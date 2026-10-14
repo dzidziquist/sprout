@@ -25,6 +25,12 @@
       "expo-router",
       "expo-font",
       [
+        "expo-notifications",
+        {
+          "color": "#3DDC84"
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#3DDC84"

@@ -8,6 +8,7 @@ import { Nunito_700Bold, Nunito_800ExtraBold } from '@expo-google-fonts/nunito';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePlantStore } from '@/store/plantStore';
 import { colors } from '@/theme/tokens';
+import { rescheduleRounds } from '@/lib/notifications';
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(() => usePlantStore.persist.hasHydrated());
@@ -23,10 +24,25 @@ export default function RootLayout() {
   const hydrated = useHydrated();
   const [fontsLoaded, fontError] = useFonts({ Fredoka_600SemiBold, Fredoka_700Bold, Nunito_700Bold, Nunito_800ExtraBold });
 
-  // Phase 1: start with a demo fam so every screen has something to show.
-  // Replaced by real onboarding in phase 2.
+  // Keep the daily plant round in sync with the latest checks and settings.
   useEffect(() => {
-    if (hydrated && usePlantStore.getState().plants.length === 0) usePlantStore.getState().seedDemo();
+    if (!hydrated) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const sync = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const { plants, profile } = usePlantStore.getState();
+        rescheduleRounds(plants, profile.round.hour, profile.round.minute, profile.round.enabled).catch(() => {});
+      }, 400);
+    };
+    sync();
+    const unsub = usePlantStore.subscribe((s, prev) => {
+      if (s.plants !== prev.plants || s.profile.round !== prev.profile.round) sync();
+    });
+    return () => {
+      clearTimeout(timer);
+      unsub();
+    };
   }, [hydrated]);
 
   if (!hydrated || !(fontsLoaded || fontError)) {
@@ -42,6 +58,7 @@ export default function RootLayout() {
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.white } }}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
         <Stack.Screen name="add" options={{ presentation: 'modal' }} />
         <Stack.Screen name="plant/[id]" />
         <Stack.Screen

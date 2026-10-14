@@ -1,8 +1,15 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore, type FaceStyle } from '@/store/plantStore';
 import { Label, Sticker, Title } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
+import { requestPermission } from '@/lib/notifications';
+
+const TIMES = [
+  { label: '8:30 am', hour: 8, minute: 30 },
+  { label: '12:30 pm', hour: 12, minute: 30 },
+  { label: '6:30 pm', hour: 18, minute: 30 },
+];
 
 const FACE_NOTE: Record<FaceStyle, string> = {
   full: 'Moods and little speech bubbles. Never guilt-trips.',
@@ -50,6 +57,38 @@ export default function MeScreen() {
           })}
         </View>
         <Label muted>{FACE_NOTE[profile.faces]}</Label>
+      </View>
+
+      <View style={{ gap: 8 }}>
+        <Label>Daily plant round</Label>
+        <View style={styles.segment} accessibilityRole="radiogroup">
+          {TIMES.map((t) => {
+            const on = profile.round.enabled && profile.round.hour === t.hour && profile.round.minute === t.minute;
+            return (
+              <Pressable
+                key={t.label}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: on }}
+                onPress={async () => {
+                  const ok = Platform.OS === 'web' ? true : await requestPermission();
+                  setProfile({ round: { enabled: ok, hour: t.hour, minute: t.minute } });
+                }}
+                style={[styles.segBtn, on && { backgroundColor: colors.ink }]}
+              >
+                <Text style={[styles.segText, on && { color: colors.white }]}>{t.label}</Text>
+              </Pressable>
+            );
+          })}
+          <Pressable
+            accessibilityRole="radio"
+            accessibilityState={{ selected: !profile.round.enabled }}
+            onPress={() => setProfile({ round: { ...profile.round, enabled: false } })}
+            style={[styles.segBtn, !profile.round.enabled && { backgroundColor: colors.ink }]}
+          >
+            <Text style={[styles.segText, !profile.round.enabled && { color: colors.white }]}>Off</Text>
+          </Pressable>
+        </View>
+        <Label muted>One reminder, only on days a plant needs a soil check.</Label>
       </View>
 
       <View style={{ gap: 8 }}>

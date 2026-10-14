@@ -1,14 +1,18 @@
 import { Platform } from 'react-native';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { TabBar } from '@/components/TabBar';
 import { colors } from '@/theme/tokens';
+import { usePlantStore } from '@/store/plantStore';
 
 /**
  * iOS gets the system tab bar (Liquid Glass on iOS 26, SF Symbols, minimises on scroll).
  * Android and web keep the PlantFam sticker tab bar with the + button.
  */
 export default function TabLayout() {
+  const onboarded = usePlantStore((s) => s.onboarded);
+  if (!onboarded) return <Redirect href="/onboarding" />;
+
   if (Platform.OS === 'ios') {
     return (
       <NativeTabs tintColor={colors.leafDeep} minimizeBehavior="onScrollDown">

@@ -11,7 +11,18 @@ export interface Profile {
   climate: ClimateProfile;
   city: string;
   faces: FaceStyle;
+  grows: { houseplants: boolean; edibles: boolean; cuttings: boolean };
+  /** Daily plant round reminder. */
+  round: { enabled: boolean; hour: number; minute: number };
 }
+
+export const DEFAULT_PROFILE: Profile = {
+  climate: 'seattle',
+  city: 'Seattle',
+  faces: 'full',
+  grows: { houseplants: true, edibles: true, cuttings: true },
+  round: { enabled: true, hour: 8, minute: 30 },
+};
 
 export type CareAction = 'water' | 'wet' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
 
@@ -46,7 +57,7 @@ function schedule(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimateProfile, at
 export const usePlantStore = create<PlantState>()(
   persist(
     (set, get) => ({
-      profile: { climate: 'seattle', city: 'Seattle', faces: 'full' },
+      profile: DEFAULT_PROFILE,
       plants: [],
       events: [],
       onboarded: false,
@@ -174,6 +185,11 @@ export const usePlantStore = create<PlantState>()(
       name: 'plantfam-v1',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (s) => ({ profile: s.profile, plants: s.plants, events: s.events, onboarded: s.onboarded }),
+      // Keep new profile fields when loading an older saved profile.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<PlantState>;
+        return { ...current, ...p, profile: { ...DEFAULT_PROFILE, ...current.profile, ...p.profile } };
+      },
     },
   ),
 );
