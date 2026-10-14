@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PlantFam — Add a plant</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B1B2F}a:hover{color:#000000}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; color: #1B1B2F; font-family: 'Nunito', sans-serif">
+  <div style="padding: 22px 20px 0; display: flex; flex-direction: column; gap: 16px">
+    <header style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px">
+      <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 28px; line-height: 1.1; font-weight: 700">Who's joining the jungle?</h1>
+      <a href="Main.dc.html" aria-label="Close" style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 22px; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; color: #1B1B2F">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </a>
+    </header>
+
+    <div style="display: flex; gap: 12px; align-items: center; padding: 10px 14px 10px 10px; border-radius: 22px; background: #FFF1B8; border: 2px solid #1B1B2F; box-shadow: 0 4px 0 #1B1B2F">
+      <div style="width: 88px; height: 88px; border-radius: 18px; background: #FFFFFF; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <dc-import name="PlantArt" species="hoya" mood="happy" pot="{{potColor}}" bg="#FFFFFF" size="80" hint-size="80px,80px"></dc-import>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 12px; font-weight: 800; color: #55556B">We think it's a…</span>
+        <span style="font-family: 'Fredoka', sans-serif; font-size: 21px; font-weight: 700; line-height: 1.1">Hoya carnosa</span>
+        <span style="font-size: 13px; font-weight: 800">Wax plant · easy · pet-safe</span>
+        <span style="font-size: 13px; font-weight: 800; text-decoration: underline">Not it? Search instead</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span id="nick-label" style="font-size: 14px; font-weight: 800">Give them a name</span>
+      <div style="display: flex; gap: 8px">
+        <output aria-labelledby="nick-label" style="flex: 1; height: 52px; padding: 0 16px; border-radius: 16px; border: 2px solid #1B1B2F; display: flex; align-items: center; font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 600">{{nick}}</output>
+        <button type="button" onClick="{{shuffle}}" aria-label="Suggest another name" style="width: 52px; height: 52px; border-radius: 16px; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; background: #EDE7FF; color: #1B1B2F; display: flex; align-items: center; justify-content: center; padding: 0">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"></rect><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"></circle><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor"></circle><circle cx="12" cy="12" r="1.2" fill="currentColor"></circle></svg>
+        </button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 14px; font-weight: 800">Pick a pot colour</span>
+      <div style="display: flex; gap: 10px">
+        <sc-for list="{{pots}}" as="p" hint-placeholder-count="5">
+          <button type="button" onClick="{{p.pick}}" aria-label="{{p.label}}" aria-pressed="{{p.pressed}}" style="width: 44px; height: 44px; border-radius: 22px; background: {{p.color}}; border: {{p.border}}; box-shadow: {{p.shadow}}; padding: 0"></button>
+        </sc-for>
+      </div>
+    </div>
+
+    <fieldset style="border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="font-size: 14px; font-weight: 800; padding: 0; margin-bottom: 8px">How sunny is its spot?</legend>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{lights}}" as="l" hint-placeholder-count="4">
+          <button type="button" onClick="{{l.pick}}" aria-pressed="{{l.pressed}}" style="height: 66px; border-radius: 16px; border: 2px solid #1B1B2F; box-shadow: {{l.shadow}}; background: {{l.bg}}; color: #1B1B2F; font-size: 13px; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0">
+            <span style="display: flex; gap: 1px" aria-hidden="true">
+              <sc-for list="{{l.suns}}" as="x" hint-placeholder-count="2">
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="#FF9F1C" stroke="#1B1B2F" stroke-width="2.4"></circle></svg>
+              </sc-for>
+            </span>
+            <span>{{l.label}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </fieldset>
+
+    <fieldset style="border: none; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+      <legend style="font-size: 14px; font-weight: 800; padding: 0; margin-bottom: 8px">What's it potted in?</legend>
+      <div style="display: flex; gap: 8px; overflow: hidden; margin-right: -20px">
+        <sc-for list="{{soils}}" as="s" hint-placeholder-count="5">
+          <button type="button" onClick="{{s.pick}}" aria-pressed="{{s.pressed}}" style="flex-shrink: 0; height: 42px; padding: 0 12px 0 6px; border-radius: 21px; border: 2px solid #1B1B2F; box-shadow: {{s.shadow}}; background: {{s.bg}}; color: #1B1B2F; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px">
+            <span aria-hidden="true" style="width: 26px; height: 26px; border-radius: 13px; border: 2px solid #1B1B2F; background: {{s.swatch}}; box-sizing: border-box"></span>{{s.label}}
+          </button>
+        </sc-for>
+      </div>
+      <span style="font-size: 12px; font-weight: 800; color: #55556B">{{soilNote}}</span>
+    </fieldset>
+
+    <fieldset style="border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="font-size: 14px; font-weight: 800; padding: 0; margin-bottom: 8px">Where's it from?</legend>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <sc-for list="{{origins}}" as="o" hint-placeholder-count="4">
+          <button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="height: 42px; padding: 0 14px; border-radius: 21px; border: 2px solid #1B1B2F; box-shadow: {{o.shadow}}; background: {{o.bg}}; color: #1B1B2F; font-size: 14px; font-weight: 800">{{o.label}}</button>
+        </sc-for>
+      </div>
+    </fieldset>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 24px; background: #FFFFFF; border-top: 2px solid #1B1B2F">
+    <a href="Plants.dc.html" style="height: 58px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: 0 4px 0 #1B1B2F; background: #3DDC84; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">{{cta}}</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var s = this.state || {};
+    var names = ['Waxy', 'Hoya Lisa', 'Sir Leafalot', 'Pearl', 'Waxwell'];
+    var n = s.n || 0;
+    var potSel = s.pot || '#FFB3C7';
+    var light = s.light || 'bright';
+    var origin = s.origin || 'bought';
+    var pots = [['#FF6B5B', 'Coral'], ['#FFD23F', 'Sunny'], ['#5AB8FF', 'Sky'], ['#A78BFA', 'Grape'], ['#FFB3C7', 'Bubblegum']].map(function (p) {
+      var on = p[0] === potSel;
+      return {
+        color: p[0], label: p[1] + ' pot', pressed: on ? 'true' : 'false',
+        border: on ? '3px solid #1B1B2F' : '2px solid #1B1B2F', shadow: on ? '0 0 0 3px #FFFFFF, 0 0 0 5px #1B1B2F' : 'none',
+        pick: function () { self.setState({ pot: p[0] }); }
+      };
+    });
+    var lights = [['low', 'Shady', 1], ['medium', 'Some', 2], ['bright', 'Bright', 3], ['sun', 'Sun!', 4]].map(function (l) {
+      var on = l[0] === light;
+      var suns = [];
+      for (var i = 0; i < l[2]; i++) suns.push({ i: i });
+      return {
+        label: l[1], suns: suns, pressed: on ? 'true' : 'false',
+        bg: on ? '#FFD23F' : '#FFFFFF', shadow: on ? '0 4px 0 #1B1B2F' : 'none',
+        pick: function () { self.setState({ light: l[0] }); }
+      };
+    });
+    var soil = s.soil || 'chunky';
+    var soilInfo = {
+      mix: ['Potting mix', '#8B5E3C', 'Holds water longest. Checks spaced out; repot every 1–2 years.'],
+      chunky: ['Chunky aroid', '#C9A27E', 'Bark + perlite drains fast. Hoyas love it; checks come a bit sooner.'],
+      gritty: ['Gritty', '#D9CBB0', 'For succulents and cacti. Dries quickest; we let it go bone dry.'],
+      leca: ['LECA', '#E07A4F', 'Semi-hydro: you top up a reservoir and feed every watering.'],
+      moss: ['Moss', '#7CB86A', 'Sphagnum stays damp: great for rooting cuttings, easy to overwater.'],
+      unsure: ['Not sure', '#FFFFFF', 'No problem. We start cautious and learn from your soil checks.']
+    };
+    var soils = Object.keys(soilInfo).map(function (k) {
+      var on = k === soil;
+      return {
+        label: soilInfo[k][0], swatch: soilInfo[k][1], pressed: on ? 'true' : 'false',
+        bg: on ? '#D7F9E4' : '#FFFFFF', shadow: on ? '0 3px 0 #1B1B2F' : 'none',
+        pick: function () { self.setState({ soil: k }); }
+      };
+    });
+    var origins = [['bought', 'Bought'], ['cutting', 'My cutting'], ['swap', 'Swap'], ['gift', 'Gift']].map(function (o) {
+      var on = o[0] === origin;
+      return {
+        label: o[1], pressed: on ? 'true' : 'false',
+        bg: on ? '#A78BFA' : '#FFFFFF', shadow: on ? '0 3px 0 #1B1B2F' : 'none',
+        pick: function () { self.setState({ origin: o[0] }); }
+      };
+    });
+    return {
+      nick: names[n % names.length],
+      cta: 'Welcome home, ' + names[n % names.length] + '!',
+      shuffle: function () { self.setState({ n: n + 1 }); },
+      potColor: potSel, pots: pots, lights: lights, origins: origins,
+      soils: soils, soilNote: soilInfo[soil][2]
+    };
+  }
+}
+</script>
+</body>
+</html>
