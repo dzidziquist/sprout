@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "PlantFam",
+    "slug": "plantfam",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "plantfam",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.dzidziquist.plantfam",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.dzidziquist.plantfam"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#3DDC84"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {}
+    },
+    "owner": "dzidziquist"
+  }
+}

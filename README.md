@@ -8,7 +8,18 @@ A playful plant-care app where plants have moods, care is a soil check rather th
 
 ## Status
 
-**Phase 1 (research + mockup): done.** The app build is paused pending founder sign-off.
+**Research + mockup: done.** **App build: phase 1 (foundation) done**: Expo app with the care engine, plant round, jungle, Offshoots and settings, running on demo plants.
+
+### Run it
+
+```bash
+npm install
+npm start        # Expo dev server (scan with Expo Go / dev client)
+npm test         # care engine unit tests
+npm run ts:check # TypeScript
+```
+
+Stack: Expo SDK 54, Expo Router, Zustand + AsyncStorage, react-native-svg (same setup as VinylRecordTracker). Care logic lives in `src/engine/careEngine.ts`.
 
 ## What's here
 
