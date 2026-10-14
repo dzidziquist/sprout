@@ -1,7 +1,7 @@
 import { SoilCheckCoach } from '@/components/SoilCheckCoach';
 import { GrowTodayCard } from '@/components/GrowTodayCard';
 import { useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -12,6 +12,8 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Chip, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
+import { TodayAnswerButtons } from '@/components/TodayAnswerButtons';
+import { TodayProgress } from '@/components/TodayProgress';
 import { seasonBanner } from '@/lib/season';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
@@ -32,10 +34,11 @@ function sameDay(a: Date, b: Date) {
 }
 
 function reason(plant: Plant, now: Date): string {
-  if (!plant.lastCheckAt) return 'First check: feel 2–3 cm down';
+  if (!plant.lastCheckAt) return 'Say hi: first soil check';
   const days = Math.round((now.getTime() - new Date(plant.lastCheckAt).getTime()) / DAY);
-  if (plant.lastResult === 'damp') return `Was damp ${days} day${days === 1 ? '' : 's'} ago, peek again?`;
-  return `Probably dry. Last checked ${days} day${days === 1 ? '' : 's'} ago`;
+  const ago = days <= 0 ? 'earlier today' : days === 1 ? 'yesterday' : `${days} days ago`;
+  if (plant.lastResult === 'damp' || plant.lastResult === 'soggy') return `Was ${plant.lastResult} ${ago}, peek again?`;
+  return `Last checked ${ago}. How’s the soil?`;
 }
 
 function inDays(iso: string, now: Date): string {
@@ -62,7 +65,7 @@ export default function TodayScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const c = useColors();
-  const { plants, profile, logCheck, undoLastCheck, undo } = usePlantStore();
+  const { plants, profile, events, logCheck, undoLastCheck, undo } = usePlantStore();
   const [messages, setMessages] = useState<Record<string, string>>({});
   const swipeRefs = useRef<Record<string, Swipeable | null>>({});
   const now = new Date();
@@ -94,7 +97,8 @@ export default function TodayScreen() {
     else haptics.answer();
   };
 
-  const heroTitle = living.length === 0 ? 'Your jungle is waiting' : round.length === 0 ? 'All caught up!' : allDone ? 'Round done!' : `${left} soil ${left === 1 ? 'check' : 'checks'} today`;
+  const firstEver = !events.some((e) => e.type === 'check');
+  const heroTitle = living.length === 0 ? 'Your jungle is waiting' : round.length === 0 ? 'All caught up!' : allDone ? 'Round done!' : `${left} soil ${left === 1 ? 'check' : 'checks'} left`;
   const heroSub =
     living.length === 0
       ? 'Add your first plant and we’ll learn its rhythm together.'
@@ -102,7 +106,9 @@ export default function TodayScreen() {
         ? 'Nobody needs a soil check today. Enjoy the green.'
         : allDone
           ? 'Everyone in the fam is happy. Nice judgement!'
-          : 'Swipe a plant, or tap how the soil feels.';
+          : firstEver
+            ? 'Say hi to the fam: feel the soil, then tap what you found.'
+            : 'Feel the soil, then tap what you found.';
 
   return (
     <ScrollView
@@ -114,9 +120,12 @@ export default function TodayScreen() {
         <Label muted>
           {now.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })} · {profile.city}
         </Label>
-        <GlassButton accessibilityLabel="Add a plant" onPress={() => router.push('/add')}>
-          <Svg width={20} height={20} viewBox="0 0 24 24"><Path d="M12 5v14M5 12h14" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" /></Svg>
-        </GlassButton>
+        {/* iOS native tabs have no + tab, so the header keeps the add button there only. */}
+        {Platform.OS === 'ios' && (
+          <GlassButton accessibilityLabel="Add a plant" onPress={() => router.push('/add')}>
+            <Svg width={20} height={20} viewBox="0 0 24 24"><Path d="M12 5v14M5 12h14" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" /></Svg>
+          </GlassButton>
+        )}
       </View>
       <Title style={{ fontSize: 36, lineHeight: 40 }}>Plant round</Title>
 
@@ -124,17 +133,77 @@ export default function TodayScreen() {
         <View style={{ flex: 1, gap: 4 }}>
           <Text style={[styles.heroTitle, { color: c.ink }]}>{heroTitle}</Text>
           <Text style={[styles.heroSub, { color: c.ink }]}>{heroSub}</Text>
-          {round.length > 0 && (
-            <View style={styles.segs} accessibilityLabel={`${done} of ${round.length} done`}>
-              {round.map((p, i) => (
-                <View key={p.id} style={[styles.seg, { borderColor: c.line, backgroundColor: i < done ? c.ink : c.card }]} />
-              ))}
-            </View>
-          )}
+          {round.length > 0 && <TodayProgress done={done} total={round.length} />}
           {living.length === 0 && <Button title="Add a plant" raised bg={c.leaf} onPress={() => router.push('/add')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
         </View>
-        <PlantBuddy speciesId="monstera" mood={calm ? 'happy' : 'thirsty'} size={112} bg={heroBg} faces={profile.faces} />
+        <PlantBuddy speciesId="monstera" mood={calm ? 'happy' : 'thirsty'} size={84} bg={heroBg} faces={profile.faces} />
       </Sticker>
+
+      {round.length > 0 && (
+        <View style={{ gap: 12 }}>
+          {left > 0 && <SoilCheckCoach />}
+          {round.map((p) => {
+            const due = isDue(p, now);
+            const mood = moodFor(p, now);
+            const tint = c.potTint[p.potColor];
+            const outcome = !due && p.lastResult ? OUTCOME[p.lastResult] : undefined;
+            const card = (
+              <PlantMenu plant={p}>
+                <Sticker style={styles.card}>
+                  <View style={[styles.thumb, { backgroundColor: tint, borderColor: c.line }]}>
+                    <PlantBuddy speciesId={p.speciesId} mood={mood} pot={p.potColor} size={74} bg={tint} faces={profile.faces} />
+                  </View>
+                  <View style={{ flex: 1, gap: 6 }}>
+                    <View>
+                      <Text style={[styles.name, { color: c.ink }]} numberOfLines={1}>{p.name}</Text>
+                      <Text style={[styles.reason, { color: due ? c.inkMuted : c.good }]}>{due ? reason(p, now) : messages[p.id] ?? 'Logged'}</Text>
+                    </View>
+                    {due ? (
+                      <TodayAnswerButtons name={p.name} onAnswer={(r) => answer(p.id, r)} />
+                    ) : (
+                      <View style={styles.answers}>
+                        {outcome && <Chip bg={outcome.bg} style={styles.tallChip}>{outcome.text}</Chip>}
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`Undo ${p.name}'s check`}
+                          hitSlop={{ top: 2, bottom: 2, left: 6, right: 6 }}
+                          style={({ pressed }) => [styles.undo, pressed && { opacity: 0.6 }]}
+                          onPress={() => {
+                            haptics.tap();
+                            undoLastCheck(p.id);
+                          }}
+                        >
+                          <Chip style={styles.tallChip}>Undo</Chip>
+                        </Pressable>
+                      </View>
+                    )}
+                  </View>
+                </Sticker>
+              </PlantMenu>
+            );
+            if (!due) return <View key={p.id}>{card}</View>;
+            return (
+              <Swipeable
+                key={p.id}
+                ref={(r: Swipeable | null) => {
+                  swipeRefs.current[p.id] = r;
+                }}
+                friction={2}
+                rightThreshold={40}
+                overshootRight={false}
+                renderRightActions={() => (
+                  <View style={styles.swipeActions}>
+                    <SwipeAction label="Skip" bg={c.sky} slash onPress={() => answer(p.id, 'damp')} />
+                    <SwipeAction label="Water" bg={c.leaf} onPress={() => answer(p.id, 'dry')} />
+                  </View>
+                )}
+              >
+                {card}
+              </Swipeable>
+            );
+          })}
+        </View>
+      )}
 
       <View style={[styles.banner, { backgroundColor: c.butter, borderColor: c.line }]}>
         <Text style={[styles.bannerText, { color: c.ink }]}>
@@ -143,75 +212,7 @@ export default function TodayScreen() {
         </Text>
       </View>
 
-      <SoilCheckCoach />
-
       <GrowTodayCard />
-
-      <View style={{ gap: 12 }}>
-        {round.map((p) => {
-          const due = isDue(p, now);
-          const mood = moodFor(p, now);
-          const tint = c.potTint[p.potColor];
-          const outcome = !due && p.lastResult ? OUTCOME[p.lastResult] : undefined;
-          const card = (
-            <PlantMenu plant={p}>
-              <Sticker style={styles.card}>
-                <View style={[styles.thumb, { backgroundColor: tint, borderColor: c.line }]}>
-                  <PlantBuddy speciesId={p.speciesId} mood={mood} pot={p.potColor} size={74} bg={tint} faces={profile.faces} />
-                </View>
-                <View style={{ flex: 1, gap: 6 }}>
-                  <View>
-                    <Text style={[styles.name, { color: c.ink }]} numberOfLines={1}>{p.name}</Text>
-                    <Text style={[styles.reason, { color: due ? c.warn : c.good }]}>{due ? reason(p, now) : messages[p.id] ?? 'Logged'}</Text>
-                  </View>
-                  {due ? (
-                    <View style={styles.answers} accessibilityLabel="How does the soil feel?">
-                      <Button title="Dry" bg={c.sun} style={styles.answer} accessibilityLabel={`${p.name}: dry`} onPress={() => answer(p.id, 'dry')} />
-                      <Button title="Damp" bg={c.ice} style={styles.answer} accessibilityLabel={`${p.name}: damp`} onPress={() => answer(p.id, 'damp')} />
-                      <Button title="Soggy" bg={c.lavender} style={styles.answer} accessibilityLabel={`${p.name}: soggy`} onPress={() => answer(p.id, 'soggy')} />
-                    </View>
-                  ) : (
-                    <View style={styles.answers}>
-                      {outcome && <Chip bg={outcome.bg}>{outcome.text}</Chip>}
-                      <Pressable
-                        accessibilityRole="button"
-                        accessibilityLabel={`Undo ${p.name}'s check`}
-                        hitSlop={6}
-                        onPress={() => {
-                          haptics.tap();
-                          undoLastCheck(p.id);
-                        }}
-                      >
-                        <Chip>Undo</Chip>
-                      </Pressable>
-                    </View>
-                  )}
-                </View>
-              </Sticker>
-            </PlantMenu>
-          );
-          if (!due) return <View key={p.id}>{card}</View>;
-          return (
-            <Swipeable
-              key={p.id}
-              ref={(r: Swipeable | null) => {
-                swipeRefs.current[p.id] = r;
-              }}
-              friction={2}
-              rightThreshold={40}
-              overshootRight={false}
-              renderRightActions={() => (
-                <View style={styles.swipeActions}>
-                  <SwipeAction label="Skip" bg={c.sky} slash onPress={() => answer(p.id, 'damp')} />
-                  <SwipeAction label="Water" bg={c.leaf} onPress={() => answer(p.id, 'dry')} />
-                </View>
-              )}
-            >
-              {card}
-            </Swipeable>
-          );
-        })}
-      </View>
 
       {calm && upNext.length > 0 && (
         <View style={{ gap: 8 }}>
@@ -240,19 +241,18 @@ export default function TodayScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 14 },
   toolbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 44 },
-  hero: { flexDirection: 'row', alignItems: 'center', padding: 16, paddingRight: 4, overflow: 'hidden', minHeight: 128 },
-  heroTitle: { fontFamily: fonts.display, fontSize: 23, lineHeight: 26 },
+  hero: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 12, paddingLeft: 14, paddingRight: 4, overflow: 'hidden' },
+  heroTitle: { fontFamily: fonts.display, fontSize: 22, lineHeight: 26 },
   heroSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  segs: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 },
-  seg: { width: 40, height: 12, borderRadius: 6, borderWidth: 2 },
   banner: { borderWidth: 2, borderRadius: 16, padding: 10 },
   bannerText: { fontFamily: fonts.body, fontSize: 13 },
   card: { flexDirection: 'row', gap: 12, padding: 10, alignItems: 'center' },
   thumb: { width: 80, height: 80, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   name: { fontFamily: fonts.displaySemi, fontSize: 18 },
   reason: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  answers: { flexDirection: 'row', gap: 6, alignItems: 'center' },
-  answer: { flex: 1, minHeight: 40, paddingHorizontal: 0 },
+  answers: { flexDirection: 'row', gap: 8, alignItems: 'center', minHeight: 48 },
+  tallChip: { height: 44, borderRadius: 22, paddingHorizontal: 14 },
+  undo: { minHeight: 44, justifyContent: 'center' },
   swipeActions: { flexDirection: 'row', gap: 6, paddingLeft: 8, paddingVertical: 4 },
   swipeAction: { width: 64, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', gap: 4 },
   swipeText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
