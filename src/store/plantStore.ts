@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { applyCheck, initialNextCheck } from '../engine/careEngine';
 import { SPECIES } from '../data/species';
-import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
+import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
 
@@ -14,6 +14,12 @@ export interface Profile {
   grows: { houseplants: boolean; edibles: boolean; cuttings: boolean };
   /** Daily plant round reminder. */
   round: { enabled: boolean; hour: number; minute: number };
+  /** Appearance: follow the phone, or force light/dark. */
+  theme: 'system' | 'light' | 'dark';
+  /** Cached PlantFam Plus entitlement (RevenueCat is the source of truth on device). */
+  plus: boolean;
+  /** Streak repairs left this month (free; refilled monthly). */
+  streakFreezes: number;
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -22,6 +28,9 @@ export const DEFAULT_PROFILE: Profile = {
   faces: 'full',
   grows: { houseplants: true, edibles: true, cuttings: true },
   round: { enabled: true, hour: 8, minute: 30 },
+  theme: 'system',
+  plus: false,
+  streakFreezes: 2,
 };
 
 export type CareAction = 'water' | 'wet' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
@@ -46,6 +55,19 @@ interface PlantState {
   logCare: (plantId: string, actions: CareAction[], note?: string, now?: Date) => number;
   takeCutting: (parentId: string, name: string, method: NonNullable<Plant['rooting']>['method'], now?: Date) => Plant | undefined;
   seedDemo: (now?: Date) => void;
+  /** Edit a plant's details. Changing soil, pot or light reschedules the next check. */
+  updatePlant: (plantId: string, patch: Partial<NewPlant>, now?: Date) => void;
+  /** Plants are never hard-deleted from lineage: archived plants leave the round but stay in Offshoots. */
+  archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
+  /** Hard delete (mistakes only). Children keep their lineage by pointing to the grandparent. */
+  deletePlant: (plantId: string) => void;
+  /** A rooting cutting is ready: pot it up and start normal checks. */
+  markRooted: (plantId: string, pot: { soil: Plant['soil']; potDiameterCm: number }, now?: Date) => void;
+  setStage: (plantId: string, stage: EdibleStage, now?: Date) => void;
+  logHarvest: (plantId: string, amount: number, unit: string, note?: string, now?: Date) => void;
+  /** Spring onions: cut and let it regrow. */
+  logRegrow: (plantId: string, now?: Date) => void;
+  addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
@@ -158,6 +180,76 @@ export const usePlantStore = create<PlantState>()(
         return child;
       },
 
+      updatePlant: (plantId, patch, now = new Date()) => {
+        const climate = get().profile.climate;
+        set((s) => ({
+          plants: s.plants.map((p) => {
+            if (p.id !== plantId) return p;
+            const next = { ...p, ...patch };
+            const careChanged = (['soil', 'potMaterial', 'potDiameterCm', 'light', 'placement', 'speciesId'] as const).some((k) => k in patch && patch[k] !== p[k]);
+            return careChanged && !next.rooting ? { ...next, nextCheckAt: schedule(next, climate, now) } : next;
+          }),
+        }));
+      },
+
+      archivePlant: (plantId, reason, now = new Date()) => {
+        const at = now.toISOString();
+        set((s) => ({
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: at, archivedReason: reason } : p)),
+          events: [...s.events, { id: uid(), plantId, type: 'archived', note: reason, at }],
+        }));
+      },
+
+      deletePlant: (plantId) => {
+        const gone = get().plants.find((p) => p.id === plantId);
+        if (!gone) return;
+        set((s) => ({
+          plants: s.plants.filter((p) => p.id !== plantId).map((p) => (p.parentId === plantId ? { ...p, parentId: gone.parentId } : p)),
+          events: s.events.filter((e) => e.plantId !== plantId),
+        }));
+      },
+
+      markRooted: (plantId, pot, now = new Date()) => {
+        const climate = get().profile.climate;
+        const at = now.toISOString();
+        set((s) => ({
+          plants: s.plants.map((p) => {
+            if (p.id !== plantId) return p;
+            const { rooting: _done, ...rest } = p;
+            const next = { ...rest, soil: pot.soil, potDiameterCm: pot.potDiameterCm, lastRepottedAt: at };
+            return { ...next, nextCheckAt: schedule(next, climate, now) };
+          }),
+          events: [...s.events, { id: uid(), plantId, type: 'rooted', at }],
+        }));
+      },
+
+      setStage: (plantId, stage, now = new Date()) => {
+        const at = now.toISOString();
+        set((s) => ({
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, stage, stageAt: at } : p)),
+          events: [...s.events, { id: uid(), plantId, type: 'stage', stage, at }],
+        }));
+      },
+
+      logHarvest: (plantId, amount, unit, note, now = new Date()) => {
+        set((s) => ({ events: [...s.events, { id: uid(), plantId, type: 'harvest', amount, unit, note: note?.trim() || undefined, at: now.toISOString() }] }));
+      },
+
+      logRegrow: (plantId, now = new Date()) => {
+        const at = now.toISOString();
+        set((s) => ({
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, regrowCount: (p.regrowCount ?? 0) + 1 } : p)),
+          events: [...s.events, { id: uid(), plantId, type: 'regrow', at }],
+        }));
+      },
+
+      addPhoto: (plantId, uri, note, now = new Date()) => {
+        set((s) => ({
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
+          events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, note: note?.trim() || undefined, at: now.toISOString() }],
+        }));
+      },
+
       seedDemo: (now = new Date()) => {
         if (get().plants.length) return;
         const add = get().addPlant;
@@ -169,7 +261,15 @@ export const usePlantStore = create<PlantState>()(
         add({ name: 'Monty', speciesId: 'monstera', potColor: 'yellow', soil: 'chunky_aroid', potMaterial: 'terracotta', potDiameterCm: 22, light: 'bright', placement: 'indoor', room: 'Living room', origin: 'bought', acquiredAt: daysAgo(400) }, now);
         add({ name: 'Snakey', speciesId: 'snake', potColor: 'coral', soil: 'gritty', potMaterial: 'terracotta', potDiameterCm: 15, light: 'medium', placement: 'indoor', room: 'Bedroom', origin: 'bought', acquiredAt: daysAgo(500) }, now);
         add({ name: 'Tommy', speciesId: 'tomato', potColor: 'yellow', soil: 'veg_mix', potMaterial: 'fabric', potDiameterCm: 38, light: 'direct', placement: 'covered_outdoor', room: 'Balcony', origin: 'bought', acquiredAt: daysAgo(200) }, now);
+        add({ name: 'Chili', speciesId: 'pepper', potColor: 'coral', soil: 'veg_mix', potMaterial: 'fabric', potDiameterCm: 25, light: 'direct', placement: 'covered_outdoor', room: 'Balcony', origin: 'bought', acquiredAt: daysAgo(180) }, now);
+        add({ name: 'Scallie', speciesId: 'spring-onion', potColor: 'blue', soil: 'veg_mix', potMaterial: 'plastic', potDiameterCm: 15, light: 'bright', placement: 'indoor', room: 'Kitchen', origin: 'cutting', acquiredAt: daysAgo(60) }, now);
+        set((s) => ({
+          plants: s.plants.map((p) =>
+            p.name === 'Tommy' ? { ...p, stage: 'fruiting', stageAt: daysAgo(40) } : p.name === 'Chili' ? { ...p, stage: 'fruiting', stageAt: daysAgo(30) } : p.name === 'Scallie' ? { ...p, stage: 'harvesting', stageAt: daysAgo(20), regrowCount: 2 } : p,
+          ),
+        }));
         get().takeCutting(queenie.id, 'Rootie', 'water', new Date(now.getTime() - 18 * 86400000));
+        get().takeCutting(mother.id, 'Sprig', 'moss', new Date(now.getTime() - 40 * 86400000));
         // Make a few plants due today so the first plant round has something to do.
         const dueIds = new Set([queenie.id]);
         set((s) => ({

@@ -30,6 +30,9 @@ export type ClimateProfile = 'seattle' | 'accra';
 
 export type Origin = 'bought' | 'cutting' | 'swap' | 'gift';
 
+/** Growth stage for edibles (tomato, pepper, spring onion, herbs). */
+export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruiting' | 'harvesting' | 'resting';
+
 export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum';
 
 export type SpeciesId =
@@ -93,9 +96,33 @@ export interface Plant {
   lastResult?: CheckResult;
   nextCheckAt: string;
   createdAt: string;
+  /** Edibles only: current stage and when it started. */
+  stage?: EdibleStage;
+  stageAt?: string;
+  /** Spring onions: how many times it has regrown from the roots. */
+  regrowCount?: number;
+  /** Latest diary photo (local file URI), used as the plant's cover. */
+  photoUri?: string;
+  /** Set when a plant dies or is given away. It leaves the round but stays in Offshoots as a memory. */
+  archivedAt?: string;
+  archivedReason?: 'died' | 'gifted' | 'composted';
 }
 
-export type CareEventType = 'check' | 'water' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo' | 'note' | 'harvest';
+export type CareEventType =
+  | 'check'
+  | 'water'
+  | 'feed'
+  | 'repot'
+  | 'prune'
+  | 'pest'
+  | 'cutting'
+  | 'photo'
+  | 'note'
+  | 'harvest'
+  | 'rooted'
+  | 'stage'
+  | 'regrow'
+  | 'archived';
 
 export interface CareEvent {
   id: string;
@@ -104,6 +131,12 @@ export interface CareEvent {
   result?: CheckResult;
   /** For harvests: count of fruit / cuts. */
   amount?: number;
+  /** For harvests: unit of `amount` (fruit, handful, cut). */
+  unit?: string;
+  /** For stage events: the new stage. */
+  stage?: EdibleStage;
+  /** Local image file for photo events. */
+  photoUri?: string;
   note?: string;
   at: string;
 }
