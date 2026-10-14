@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts, sticker } from '../theme/tokens';
+import { colors, fonts } from '../theme/tokens';
+import { useColors } from '../theme/theme';
 
 const ACTIVE_BG: Record<string, string> = { index: colors.leaf, jungle: colors.sky, offshoots: colors.grape, me: colors.bubblegum };
 const LABEL: Record<string, string> = { index: 'Today', jungle: 'Jungle', offshoots: 'Offshoots', me: 'Me' };
@@ -40,6 +41,7 @@ function Icon({ name, color }: { name: string; color: string }) {
 export function TabBar({ state, navigation }: BottomTabBarProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const c = useColors();
   const routes = state.routes;
   const tab = (i: number) => {
     const route = routes[i];
@@ -50,18 +52,18 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
         accessibilityRole="tab"
         accessibilityState={{ selected: focused }}
         onPress={() => !focused && navigation.navigate(route.name)}
-        style={[styles.tab, focused && [styles.tabActive, { backgroundColor: ACTIVE_BG[route.name] }]]}
+        style={[styles.tab, focused && [styles.tabActive, { borderColor: c.line, backgroundColor: ACTIVE_BG[route.name] }]]}
       >
-        <Icon name={route.name} color={focused ? colors.ink : colors.inkMuted} />
-        <Text style={[styles.label, { color: focused ? colors.ink : colors.inkMuted }]}>{LABEL[route.name]}</Text>
+        <Icon name={route.name} color={focused ? c.onBright : c.inkMuted} />
+        <Text style={[styles.label, { color: focused ? c.onBright : c.inkMuted }]}>{LABEL[route.name]}</Text>
       </Pressable>
     );
   };
   return (
-    <View style={[styles.bar, { bottom: Math.max(insets.bottom, 12) }]}>
+    <View style={[styles.bar, { bottom: Math.max(insets.bottom, 12), backgroundColor: c.card, borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
       {tab(0)}
       {tab(1)}
-      <Pressable accessibilityRole="button" accessibilityLabel="Add a plant" onPress={() => router.push('/add')} style={styles.add}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Add a plant" onPress={() => router.push('/add')} style={[styles.add, { borderColor: c.line, boxShadow: `0px 3px 0px ${c.drop}` }]}>
         <Svg width={26} height={26} viewBox="0 0 24 24">
           <Path d="M12 5v14M5 12h14" stroke={colors.ink} strokeWidth={3} strokeLinecap="round" />
         </Svg>
@@ -74,29 +76,26 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
 
 const styles = StyleSheet.create({
   bar: {
-    ...sticker,
+    borderWidth: 2,
     position: 'absolute',
     left: 14,
     right: 14,
     height: 72,
     borderRadius: 26,
-    backgroundColor: colors.white,
-    boxShadow: `0px 4px 0px ${colors.ink}`,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingHorizontal: 6,
   },
   tab: { minWidth: 62, height: 54, alignItems: 'center', justifyContent: 'center', gap: 2, borderRadius: 18 },
-  tabActive: { ...sticker },
+  tabActive: { borderWidth: 2 },
   label: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   add: {
-    ...sticker,
+    borderWidth: 2,
     width: 56,
     height: 56,
     borderRadius: 20,
     backgroundColor: colors.sun,
-    boxShadow: `0px 3px 0px ${colors.ink}`,
     alignItems: 'center',
     justifyContent: 'center',
     transform: [{ translateY: -14 }],

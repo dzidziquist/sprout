@@ -1,6 +1,6 @@
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
-import { colors } from '../theme/tokens';
+import { useColors } from '../theme/theme';
 
 const liquidGlass = Platform.OS === 'ios' && isLiquidGlassAvailable();
 
@@ -19,6 +19,10 @@ export function GlassButton({
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 }) {
+  const c = useColors();
+  const frosted = c.scheme === 'dark'
+    ? { backgroundColor: 'rgba(40,38,62,0.8)', borderColor: 'rgba(255,255,255,0.14)', boxShadow: '0px 6px 18px rgba(0,0,0,0.4)' }
+    : { backgroundColor: 'rgba(255,255,255,0.75)', borderColor: 'rgba(27,27,47,0.08)', boxShadow: '0px 6px 18px rgba(27,27,47,0.12)' };
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} hitSlop={6} style={({ pressed }) => [pressed && { opacity: 0.7 }]}>
       {liquidGlass ? (
@@ -26,7 +30,7 @@ export function GlassButton({
           {children}
         </GlassView>
       ) : (
-        <View style={[styles.base, styles.fallback, style]}>{children}</View>
+        <View style={[styles.base, styles.fallback, frosted, style]}>{children}</View>
       )}
     </Pressable>
   );
@@ -34,12 +38,6 @@ export function GlassButton({
 
 const styles = StyleSheet.create({
   base: { minWidth: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 12 },
-  fallback: {
-    backgroundColor: 'rgba(255,255,255,0.75)',
-    borderWidth: 1,
-    borderColor: 'rgba(27,27,47,0.08)',
-    boxShadow: `0px 6px 18px rgba(27,27,47,0.12)`,
-  },
+  fallback: { borderWidth: 1 },
 });
 
-export const glassInk = colors.ink;
