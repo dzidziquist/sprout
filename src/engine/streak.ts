@@ -1,5 +1,5 @@
 import { checkIntervalDays } from './careEngine';
-import { SPECIES } from '../data/species';
+import { speciesOf } from '../data/species';
 import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
 
 /*
@@ -78,7 +78,7 @@ function addWeeks(d: Date, n: number): Date {
 }
 
 function gapDays(plant: Plant, climate: ClimateProfile, result: CheckResult, at: Date): number {
-  const full = checkIntervalDays({ group: SPECIES[plant.speciesId].group, plant, profile: climate, at });
+  const full = checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at });
   if (result === 'dry') return full;
   if (result === 'damp') return Math.min(2, full);
   return 4;
@@ -101,7 +101,7 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
     const to = Math.min(checkedAt, end);
     if (to > from) out.push([from, to]);
   };
-  let due = start + checkIntervalDays({ group: SPECIES[plant.speciesId].group, plant, profile: climate, at: new Date(start) }) * DAY_MS;
+  let due = start + checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at: new Date(start) }) * DAY_MS;
   for (const c of checks) {
     const t = new Date(c.at).getTime();
     push(due, t);

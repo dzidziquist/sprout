@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { moodFor } from '@/engine/careEngine';
-import { SPECIES } from '@/data/species';
+import { speciesOf } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
@@ -43,7 +43,7 @@ function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
         <View style={styles.meta}>
           <Text style={[styles.name, { color: c.ink }]} numberOfLines={1}>{plant.name}</Text>
           <Text style={[styles.kind, { color: c.inkMuted }]} numberOfLines={1}>
-            {plant.room ? `${SPECIES[plant.speciesId].commonName} · ${plant.room}` : SPECIES[plant.speciesId].commonName}
+            {plant.room ? `${speciesOf(plant).commonName} · ${plant.room}` : speciesOf(plant).commonName}
           </Text>
         </View>
       </Sticker>
@@ -61,7 +61,7 @@ export default function JungleScreen() {
   const potted = living.filter((p) => !p.rooting);
   const rooting = living.filter((p) => p.rooting);
   const memory = plants.filter((p) => p.archivedAt);
-  const edibles = potted.filter((p) => SPECIES[p.speciesId].edible);
+  const edibles = potted.filter((p) => speciesOf(p).edible);
   const rooms = new Set(potted.map((p) => p.room).filter(Boolean));
 
   return (

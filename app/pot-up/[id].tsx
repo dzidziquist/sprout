@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { SPECIES } from '@/data/species';
+import { speciesOf } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { POT_UP_AFTER_DAYS, rootingDays } from '@/engine/treeLayout';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -45,7 +45,7 @@ export default function PotUpScreen() {
   const faces = usePlantStore((s) => s.profile.faces);
   const markRooted = usePlantStore((s) => s.markRooted);
 
-  const defaultSoil = plant ? SPECIES[plant.speciesId].defaultSoil : 'potting_mix';
+  const defaultSoil = plant ? speciesOf(plant).defaultSoil : 'potting_mix';
   const soils = [defaultSoil, ...SOILS.filter((s) => s !== defaultSoil)];
   const [soil, setSoil] = useState<Soil>(defaultSoil);
   const [cm, setCm] = useState<number>(12);
@@ -117,7 +117,7 @@ export default function PotUpScreen() {
             );
           })}
         </View>
-        <Text style={styles.hint}>★ what {SPECIES[plant.speciesId].commonName} usually likes</Text>
+        <Text style={styles.hint}>★ what {speciesOf(plant).commonName} usually likes</Text>
       </View>
 
       <View style={styles.section}>

@@ -1,8 +1,8 @@
 // Generated from the ChatGPT plant-buddy sheet (design/asset-concepts). Static requires so Metro can bundle them.
 import type { ImageSourcePropType } from 'react-native';
-import type { Mood, SpeciesId } from '../types';
+import type { ArtId, Mood } from '../types';
 
-export const BUDDY_IMAGES: Record<SpeciesId | 'cutting', Record<Mood, ImageSourcePropType>> = {
+export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePropType>> = {
   'aloe': {
     happy: require('../../assets/buddies/aloe-happy.png'),
     thirsty: require('../../assets/buddies/aloe-thirsty.png'),

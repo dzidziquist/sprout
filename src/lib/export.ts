@@ -1,4 +1,4 @@
-import { SPECIES } from '../data/species';
+import { speciesOf } from '../data/species';
 import type { Profile } from '../store/plantStore';
 import type { CareEvent, Plant } from '../types';
 
@@ -50,7 +50,7 @@ export function buildCareDiaryCsv(plants: Plant[], events: CareEvent[]): string 
     .sort((a, b) => a.at.localeCompare(b.at))
     .map((e) => {
       const plant = byId.get(e.plantId);
-      const species = plant ? SPECIES[plant.speciesId]?.commonName ?? plant.speciesId : '';
+      const species = plant ? speciesOf(plant)?.commonName ?? plant.speciesId : '';
       let note = e.note;
       // Cutting events store the new plant's id in `note`; show its name instead.
       if (e.type === 'cutting' && note) note = `Cutting: ${byId.get(note)?.name ?? 'new plant'}`;

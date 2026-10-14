@@ -2,7 +2,8 @@ import { Image } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { BUDDY_IMAGES } from '../data/buddyImages';
 import { colors, potHex } from '../theme/tokens';
-import type { Mood, PotColor, SpeciesId } from '../types';
+import { artFor } from '../data/species';
+import type { ArtId, Mood, PotColor, SpeciesId } from '../types';
 import type { FaceStyle } from '../store/plantStore';
 
 /*
@@ -14,7 +15,7 @@ import type { FaceStyle } from '../store/plantStore';
 type Art = 'monstera' | 'pothos' | 'fig' | 'calathea' | 'snake' | 'hoya' | 'tomato' | 'pepper' | 'onion' | 'cutting';
 
 /** Species without their own drawing yet borrow the closest silhouette. */
-const ART_FOR: Record<SpeciesId, Art> = {
+const ART_FOR: Record<ArtId, Art> = {
   monstera: 'monstera',
   pothos: 'pothos',
   fig: 'fig',
@@ -264,6 +265,7 @@ function Face({ mood, y, style }: { mood: Mood; y: number; style: FaceStyle }) {
 }
 
 export interface PlantBuddyProps {
+  /** Any catalogue id (or 'other-<group>', or 'cutting'); species without their own art show their closest look-alike. */
   speciesId: SpeciesId | 'cutting';
   mood?: Mood;
   pot?: PotColor;
@@ -274,12 +276,13 @@ export interface PlantBuddyProps {
 }
 
 export function PlantBuddy({ speciesId, mood = 'happy', pot = 'yellow', size = 96, bg = colors.white, faces = 'full' }: PlantBuddyProps) {
+  const artId = artFor(speciesId);
   if (faces !== 'off') {
     // "Gentle" never shows the worried face.
     const shown: Mood = faces === 'gentle' && mood === 'thirsty' ? 'happy' : mood;
     return (
       <Image
-        source={BUDDY_IMAGES[speciesId][shown]}
+        source={BUDDY_IMAGES[artId][shown]}
         style={{ width: size, height: size }}
         resizeMode="contain"
         accessibilityElementsHidden
@@ -287,7 +290,7 @@ export function PlantBuddy({ speciesId, mood = 'happy', pot = 'yellow', size = 9
       />
     );
   }
-  const art: Art = speciesId === 'cutting' ? 'cutting' : ART_FOR[speciesId];
+  const art: Art = artId === 'cutting' ? 'cutting' : ART_FOR[artId];
   const jar = art === 'cutting';
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">

@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { SPECIES } from '@/data/species';
+import { speciesOf } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { ARCHIVE_COPY, confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
@@ -103,7 +103,7 @@ export default function EditPlantScreen() {
   const [confirming, setConfirming] = useState(false);
 
   if (!plant || !actions) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
-  const sp = SPECIES[plant.speciesId];
+  const sp = speciesOf(plant);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
   const back = () => (router.canGoBack() ? router.back() : router.replace(`/plant/${plant.id}`));

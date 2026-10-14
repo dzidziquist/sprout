@@ -35,7 +35,8 @@ export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruit
 
 export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum';
 
-export type SpeciesId =
+/** Plants with their own illustrated buddy (assets/buddies). Other species borrow the closest one. */
+export type ArtId =
   | 'monstera'
   | 'pothos'
   | 'fig'
@@ -56,6 +57,11 @@ export type SpeciesId =
   | 'pepper'
   | 'spring-onion';
 
+/** Catalogue id (e.g. 'monstera', 'philodendron-brasil'), or 'other-<group>' for a plant not in the catalogue. */
+export type SpeciesId = string;
+
+export type PlantCategory = 'houseplant' | 'succulent' | 'vegetable' | 'herb' | 'fruit';
+
 /** A catalogue entry shared by every plant of that kind. */
 export interface Species {
   id: SpeciesId;
@@ -69,6 +75,17 @@ export interface Species {
   edible: boolean;
   /** Pot colour in the species illustration; new plants default to it. */
   artPot: PotColor;
+  /** Which illustrated buddy to show (its own, or the closest look-alike until it gets one). */
+  art: ArtId;
+  category: PlantCategory;
+  /** Other common names, for search and photo-ID matching. */
+  aliases?: string[];
+  /** Extra Latin names for photo-ID matching (lowercase "genus species"), whole genera, or close-relative genera. */
+  match?: { species?: string[]; genus?: string[]; relatives?: string[] };
+  /** One short, specific care tip in PlantFam's voice. */
+  tip?: string;
+  /** Shown first in the picker. */
+  popular?: boolean;
 }
 
 /** One individual plant the user owns. */
@@ -76,6 +93,8 @@ export interface Plant {
   id: string;
   name: string;
   speciesId: SpeciesId;
+  /** For plants not in the catalogue (speciesId 'other-<group>'): what the user calls the species. */
+  custom?: { commonName: string; latinName?: string; petToxic?: boolean };
   potColor: PotColor;
   soil: Soil;
   potMaterial: PotMaterial;

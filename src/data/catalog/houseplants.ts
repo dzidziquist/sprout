@@ -1,0 +1,23 @@
+import type { Species } from '../../types';
+
+/*
+ * Houseplants and indoor succulents. Toxicity flags are our own yes/no reading of the ASPCA list (cats and dogs);
+ * the app links out to ASPCA for detail and never copies its text.
+ * `art` is the illustrated buddy shown for the plant: its own, or the closest look-alike until it gets one.
+ */
+export const HOUSEPLANTS: Species[] = [
+  { id: 'monstera', commonName: 'Monstera', latinName: 'Monstera deliciosa', group: 'tropical', defaultSoil: 'chunky_aroid', defaultLight: 'bright', petToxic: true, edible: false, artPot: 'yellow', art: 'monstera', category: 'houseplant', popular: true, match: { species: ['monstera borsigiana'], relatives: ['monstera'] } },
+  { id: 'pothos', commonName: 'Pothos', latinName: 'Epipremnum aureum', group: 'tropical', defaultSoil: 'potting_mix', defaultLight: 'medium', petToxic: true, edible: false, artPot: 'blue', art: 'pothos', category: 'houseplant', popular: true, match: { species: ['epipremnum pinnatum', 'scindapsus aureus'], relatives: ['epipremnum', 'scindapsus'] } },
+  { id: 'fig', commonName: 'Fiddle-leaf fig', latinName: 'Ficus lyrata', group: 'tropical', defaultSoil: 'potting_mix', defaultLight: 'bright', petToxic: true, edible: false, artPot: 'coral', art: 'fig', category: 'houseplant', popular: true, match: { relatives: ['ficus'] } },
+  { id: 'calathea', commonName: 'Calathea', latinName: 'Goeppertia orbifolia', group: 'moisture', defaultSoil: 'potting_mix', defaultLight: 'medium', petToxic: false, edible: false, artPot: 'grape', art: 'calathea', category: 'houseplant', popular: true, match: { genus: ['goeppertia', 'calathea'] } },
+  { id: 'snake', commonName: 'Snake plant', latinName: 'Dracaena trifasciata', group: 'succulent', defaultSoil: 'gritty', defaultLight: 'medium', petToxic: true, edible: false, artPot: 'coral', art: 'snake', category: 'succulent', popular: true, match: { species: ['sansevieria trifasciata', 'dracaena angolensis', 'sansevieria cylindrica'], genus: ['sansevieria'] } },
+  { id: 'hoya', commonName: 'Hoya', latinName: 'Hoya carnosa', group: 'tropical', defaultSoil: 'chunky_aroid', defaultLight: 'bright', petToxic: false, edible: false, artPot: 'bubblegum', art: 'hoya', category: 'houseplant', popular: true, match: { genus: ['hoya'] } },
+  { id: 'peace-lily', commonName: 'Peace lily', latinName: 'Spathiphyllum wallisii', group: 'moisture', defaultSoil: 'potting_mix', defaultLight: 'medium', petToxic: true, edible: false, artPot: 'blue', art: 'peace-lily', category: 'houseplant', popular: true, match: { genus: ['spathiphyllum'] } },
+  { id: 'zz', commonName: 'ZZ plant', latinName: 'Zamioculcas zamiifolia', group: 'succulent', defaultSoil: 'perlite_mix', defaultLight: 'low', petToxic: true, edible: false, artPot: 'yellow', art: 'zz', category: 'succulent', popular: true, match: { genus: ['zamioculcas'] } },
+  { id: 'string-of-pearls', commonName: 'String of pearls', latinName: 'Curio rowleyanus', group: 'succulent', defaultSoil: 'gritty', defaultLight: 'bright', petToxic: true, edible: false, artPot: 'grape', art: 'string-of-pearls', category: 'succulent', popular: true, match: { species: ['senecio rowleyanus'], relatives: ['curio'] } },
+  { id: 'pink-princess', commonName: 'Pink Princess', latinName: "Philodendron erubescens 'Pink Princess'", group: 'tropical', defaultSoil: 'chunky_aroid', defaultLight: 'bright', petToxic: true, edible: false, artPot: 'coral', art: 'pink-princess', category: 'houseplant', popular: true, match: { species: ['philodendron erubescens'], relatives: ['philodendron'] } },
+  { id: 'aloe', commonName: 'Aloe vera', latinName: 'Aloe vera', group: 'succulent', defaultSoil: 'gritty', defaultLight: 'direct', petToxic: true, edible: false, artPot: 'coral', art: 'aloe', category: 'succulent', popular: true, match: { species: ['aloe barbadensis'], relatives: ['aloe'] } },
+  { id: 'spider', commonName: 'Spider plant', latinName: 'Chlorophytum comosum', group: 'tropical', defaultSoil: 'potting_mix', defaultLight: 'medium', petToxic: false, edible: false, artPot: 'blue', art: 'spider', category: 'houseplant', popular: true, match: { relatives: ['chlorophytum'] } },
+  { id: 'rubber', commonName: 'Rubber plant', latinName: 'Ficus elastica', group: 'tropical', defaultSoil: 'potting_mix', defaultLight: 'bright', petToxic: true, edible: false, artPot: 'coral', art: 'rubber', category: 'houseplant', popular: true },
+  { id: 'bird-of-paradise', commonName: 'Bird of paradise', latinName: 'Strelitzia reginae', group: 'tropical', defaultSoil: 'potting_mix', defaultLight: 'direct', petToxic: true, edible: false, artPot: 'yellow', art: 'bird-of-paradise', category: 'houseplant', popular: true, match: { genus: ['strelitzia'] } },
+];

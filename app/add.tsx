@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { SPECIES, SPECIES_LIST } from '@/data/species';
+import { SPECIES, SPECIES_LIST, getSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
@@ -91,7 +91,7 @@ function Pill({ on, label, onPress, bg }: { on: boolean; label: string; onPress:
 
 /** Care defaults a freshly picked species starts with. */
 function defaultsFor(id: SpeciesId) {
-  const sp = SPECIES[id];
+  const sp = getSpecies(id);
   return { soil: sp.defaultSoil, light: sp.defaultLight, placement: (sp.edible ? 'covered_outdoor' : 'indoor') as Placement, name: (NAMES[id] ?? fallbackNames)[0] };
 }
 
@@ -191,7 +191,7 @@ export default function AddPlantScreen() {
     );
   }
 
-  const sp = SPECIES[speciesId];
+  const sp = getSpecies(speciesId);
   const suggestions = NAMES[speciesId] ?? fallbackNames;
   const parents = plants.filter((p) => p.speciesId === speciesId);
   const soilInfo = SOILS.find((s) => s.id === soil);

@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
 import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask } from '@/engine/growPatch';
 import { edibleGuide } from '@/data/edibles';
-import { SPECIES } from '@/data/species';
+import { speciesOf } from '@/data/species';
 import { useForecast } from '@/lib/weather';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Label, Sticker, Title } from '@/components/ui';
@@ -160,7 +160,7 @@ function CropCard({ plant, total, now }: { plant: Plant; total?: string; now: Da
   const logRegrow = usePlantStore((s) => s.logRegrow);
   const [pending, setPending] = useState<EdibleStage | undefined>();
   const guide = edibleGuide(plant.speciesId)!;
-  const species = SPECIES[plant.speciesId];
+  const species = speciesOf(plant);
   const tint = c.potTint[plant.potColor];
   const info = plant.stage ? guide.info[plant.stage] : undefined;
   const days = daysInStage(plant, now);

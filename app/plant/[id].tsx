@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { checkIntervalDays, isFeedingPaused, moodFor } from '@/engine/careEngine';
-import { SPECIES } from '@/data/species';
+import { speciesOf } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { usePlantActions } from '@/components/PlantMenu';
@@ -73,7 +73,7 @@ export default function PlantDetail() {
   if (!plant || !actions) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
 
   const now = new Date();
-  const species = SPECIES[plant.speciesId];
+  const species = speciesOf(plant);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
   const rhythm = Math.round(checkIntervalDays({ group: species.group, plant, profile: profile.climate, at: now }));

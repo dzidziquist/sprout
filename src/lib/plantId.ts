@@ -1,4 +1,4 @@
-import { SPECIES } from '../data/species';
+import { getSpecies, SPECIES_LIST } from '../data/species';
 import type { SpeciesId } from '../types';
 
 /*
@@ -77,35 +77,28 @@ interface Rule {
 }
 
 /*
+ * Built from the catalogue: each species' own Latin name plus its `match` extras.
  * Species-level names are checked first, then whole-genus entries, then relatives,
  * so Ficus lyrata → fig and Ficus elastica → rubber, while a Ficus benjamina is a "close relative" of the fig.
  */
-const RULES: Rule[] = [
-  { id: 'monstera', species: ['monstera deliciosa', 'monstera borsigiana'], relatives: ['monstera'] },
-  { id: 'pothos', species: ['epipremnum aureum', 'epipremnum pinnatum', 'scindapsus aureus'], relatives: ['epipremnum', 'scindapsus'] },
-  { id: 'fig', species: ['ficus lyrata'], relatives: ['ficus'] },
-  { id: 'rubber', species: ['ficus elastica'] },
-  { id: 'calathea', genus: ['goeppertia', 'calathea'] },
-  { id: 'snake', species: ['dracaena trifasciata', 'sansevieria trifasciata', 'dracaena angolensis', 'sansevieria cylindrica'], genus: ['sansevieria'] },
-  { id: 'hoya', genus: ['hoya'] },
-  { id: 'peace-lily', genus: ['spathiphyllum'] },
-  { id: 'zz', genus: ['zamioculcas'] },
-  { id: 'string-of-pearls', species: ['curio rowleyanus', 'senecio rowleyanus'], relatives: ['curio'] },
-  { id: 'pink-princess', species: ['philodendron erubescens'], relatives: ['philodendron'] },
-  { id: 'aloe', species: ['aloe vera', 'aloe barbadensis'], relatives: ['aloe'] },
-  { id: 'spider', species: ['chlorophytum comosum'], relatives: ['chlorophytum'] },
-  { id: 'bird-of-paradise', genus: ['strelitzia'] },
-  { id: 'basil', genus: ['ocimum'] },
-  { id: 'mint', genus: ['mentha'] },
-  { id: 'tomato', species: ['solanum lycopersicum', 'lycopersicon esculentum'] },
-  { id: 'pepper', genus: ['capsicum'] },
-  { id: 'spring-onion', species: ['allium fistulosum', 'allium cepa'], relatives: ['allium'] },
-];
+let rules: Rule[] | null = null;
+function RULES_(): Rule[] {
+  if (!rules) {
+    rules = SPECIES_LIST.map((sp) => ({
+      id: sp.id,
+      species: [normalizeLatin(sp.latinName), ...(sp.match?.species ?? [])].filter(Boolean),
+      genus: sp.match?.genus,
+      relatives: sp.match?.relatives,
+    }));
+  }
+  return rules;
+}
 
 /** Which catalogue species a Pl@ntNet answer belongs to, if any. */
 export function speciesFor(latinName: string, genus?: string): { id: SpeciesId; exact: boolean } | null {
   const name = normalizeLatin(latinName);
   const g = (genus ? genus.toLowerCase().trim() : name.split(' ')[0]) || '';
+  const RULES = RULES_();
   for (const r of RULES) if (r.species?.includes(name)) return { id: r.id, exact: true };
   for (const r of RULES) if (r.genus?.includes(g)) return { id: r.id, exact: true };
   for (const r of RULES) if (r.relatives?.includes(g)) return { id: r.id, exact: false };
@@ -164,7 +157,7 @@ export function parsePlantNet(body: unknown): PlantNetResult[] {
 
 /** Pl@ntNet's catalogue name for a species we have, e.g. for "close relative" copy. */
 export function catalogueName(id: SpeciesId): string {
-  return SPECIES[id].commonName;
+  return getSpecies(id).commonName;
 }
 
 export function plantIdConfigured(): boolean {

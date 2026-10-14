@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import Svg, { Path } from 'react-native-svg';
-import { SPECIES } from '@/data/species';
+import { getSpecies } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Sticker, Title } from '@/components/ui';
@@ -233,13 +233,13 @@ export default function IdentifyScreen() {
                     <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel="Your photo" />
                   </View>
                 )}
-                <View style={[styles.compareTile, { borderColor: c.line, backgroundColor: c.potTint[SPECIES[confirm.speciesId].artPot], alignItems: 'center', justifyContent: 'center' }]}>
+                <View style={[styles.compareTile, { borderColor: c.line, backgroundColor: c.potTint[getSpecies(confirm.speciesId).artPot], alignItems: 'center', justifyContent: 'center' }]}>
                   <PlantBuddy speciesId={confirm.speciesId} size={104} />
                 </View>
               </View>
               <View style={{ alignItems: 'center', gap: 2 }}>
-                <Text style={[styles.matchName, { color: c.ink }]}>{SPECIES[confirm.speciesId].commonName}</Text>
-                <Text style={[styles.latin, { color: c.inkMuted }]}>{SPECIES[confirm.speciesId].latinName}</Text>
+                <Text style={[styles.matchName, { color: c.ink }]}>{getSpecies(confirm.speciesId).commonName}</Text>
+                <Text style={[styles.latin, { color: c.inkMuted }]}>{getSpecies(confirm.speciesId).latinName}</Text>
               </View>
               <Button
                 title="Yes, that's them!"
@@ -263,7 +263,7 @@ export default function IdentifyScreen() {
 }
 
 function MatchCard({ match, c, onPress }: { match: CatalogueMatch; c: Palette; onPress: () => void }) {
-  const sp = SPECIES[match.speciesId];
+  const sp = getSpecies(match.speciesId);
   const fill = confidenceFill(match.confidence, c);
   const pct = Math.round(match.score * 100);
   return (

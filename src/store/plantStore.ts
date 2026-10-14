@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { applyCheck, initialNextCheck } from '../engine/careEngine';
-import { SPECIES } from '../data/species';
+import { speciesOf } from '../data/species';
 import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
@@ -73,7 +73,7 @@ interface PlantState {
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
 function schedule(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimateProfile, at: Date): string {
-  return initialNextCheck({ group: SPECIES[plant.speciesId].group, plant, profile: climate, at });
+  return initialNextCheck({ group: speciesOf(plant).group, plant, profile: climate, at });
 }
 
 export const usePlantStore = create<PlantState>()(
@@ -99,7 +99,7 @@ export const usePlantStore = create<PlantState>()(
         const { plants, profile } = get();
         const plant = plants.find((p) => p.id === plantId);
         if (!plant) return '';
-        const out = applyCheck({ group: SPECIES[plant.speciesId].group, plant, profile: profile.climate, at: now }, result);
+        const out = applyCheck({ group: speciesOf(plant).group, plant, profile: profile.climate, at: now }, result);
         const events: CareEvent[] = [{ id: uid(), plantId, type: 'check', result, at: now.toISOString() }];
         if (out.watered) events.push({ id: uid(), plantId, type: 'water', at: now.toISOString() });
         set((s) => ({

@@ -6,7 +6,8 @@ import type { ClimateProfile, EdibleStage, SpeciesId } from '../types';
  * is partly inferred in those notes (no MoFA month calendar exists online), so its wording stays gentle.
  */
 
-export type EdibleId = Extract<SpeciesId, 'tomato' | 'pepper' | 'spring-onion' | 'basil' | 'mint'>;
+/** Catalogue id of an edible with a grow guide (see src/data/catalog/edibles.ts). */
+export type EdibleId = SpeciesId;
 export type HarvestUnit = 'fruit' | 'handful' | 'bunch' | 'grams';
 
 export const HARVEST_UNITS: HarvestUnit[] = ['fruit', 'handful', 'bunch', 'grams'];
@@ -38,6 +39,21 @@ export interface EdibleGuide {
 const SEED: StageInfo = { label: 'Sow', tip: 'Seeds tucked in. Keep the mix warm and just damp.', feed: 'No feed yet' };
 
 export const EDIBLES: Record<EdibleId, EdibleGuide> = {
+  // Any edible not in the catalogue ("Something tasty") gets a simple sow → grow → pick track.
+  'other-edible': {
+    id: 'other-edible',
+    stages: ['seed', 'seedling', 'growing', 'flowering', 'harvesting', 'resting'],
+    unit: 'handful',
+    regrows: false,
+    info: {
+      seed: SEED,
+      seedling: { label: 'Sprout', tip: 'Give seedlings your brightest spot so they don’t stretch.', feed: 'No feed yet' },
+      growing: { label: 'Grow', tip: 'Water when the top few cm are dry; more often in warm spells.', feed: 'Balanced feed every 2–3 weeks' },
+      flowering: { label: 'Flower', tip: 'Flowers mean fruit or seed is coming. Keep watering even.', feed: 'Balanced feed every 2–3 weeks' },
+      harvesting: { label: 'Pick', tip: 'Pick little and often. Log every harvest!', feed: 'Balanced feed every 2–3 weeks' },
+      resting: { label: 'Done', tip: 'Season’s over. Compost healthy plants and refresh the mix.', feed: 'No feed' },
+    },
+  },
   tomato: {
     id: 'tomato',
     stages: ['seed', 'seedling', 'growing', 'flowering', 'fruiting', 'harvesting', 'resting'],
@@ -112,7 +128,7 @@ export const EDIBLES: Record<EdibleId, EdibleGuide> = {
 };
 
 export function edibleGuide(speciesId: SpeciesId): EdibleGuide | undefined {
-  return (EDIBLES as Partial<Record<SpeciesId, EdibleGuide>>)[speciesId];
+  return EDIBLES[speciesId];
 }
 
 /** The month calendar ------------------------------------------------------------------------- */
