@@ -290,3 +290,31 @@ Suggested headlines (added in Figma/Canva, not in the image):
 | **Total** | **≈89 images** |
 
 Tip: for the 30 buddy images, generate the 10 three-mood sheets and slice them. That is 10 generations, not 30, and it keeps the moods identical in pose.
+
+---
+
+## Round 2: fixes after reviewing the first ChatGPT sheets
+
+The first sheets are in `design/asset-concepts/`. The style is right, so keep it. Fix these before final export:
+
+**R2.1 Wordmark.** The sticker still says "Rootline".
+```
+Redo the logo sticker with the word "PlantFam" (capital P and F) in the same chunky rounded font, the same leaf badge, white sticker border and ink outline. Transparent background, 2000×800.
+```
+
+**R2.2 Transparent, one asset per file.** Sheet 1 has a blurry rainbow background. Ask for each asset on its own:
+```
+Export [asset name] alone as a PNG with a fully transparent background: no glow, no blur, no backdrop, no label text. [size from the list above].
+```
+
+**R2.3 All three moods per species.** Sheet 2 shows one mood per plant. Use prompts 2.1–2.10 (three moods side by side) for every species.
+
+**R2.4 Seattle season set.** Seattle is the default profile now; keep harmattan for the tropical profile.
+```
+Two more season spot illustrations in the same style, transparent, 800×800: (1) "Grey season": a cosy rainy window with soft grey clouds and drizzle, a snoozing plant on the sill and a small glowing grow-light bulb; (2) "Dry summer": a sunny balcony with a happy cherry tomato plant and a small watering can.
+```
+
+**R2.5 Offshoots badge.** The family-tree feature is now called "Offshoots".
+```
+A round badge in the same style: grape fill, white inner ring, and in the centre a small parent plant with a dashed line to a cutting in a jar. No text. Transparent, 600×600, plus a locked version.
+```
