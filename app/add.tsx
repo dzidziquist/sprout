@@ -143,6 +143,8 @@ export default function AddPlantScreen() {
   const [origin, setOrigin] = useState<Origin>('bought');
   const [parentId, setParentId] = useState<string | undefined>();
   const [category, setCategory] = useState<PlantCategory | 'all'>('all');
+  // Quick add: name and light up front, the rest tucked behind sensible defaults.
+  const [showMore, setShowMore] = useState(false);
   const [limit, setLimit] = useState(PAGE);
   // "Other" plants: the user's own species name, optional Latin name, and what they know about pets.
   const [customName, setCustomName] = useState(typeof params.name === 'string' ? params.name : '');
@@ -400,60 +402,86 @@ export default function AddPlantScreen() {
         ))}
       </View>
 
-      <Label>What's it potted in?</Label>
-      <View style={styles.wrap}>
-        {SOILS.map((s) => (
-          <Pressable
-            key={s.id}
-            accessibilityRole="button"
-            accessibilityState={{ selected: soil === s.id }}
-            onPress={() => {
-              haptics.tap();
-              setSoil(s.id);
-            }}
-            style={[styles.pill, styles.soilPill, { borderColor: c.line, backgroundColor: soil === s.id ? c.mint : c.card }, soil === s.id && { boxShadow: `0px 3px 0px ${c.drop}` }]}
-          >
-            <View style={[styles.swatch, { backgroundColor: s.swatch, borderColor: c.line }]} />
-            <Text style={[styles.pillText, { color: c.ink }]}>{SOIL_LABEL[s.id].replace(' (not ideal in pots)', '')}</Text>
-          </Pressable>
-        ))}
-      </View>
-      {soilInfo && <Text style={[styles.note, { color: soil === 'garden_soil' ? c.warn : c.inkMuted }]}>{soilInfo.note}</Text>}
-
-      <Label>Pot</Label>
-      <View style={styles.wrap}>
-        {POT_SIZES.map((p) => (
-          <Pill key={p.label} on={size === p.cm} label={p.label} onPress={() => setSize(p.cm)} />
-        ))}
-      </View>
-      <View style={styles.wrap}>
-        {MATERIALS.map((m) => (
-          <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
-        ))}
-      </View>
-
-      <Label>Where does it live?</Label>
-      <View style={styles.wrap}>
-        {PLACES.map((p) => (
-          <Pill key={p.id} on={placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id)} />
-        ))}
-      </View>
-      <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" />
-
-      <Label>Where's it from?</Label>
-      <View style={styles.wrap}>
-        {ORIGINS.map((o) => (
-          <Pill key={o.id} on={origin === o.id} bg={c.grape} label={o.label} onPress={() => setOrigin(o.id)} />
-        ))}
-      </View>
-      {origin === 'cutting' && parents.length > 0 && (
-        <View style={{ gap: 6 }}>
-          <Label muted>Cutting from which plant? It joins that plant's Offshoots.</Label>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: showMore }}
+        accessibilityLabel={showMore ? 'Hide pot and soil details' : 'Change pot, soil and spot'}
+        onPress={() => {
+          haptics.tap();
+          setShowMore(!showMore);
+        }}
+        style={[styles.moreCard, { borderColor: c.line, backgroundColor: c.cloud }]}
+      >
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={[styles.careTitle, { color: c.ink }]}>{showMore ? 'Pot, soil and spot' : 'Pot, soil and spot (optional)'}</Text>
+          {!showMore && (
+            <Text style={[styles.careSub, { color: c.inkMuted }]} numberOfLines={2}>
+              {SOIL_LABEL[soil].replace(' (not ideal in pots)', '')} · {POT_SIZES.find((x) => x.cm === size)?.label ?? 'Medium'} {MATERIALS.find((m) => m.id === material)?.label.toLowerCase()} pot · {PLACES.find((x) => x.id === placement)?.label} · {ORIGINS.find((o) => o.id === origin)?.label}
+            </Text>
+          )}
+        </View>
+        <Text style={[styles.moreLink, { color: c.leafDeep }]}>{showMore ? 'Done' : 'Change'}</Text>
+      </Pressable>
+      {!showMore && <Text style={[styles.note, { color: c.inkMuted }]}>Good defaults are set. Your soil checks fine-tune everything over time.</Text>}
+      {showMore && (
+        <View style={{ gap: 12 }}>
+          <Label>What's it potted in?</Label>
           <View style={styles.wrap}>
-            {parents.map((p) => (
-              <Pill key={p.id} on={parentId === p.id} bg={c.lavender} label={p.name} onPress={() => setParentId(p.id)} />
+            {SOILS.map((s) => (
+              <Pressable
+                key={s.id}
+                accessibilityRole="button"
+                accessibilityState={{ selected: soil === s.id }}
+                onPress={() => {
+                  haptics.tap();
+                  setSoil(s.id);
+                }}
+                style={[styles.pill, styles.soilPill, { borderColor: c.line, backgroundColor: soil === s.id ? c.mint : c.card }, soil === s.id && { boxShadow: `0px 3px 0px ${c.drop}` }]}
+              >
+                <View style={[styles.swatch, { backgroundColor: s.swatch, borderColor: c.line }]} />
+                <Text style={[styles.pillText, { color: c.ink }]}>{SOIL_LABEL[s.id].replace(' (not ideal in pots)', '')}</Text>
+              </Pressable>
             ))}
           </View>
+          {soilInfo && <Text style={[styles.note, { color: soil === 'garden_soil' ? c.warn : c.inkMuted }]}>{soilInfo.note}</Text>}
+
+          <Label>Pot</Label>
+          <View style={styles.wrap}>
+            {POT_SIZES.map((p) => (
+              <Pill key={p.label} on={size === p.cm} label={p.label} onPress={() => setSize(p.cm)} />
+            ))}
+          </View>
+          <View style={styles.wrap}>
+            {MATERIALS.map((m) => (
+              <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
+            ))}
+          </View>
+
+          <Label>Where does it live?</Label>
+          <View style={styles.wrap}>
+            {PLACES.map((p) => (
+              <Pill key={p.id} on={placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id)} />
+            ))}
+          </View>
+          <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" />
+
+          <Label>Where's it from?</Label>
+          <View style={styles.wrap}>
+            {ORIGINS.map((o) => (
+              <Pill key={o.id} on={origin === o.id} bg={c.grape} label={o.label} onPress={() => setOrigin(o.id)} />
+            ))}
+          </View>
+          {origin === 'cutting' && parents.length > 0 && (
+            <View style={{ gap: 6 }}>
+              <Label muted>Cutting from which plant? It joins that plant's Offshoots.</Label>
+              <View style={styles.wrap}>
+                {parents.map((p) => (
+                  <Pill key={p.id} on={parentId === p.id} bg={c.lavender} label={p.name} onPress={() => setParentId(p.id)} />
+                ))}
+              </View>
+            </View>
+          )}
+
         </View>
       )}
 
@@ -473,6 +501,8 @@ const styles = StyleSheet.create({
   plusBadge: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, height: 22, justifyContent: 'center' },
   plusBadgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  moreCard: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderRadius: 18, padding: 12 },
+  moreLink: { fontFamily: fonts.displaySemi, fontSize: 15 },
   careType: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderRadius: 18, padding: 8 },
   careTitle: { fontFamily: fonts.displaySemi, fontSize: 16 },
   careSub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildCareDiaryCsv, buildExportJson, csvCell } from './export';
+import { buildCareDiaryCsv, buildExportJson, csvCell, parseBackup } from './export';
 import { DEFAULT_PROFILE } from '../store/plantStore';
 import type { CareEvent, Plant } from '../types';
 
@@ -72,5 +72,28 @@ describe('buildExportJson', () => {
     expect(doc.profile.city).toBe('Seattle');
     expect(doc.profile).not.toHaveProperty('plus');
     expect(doc.profile).not.toHaveProperty('streakFreezes');
+  });
+});
+
+describe('parseBackup', () => {
+  const plant = { id: 'p1', name: 'Queenie', speciesId: 'pothos', nextCheckAt: '2026-10-20T09:00:00.000Z', k: 1 };
+  const good = { app: 'PlantFam', format: 1, exportedAt: '2026-10-14T09:00:00.000Z', profile: { city: 'Seattle' }, plants: [plant], events: [{ id: 'e1', plantId: 'p1', type: 'check', at: '2026-10-14T09:00:00.000Z' }, { id: 'e2', plantId: 'ghost', type: 'check', at: 'x' }] };
+
+  it('round-trips an export', () => {
+    const out = parseBackup(buildExportJson({ profile: DEFAULT_PROFILE, plants: [plant as never], events: [] }));
+    expect(out.ok).toBe(true);
+  });
+
+  it('accepts a valid backup and drops events for unknown plants', () => {
+    const out = parseBackup('﻿' + JSON.stringify(good));
+    expect(out.ok && out.data.plants.length).toBe(1);
+    expect(out.ok && out.data.events.map((e) => e.id)).toEqual(['e1']);
+  });
+
+  it('rejects other files, newer formats and damaged plants', () => {
+    expect(parseBackup('not json').ok).toBe(false);
+    expect(parseBackup(JSON.stringify({ hello: 1 })).ok).toBe(false);
+    expect(parseBackup(JSON.stringify({ ...good, format: 2 })).ok).toBe(false);
+    expect(parseBackup(JSON.stringify({ ...good, plants: [{ id: 'x' }] })).ok).toBe(false);
   });
 });

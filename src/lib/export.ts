@@ -3,12 +3,13 @@ import type { Profile } from '../store/plantStore';
 import type { CareEvent, Plant } from '../types';
 
 /*
- * "Export my data" (PlantFam Plus): a full JSON backup plus a spreadsheet-friendly care diary.
+ * Backups (free for everyone): a full JSON file you can restore on any phone.
+ * Spreadsheet export (PlantFam Plus): the care diary as CSV.
  * The builders are pure so they can be tested; file writing and sharing load lazily so this
  * module stays importable from tests and from the web build.
  */
 
-export const JSON_FILE = 'plantfam-export.json';
+export const JSON_FILE = 'plantfam-backup.json';
 export const CSV_FILE = 'plantfam-care-diary.csv';
 
 export interface ExportSource {
@@ -18,7 +19,7 @@ export interface ExportSource {
 }
 
 /** Profile fields that are app plumbing rather than the user's data. */
-const INTERNAL_PROFILE_KEYS = ['plus', 'streakFreezes'] as const;
+const INTERNAL_PROFILE_KEYS = ['plus', 'streakFreezes', 'lastBackupAt'] as const;
 
 export function buildExportJson(src: ExportSource, now = new Date()): string {
   const profile: Partial<Profile> = { ...src.profile };
@@ -61,13 +62,68 @@ export function buildCareDiaryCsv(plants: Plant[], events: CareEvent[]): string 
 
 export type ExportOutcome = { ok: true } | { ok: false; message: string };
 
-/** Write both files and hand them to the share sheet (device) or download them (web). */
-export async function exportMyData(src: ExportSource): Promise<ExportOutcome> {
-  const files = [
+export interface BackupData {
+  profile: Partial<Profile>;
+  plants: Plant[];
+  events: CareEvent[];
+  exportedAt?: string;
+}
+
+export type BackupParse = { ok: true; data: BackupData } | { ok: false; message: string };
+
+const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+/** Validate a backup file before it's allowed anywhere near the store. */
+export function parseBackup(text: string): BackupParse {
+  let doc: unknown;
+  try {
+    doc = JSON.parse(text.replace(/^\uFEFF/, ''));
+  } catch {
+    return { ok: false, message: "That file isn't a PlantFam backup (it isn't valid JSON)." };
+  }
+  if (!isObj(doc) || doc.app !== 'PlantFam') return { ok: false, message: "That file isn't a PlantFam backup." };
+  if (typeof doc.format !== 'number' || doc.format > 1) return { ok: false, message: 'This backup is from a newer PlantFam. Update the app, then try again.' };
+  if (!Array.isArray(doc.plants) || !Array.isArray(doc.events)) return { ok: false, message: 'This backup looks damaged (no plants list).' };
+  const plants = doc.plants.filter(
+    (p): p is Plant => isObj(p) && typeof p.id === 'string' && typeof p.name === 'string' && typeof p.speciesId === 'string' && typeof p.nextCheckAt === 'string' && typeof p.k === 'number',
+  );
+  if (plants.length !== doc.plants.length) return { ok: false, message: 'This backup looks damaged (some plants are unreadable).' };
+  const ids = new Set(plants.map((p) => p.id));
+  const events = doc.events.filter((e): e is CareEvent => isObj(e) && typeof e.id === 'string' && typeof e.plantId === 'string' && typeof e.type === 'string' && typeof e.at === 'string' && ids.has(e.plantId));
+  return { ok: true, data: { profile: isObj(doc.profile) ? (doc.profile as Partial<Profile>) : {}, plants, events, exportedAt: typeof doc.exportedAt === 'string' ? doc.exportedAt : undefined } };
+}
+
+/** Let the user pick a backup file and read it as text. Null if they cancelled. */
+export async function pickBackupText(): Promise<string | null> {
+  const DocumentPicker = require('expo-document-picker') as typeof import('expo-document-picker');
+  const res = await DocumentPicker.getDocumentAsync({ type: ['application/json', 'text/plain', '*/*'], copyToCacheDirectory: true, multiple: false });
+  if (res.canceled || !res.assets?.[0]) return null;
+  const asset = res.assets[0];
+  const { Platform } = require('react-native') as typeof import('react-native');
+  if (Platform.OS === 'web') {
+    if (asset.file) return await asset.file.text();
+    return await (await fetch(asset.uri)).text();
+  }
+  const { File } = require('expo-file-system') as typeof import('expo-file-system');
+  return await new File(asset.uri).text();
+}
+
+/** Free backup: just the JSON file. */
+export function backupMyData(src: ExportSource): Promise<ExportOutcome> {
+  return shareFiles([{ name: JSON_FILE, mime: 'application/json', uti: 'public.json', body: buildExportJson(src) }]);
+}
+
+/** Plus: backup plus the spreadsheet-friendly care diary. */
+export function exportMyData(src: ExportSource): Promise<ExportOutcome> {
+  return shareFiles([
     { name: JSON_FILE, mime: 'application/json', uti: 'public.json', body: buildExportJson(src) },
     // A BOM helps Excel read names with accents and emoji as UTF-8.
-    { name: CSV_FILE, mime: 'text/csv', uti: 'public.comma-separated-values-text', body: '﻿' + buildCareDiaryCsv(src.plants, src.events) },
-  ];
+    { name: CSV_FILE, mime: 'text/csv', uti: 'public.comma-separated-values-text', body: '\uFEFF' + buildCareDiaryCsv(src.plants, src.events) },
+  ]);
+}
+
+/** Write files and hand them to the share sheet (device) or download them (web). */
+async function shareFiles(files: { name: string; mime: string; uti: string; body: string }[]): Promise<ExportOutcome> {
   const { Platform } = require('react-native') as typeof import('react-native');
   try {
     if (Platform.OS === 'web') {

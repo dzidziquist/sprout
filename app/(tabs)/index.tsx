@@ -1,3 +1,4 @@
+import { SoilCheckCoach } from '@/components/SoilCheckCoach';
 import { GrowTodayCard } from '@/components/GrowTodayCard';
 import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -141,6 +142,8 @@ export default function TodayScreen() {
           {season.body}
         </Text>
       </View>
+
+      <SoilCheckCoach />
 
       <GrowTodayCard />
 

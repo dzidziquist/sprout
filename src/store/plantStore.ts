@@ -20,6 +20,10 @@ export interface Profile {
   plus: boolean;
   /** Streak repairs left this month (free; refilled monthly). */
   streakFreezes: number;
+  /** The "how to check soil" coach on Today was dismissed. */
+  coachDismissed: boolean;
+  /** When the user last saved a backup file. */
+  lastBackupAt?: string;
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -31,6 +35,7 @@ export const DEFAULT_PROFILE: Profile = {
   theme: 'system',
   plus: false,
   streakFreezes: 2,
+  coachDismissed: false,
 };
 
 export type CareAction = 'water' | 'wet' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
@@ -68,6 +73,8 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
+  restoreBackup: (data: { profile: Partial<Profile>; plants: Plant[]; events: CareEvent[] }) => void;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
@@ -247,6 +254,17 @@ export const usePlantStore = create<PlantState>()(
         set((s) => ({
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
           events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, note: note?.trim() || undefined, at: now.toISOString() }],
+        }));
+      },
+
+      restoreBackup: (data) => {
+        const { plus: _p, streakFreezes: _f, lastBackupAt: _b, ...profile } = data.profile;
+        set((s) => ({
+          plants: data.plants,
+          events: data.events,
+          undo: {},
+          onboarded: true,
+          profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, plus: s.profile.plus, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
         }));
       },
 

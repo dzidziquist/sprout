@@ -36,7 +36,7 @@ export function PlusCard() {
         </View>
         <View style={{ flex: 1, gap: 2 }}>
           <Text style={[styles.title, { color: ink }]}>Get PlantFam Plus</Text>
-          <Text style={[styles.body, { color: ink }]}>Photo ID, export your data, and a high five for an indie dev.</Text>
+          <Text style={[styles.body, { color: ink }]}>Photo ID, spreadsheet export, and a high five for an indie dev.</Text>
         </View>
         <View style={[styles.arrow, { backgroundColor: c.card, borderColor: c.line }]}>
           <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="m9 6 6 6-6 6" stroke={c.ink} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
@@ -53,7 +53,7 @@ export function PlusCard() {
     const res = await exportMyData({ profile, plants, events });
     setBusy(false);
     if (res.ok) haptics.success();
-    setMsg(res.ok ? 'Exported your plants and care diary.' : res.message);
+    setMsg(res.ok ? 'Exported your care diary.' : res.message);
   };
 
   return (
@@ -66,7 +66,7 @@ export function PlusCard() {
         </View>
       </View>
       <View style={styles.row}>
-        <Button title={busy ? 'Exporting…' : 'Export my data'} raised disabled={busy} onPress={doExport} style={{ flex: 1 }} />
+        <Button title={busy ? 'Exporting…' : 'Export spreadsheet'} raised disabled={busy} onPress={doExport} style={{ flex: 1 }} />
         <Button title="Identify a plant" raised bg={c.card} onPress={() => router.push('/identify')} style={{ flex: 1 }} />
       </View>
       {msg && <Text style={[styles.body, { color: c.ink }]}>{msg}</Text>}

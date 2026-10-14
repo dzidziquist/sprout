@@ -20,7 +20,7 @@ const PRIVACY_URL = 'https://plantfam.app/privacy';
 
 const BENEFITS: { icon: 'camera' | 'box' | 'heart'; title: string; body: string; tint: keyof Pick<Palette, 'butter' | 'ice' | 'blush'> }[] = [
   { icon: 'camera', title: 'Photo ID', body: 'Snap a leaf, get suggestions from Pl@ntNet, and you confirm who it is.', tint: 'butter' },
-  { icon: 'box', title: 'Export my data', body: 'Your plants and care diary as JSON and a CSV spreadsheet, any time.', tint: 'ice' },
+  { icon: 'box', title: 'Spreadsheet export', body: 'Your whole care diary as a CSV for Numbers, Excel or Sheets. (Backups stay free for everyone.)', tint: 'ice' },
   { icon: 'heart', title: 'Back an indie developer', body: 'PlantFam is built by one indie developer. Plus keeps it growing.', tint: 'blush' },
 ];
 
@@ -103,7 +103,7 @@ export default function PlusScreen() {
           <Text style={[styles.heroBody, { color: textOn(c.leaf, c) }]}>Your support keeps PlantFam indie. Everything in Plus is switched on.</Text>
         </Sticker>
         <Button title="Identify a plant" raised onPress={() => router.replace('/identify')} style={styles.bigBtn} textStyle={styles.bigBtnText} />
-        <Button title={busy === 'export' ? 'Exporting…' : 'Export my data'} bg={c.card} disabled={busy === 'export'} onPress={doExport} style={{ minHeight: 50 }} />
+        <Button title={busy === 'export' ? 'Exporting…' : 'Export spreadsheet'} bg={c.card} disabled={busy === 'export'} onPress={doExport} style={{ minHeight: 50 }} />
         {msg && <Text style={[styles.msg, { color: c.ink }]}>{msg}</Text>}
         {devUnlock && <Button title="Developer: turn Plus off" bg={c.cloud} onPress={() => devUnlock(false)} style={{ minHeight: 44 }} />}
       </ScrollView>

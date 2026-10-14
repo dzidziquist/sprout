@@ -1,4 +1,6 @@
 import { PlusCard } from '@/components/PlusCard';
+import { DataCard } from '@/components/DataCard';
+import { useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -56,6 +58,7 @@ function Segmented<T extends string>({ options, value, onChange, label }: { opti
 }
 
 export default function MeScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
   const { profile, setProfile, events, plants } = usePlantStore();
@@ -151,12 +154,26 @@ export default function MeScreen() {
 
       <View style={{ gap: 8 }}>
         <Label>Climate</Label>
-        <Sticker drop={0} bg={c.mint} style={{ padding: 12 }}>
-          <Text style={[styles.statLabel, { color: c.ink }]}>
-            {profile.city} · {profile.climate === 'seattle' ? 'Marine: dark wet winters, dry summers' : 'Tropical: harmattan and two rainy seasons'}
-          </Text>
-        </Sticker>
+        <Segmented
+          label="Climate"
+          value={profile.climate}
+          options={[
+            { id: 'seattle' as const, label: 'Seattle' },
+            { id: 'accra' as const, label: 'Accra' },
+          ]}
+          onChange={(v) => setProfile({ climate: v, city: v === 'seattle' ? 'Seattle' : 'Accra' })}
+        />
+        <Label muted>{profile.climate === 'seattle' ? 'Marine: dark wet winters, dry summers. Seasons and grow-patch tasks follow this.' : 'Tropical: harmattan and two rainy seasons. Seasons and grow-patch tasks follow this.'}</Label>
       </View>
+
+      <DataCard />
+
+      <Pressable accessibilityRole="button" onPress={() => router.push('/help')}>
+        <Sticker drop={0} bg={c.ice} style={{ padding: 12, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Text style={[styles.statLabel, { color: c.ink, flex: 1, fontSize: 15 }]}>How PlantFam works</Text>
+          <Text style={[styles.statLabel, { color: c.ink }]}>›</Text>
+        </Sticker>
+      </Pressable>
     </ScrollView>
   );
 }
