@@ -1,36 +1,229 @@
 {
   "v": 3,
-  "createdOnFiles": {"v": 1, "at": "2026-10-13T12:00:00Z"},
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-13T12:00:00Z"
+  },
   "title": "Rootline — Plant App Design Board",
-  "launch": {"view": "canvas"},
+  "launch": {
+    "view": "canvas"
+  },
   "pages": [],
   "boards": {
-    "Welcome.dc.html": {"x": 0, "y": 0, "w": 390, "h": 844, "title": "00 Welcome", "is_interactive": true, "radius": 36},
-    "Setup.dc.html": {"x": 470, "y": 0, "w": 390, "h": 844, "title": "01 Setup · climate & faces", "is_interactive": true, "radius": 36},
-    "Main.dc.html": {"x": 940, "y": 0, "w": 390, "h": 844, "title": "02 Today · plant round", "is_interactive": true, "radius": 36},
-    "PlantDetail.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 844, "title": "03 Plant detail", "is_interactive": true, "radius": 36},
-    "LogCare.dc.html": {"x": 1880, "y": 0, "w": 390, "h": 844, "title": "04 Log care", "is_interactive": true, "radius": 36},
-    "Lineage.dc.html": {"x": 2350, "y": 0, "w": 390, "h": 844, "title": "05 Family tree", "is_interactive": true, "radius": 36},
-    "Plants.dc.html": {"x": 0, "y": 1244, "w": 390, "h": 844, "title": "06 Jungle · houseplants & wishlist", "is_interactive": true, "radius": 36},
-    "Grow.dc.html": {"x": 470, "y": 1244, "w": 390, "h": 844, "title": "07 Grow patch · edibles", "is_interactive": true, "radius": 36},
-    "AddPlant.dc.html": {"x": 940, "y": 1244, "w": 390, "h": 844, "title": "08 Add a plant", "is_interactive": true, "radius": 36},
-    "Me.dc.html": {"x": 1410, "y": 1244, "w": 390, "h": 844, "title": "09 Me · progress & badges", "is_interactive": true, "radius": 36},
-    "Notify.dc.html": {"x": 1880, "y": 1244, "w": 390, "h": 844, "title": "10 Daily plant round push", "radius": 36},
-    "StyleGuide.dc.html": {"x": 0, "y": 2488, "w": 1280, "h": 980, "title": "Style guide"},
-    "PlantArt.dc.html": {"x": 1360, "y": 2488, "w": 120, "h": 120, "title": "Component · PlantArt (species, mood, pot)"}
+    "Welcome.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "00 Welcome",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "Setup.dc.html": {
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "01 Setup · climate & faces",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "Main.dc.html": {
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "02 Today · plant round",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "PlantDetail.dc.html": {
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "03 Plant detail",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "LogCare.dc.html": {
+      "x": 1880,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "04 Log care",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "Lineage.dc.html": {
+      "x": 2350,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "05 Family tree",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "Plants.dc.html": {
+      "x": 0,
+      "y": 1244,
+      "w": 390,
+      "h": 844,
+      "title": "06 Jungle · houseplants & wishlist",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "Grow.dc.html": {
+      "x": 470,
+      "y": 1244,
+      "w": 390,
+      "h": 844,
+      "title": "07 Grow patch · edibles",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "AddPlant.dc.html": {
+      "x": 940,
+      "y": 1244,
+      "w": 390,
+      "h": 844,
+      "title": "08 Add a plant · soil & light",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "Me.dc.html": {
+      "x": 1410,
+      "y": 1244,
+      "w": 390,
+      "h": 844,
+      "title": "09 Me · progress & badges",
+      "is_interactive": true,
+      "radius": 36
+    },
+    "Notify.dc.html": {
+      "x": 1880,
+      "y": 1244,
+      "w": 390,
+      "h": 844,
+      "title": "10 Daily plant round push",
+      "radius": 36
+    },
+    "StyleGuide.dc.html": {
+      "x": 0,
+      "y": 2488,
+      "w": 1280,
+      "h": 980,
+      "title": "Style guide"
+    },
+    "PlantArt.dc.html": {
+      "x": 1360,
+      "y": 2488,
+      "w": 120,
+      "h": 120,
+      "title": "Component · PlantArt (species, mood, pot)"
+    }
   },
-  "order": ["Welcome.dc.html", "Setup.dc.html", "Main.dc.html", "PlantDetail.dc.html", "LogCare.dc.html", "Lineage.dc.html", "Plants.dc.html", "Grow.dc.html", "AddPlant.dc.html", "Me.dc.html", "Notify.dc.html", "StyleGuide.dc.html", "PlantArt.dc.html"],
+  "order": [
+    "Welcome.dc.html",
+    "Setup.dc.html",
+    "Main.dc.html",
+    "PlantDetail.dc.html",
+    "LogCare.dc.html",
+    "Lineage.dc.html",
+    "Plants.dc.html",
+    "Grow.dc.html",
+    "AddPlant.dc.html",
+    "Me.dc.html",
+    "Notify.dc.html",
+    "StyleGuide.dc.html",
+    "PlantArt.dc.html"
+  ],
   "notes": {
-    "screens": {"x": 0, "y": -300, "text": "Rootline — onboarding & daily loop", "kind": "title1", "maxW": 2740},
-    "noteSetup": {"x": 470, "y": -190, "w": 390, "maxH": 150, "fill": "teal", "text": "Seasons come from place, not the calendar. Accra gets harmattan + rains; temperate homes get winter dormancy. Faces can be toned down."},
-    "noteToday": {"x": 940, "y": -190, "w": 390, "maxH": 150, "fill": "green", "text": "The soil check is the unit: Dry / Damp / Soggy. A correct skip earns as much as a watering. Streak = weeks with no overdue checks."},
-    "noteLog": {"x": 1880, "y": -190, "w": 390, "maxH": 150, "fill": "orange", "text": "Logging ends in a thank-you: confetti, care points. Multi-select tiles, one save."},
-    "noteLineage": {"x": 2350, "y": -190, "w": 390, "maxH": 150, "fill": "purple", "text": "The family tree is the moat. Gift a cutting = it lands in the friend's tree with its lineage. No marketplace, no prices."},
-    "row2": {"x": 0, "y": 944, "text": "Rootline — collection, edibles & engagement", "kind": "title1", "maxW": 2270},
-    "noteJungle": {"x": 0, "y": 1054, "w": 390, "maxH": 150, "fill": "yellow", "text": "Discogs pattern: catalogue entry vs your individual plant, plus a Wishlist. Patent flag on cultivars before sharing cuttings."},
-    "noteGrow": {"x": 470, "y": 1054, "w": 390, "maxH": 150, "fill": "red", "text": "Edibles run on stage clocks + weather triggers: flower-drop above ~32°C, high-potash feed at fruit swell, scallion regrowth counter."},
-    "noteNotify": {"x": 1880, "y": 1054, "w": 390, "maxH": 150, "fill": "blue", "text": "One round a day at your time, silent when nothing's due. First-person, curious tone. Never 'you forgot me'."},
-    "system": {"x": 0, "y": 2188, "text": "Rootline — system & components", "kind": "title1", "maxW": 1480}
+    "screens": {
+      "x": 0,
+      "y": -300,
+      "text": "Rootline — onboarding & daily loop",
+      "kind": "title1",
+      "maxW": 2740
+    },
+    "noteSetup": {
+      "x": 470,
+      "y": -190,
+      "w": 390,
+      "maxH": 150,
+      "fill": "teal",
+      "text": "Seasons come from place: Seattle defaults = grey season Oct–Apr (checks ×1.15–1.55, feeding paused Oct 15–Mar 1), dry summer (outdoor pots ×0.6). Tropical/Accra profile also supported."
+    },
+    "noteToday": {
+      "x": 940,
+      "y": -190,
+      "w": 390,
+      "maxH": 150,
+      "fill": "green",
+      "text": "The soil check is the unit: Dry / Damp / Soggy. A correct skip earns as much as a watering. Streak = weeks with no overdue checks."
+    },
+    "noteLog": {
+      "x": 1880,
+      "y": -190,
+      "w": 390,
+      "maxH": 150,
+      "fill": "orange",
+      "text": "Logging ends in a thank-you: confetti, care points. Multi-select tiles, one save."
+    },
+    "noteLineage": {
+      "x": 2350,
+      "y": -190,
+      "w": 390,
+      "maxH": 150,
+      "fill": "purple",
+      "text": "The family tree is the moat. Gift a cutting = it lands in the friend's tree with its lineage. No marketplace, no prices."
+    },
+    "row2": {
+      "x": 0,
+      "y": 944,
+      "text": "Rootline — collection, edibles & engagement",
+      "kind": "title1",
+      "maxW": 2270
+    },
+    "noteJungle": {
+      "x": 0,
+      "y": 1054,
+      "w": 390,
+      "maxH": 150,
+      "fill": "yellow",
+      "text": "Discogs pattern: catalogue entry vs your individual plant, plus a Wishlist. Patent flag on cultivars before sharing cuttings."
+    },
+    "noteGrow": {
+      "x": 470,
+      "y": 1054,
+      "w": 390,
+      "maxH": 150,
+      "fill": "red",
+      "text": "Edibles run on stage clocks + weather triggers. Seattle: nights must stay >55°F for tomato fruit set; mid-Aug remove new flowers; Oct: pick greens, overwinter peppers. Hot climates get flower-drop alerts instead."
+    },
+    "noteNotify": {
+      "x": 1880,
+      "y": 1054,
+      "w": 390,
+      "maxH": 150,
+      "fill": "blue",
+      "text": "One round a day at your time, silent when nothing's due. First-person, curious tone. Never 'you forgot me'."
+    },
+    "system": {
+      "x": 0,
+      "y": 2188,
+      "text": "Rootline — system & components",
+      "kind": "title1",
+      "maxW": 1480
+    },
+    "noteSoil": {
+      "x": 940,
+      "y": 1054,
+      "w": 390,
+      "maxH": 150,
+      "fill": "green",
+      "text": "Soil type sets the drying multiplier: gritty ×0.6, chunky aroid ×0.7, potting mix ×1.0, coir ×1.1, moss ×1.2, garden soil ×1.35 (+ warning). LECA switches to reservoir checks. Repot nudge at 18–24 months."
+    }
   },
   "designSystems": []
 }

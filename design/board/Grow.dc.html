@@ -23,8 +23,8 @@ button{font-family:inherit;cursor:pointer}
         <span style="font-size: 14px; font-weight: 800; color: #55556B">Balcony · 3 crops growing</span>
       </div>
       <span style="height: 34px; padding: 0 12px; border-radius: 17px; background: #FFF1B8; border: 2px solid #1B1B2F; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800">
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="#FF9F1C" stroke="#1B1B2F" stroke-width="2"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="#1B1B2F" stroke-width="2" stroke-linecap="round"></path></svg>
-        33°C
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-8A5.5 5.5 0 0 1 17 8.5a4.5 4.5 0 0 1 0 9.5z" fill="#D6EEFF" stroke="#1B1B2F" stroke-width="2" stroke-linejoin="round"></path></svg>
+        9°C tonight
       </span>
     </header>
 
@@ -113,21 +113,21 @@ class Component extends DCLogic {
     var self = this;
     var st = this.state || {};
     var which = st.crop || 'tomato';
-    var picked = st.picked || { tomato: 0, pepper: 14, onion: 6 };
+    var picked = st.picked || { tomato: 86, pepper: 31, onion: 6 };
     var labels = ['Sow', 'Sprout', 'Leaves', 'Move', 'Flower', 'Fruit', 'Pick'];
     var crops = {
-      tomato: { name: 'Tommy', title: 'Tommy', kind: 'Cherry tomato · 20 L pot', species: 'tomato', pot: '#FFD23F', tone: '#FFD9CF', at: 4, day: 'Day 58 since sowing', mood: 'thirsty',
-        next: 'Flowering! First fruit in ~2 weeks.',
-        tip: 'Hot week ahead (33°C). Flowers drop above ~32°C: shade Tommy after 2pm and tap the flowers to pollinate.',
-        tipAction: 'I tapped them', unit: 'tomatoes' },
-      pepper: { name: 'Chili', title: 'Chili Pepper', kind: 'Scotch bonnet · 12 L pot', species: 'pepper', pot: '#5AB8FF', tone: '#FFF1B8', at: 6, day: 'Day 112 since sowing', mood: 'happy',
-        next: 'Picking time. Keep harvesting to get more flowers.',
-        tip: 'Fruit is swelling: switch to a high-potash feed every 10–14 days.',
-        tipAction: 'Fed today', unit: 'peppers' },
+      tomato: { name: 'Tommy', title: 'Tommy', kind: 'Sungold cherry · 10 gal pot', species: 'tomato', pot: '#FFD23F', tone: '#FFD9CF', at: 6, day: 'Season wrap-up', mood: 'thirsty',
+        next: 'Nights are under 10°C, so no more ripening outside.',
+        tip: 'Pick every green tomato before frost (usually mid-Nov). They ripen on the counter in ~2 weeks, no light needed.',
+        tipAction: 'Picked them', unit: 'tomatoes' },
+      pepper: { name: 'Chili', title: 'Chili Pepper', kind: 'Scotch bonnet · 5 gal pot', species: 'pepper', pot: '#5AB8FF', tone: '#FFF1B8', at: 6, day: 'Last picks', mood: 'happy',
+        next: 'Pick the last pods, then keep me for next year?',
+        tip: 'Overwinter me: prune back, move to a bright ~13°C spot indoors, water every ~2 weeks, no feed.',
+        tipAction: 'Bring indoors', unit: 'peppers' },
       onion: { name: 'Scallie', title: 'Scallie', kind: 'Spring onion · regrown from scraps', species: 'onion', pot: '#A78BFA', tone: '#D7F9E4', at: 6, day: 'Regrowth 3 of ~4', mood: 'happy',
         next: 'Ready to snip. Cut 2–3 cm above the white base.',
-        tip: 'Each regrow gets a little weaker. Plan a fresh sowing after the 4th cut.',
-        tipAction: 'Remind me', unit: 'cuts' }
+        tip: 'Hardy all winter outside. Keep me under the eave so I don\'t sit soggy in the rain.',
+        tipAction: 'Moved it', unit: 'cuts' }
     };
     var c = crops[which];
     var stages = labels.map(function (l, i) {
@@ -149,7 +149,7 @@ class Component extends DCLogic {
     });
     return {
       crops: cropList,
-      cur: Object.assign({}, c, { stages: stages, heat: which === 'tomato', idea: which !== 'tomato', tipTone: which === 'tomato' ? '#FFD9CF' : '#D6EEFF' }),
+      cur: Object.assign({}, c, { stages: stages, heat: which === 'tomato', idea: which !== 'tomato', tipTone: which === 'tomato' ? '#D6EEFF' : '#D7F9E4' }),
       tipDone: function () { self.setState({ tip: !st.tip }); },
       tipLabel: st.tip ? 'Logged ✓' : c.tipAction,
       tipBg: st.tip ? '#3DDC84' : '#FFFFFF',

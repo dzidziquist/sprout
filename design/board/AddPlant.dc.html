@@ -72,6 +72,18 @@ button{cursor:pointer}
       </div>
     </fieldset>
 
+    <fieldset style="border: none; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+      <legend style="font-size: 14px; font-weight: 800; padding: 0; margin-bottom: 8px">What's it potted in?</legend>
+      <div style="display: flex; gap: 8px; overflow: hidden; margin-right: -20px">
+        <sc-for list="{{soils}}" as="s" hint-placeholder-count="5">
+          <button type="button" onClick="{{s.pick}}" aria-pressed="{{s.pressed}}" style="flex-shrink: 0; height: 42px; padding: 0 12px 0 6px; border-radius: 21px; border: 2px solid #1B1B2F; box-shadow: {{s.shadow}}; background: {{s.bg}}; color: #1B1B2F; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px">
+            <span aria-hidden="true" style="width: 26px; height: 26px; border-radius: 13px; border: 2px solid #1B1B2F; background: {{s.swatch}}; box-sizing: border-box"></span>{{s.label}}
+          </button>
+        </sc-for>
+      </div>
+      <span style="font-size: 12px; font-weight: 800; color: #55556B">{{soilNote}}</span>
+    </fieldset>
+
     <fieldset style="border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
       <legend style="font-size: 14px; font-weight: 800; padding: 0; margin-bottom: 8px">Where's it from?</legend>
       <div style="display: flex; gap: 8px; flex-wrap: wrap">
@@ -115,7 +127,24 @@ class Component extends DCLogic {
         pick: function () { self.setState({ light: l[0] }); }
       };
     });
-    var origins = [['bought', 'Bought it'], ['cutting', 'My cutting'], ['swap', 'Swap'], ['gift', 'A gift']].map(function (o) {
+    var soil = s.soil || 'chunky';
+    var soilInfo = {
+      mix: ['Potting mix', '#8B5E3C', 'Holds water longest. Checks spaced out; repot every 1–2 years.'],
+      chunky: ['Chunky aroid', '#C9A27E', 'Bark + perlite drains fast. Hoyas love it; checks come a bit sooner.'],
+      gritty: ['Gritty', '#D9CBB0', 'For succulents and cacti. Dries quickest; we let it go bone dry.'],
+      leca: ['LECA', '#E07A4F', 'Semi-hydro: you top up a reservoir and feed every watering.'],
+      moss: ['Moss', '#7CB86A', 'Sphagnum stays damp: great for rooting cuttings, easy to overwater.'],
+      unsure: ['Not sure', '#FFFFFF', 'No problem. We start cautious and learn from your soil checks.']
+    };
+    var soils = Object.keys(soilInfo).map(function (k) {
+      var on = k === soil;
+      return {
+        label: soilInfo[k][0], swatch: soilInfo[k][1], pressed: on ? 'true' : 'false',
+        bg: on ? '#D7F9E4' : '#FFFFFF', shadow: on ? '0 3px 0 #1B1B2F' : 'none',
+        pick: function () { self.setState({ soil: k }); }
+      };
+    });
+    var origins = [['bought', 'Bought'], ['cutting', 'My cutting'], ['swap', 'Swap'], ['gift', 'Gift']].map(function (o) {
       var on = o[0] === origin;
       return {
         label: o[1], pressed: on ? 'true' : 'false',
@@ -127,7 +156,8 @@ class Component extends DCLogic {
       nick: names[n % names.length],
       cta: 'Welcome home, ' + names[n % names.length] + '!',
       shuffle: function () { self.setState({ n: n + 1 }); },
-      potColor: potSel, pots: pots, lights: lights, origins: origins
+      potColor: potSel, pots: pots, lights: lights, origins: origins,
+      soils: soils, soilNote: soilInfo[soil][2]
     };
   }
 }

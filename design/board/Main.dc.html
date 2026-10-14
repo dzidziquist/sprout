@@ -19,7 +19,7 @@ button{font-family:inherit;cursor:pointer}
   <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 14px">
     <header style="display: flex; justify-content: space-between; align-items: center">
       <div style="display: flex; flex-direction: column">
-        <span style="font-size: 14px; font-weight: 800; color: #55556B">Tue 13 Oct · Accra</span>
+        <span style="font-size: 14px; font-weight: 800; color: #55556B">Tue 13 Oct · Seattle</span>
         <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 700">Plant round</h1>
       </div>
       <a href="Me.dc.html" aria-label="5 weeks on track" style="display: flex; align-items: center; gap: 4px; height: 44px; padding: 0 12px 0 8px; border-radius: 22px; background: #FFF1B8; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; text-decoration: none; font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 700">
@@ -44,8 +44,8 @@ button{font-family:inherit;cursor:pointer}
     </section>
 
     <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 16px; background: #FFF1B8; border: 2px solid #1B1B2F">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7"></path></svg>
-      <span style="font-size: 13px; font-weight: 800">Harmattan mode: dry air dries pots faster, so checks come sooner.</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-8A5.5 5.5 0 0 1 17 8.5a4.5 4.5 0 0 1 0 9.5z"></path></svg>
+      <span style="font-size: 13px; font-weight: 800">Grey season: short days, so checks are spaced out. Feeding paused till March.</span>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 10px">
@@ -103,9 +103,9 @@ class Component extends DCLogic {
     var s = this.state || {};
     var self = this;
     var base = [
-      { id: 'a', name: 'Queenie', species: 'pothos', pot: '#5AB8FF', tone: '#FFF1B8', why: 'Probably dry. Last drink 9 days ago' },
+      { id: 'a', name: 'Queenie', species: 'pothos', pot: '#5AB8FF', tone: '#FFF1B8', why: 'Probably dry. Last drink 12 days ago' },
       { id: 'b', name: 'Big Fig', species: 'fig', pot: '#FF6B5B', tone: '#EDE7FF', why: 'Was damp on Saturday, peek again?' },
-      { id: 'c', name: 'Tommy', species: 'tomato', pot: '#FFD23F', tone: '#FFD9CF', why: 'Hot day: containers dry fast' }
+      { id: 'c', name: 'Cal', species: 'calathea', pot: '#A78BFA', tone: '#D6EEFF', why: 'Heating is on: dry air dries pots' }
     ];
     var outcome = {
       dry: { mood: 'happy', line: 'Watered! Next check in ~8 days', chip: 'Watered', chipBg: '#3DDC84' },
