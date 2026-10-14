@@ -17,7 +17,8 @@ A playful plant-care app where plants have moods, care is a soil check rather th
 | `docs/product-brief.md` | Vision, positioning, MVP scope, care engine, data stack, risks, open decisions |
 | `docs/research/research-report.md` | Synthesised deep-research report with citations |
 | `docs/research/notes/` | Raw research notes: care science, edibles, app market, gamification, data APIs, collector patterns, soil types + Seattle |
-| `docs/asset-prompts.md` | Paste-ready ChatGPT prompts for every illustration asset (~89 images) |
+| `docs/asset-prompts-v2.md` | **Production** ChatGPT prompts, one asset per image (123 assets), based on the approved concept style |
+| `docs/asset-prompts.md` | v1 prompts that produced the concept sheets in `design/asset-concepts/` |
 | `design/board/` | Source of the interactive design board (`.dc.html` artboards + `canvas.json`) |
 | `design/screens/` | Rendered PNG of every screen and state |
 
