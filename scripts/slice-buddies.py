@@ -47,23 +47,23 @@ species = [
 cells = [(0, 384), (384, 768), (768, 1152), (1152, 1536)]
 report = {}
 for ri, (y0, y1) in enumerate(bands):
+    band_mask = np.zeros((y1 - y0, 1536), bool)
+    pots = []  # (name, index, x0, x1 in band coords, pt, pb)
     for ci, (x0, x1) in enumerate(cells):
         name = species[ri][ci]
         sub = (slice(y0, y1), slice(x0, x1))
         a = A[sub]; pl = potlike[sub]; colr = colorful[sub]
-        # pot rows: rows where potlike pixels are dense
         prow = pl.sum(1)
         pot_rows = np.where(prow > 12)[0]
         pt, pb = pot_rows.min(), pot_rows.max()
-        # pot columns: runs of potlike within pot rows
         prof = pl[max(pt, pb-14):pb+1].sum(0)
-        runs = []; s = None
+        runs = []; s0 = None
         for x, v in enumerate(prof):
-            if v > 3 and s is None: s = x
-            if v <= 3 and s is not None:
-                if x - s > 24: runs.append((s, x))
-                s = None
-        if s is not None and len(prof) - s > 24: runs.append((s, len(prof)))
+            if v > 3 and s0 is None: s0 = x
+            if v <= 3 and s0 is not None:
+                if x - s0 > 24: runs.append((s0, x))
+                s0 = None
+        if s0 is not None and len(prof) - s0 > 24: runs.append((s0, len(prof)))
         # label removal: dark low-sat pixels below the pots with no colour nearby
         mask = a.copy()
         dark = a & ~colr
@@ -72,6 +72,7 @@ for ri, (y0, y1) in enumerate(bands):
         for _ in range(4):
             col_dil = col_dil | np.roll(col_dil, 1, 0) | np.roll(col_dil, -1, 0) | np.roll(col_dil, 1, 1) | np.roll(col_dil, -1, 1)
         mask &= ~(dark & below & ~col_dil)
+        band_mask[:, x0:x1] = mask
         merged = []
         for rr in runs:
             if merged and rr[0] - merged[-1][1] < 14: merged[-1] = (merged[-1][0], rr[1])
@@ -80,31 +81,47 @@ for ri, (y0, y1) in enumerate(bands):
         if len(runs) != 3 and not (name == 'zz' and len(runs) == 4):
             w = (x1 - x0) / 3
             runs = [(int(i * w + w * 0.3), int(i * w + w * 0.7)) for i in range(3)]
-            if pt is None or pb - pt < 10: pass
-        report[name] = {'pots': len(runs), 'runs': runs, 'pot_rows': (int(pt), int(pb))}
-        centers = [(p + q) / 2 for p, q in runs]
-        edges = [0] + [int((centers[i] + centers[i+1]) / 2) for i in range(len(centers)-1)] + [x1 - x0]
-        for i in range(len(runs)):
-            cx0, cx1 = edges[i], edges[i+1]
-            m = mask[:, cx0:cx1]
-            lab, sizes = components(m)
-            # main = component containing the pot centre
-            pcx = int(centers[i]) - cx0; pcy = int((pt + pb) / 2)
-            main = lab[pcy, pcx] or int(np.argmax(sizes))
-            keep = lab == main
-            # also keep small detached bits (drops, flowers, pearls) that don't touch the crop's side edges
-            for k in range(1, len(sizes)):
-                if k == main: continue
-                ys, xs = np.where(lab == k)
-                if xs.min() > 0 and xs.max() < m.shape[1] - 1 and sizes[k] < sizes[main] * 0.25:
-                    keep |= lab == k
-            crop = im[y0:y1, x0+cx0:x0+cx1].copy()
-            crop[:, :, 3] = np.where(keep, crop[:, :, 3], 0)
-            ys, xs = np.where(crop[:, :, 3] > 40)
-            crop = crop[ys.min():ys.max()+1, xs.min():xs.max()+1]
-            img = Image.fromarray(crop.astype(np.uint8), 'RGBA')
-            side = max(img.size) + 8
-            sq = Image.new('RGBA', (side, side), (0, 0, 0, 0))
-            sq.paste(img, ((side - img.width) // 2, side - img.height - 4), img)
-            sq.save(f'raw/{name}-{i}.png')
+        report[name] = {'pots': len(runs)}
+        for i, (p0, p1) in enumerate(runs):
+            pots.append((name, i, x0 + p0, x0 + p1, int(pt), int(pb)))
+
+    # Split the whole row between all its pots along the leaves themselves: a multi-source flood fill
+    # from every pot through opaque pixels gives each leaf to the pot it grows from, even when it
+    # reaches past the midpoint or into the next cell.
+    h, w = band_mask.shape
+    owner = np.full((h, w), -1, np.int32)
+    q = deque()
+    for k, (_, _, p0, p1, pt, pb) in enumerate(pots):
+        for yy in range(pt, pb + 1):
+            for xx in range(p0, p1):
+                if band_mask[yy, xx] and owner[yy, xx] < 0:
+                    owner[yy, xx] = k; q.append((yy, xx))
+    while q:
+        cy, cx = q.popleft(); o = owner[cy, cx]
+        for ny, nx in ((cy+1,cx),(cy-1,cx),(cy,cx+1),(cy,cx-1),(cy+1,cx+1),(cy-1,cx-1),(cy+1,cx-1),(cy-1,cx+1)):
+            if 0 <= ny < h and 0 <= nx < w and band_mask[ny, nx] and owner[ny, nx] < 0:
+                owner[ny, nx] = o; q.append((ny, nx))
+    # Detached bits (drops, z's, pearls) go to the nearest pot horizontally, if close to it.
+    centers = [(p0 + p1) / 2 for (_, _, p0, p1, _, _) in pots]
+    loose = band_mask & (owner < 0)
+    if loose.any():
+        lab, sizes = components(loose)
+        for k in range(1, len(sizes)):
+            if sizes[k] < 6: continue
+            ys, xs = np.where(lab == k)
+            dists = [abs(xs.mean() - cc) for cc in centers]
+            j = int(np.argmin(dists))
+            if dists[j] < 90: owner[lab == k] = j
+
+    for k, (name, i, _, _, _, _) in enumerate(pots):
+        keep = owner == k
+        crop = im[y0:y1].copy()
+        crop[:, :, 3] = np.where(keep, crop[:, :, 3], 0)
+        ys, xs = np.where(crop[:, :, 3] > 40)
+        crop = crop[ys.min():ys.max()+1, xs.min():xs.max()+1]
+        img = Image.fromarray(crop.astype(np.uint8), 'RGBA')
+        side = max(img.size) + 12
+        sq = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+        sq.paste(img, ((side - img.width) // 2, side - img.height - 6), img)
+        sq.save(f'raw/{name}-{i}.png')
 print(json.dumps({k: v['pots'] for k, v in report.items()}))
