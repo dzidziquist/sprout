@@ -6,6 +6,7 @@ import { usePlantStore } from '../store/plantStore';
 import { moodFor } from '../engine/careEngine';
 import { edgePath, isReadyToPotUp, rootingDays, rootingProgress, type FamilyLayout, type LayoutOptions, type RootingMethod } from '../engine/treeLayout';
 import { PlantBuddy } from './PlantBuddy';
+import { TreeScrollCue } from './TreeScrollCue';
 import { textOn, useColors, type Palette } from '../theme/theme';
 import { fonts } from '../theme/tokens';
 import * as haptics from '../lib/haptics';
@@ -28,21 +29,69 @@ function methodFill(m: RootingMethod, c: Palette) {
   return m === 'water' ? c.sky : m === 'moss' ? c.leafLight : m === 'soil' ? c.orange : c.bubblegum;
 }
 
+/** What a family-tree node shows for a plant: tint, mood, subtitle, corner tag and a screen-reader label. */
+export function nodeInfo(p: Plant, depth: number, now: Date, c: Palette) {
+  const gone = !!p.archivedAt;
+  const rooting = !gone ? p.rooting : undefined;
+  const ready = isReadyToPotUp(p, now);
+  const tint = rooting ? c.ice : gone ? c.card : c.potTint[p.potColor];
+  const mood = gone ? ('snoozing' as const) : rooting ? ('happy' as const) : moodFor(p, now);
+  const sub = gone
+    ? monthYear(p.archivedAt!)
+    : depth === 0
+      ? `The OG · ${new Date(p.acquiredAt).getFullYear()}`
+      : `${p.origin === 'cutting' ? 'Cutting' : 'Baby'} · ${monthYear(p.acquiredAt)}`;
+  const corner = rooting ? { text: rooting.method, fill: methodFill(rooting.method, c) } : gone ? { text: ARCHIVED_LABEL[p.archivedReason ?? 'gifted'], fill: c.cloud } : null;
+  const days = rooting ? rootingDays(rooting.startedAt, now) : 0;
+  const a11y = `${p.name}, ${gone ? `${ARCHIVED_LABEL[p.archivedReason ?? 'gifted']}, ` : ''}${rooting ? `rooting in ${rooting.method}, day ${days}${ready ? ', ready to pot up' : ''}` : sub}`;
+  return { gone, rooting, ready, tint, mood, sub, corner, days, a11y };
+}
+
+/** "+6 more" (and how many of their babies come along). */
+export function moreLabel(n: { more?: number; hiddenTotal?: number }) {
+  const extra = (n.hiddenTotal ?? 0) - (n.more ?? 0);
+  return { title: `${n.more} more`, sub: extra > 0 ? `+${extra} of their babies` : 'tap to show' };
+}
+
 /**
  * One drawn family. `bleed` is the page's side padding: when the tree is wider than the screen it scrolls
- * sideways edge to edge instead of being clipped at the padding.
+ * sideways edge to edge instead of being clipped at the padding, with fades and arrows on the edges that
+ * still hide nodes. `onExpand` opens a collapsed "+N more" group.
  */
-export function FamilyTree({ family, now = new Date(), bleed = 0 }: { family: FamilyLayout<Plant>; now?: Date; bleed?: number }) {
+export function FamilyTree({
+  family,
+  now = new Date(),
+  bleed = 0,
+  onExpand,
+}: {
+  family: FamilyLayout<Plant>;
+  now?: Date;
+  bleed?: number;
+  onExpand?: (parentId: string) => void;
+}) {
   const c = useColors();
   const router = useRouter();
   const faces = usePlantStore((s) => s.profile.faces);
   const styles = useMemo(() => makeStyles(c), [c]);
   const [available, setAvailable] = useState(0);
+  const [scrollX, setScrollX] = useState(0);
   const scroller = useRef<ScrollView>(null);
-  const centred = useRef(false);
+  const centredFor = useRef(-1);
   const { width, height, nodes, edges } = family;
-  const archived = useMemo(() => new Set(nodes.filter((n) => n.plant.archivedAt).map((n) => n.id)), [nodes]);
-  const ringed = useMemo(() => new Set(nodes.filter((n) => n.plant.rooting && !n.plant.archivedAt).map((n) => n.id)), [nodes]);
+  const archived = useMemo(() => new Set(nodes.filter((n) => n.plant.archivedAt && !n.more).map((n) => n.id)), [nodes]);
+  const ringed = useMemo(() => new Set(nodes.filter((n) => n.plant.rooting && !n.plant.archivedAt && !n.more).map((n) => n.id)), [nodes]);
+  const viewport = available + 2 * bleed;
+  const content = width + 2 * bleed;
+  const scrolls = available > 0 && width > available;
+  const hiddenLeft = scrolls && scrollX > 8;
+  const hiddenRight = scrolls && scrollX < content - viewport - 8;
+
+  const scrollBy = (dir: -1 | 1) => {
+    haptics.tap();
+    const x = Math.max(0, Math.min(content - viewport, scrollX + dir * viewport * 0.7));
+    scroller.current?.scrollTo({ x, animated: true });
+    setScrollX(x);
+  };
 
   const canvas = (
     <View style={{ width, height }}>
@@ -52,16 +101,16 @@ export function FamilyTree({ family, now = new Date(), bleed = 0 }: { family: Fa
             key={`${e.from}>${e.to}`}
             d={edgePath({ ...e, y1: e.y1 - 2, y2: e.y2 + (ringed.has(e.to) ? 2 : CIRCLE_TOP) })}
             stroke={c.line}
-            strokeOpacity={archived.has(e.to) ? 0.55 : 1}
+            strokeOpacity={archived.has(e.to) || e.to.endsWith('+more') ? 0.55 : 1}
             strokeWidth={3}
             strokeLinecap="round"
-            strokeDasharray={archived.has(e.to) ? '2 7' : undefined}
+            strokeDasharray={archived.has(e.to) || e.to.endsWith('+more') ? '2 7' : undefined}
             fill="none"
           />
         ))}
         {nodes.map((n) => {
           const r = n.plant.rooting;
-          if (!r || n.plant.archivedAt) return null;
+          if (!r || n.plant.archivedAt || n.more) return null;
           const radius = CIRCLE / 2 + RING_GAP / 2 + 1;
           const len = 2 * Math.PI * radius;
           const prog = rootingProgress(r, now);
@@ -84,53 +133,67 @@ export function FamilyTree({ family, now = new Date(), bleed = 0 }: { family: Fa
       </Svg>
 
       {nodes.map((n) => {
+        const box = { left: n.x, top: n.y, width: TREE_LAYOUT.nodeWidth, height: TREE_LAYOUT.nodeHeight };
+        if (n.more) {
+          const label = moreLabel(n);
+          return (
+            <Pressable
+              key={n.id}
+              accessibilityRole="button"
+              accessibilityLabel={`Show ${label.title} of ${n.plant.name}'s babies`}
+              onPress={() => {
+                haptics.tap();
+                onExpand?.(n.plant.id);
+              }}
+              style={({ pressed }) => [styles.node, box, pressed && { transform: [{ translateY: 2 }] }]}
+            >
+              <View style={[styles.circle, styles.moreCircle]}>
+                <Text style={styles.moreNum}>+{n.more}</Text>
+              </View>
+              <Text numberOfLines={1} style={styles.name}>
+                {label.title}
+              </Text>
+              <Text numberOfLines={1} style={[styles.sub, { color: c.ink }]}>
+                {label.sub}
+              </Text>
+            </Pressable>
+          );
+        }
         const p = n.plant;
-        const gone = !!p.archivedAt;
-        const rooting = !gone ? p.rooting : undefined;
-        const ready = isReadyToPotUp(p, now);
-        const tint = rooting ? c.ice : gone ? c.card : c.potTint[p.potColor];
-        const mood = gone ? 'snoozing' : rooting ? 'happy' : moodFor(p, now);
-        const sub = gone
-          ? monthYear(p.archivedAt!)
-          : n.depth === 0
-            ? `The OG · ${new Date(p.acquiredAt).getFullYear()}`
-            : `${p.origin === 'cutting' ? 'Cutting' : 'Baby'} · ${monthYear(p.acquiredAt)}`;
-        const corner = rooting ? { text: rooting.method, fill: methodFill(rooting.method, c) } : gone ? { text: ARCHIVED_LABEL[p.archivedReason ?? 'gifted'], fill: c.cloud } : null;
-        const days = rooting ? rootingDays(rooting.startedAt, now) : 0;
-        const a11y = `${p.name}, ${gone ? `${ARCHIVED_LABEL[p.archivedReason ?? 'gifted']}, ` : ''}${rooting ? `rooting in ${rooting.method}, day ${days}${ready ? ', ready to pot up' : ''}` : sub}`;
+        const info = nodeInfo(p, n.depth, now, c);
         return (
           <Pressable
             key={n.id}
             accessibilityRole="button"
-            accessibilityLabel={a11y}
+            accessibilityLabel={info.a11y}
             onPress={() => {
               haptics.tap();
               router.push(`/plant/${p.id}`);
             }}
-            style={({ pressed }) => [styles.node, { left: n.x, top: n.y, width: TREE_LAYOUT.nodeWidth, height: TREE_LAYOUT.nodeHeight }, pressed && { transform: [{ translateY: 2 }] }]}
+            style={({ pressed }) => [styles.node, box, pressed && { transform: [{ translateY: 2 }] }]}
           >
-            <View style={[styles.circle, { backgroundColor: tint }, gone ? styles.circleGone : { boxShadow: `0px 3px 0px ${c.drop}` }]}>
-              <View style={gone && { opacity: 0.45 }}>
-                <PlantBuddy speciesId={rooting ? 'cutting' : p.speciesId} mood={mood} pot={p.potColor} size={CIRCLE - 10} bg={tint} faces={faces} />
+            <View style={[styles.circle, { backgroundColor: info.tint }, info.gone ? styles.circleGone : { boxShadow: `0px 3px 0px ${c.drop}` }]}>
+              <View style={info.gone && { opacity: 0.45 }}>
+                <PlantBuddy speciesId={info.rooting ? 'cutting' : p.speciesId} mood={info.mood} pot={p.potColor} size={CIRCLE - 10} bg={info.tint} faces={faces} />
               </View>
             </View>
-            {corner && (
-              <View style={[styles.corner, { backgroundColor: corner.fill }]}>
-                <Text style={[styles.cornerText, { color: textOn(corner.fill, c) }]}>{corner.text}</Text>
+            {info.corner && (
+              <View style={[styles.corner, { backgroundColor: info.corner.fill }]}>
+                <Text style={[styles.cornerText, { color: textOn(info.corner.fill, c) }]}>{info.corner.text}</Text>
               </View>
             )}
-            <Text numberOfLines={1} style={[styles.name, gone && { color: c.inkMuted }]}>
+            <Text numberOfLines={1} style={[styles.name, info.gone && { color: c.inkMuted }]}>
               {p.name}
             </Text>
-            {rooting ? (
-              <View style={[styles.pill, { backgroundColor: ready ? c.leaf : c.ice }]}>
-                <Text numberOfLines={1} style={[styles.pillText, { color: ready ? textOn(c.leaf, c) : c.ink }]}>
-                  {ready ? 'ready to pot!' : `rooting · day ${days}`}
+            {info.rooting ? (
+              <View style={[styles.pill, { backgroundColor: info.ready ? c.leaf : c.ice }]}>
+                <Text numberOfLines={1} style={[styles.pillText, { color: info.ready ? textOn(c.leaf, c) : c.ink }]}>
+                  {info.ready ? 'ready to pot!' : `rooting · day ${info.days}`}
                 </Text>
               </View>
             ) : (
               <Text numberOfLines={1} style={styles.sub}>
-                {sub}
+                {info.sub}
               </Text>
             )}
           </Pressable>
@@ -141,22 +204,31 @@ export function FamilyTree({ family, now = new Date(), bleed = 0 }: { family: Fa
 
   return (
     <View onLayout={(e) => setAvailable(e.nativeEvent.layout.width)}>
-      {available > 0 && width > available ? (
-        <ScrollView
-          ref={scroller}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          onLayout={() => {
-            // Start with the root (the OG) in the middle of the screen rather than the far-left leaf.
-            if (centred.current) return;
-            centred.current = true;
-            const rootCx = nodes[0]?.cx ?? 0;
-            const x = Math.max(0, Math.min(width - available, rootCx + bleed - (available + 2 * bleed) / 2));
-            requestAnimationFrame(() => scroller.current?.scrollTo({ x, animated: false }));
-          }}
-          style={{ marginHorizontal: -bleed }} contentContainerStyle={{ paddingHorizontal: bleed, paddingBottom: 4 }}>
-          {canvas}
-        </ScrollView>
+      {scrolls ? (
+        <View style={{ marginHorizontal: -bleed }}>
+          <ScrollView
+            ref={scroller}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            scrollEventThrottle={32}
+            onScroll={(e) => setScrollX(e.nativeEvent.contentOffset.x)}
+            onContentSizeChange={(w) => {
+              // Start with the root (the OG) in the middle of the screen rather than the far-left leaf,
+              // and re-centre when a collapsed group opens and the tree gets wider.
+              if (centredFor.current === w) return;
+              centredFor.current = w;
+              const rootCx = nodes[0]?.cx ?? 0;
+              const x = Math.max(0, Math.min(content - viewport, rootCx + bleed - viewport / 2));
+              setScrollX(x);
+              requestAnimationFrame(() => scroller.current?.scrollTo({ x, animated: false }));
+            }}
+            contentContainerStyle={{ paddingHorizontal: bleed, paddingBottom: 4 }}
+          >
+            {canvas}
+          </ScrollView>
+          <TreeScrollCue side="left" visible={hiddenLeft} onPress={() => scrollBy(-1)} />
+          <TreeScrollCue side="right" visible={hiddenRight} onPress={() => scrollBy(1)} />
+        </View>
       ) : (
         <View style={{ alignItems: 'center' }}>{canvas}</View>
       )}
@@ -179,6 +251,8 @@ function makeStyles(c: Palette) {
       overflow: 'hidden',
     },
     circleGone: { borderStyle: 'dashed', borderColor: c.inkMuted },
+    moreCircle: { borderStyle: 'dashed', backgroundColor: c.cloud },
+    moreNum: { fontFamily: fonts.display, fontSize: 24, color: c.ink },
     corner: {
       position: 'absolute',
       top: 0,

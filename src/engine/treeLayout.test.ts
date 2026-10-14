@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_LAYOUT, edgePath, isReadyToPotUp, layoutForest, resolveParents, rootingDays, rootingProgress } from './treeLayout';
+import { DEFAULT_LAYOUT, edgePath, isReadyToPotUp, layoutForest, moreNodeId, resolveParents, rootingDays, rootingProgress } from './treeLayout';
 
 const p = (id: string, parentId?: string) => ({ id, parentId });
 const O = { nodeWidth: 100, nodeHeight: 100, gapX: 10, gapY: 40, padding: 0 };
@@ -93,6 +93,49 @@ describe('layoutForest', () => {
     const { families } = layoutForest([p('a'), p('b', 'a'), p('b', 'a')]);
     expect(families[0].nodes).toHaveLength(2);
     expect(families[0].width).toBe(DEFAULT_LAYOUT.padding * 2 + DEFAULT_LAYOUT.nodeWidth);
+  });
+});
+
+describe('collapsing big sibling groups', () => {
+  // A collector's mother plant with 8 babies, one of which has 2 babies of its own.
+  const fam = [p('mom'), ...Array.from({ length: 8 }, (_, i) => p(`k${i}`, 'mom')), p('g1', 'k5'), p('g2', 'k5')];
+  const C = { maxChildren: 5, keep: 2 };
+
+  it('leaves the layout alone without collapse options or under the threshold', () => {
+    const plain = layoutForest(fam, O).families[0];
+    expect(plain.nodes).toHaveLength(11);
+    expect(plain.members).toBe(11);
+    expect(plain.collapsible).toEqual([]);
+    const small = layoutForest([p('a'), p('b', 'a'), p('c', 'a')], O, C).families[0];
+    expect(small.nodes.some((n) => n.more)).toBe(false);
+    expect(small.collapsible).toEqual([]);
+  });
+
+  it('keeps the first siblings and adds one "+N more" node that fits on a phone', () => {
+    const f = layoutForest(fam, O, C).families[0];
+    expect(f.collapsible).toEqual(['mom']);
+    expect(f.nodes.map((n) => n.id)).toEqual(['mom', 'k0', 'k1', moreNodeId('mom')]);
+    const more = f.nodes.find((n) => n.more)!;
+    expect(more.more).toBe(6);
+    expect(more.hiddenTotal).toBe(8);
+    expect(more.depth).toBe(1);
+    expect(more.plant.id).toBe('mom');
+    expect(f.members).toBe(11);
+    // Hidden grandchildren still count as a generation, but the drawing is only two rows tall.
+    expect(f.generations).toBe(3);
+    expect(f.height).toBe(240);
+    // Three slots wide, parent centred over the group, and an edge to the placeholder.
+    expect(f.width).toBe(320);
+    expect(f.nodes[0].cx).toBe(160);
+    expect(f.edges.map((e) => e.to)).toContain(moreNodeId('mom'));
+  });
+
+  it('shows everyone once the parent is expanded', () => {
+    const f = layoutForest(fam, O, { ...C, expanded: new Set(['mom']) }).families[0];
+    expect(f.nodes).toHaveLength(11);
+    expect(f.nodes.some((n) => n.more)).toBe(false);
+    expect(f.collapsible).toEqual(['mom']);
+    expect(f.width).toBe(9 * 100 + 8 * 10);
   });
 });
 

@@ -44,7 +44,25 @@ export interface TreeNode<T extends LineagePlant> {
   y: number;
   /** Horizontal centre of the node box. */
   cx: number;
+  /**
+   * Set on a "+N more" placeholder that stands in for a collapsed group of siblings. `more` is how many
+   * siblings it hides, `hiddenTotal` how many plants that is including their own babies. A placeholder's
+   * `plant` is the parent whose group was collapsed and its `id` is `<parentId>+more`.
+   */
+  more?: number;
+  hiddenTotal?: number;
 }
+
+export interface CollapseOptions {
+  /** Sibling groups larger than this are collapsed. */
+  maxChildren: number;
+  /** How many siblings stay visible in a collapsed group (the rest become one "+N more" node). */
+  keep: number;
+  /** Parents whose group the user expanded. */
+  expanded?: ReadonlySet<string>;
+}
+
+export const moreNodeId = (parentId: string) => `${parentId}+more`;
 
 export interface TreeEdge {
   from: string;
@@ -64,8 +82,12 @@ export interface FamilyLayout<T extends LineagePlant> {
   edges: TreeEdge[];
   width: number;
   height: number;
-  /** Number of rows (root counts as generation 1). */
+  /** Number of rows (root counts as generation 1). Counts hidden rows too. */
   generations: number;
+  /** Every plant in the family, including ones hidden in a collapsed group. */
+  members: number;
+  /** Parents whose sibling group is big enough to collapse (whether or not it is collapsed right now). */
+  collapsible: string[];
   /** Where this family starts if all families are drawn side by side on one canvas. */
   offsetX: number;
 }
@@ -113,7 +135,11 @@ export function resolveParents<T extends LineagePlant>(plants: readonly T[]): Ma
 }
 
 /** Lay out every family in the fam. Children keep input order, so sort the input (e.g. by acquiredAt) first. */
-export function layoutForest<T extends LineagePlant>(plants: readonly T[], options: Partial<LayoutOptions> = {}): ForestLayout<T> {
+export function layoutForest<T extends LineagePlant>(
+  plants: readonly T[],
+  options: Partial<LayoutOptions> = {},
+  collapse?: CollapseOptions,
+): ForestLayout<T> {
   const o = { ...DEFAULT_LAYOUT, ...options };
   const parent = resolveParents(plants);
   const byId = new Map<string, T>();
@@ -140,15 +166,39 @@ export function layoutForest<T extends LineagePlant>(plants: readonly T[], optio
 
     const nodes: TreeNode<T>[] = [];
     const edges: TreeEdge[] = [];
+    const collapsible: string[] = [];
     let nextLeaf = 0;
     let maxDepth = 0;
+    let members = 0;
+    const count = (nid: string): number => 1 + (children.get(nid) ?? []).reduce((n, k) => n + count(k), 0);
 
     // Post-order: leaves take the next free slot, parents sit midway over their first and last child.
     const place = (nid: string, depth: number, pid: string | undefined): TreeNode<T> => {
       const node: TreeNode<T> = { id: nid, plant: byId.get(nid)!, depth, parentId: pid, x: 0, y: o.padding + depth * row, cx: 0 };
       nodes.push(node);
+      members++;
       maxDepth = Math.max(maxDepth, depth);
-      const kids = (children.get(nid) ?? []).map((k) => place(k, depth + 1, nid));
+      let ids = children.get(nid) ?? [];
+      let hidden: string[] = [];
+      if (collapse && ids.length > collapse.maxChildren) {
+        collapsible.push(nid);
+        if (!collapse.expanded?.has(nid)) {
+          const keep = Math.max(1, Math.min(collapse.keep, collapse.maxChildren));
+          hidden = ids.slice(keep);
+          ids = ids.slice(0, keep);
+        }
+      }
+      const kids = ids.map((k) => place(k, depth + 1, nid));
+      if (hidden.length) {
+        const hiddenTotal = hidden.reduce((n, k) => n + count(k), 0);
+        members += hiddenTotal;
+        const cx = o.padding + nextLeaf++ * slot + o.nodeWidth / 2;
+        const more: TreeNode<T> = { id: moreNodeId(nid), plant: node.plant, depth: depth + 1, parentId: nid, x: cx - o.nodeWidth / 2, y: o.padding + (depth + 1) * row, cx, more: hidden.length, hiddenTotal };
+        nodes.push(more);
+        kids.push(more);
+        const deepest = (k: string, d: number): number => Math.max(d, ...(children.get(k) ?? []).map((g) => deepest(g, d + 1)));
+        maxDepth = Math.max(maxDepth, ...hidden.map((k) => deepest(k, depth + 1)));
+      }
       const center = kids.length
         ? (kids[0].cx + kids[kids.length - 1].cx) / 2
         : o.padding + nextLeaf++ * slot + o.nodeWidth / 2;
@@ -160,8 +210,9 @@ export function layoutForest<T extends LineagePlant>(plants: readonly T[], optio
     place(id, 0, undefined);
 
     const width = o.padding * 2 + nextLeaf * o.nodeWidth + (nextLeaf - 1) * o.gapX;
-    const height = o.padding * 2 + (maxDepth + 1) * o.nodeHeight + maxDepth * o.gapY;
-    families.push({ root: plant, nodes, edges, width, height, generations: maxDepth + 1, offsetX });
+    const drawnDepth = Math.max(...nodes.map((n) => n.depth));
+    const height = o.padding * 2 + (drawnDepth + 1) * o.nodeHeight + drawnDepth * o.gapY;
+    families.push({ root: plant, nodes, edges, width, height, generations: maxDepth + 1, members, collapsible, offsetX });
     offsetX += width + o.gapX;
   }
 
