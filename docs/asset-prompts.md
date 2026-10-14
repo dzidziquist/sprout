@@ -1,8 +1,8 @@
-# Rootline: image asset prompts for ChatGPT
+# PlantFam: image asset prompts for ChatGPT
 
 How to use this:
 1. Start **one** ChatGPT conversation and paste the **Style anchor** first. Keep every asset in that same chat so the style stays consistent.
-2. Upload `design/screens/StyleGuide.png` (and optionally `design/rootline-overview.png`) as a visual reference with the anchor.
+2. Upload `design/screens/StyleGuide.png` (and optionally `design/plantfam-overview.png`) as a visual reference with the anchor.
 3. Then paste prompts one at a time. Ask for **transparent PNG** wherever noted. Re-roll until the outline weight and face style match the reference.
 4. Save files with the names given. They map to the app's asset folders.
 
@@ -13,7 +13,7 @@ How to use this:
 ## Style anchor (paste first)
 
 ```
-You are illustrating assets for "Rootline", a playful plant-care app. Keep one consistent style for every image in this chat:
+You are illustrating assets for "PlantFam", a playful plant-care app. Keep one consistent style for every image in this chat:
 
 STYLE: Bold, friendly "sticker" illustration. Flat colour fills, no gradients, no textures, no photorealism. Every shape has a thick, even, dark ink outline (#1B1B2F, about 2–3% of image width, rounded joins). Shapes are chunky and rounded. Tiny white highlight strokes on pots and leaves. Cute but not babyish, think Duolingo or Finch, with a slightly indie, hand-made warmth.
 
@@ -36,17 +36,17 @@ TONE: warm, encouraging, never guilt-inducing. No text inside images unless aske
 
 **1.1 App icon**: `app-icon-1024.png` (1024×1024, no transparency, no rounded corners; iOS masks them)
 ```
-App icon for Rootline. A single happy monstera in a sun-yellow (#FFD23F) pot with the smiling face, centered on a solid leaf-green (#3DDC84) background. The plant fills about 70% of the canvas, with three fenestrated leaves. Thick ink outline. No text. Square 1024×1024, full bleed, no rounded corners. It must read clearly at 60px.
+App icon for PlantFam. A single happy monstera in a sun-yellow (#FFD23F) pot with the smiling face, centered on a solid leaf-green (#3DDC84) background. The plant fills about 70% of the canvas, with three fenestrated leaves. Thick ink outline. No text. Square 1024×1024, full bleed, no rounded corners. It must read clearly at 60px.
 ```
 
 **1.2 Icon variants**: `app-icon-dark-1024.png`, `app-icon-tinted-1024.png`
 ```
-Two versions of the same Rootline app icon: (a) dark mode, the same character on a deep ink (#1B1B2F) background with the leaves slightly brighter; (b) monochrome/tinted, the character as a single flat white silhouette with ink outlines on transparent, for iOS tinted icons. 1024×1024 each.
+Two versions of the same PlantFam app icon: (a) dark mode, the same character on a deep ink (#1B1B2F) background with the leaves slightly brighter; (b) monochrome/tinted, the character as a single flat white silhouette with ink outlines on transparent, for iOS tinted icons. 1024×1024 each.
 ```
 
 **1.3 Wordmark sticker**: `logo-sticker.png` (transparent)
 ```
-A sticker-style logo: a small leaf-green rounded square badge holding a single ink leaf icon, next to the word "Rootline" in a chunky rounded display font (like Fredoka Bold), ink colour. Thick white sticker border around the whole lockup, then a thin ink outline. Transparent background, 2000×800.
+A sticker-style logo: a small leaf-green rounded square badge holding a single ink leaf icon, next to the word "PlantFam" in a chunky rounded display font (like Fredoka Bold), ink colour. Thick white sticker border around the whole lockup, then a thin ink outline. Transparent background, 2000×800.
 ```
 
 **1.4 Splash screen**: `splash-2048.png` (transparent PNG; the app supplies the green background)
@@ -126,7 +126,7 @@ Three plant buddies tilted like stickers on a fridge: a happy pothos (blue pot) 
 
 **3.2 Climate set**: `season-harmattan.png`, `season-rains.png`, `season-winter.png`, `season-summer.png` (transparent, 800×800 each)
 ```
-Four small square spot illustrations in the Rootline style, one per image: (1) Harmattan: a hazy sun with dusty wind swirls and a slightly thirsty pot plant; (2) Rainy season: a cheerful raincloud with drops over a happy snoozing pot plant; (3) Temperate winter: a window with snowflakes and a snoozing plant on the sill beside a radiator; (4) Summer: a big smiling sun and a happy plant wearing tiny sunglasses. Transparent, 800×800 each, matching outline weight.
+Four small square spot illustrations in the PlantFam style, one per image: (1) Harmattan: a hazy sun with dusty wind swirls and a slightly thirsty pot plant; (2) Rainy season: a cheerful raincloud with drops over a happy snoozing pot plant; (3) Temperate winter: a window with snowflakes and a snoozing plant on the sill beside a radiator; (4) Summer: a big smiling sun and a happy plant wearing tiny sunglasses. Transparent, 800×800 each, matching outline weight.
 ```
 
 **3.3 What-do-you-grow tiles**: `grow-houseplants.png`, `grow-edibles.png`, `grow-cuttings.png`
@@ -200,7 +200,7 @@ Each badge: a **circle medal** with a thick ink outline, a solid fill colour, a 
 
 Prompt template:
 ```
-A round achievement badge in the Rootline sticker style: solid {COLOUR} fill, a white inner ring, a thick ink outline and a hard drop shadow straight down. In the centre: {EMBLEM}. No text. Transparent background, 600×600. Then a second image: the locked version of the same badge, with a light grey fill, dashed outline and grey emblem.
+A round achievement badge in the PlantFam sticker style: solid {COLOUR} fill, a white inner ring, a thick ink outline and a hard drop shadow straight down. In the centre: {EMBLEM}. No text. Transparent background, 600×600. Then a second image: the locked version of the same badge, with a light grey fill, dashed outline and grey emblem.
 ```
 
 | File | Colour | Emblem |
@@ -224,7 +224,7 @@ A round achievement badge in the Rootline sticker style: solid {COLOUR} fill, a 
 
 **7.1 Family tree card background**: `share-tree-bg.png` (1080×1920, story format)
 ```
-A vertical 1080×1920 shareable card background in the Rootline style: a butter-yellow (#FFF1B8) background with a subtle pattern of tiny leaves and dots, a large empty white rounded card area in the middle (for the app to draw the family tree), a leaf-green ribbon banner at the top (left empty for text), and confetti at the corners. No text.
+A vertical 1080×1920 shareable card background in the PlantFam style: a butter-yellow (#FFF1B8) background with a subtle pattern of tiny leaves and dots, a large empty white rounded card area in the middle (for the app to draw the family tree), a leaf-green ribbon banner at the top (left empty for text), and confetti at the corners. No text.
 ```
 
 **7.2 Harvest recap card**: `share-harvest-bg.png` (1080×1920)
@@ -253,7 +253,7 @@ A tightly cropped head-and-shoulders view of the pothos buddy's pot face (thirst
 
 **8.2 Home-screen widget art**: `widget-small.png`, `widget-medium.png`
 ```
-Two widget backgrounds in the Rootline style: (a) small square 600×600, a butter-yellow tile with a happy monstera buddy in the bottom-right corner, leaving the top-left empty for a number; (b) medium 1200×600, a mint tile with three tiny buddies along the bottom edge and empty space above for text. Thick ink outline around the tile edge, rounded corners.
+Two widget backgrounds in the PlantFam style: (a) small square 600×600, a butter-yellow tile with a happy monstera buddy in the bottom-right corner, leaving the top-left empty for a number; (b) medium 1200×600, a mint tile with three tiny buddies along the bottom edge and empty space above for text. Thick ink outline around the tile edge, rounded corners.
 ```
 
 ---
@@ -262,7 +262,7 @@ Two widget backgrounds in the Rootline style: (a) small square 600×600, a butte
 
 **9.1 Screenshot backgrounds**: `store-bg-1..5.png` (1290×2796, iPhone 6.7")
 ```
-Five vertical 1290×2796 App Store screenshot backgrounds in the Rootline style, one per colour: leaf green, sun yellow, coral, sky blue, grape. Each has a big empty area in the upper third for a headline, a centred empty rounded phone-shaped space (for a screenshot) with a thick ink outline and a hard shadow, and 2–3 plant buddies peeking from behind the phone edges with different moods. Confetti accents. No text.
+Five vertical 1290×2796 App Store screenshot backgrounds in the PlantFam style, one per colour: leaf green, sun yellow, coral, sky blue, grape. Each has a big empty area in the upper third for a headline, a centred empty rounded phone-shaped space (for a screenshot) with a thick ink outline and a hard shadow, and 2–3 plant buddies peeking from behind the phone edges with different moods. Confetti accents. No text.
 ```
 
 Suggested headlines (added in Figma/Canva, not in the image):

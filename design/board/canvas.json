@@ -4,7 +4,7 @@
     "v": 1,
     "at": "2026-10-13T12:00:00Z"
   },
-  "title": "Rootline — Plant App Design Board",
+  "title": "PlantFam — Plant App Design Board",
   "launch": {
     "view": "canvas"
   },
@@ -142,7 +142,7 @@
     "screens": {
       "x": 0,
       "y": -300,
-      "text": "Rootline — onboarding & daily loop",
+      "text": "PlantFam — onboarding & daily loop",
       "kind": "title1",
       "maxW": 2740
     },
@@ -181,7 +181,7 @@
     "row2": {
       "x": 0,
       "y": 944,
-      "text": "Rootline — collection, edibles & engagement",
+      "text": "PlantFam — collection, edibles & engagement",
       "kind": "title1",
       "maxW": 2270
     },
@@ -212,7 +212,7 @@
     "system": {
       "x": 0,
       "y": 2188,
-      "text": "Rootline — system & components",
+      "text": "PlantFam — system & components",
       "kind": "title1",
       "maxW": 1480
     },

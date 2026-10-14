@@ -1,8 +1,8 @@
-# Rootline: product brief
+# PlantFam: product brief
 
 **Owner:** Claude (product + design + build), with the founder as decision-maker on taste, brand and launch.
 **Status:** Research and mockup done. **Paused before the app build**, waiting for founder sign-off.
-**Board:** https://claude.ai/artifact/31tneAVDS8aSNWvdv32Dsy · Screens: `design/screens/` · Research: `docs/research/`
+**Board:** https://claude.ai/artifact/31tneAVDS8aSNWvdv32Dsy · Formerly codenamed "Rootline" · Screens: `design/screens/` · Research: `docs/research/`
 
 ---
 
@@ -13,14 +13,14 @@ A playful plant-care app where plants have moods, care is a **soil check** rathe
 ## Why this, why now
 
 - **The market charges $30–48/yr for reminders and photo ID** (Planta, PictureThis, Greg). The loudest complaints are paywalls that auto-charge after a trial, confidently wrong IDs, and fixed schedules that overwater.
-- **Overwatering is the main killer.** University extension guidance (Illinois, RHS, UConn) says to water "when they need it and not according to the calendar". Most apps still nag on a calendar. Rootline asks you to check the soil and learns from the answer.
+- **Overwatering is the main killer.** University extension guidance (Illinois, RHS, UConn) says to water "when they need it and not according to the calendar". Most apps still nag on a calendar. PlantFam asks you to check the soil and learns from the answer.
 - **Lineage and harvests sit in indie corners.** No polished app combines mainstream care, a parent→cutting family tree with provenance, and sow-to-harvest tracking for edibles. Collectors today use Notion templates.
 - **Persona zero is the founder.** A data analyst and indie builder in **Seattle**: a houseplant collector, pepper/tomato/spring-onion grower, vinyl and LEGO collector, gamer. She lives the cross-over between care, collecting and growing.
 
 ## Positioning
 
-> **Rootline rewards judgement, not watering.**
-> Other apps tell you when to water. Rootline teaches you when *not* to, remembers where every cutting came from, and celebrates your first harvest.
+> **PlantFam rewards judgement, not watering.**
+> Other apps tell you when to water. PlantFam teaches you when *not* to, remembers where every cutting came from, and celebrates your first harvest.
 
 ## Design principles (validated by research)
 
@@ -69,7 +69,7 @@ A playful plant-care app where plants have moods, care is a **soil check** rathe
   - Heat → daily checks and "keep moisture even" (blossom-end rot).
   - First fruit → high-potash feed every 10–14 days.
   - Nights >24°C or days >32–35°C → flower-drop alert and a hand-pollination prompt.
-- Multiplier magnitudes are **not established** in the literature. They start conservative and get calibrated from Rootline's own anonymised check data. That data is itself a moat for a data-analyst founder.
+- Multiplier magnitudes are **not established** in the literature. They start conservative and get calibrated from PlantFam's own anonymised check data. That data is itself a moat for a data-analyst founder.
 
 ## Soil types (substrate) in the engine
 
@@ -133,7 +133,7 @@ Reuse the founder's proven VinylRecordTracker stack: **Expo (SDK 54) + Expo Rout
 
 | Risk | Severity | Plan |
 |---|---|---|
-| **Name clash: "Rootling: Plant Propagation"** is already on the iOS App Store, in the same niche | High | Decide the name before building (see options below). Run trademark searches (USPTO/EUIPO/Ghana). |
+| **Name: PlantFam** is slangy ("plant fam"), which can make a trademark harder | Medium | No app or company called PlantFam found (Oct 2026 web search). Run USPTO/EUIPO searches and check domains before the store listing. Fallback: **Leafkin**. |
 | Rewarding the wrong behaviour | High | Check-based rules above |
 | Distribution in a crowded category | High | Founder's communities (plants, vinyl, LEGO, sneakers) and shareable family-tree and harvest cards |
 | ASPCA toxicity reuse | High | Own wording, link out, legal review |
@@ -141,11 +141,11 @@ Reuse the founder's proven VinylRecordTracker stack: **Expo (SDK 54) + Expo Rout
 | Uncalibrated tropical logic | Medium | Accra beta, calibrate from check data |
 | Incumbent catch-up (Planta added propagation; Pothy pre-launch) | Medium | Ship fast; win on emotional design and the houseplant + edible combination |
 
-**Name options if we move off Rootline:** Sproutly-style names are crowded. Distinct options to search: **Plant Round**, **Leaflings**, **Cuttings & Co**, **Potpals**, **Rootstory**. My pick is to keep Rootline only if a trademark search is clean, otherwise **Rootstory** (keeps "roots", tells the family-tree story).
+**Naming decision (Oct 2026):** renamed from "Rootline" to **PlantFam** because "Rootling: Plant Propagation" already exists in the same niche, and because the name should cover *all* plants (houseplants, edibles, cuttings), not only propagation. The family-tree feature is called **Offshoots**. Rejected as taken or crowded: Sprig, Plantdex, Plantfolk, Leafy, Jungle-*, Potpals (too close to PlantPal). Fallback: Leafkin.
 
 ## Open decisions for the founder
 
-1. **Name:** keep Rootline or switch? *(blocking before store listing, not before the build)*
+1. ~~Name~~ **PlantFam** (decided). Trademark search before the store listing.
 2. ~~Where are you growing now?~~ **Seattle**, now the default profile (see above).
 3. **Business model:** free core + lifetime unlock, or free core + annual?
-4. **Repo:** `dzidziquist/rootline` needs to be created by you (my GitHub access can't create repos).
+4. **Repo:** `dzidziquist/plantfam` needs to be created by you (my GitHub access can't create repos).
