@@ -64,6 +64,8 @@ export interface Species {
   /** Our own wording; always link out to ASPCA for detail. */
   petToxic: boolean;
   edible: boolean;
+  /** Pot colour in the species illustration; new plants default to it. */
+  artPot: PotColor;
 }
 
 /** One individual plant the user owns. */

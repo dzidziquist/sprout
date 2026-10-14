@@ -151,7 +151,7 @@ export const usePlantStore = create<PlantState>()(
         if (get().plants.length) return;
         const add = get().addPlant;
         const daysAgo = (d: number) => new Date(now.getTime() - d * 86400000).toISOString();
-        const mother = add({ name: 'Kitchen Queen', speciesId: 'pothos', potColor: 'yellow', soil: 'potting_mix', potMaterial: 'plastic', potDiameterCm: 18, light: 'medium', placement: 'indoor', room: 'Kitchen', origin: 'bought', acquiredAt: daysAgo(900) }, now);
+        const mother = add({ name: 'Kitchen Queen', speciesId: 'pothos', potColor: 'blue', soil: 'potting_mix', potMaterial: 'plastic', potDiameterCm: 18, light: 'medium', placement: 'indoor', room: 'Kitchen', origin: 'bought', acquiredAt: daysAgo(900) }, now);
         const queenie = add({ name: 'Queenie', speciesId: 'pothos', potColor: 'blue', soil: 'chunky_aroid', potMaterial: 'plastic', potDiameterCm: 15, light: 'bright', placement: 'indoor', room: 'Living room', origin: 'cutting', parentId: mother.id, acquiredAt: daysAgo(210) }, now);
         add({ name: 'Big Fig', speciesId: 'fig', potColor: 'coral', soil: 'potting_mix', potMaterial: 'glazed', potDiameterCm: 25, light: 'bright', placement: 'indoor', room: 'Bedroom', origin: 'bought', acquiredAt: daysAgo(300) }, now);
         add({ name: 'Cal', speciesId: 'calathea', potColor: 'grape', soil: 'potting_mix', potMaterial: 'plastic', potDiameterCm: 15, light: 'medium', placement: 'indoor', room: 'Bathroom', origin: 'gift', acquiredAt: daysAgo(120) }, now);

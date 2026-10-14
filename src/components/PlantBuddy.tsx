@@ -1,12 +1,14 @@
+import { Image } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
+import { BUDDY_IMAGES } from '../data/buddyImages';
 import { colors, potHex } from '../theme/tokens';
 import type { Mood, PotColor, SpeciesId } from '../types';
 import type { FaceStyle } from '../store/plantStore';
 
 /*
- * Code-drawn plant buddy, ported from design/board/PlantArt.dc.html.
- * Used at small and medium sizes (cards, lists, family tree) because it can change
- * pot colour and mood live. Large hero illustrations come from the ChatGPT asset set.
+ * Plant buddies are the illustrated characters from the PlantFam asset set (assets/buddies),
+ * one image per species and mood. The code-drawn version below (ported from
+ * design/board/PlantArt.dc.html) is kept for the "faces off" setting, which needs plain plants.
  */
 
 type Art = 'monstera' | 'pothos' | 'fig' | 'calathea' | 'snake' | 'hoya' | 'tomato' | 'pepper' | 'onion' | 'cutting';
@@ -272,6 +274,19 @@ export interface PlantBuddyProps {
 }
 
 export function PlantBuddy({ speciesId, mood = 'happy', pot = 'yellow', size = 96, bg = colors.white, faces = 'full' }: PlantBuddyProps) {
+  if (faces !== 'off') {
+    // "Gentle" never shows the worried face.
+    const shown: Mood = faces === 'gentle' && mood === 'thirsty' ? 'happy' : mood;
+    return (
+      <Image
+        source={BUDDY_IMAGES[speciesId][shown]}
+        style={{ width: size, height: size }}
+        resizeMode="contain"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      />
+    );
+  }
   const art: Art = speciesId === 'cutting' ? 'cutting' : ART_FOR[speciesId];
   const jar = art === 'cutting';
   return (
