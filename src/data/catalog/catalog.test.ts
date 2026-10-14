@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HOUSEPLANTS } from './houseplants';
 import { EDIBLE_PLANTS } from './edibles';
-import { EDIBLES } from '../edibles';
+import { CALENDAR, EDIBLES } from '../edibles';
 import { OTHER, SPECIES_LIST, searchSpecies, speciesOf } from '../species';
 
 const ART = ['monstera', 'pothos', 'fig', 'calathea', 'snake', 'hoya', 'peace-lily', 'zz', 'string-of-pearls', 'pink-princess', 'aloe', 'spider', 'rubber', 'bird-of-paradise', 'basil', 'mint', 'tomato', 'pepper', 'spring-onion'];
@@ -44,6 +44,39 @@ describe('catalogue data', () => {
 
   it('gives every edible a grow guide', () => {
     for (const s of EDIBLE_PLANTS) expect(EDIBLES[s.id], s.id).toBeDefined();
+  });
+
+  it('has the edibles whose illustrations are being commissioned', () => {
+    const ids = new Set(EDIBLE_PLANTS.map((s) => s.id));
+    for (const id of ['lettuce', 'kale', 'bush-bean', 'pea', 'cucumber', 'zucchini', 'strawberry', 'blueberry', 'rosemary', 'parsley', 'cilantro', 'chives', 'garlic', 'radish', 'carrot', 'meyer-lemon']) {
+      expect(ids.has(id), id).toBe(true);
+    }
+    expect(EDIBLE_PLANTS.length).toBeGreaterThanOrEqual(45);
+  });
+
+  it('keeps grow-guide labels short enough for the stage track', () => {
+    for (const g of Object.values(EDIBLES)) {
+      expect(g.stages.length, g.id).toBeGreaterThan(0);
+      for (const s of g.stages) expect(g.info[s]?.label.length ?? 99, `${g.id}/${s}`).toBeLessThanOrEqual(7);
+    }
+  });
+
+  it('keeps calendar cards short and every edible on the Seattle calendar', () => {
+    for (const t of [...CALENDAR.seattle, ...CALENDAR.accra]) {
+      expect(t.title.length, t.id).toBeLessThanOrEqual(24);
+      expect(t.body.length, t.id).toBeLessThanOrEqual(110);
+    }
+    for (const s of EDIBLE_PLANTS) expect(CALENDAR.seattle.some((t) => t.species.includes(s.id)), s.id).toBe(true);
+  });
+
+  it('flags alliums, nightshade foliage and ASPCA-listed herbs as pet-toxic', () => {
+    const toxic = new Map(EDIBLE_PLANTS.map((s) => [s.id, s.petToxic]));
+    for (const id of ['garlic', 'chives', 'leek', 'spring-onion', 'tomato', 'eggplant', 'parsley', 'oregano', 'lavender', 'lemongrass', 'bay-laurel', 'meyer-lemon', 'common-fig', 'kontomire']) {
+      expect(toxic.get(id), id).toBe(true);
+    }
+    for (const id of ['lettuce', 'cucumber', 'zucchini', 'carrot', 'strawberry', 'blueberry', 'rosemary', 'thyme', 'sage', 'cilantro', 'basil']) {
+      expect(toxic.get(id), id).toBe(false);
+    }
   });
 });
 

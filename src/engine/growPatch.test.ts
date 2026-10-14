@@ -254,6 +254,89 @@ describe('weatherAlerts', () => {
   });
 });
 
+describe('the wider edible patch', () => {
+  it('October in Seattle: plant garlic once the window opens, lift it in July', () => {
+    const garlic = plant({ name: 'Garlie', speciesId: 'garlic', placement: 'outdoor', stage: 'seed' });
+    const oct20 = tasksFor([garlic], 'seattle', new Date(2026, 9, 20));
+    const plantIt = oct20.find((t) => t.id === 'sea-plant-garlic')!;
+    expect(plantIt.plantIds).toEqual([garlic.id]);
+    expect(plantIt.thisWeek).toBe(true);
+    // Early October: on the month list, not yet this week.
+    expect(tasksFor([garlic], 'seattle', new Date(2026, 9, 2)).find((t) => t.id === 'sea-plant-garlic')!.thisWeek).toBe(false);
+    expect(tasksFor([garlic], 'seattle', new Date(2026, 6, 5)).map((t) => t.id)).toContain('sea-garlic-lift');
+    expect(tasksFor([garlic], 'seattle', new Date(2026, 6, 5)).map((t) => t.id)).not.toContain('sea-plant-garlic');
+  });
+
+  it('lettuce gets a succession-sowing nudge every month from March to September', () => {
+    const lettuce = plant({ speciesId: 'lettuce', placement: 'covered_outdoor', stage: 'harvesting' });
+    for (let m = 2; m <= 8; m++) expect(tasksFor([lettuce], 'seattle', new Date(2026, m, 1)).map((t) => t.id), `month ${m}`).toContain('sea-lettuce-succession');
+    expect(tasksFor([lettuce], 'seattle', new Date(2026, 10, 1)).map((t) => t.id)).not.toContain('sea-lettuce-succession');
+    expect(nextStage('lettuce', 'harvesting')).toBe('resting');
+  });
+
+  it('slug patrol covers soft crops in spring and autumn, not tomatoes', () => {
+    const lettuce = plant({ speciesId: 'lettuce', stage: 'growing' });
+    const slugs = tasksFor([lettuce, plant({ stage: 'growing' })], 'seattle', new Date(2026, 3, 10)).find((t) => t.id === 'sea-slugs')!;
+    expect(slugs.plantIds).toEqual([lettuce.id]);
+    expect(tasksFor([lettuce], 'seattle', new Date(2026, 6, 10)).map((t) => t.id)).not.toContain('sea-slugs');
+  });
+
+  it('beans in flower get cold-night and heat alerts from their own limits', () => {
+    const bean = plant({ name: 'Beanie', speciesId: 'bush-bean', stage: 'flowering' });
+    const cold = weatherAlerts([bean], [day('d1', 8, 17)]);
+    expect(cold.map((a) => a.kind)).toEqual(['cold-set']);
+    expect(cold[0].body).toContain('Beanie');
+    // 12°C nights are fine for beans but too cold for a tomato.
+    const tommy = plant({ name: 'Tommy', stage: 'flowering' });
+    expect(weatherAlerts([bean, tommy], [day('d1', 12, 22)])[0].plantIds).toEqual([tommy.id]);
+    expect(weatherAlerts([bean], [day('d1', 18, 33)])[0].kind).toBe('heat-set');
+  });
+
+  it('a strawberry with only a heat limit gets heat alerts but no cold-set alert', () => {
+    const berry = plant({ speciesId: 'strawberry', stage: 'flowering' });
+    expect(weatherAlerts([berry], [day('d1', 5, 18)])).toEqual([]);
+    expect(weatherAlerts([berry], [day('d1', 15, 31)]).map((a) => a.kind)).toEqual(['heat-set']);
+  });
+
+  it('fruiting crops beyond tomato and pepper get the potash nudge; leafy crops do not', () => {
+    const cuke = plant({ speciesId: 'cucumber', stage: 'fruiting' });
+    const kale = plant({ speciesId: 'kale', stage: 'harvesting' });
+    const july = tasksFor([cuke, kale], 'seattle', new Date(2026, 6, 10));
+    expect(july.find((t) => t.id === 'stage-potash')!.plantIds).toEqual([cuke.id]);
+  });
+
+  it('squash-type flowers get a hand-pollination task, tomato-type a shake', () => {
+    const zuke = plant({ speciesId: 'zucchini', stage: 'flowering' });
+    const egg = plant({ speciesId: 'garden-egg', stage: 'flowering' });
+    const ids = tasksFor([zuke, egg], 'accra', new Date(2026, 1, 5));
+    expect(ids.find((t) => t.id === 'stage-hand-pollinate')!.plantIds).toEqual([zuke.id]);
+    expect(ids.find((t) => t.id === 'stage-pollinate')!.plantIds).toEqual([egg.id]);
+    // In Seattle's July the calendar already says it.
+    const july = tasksFor([zuke], 'seattle', new Date(2026, 6, 5)).map((t) => t.id);
+    expect(july).toContain('sea-pollinate-vines');
+    expect(july).not.toContain('stage-hand-pollinate');
+  });
+
+  it('feeding windows come from the guide: garlic in spring, blueberries before July', () => {
+    const garlic = plant({ speciesId: 'garlic', placement: 'outdoor', stage: 'growing' });
+    expect(edibleFeedingPaused(garlic, 'seattle', new Date(2026, 3, 20))).toBe(false);
+    expect(edibleFeedingPaused(garlic, 'seattle', new Date(2026, 5, 10))).toBe(true);
+    expect(feedingAdvice(garlic, 'seattle', new Date(2026, 5, 10))).toMatch(/winding down/);
+    expect(feedingAdvice(garlic, 'seattle', new Date(2026, 1, 10))).toMatch(/starts in March/);
+    const blue = plant({ speciesId: 'blueberry', stage: 'fruiting' });
+    expect(edibleFeedingPaused(blue, 'seattle', new Date(2026, 4, 10))).toBe(false);
+    expect(edibleFeedingPaused(blue, 'seattle', new Date(2026, 6, 10))).toBe(true);
+    // Indoors (or in Accra) the window doesn't apply.
+    expect(edibleFeedingPaused({ ...garlic, placement: 'indoor' }, 'seattle', new Date(2026, 5, 10))).toBe(false);
+    expect(edibleFeedingPaused(garlic, 'accra', new Date(2026, 5, 10))).toBe(false);
+  });
+
+  it('Accra rains bring kontomire planting', () => {
+    const koko = plant({ speciesId: 'kontomire', stage: 'seedling' });
+    expect(tasksFor([koko], 'accra', new Date(2026, 3, 5)).map((t) => t.id)).toContain('acc-plant-cocoyam');
+  });
+});
+
 describe('harvestStats', () => {
   const tommy = plant({ name: 'Tommy' });
   const scallie = plant({ name: 'Scallie', speciesId: 'spring-onion' });

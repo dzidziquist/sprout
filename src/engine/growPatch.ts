@@ -1,4 +1,4 @@
-import { CALENDAR, edibleGuide, type CalendarTask, type TaskKind, type TaskWindow } from '../data/edibles';
+import { CALENDAR, edibleGuide, type CalendarTask, type FeedWindow, type TaskKind, type TaskWindow } from '../data/edibles';
 import { isFeedingPaused } from './careEngine';
 import type { CareEvent, ClimateProfile, EdibleStage, Placement, Plant } from '../types';
 
@@ -32,27 +32,45 @@ export function daysInStage(plant: Pick<Plant, 'stageAt'>, now: Date): number | 
 }
 
 const OUTSIDE: Placement[] = ['outdoor', 'covered_outdoor'];
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function inFeedWindow(w: FeedWindow, date: Date): boolean {
+  const m = date.getMonth();
+  return m >= w.from && (m < w.to || (m === w.to && date.getDate() <= (w.toDay ?? 31)));
+}
+
+/** The Seattle outdoor feeding window for this plant, when it has one and lives outside. */
+function outdoorFeedWindow(plant: Pick<Plant, 'placement' | 'speciesId'>, climate: ClimateProfile): FeedWindow | undefined {
+  if (climate !== 'seattle' || !OUTSIDE.includes(plant.placement)) return undefined;
+  return edibleGuide(plant.speciesId)?.seattleOutdoorFeed;
+}
 
 /**
- * Feeding for edibles. Seattle balcony edibles are fed May to mid-August, then left to ripen
- * (WSU / soil_and_seattle notes). Indoors they follow the houseplant pause. Resting plants never eat.
+ * Feeding for edibles. Seattle balcony edibles with a feeding window (fruiting crops May to mid-August,
+ * garlic in spring, blueberries spring only...) are fed only inside it (WSU / soil_and_seattle notes).
+ * Everything else, and anything indoors, follows the houseplant pause. Resting plants never eat.
  */
 export function edibleFeedingPaused(plant: Pick<Plant, 'placement' | 'stage' | 'speciesId'>, climate: ClimateProfile, date: Date): boolean {
   if (plant.stage === 'resting' || plant.stage === 'seed') return true;
-  if (climate === 'seattle' && OUTSIDE.includes(plant.placement) && (plant.speciesId === 'tomato' || plant.speciesId === 'pepper')) {
-    const m = date.getMonth();
-    const d = date.getDate();
-    return !(m >= 4 && (m < 7 || (m === 7 && d <= 15)));
-  }
+  const w = outdoorFeedWindow(plant, climate);
+  if (w) return !inFeedWindow(w, date);
   return isFeedingPaused(climate, plant.placement, date);
 }
 
 /** What to feed right now, in a few words. */
 export function feedingAdvice(plant: Plant, climate: ClimateProfile, date: Date): string {
-  const info = plant.stage ? edibleGuide(plant.speciesId)?.info[plant.stage] : undefined;
+  const guide = edibleGuide(plant.speciesId);
+  const info = plant.stage ? guide?.info[plant.stage] : undefined;
   if (!info) return 'Pick a stage for feeding tips';
   if (plant.stage !== 'seed' && plant.stage !== 'resting' && edibleFeedingPaused(plant, climate, date)) {
-    return climate === 'seattle' && OUTSIDE.includes(plant.placement) ? 'No feed now: ripening season' : 'Feeding paused for winter';
+    const w = outdoorFeedWindow(plant, climate);
+    if (!w) return 'Feeding paused for winter';
+    const m = date.getMonth();
+    // After the window and before November: the plant is finishing its season.
+    if (m >= w.from && m < 10) return guide?.fruitingFeed ? 'No feed now: ripening season' : 'No feed now: winding down';
+    // Before the window in spring: say when it starts.
+    if (m < w.from && m >= 1) return `No feed yet: starts in ${MONTH_NAMES[w.from]}`;
+    return 'Feeding paused for winter';
   }
   return info.feed;
 }
@@ -113,14 +131,22 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, date: Date): 
     out.push({ id: task.id, kind: task.kind, title: task.title, body: task.body, plantIds, thisWeek: overlaps(task, dayStart, weekEnd, y) });
   }
 
-  // Stage triggers.
-  const swelling = mine.filter((p) => (p.stage === 'fruiting' || p.stage === 'harvesting') && (p.speciesId === 'tomato' || p.speciesId === 'pepper') && !edibleFeedingPaused(p, climate, date));
+  // Stage triggers, driven by guide flags.
+  const guide = (p: Plant) => edibleGuide(p.speciesId);
+  const swelling = mine.filter((p) => (p.stage === 'fruiting' || p.stage === 'harvesting') && guide(p)?.fruitingFeed && !edibleFeedingPaused(p, climate, date));
   if (swelling.length) {
     out.push({ id: 'stage-potash', kind: 'feed', title: 'High-potash feed', body: 'Fruit is swelling: switch to a tomato feed every 10–14 days.', plantIds: swelling.map((p) => p.id), thisWeek: true });
   }
-  const flowering = mine.filter((p) => p.stage === 'flowering' && (p.speciesId === 'tomato' || p.speciesId === 'pepper'));
-  if (flowering.length && !out.some((t) => t.id === 'sea-pollinate')) {
-    out.push({ id: 'stage-pollinate', kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz open flowers at midday every 2–3 days to help them set.', plantIds: flowering.map((p) => p.id), thisWeek: true });
+  // Plants a calendar pollination task already covers this month don't need a second reminder.
+  const pollinated = new Set(out.filter((t) => t.id.includes('pollinate')).flatMap((t) => t.plantIds));
+  const flowering = (how: 'shake' | 'brush') => mine.filter((p) => p.stage === 'flowering' && guide(p)?.pollinate === how && !pollinated.has(p.id));
+  const shake = flowering('shake');
+  if (shake.length) {
+    out.push({ id: 'stage-pollinate', kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz open flowers at midday every 2–3 days to help them set.', plantIds: shake.map((p) => p.id), thisWeek: true });
+  }
+  const brush = flowering('brush');
+  if (brush.length) {
+    out.push({ id: 'stage-hand-pollinate', kind: 'care', title: 'Hand-pollinate', body: 'In the morning, dab pollen from a male flower into the female (the one with a tiny fruit).', plantIds: brush.map((p) => p.id), thisWeek: true });
   }
   const basilFlowers = mine.filter((p) => p.speciesId === 'basil' && p.stage === 'flowering');
   if (basilFlowers.length && !out.some((t) => t.id === 'sea-basil-pinch' || t.id === 'acc-basil-pinch')) {
@@ -191,10 +217,13 @@ export function weatherAlerts(plants: Plant[], forecast: DailyForecast[] | null 
   }));
 
   // Plants setting fruit, with their temperature limits.
-  const setters = outside.filter((p) => p.stage && SETTING.includes(p.stage) && edibleGuide(p.speciesId)?.setNightMinC !== undefined);
+  const setters = outside.filter((p) => {
+    const g = edibleGuide(p.speciesId);
+    return p.stage && SETTING.includes(p.stage) && (g?.setNightMinC !== undefined || g?.setDayMaxC !== undefined);
+  });
   const nightMin = (p: Plant) => edibleGuide(p.speciesId)?.setNightMinC ?? -Infinity;
   const dayMax = (p: Plant) => edibleGuide(p.speciesId)?.setDayMaxC ?? Infinity;
-  // Cold nights: tomatoes under 13°C, peppers under 15.5°C (frost days are covered above).
+  // Cold nights: tomatoes under 13°C, peppers under 15.5°C, beans and cucurbits under 10°C (frost days are covered above).
   const coldNight = (d: DailyForecast, p: Plant) => d.minC > FROST_C && d.minC < nightMin(p);
   const coldHit = setters.filter((p) => forecast.some((d) => coldNight(d, p)));
   const coldDays = forecast.filter((d) => coldHit.some((p) => coldNight(d, p)));
