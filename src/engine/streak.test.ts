@@ -64,9 +64,10 @@ describe('streak', () => {
     const p = plant('a', { nextCheckAt: '2026-06-29T09:00:00' });
     const events = ['2026-06-08', '2026-06-15', '2026-06-22'].map((d) => check('a', `${d}T09:00:00`));
     const s = computeStreak({ plants: [p], events, climate: 'seattle', now: new Date('2026-06-30T12:00:00') });
-    expect(s.weeks.map((w) => w.status)).toEqual(['kept', 'kept', 'kept', 'kept']);
-    expect(s.current).toBe(5);
-    expect(s.best).toBe(5);
+    // Week of Jun 1 had nothing checked: quiet, neither counts nor breaks. This week has no check yet.
+    expect(s.weeks.map((w) => w.status)).toEqual(['quiet', 'kept', 'kept', 'kept']);
+    expect(s.current).toBe(3);
+    expect(s.best).toBe(3);
     expect(s.thisWeek).toBe('clean');
     expect(s.freezesLeft).toBe(2);
   });
@@ -79,19 +80,26 @@ describe('streak', () => {
       check('a', '2026-06-23T09:00:00', 'dry'), // due Jun 18 → lapse Jun 20–23, also week of Jun 22
     ];
     const s = computeStreak({ plants: [p], events, climate: 'seattle', now: new Date('2026-07-01T12:00:00') });
-    expect(s.weeks.map((w) => w.status)).toEqual(['kept', 'repaired', 'repaired', 'missed']);
-    expect(s.best).toBe(3);
-    expect(s.current).toBe(1);
+    expect(s.weeks.map((w) => w.status)).toEqual(['quiet', 'repaired', 'repaired', 'missed']);
+    expect(s.best).toBe(2);
+    expect(s.current).toBe(0);
     // July brings fresh freezes.
     expect(s.freezesLeft).toBe(2);
   });
 
   it('lets a freeze cover the current week, and never breaks the run mid-week', () => {
     const p = plant('a', { nextCheckAt: '2026-06-08T09:00:00' });
-    const covered = computeStreak({ plants: [p], events: [], climate: 'seattle', now: new Date('2026-06-11T12:00:00') });
+    const covered = computeStreak({ plants: [p], events: [check('a', '2026-06-02T09:00:00', 'damp')], climate: 'seattle', now: new Date('2026-06-11T12:00:00') });
     expect(covered.thisWeek).toBe('covered');
-    expect(covered.current).toBe(2);
+    expect(covered.current).toBe(1);
     expect(covered.freezesLeft).toBe(1);
+  });
+
+  it('is never handed out before the first soil check', () => {
+    const p = plant('a', { nextCheckAt: '2026-07-30T09:00:00' });
+    const s = computeStreak({ plants: [p], events: [], climate: 'seattle', now: new Date('2026-06-30T12:00:00') });
+    expect(s.current).toBe(0);
+    expect(s.best).toBe(0);
   });
 
   it('is empty with no plants', () => {

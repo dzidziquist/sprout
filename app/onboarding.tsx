@@ -137,7 +137,7 @@ export default function Onboarding() {
       <Title>One plant round a day</Title>
       <Sticker bg={c.butter} drop={0} style={{ padding: 14, gap: 4 }}>
         <Text style={styles.choiceTitle}>Plant round 🌱</Text>
-        <Text style={styles.choiceSub}>Queenie and Cal would love a soil check. 2 mins, tops.</Text>
+        <Text style={styles.choiceSub}>Your plants would love a soil check. 2 mins, tops.</Text>
       </Sticker>
       <Label muted>Just one reminder, only on days something needs you. Never "you forgot me".</Label>
       <View style={styles.row3}>

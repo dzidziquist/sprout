@@ -8,11 +8,11 @@ import type { StreakResult } from '@/engine/streak';
 const SPROUT = 'M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z';
 const FREEZE = 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5';
 
-const COPY: Record<StreakResult['thisWeek'], string> = {
-  clean: 'Everyone got checked in time this week.',
-  covered: 'A free freeze has this week covered. No stress.',
-  open: 'New week, fresh sprout. Check in whenever you can.',
-};
+function copyFor(s: StreakResult): string {
+  if (s.thisWeek === 'covered') return 'A free pass has this week covered. No stress.';
+  if (s.thisWeek === 'open') return 'New week, fresh sprout. Check in whenever you can.';
+  return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next soil check adds this week.';
+}
 
 /** Weekly streak, drawn as a growing sprout. No flames, no guilt. */
 export function StreakCard({ streak }: { streak: StreakResult }) {
@@ -29,15 +29,15 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         </View>
         <View style={{ flex: 1 }}>
           <Text style={[styles.big, { color: c.ink }]} accessibilityRole="header">
-            {streak.current} {weeks} growing
+            {streak.started ? `${streak.current} ${weeks} growing` : 'Your streak starts here'}
           </Text>
-          <Text style={[styles.sub, { color: c.ink }]}>{COPY[streak.thisWeek]}</Text>
+          <Text style={[styles.sub, { color: c.ink }]}>{streak.started ? copyFor(streak) : 'Do your first soil check and the first sprout appears.'}</Text>
         </View>
       </View>
 
       <View style={styles.weeks} accessibilityLabel={`Last ${recent.length + 1} weeks`}>
         {recent.map((w) => {
-          const bg = w.status === 'kept' ? c.leaf : w.status === 'repaired' ? c.sky : c.card;
+          const bg = w.status === 'kept' ? c.leaf : w.status === 'repaired' ? c.sky : w.status === 'quiet' ? c.cloud : c.card;
           return (
             <View key={w.start} style={[styles.week, { backgroundColor: bg, borderColor: c.line }]}>
               {w.status === 'repaired' && (
@@ -46,17 +46,17 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
             </View>
           );
         })}
-        <View style={[styles.week, styles.now, { borderColor: c.line, backgroundColor: streak.thisWeek === 'open' ? c.card : streak.thisWeek === 'covered' ? c.sky : c.leafLight }]}>
-          <Text style={[styles.nowText, { color: streak.thisWeek === 'open' ? c.ink : c.onBright }]}>now</Text>
+        <View style={[styles.week, styles.now, { borderColor: c.line, backgroundColor: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.card : streak.thisWeek === 'covered' ? c.sky : c.leafLight }]}>
+          <Text style={[styles.nowText, { color: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.ink : c.onBright }]}>now</Text>
         </View>
       </View>
 
       <View style={styles.footer}>
         <Text style={[styles.meta, { color: c.ink }]}>Best: {streak.best} {streak.best === 1 ? 'week' : 'weeks'}</Text>
-        <View style={styles.freezes} accessibilityLabel={`${streak.freezesLeft} free freezes left this month`}>
+        <View style={styles.freezes} accessibilityLabel={`${streak.freezesLeft} free passes left this month`}>
           <Svg width={16} height={16} viewBox="0 0 24 24"><Path d={FREEZE} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" fill="none" /></Svg>
           <Text style={[styles.meta, { color: c.ink }]}>
-            {streak.freezesLeft} free {streak.freezesLeft === 1 ? 'freeze' : 'freezes'} left this month
+            {streak.freezesLeft} free {streak.freezesLeft === 1 ? 'pass' : 'passes'} left this month
           </Text>
         </View>
       </View>

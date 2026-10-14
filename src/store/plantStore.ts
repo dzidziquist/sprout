@@ -24,6 +24,8 @@ export interface Profile {
   coachDismissed: boolean;
   /** When the user last saved a backup file. */
   lastBackupAt?: string;
+  /** Temperatures and rain: 'auto' follows the climate (Seattle °F, Accra °C). */
+  units: 'auto' | 'imperial' | 'metric';
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -36,6 +38,7 @@ export const DEFAULT_PROFILE: Profile = {
   plus: false,
   streakFreezes: 2,
   coachDismissed: false,
+  units: 'auto',
 };
 
 export type CareAction = 'water' | 'wet' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
@@ -251,7 +254,8 @@ export const usePlantStore = create<PlantState>()(
         const at = now.toISOString();
         set((s) => ({
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, regrowCount: (p.regrowCount ?? 0) + 1 } : p)),
-          events: [...s.events, { id: uid(), plantId, type: 'regrow', at }],
+          // A cut is a harvest too: it shows up in the basket and earns the first-harvest party.
+          events: [...s.events, { id: uid(), plantId, type: 'regrow', at }, { id: uid(), plantId, type: 'harvest', amount: 1, unit: 'bunch', at }],
         }));
       },
 

@@ -166,6 +166,21 @@ export default function MeScreen() {
         <Label muted>{profile.climate === 'seattle' ? 'Marine: dark wet winters, dry summers. Seasons and grow-patch tasks follow this.' : 'Tropical: harmattan and two rainy seasons. Seasons and grow-patch tasks follow this.'}</Label>
       </View>
 
+      <View style={{ gap: 8 }}>
+        <Label>Units</Label>
+        <Segmented
+          label="Units"
+          value={profile.units}
+          options={[
+            { id: 'auto' as const, label: 'Auto' },
+            { id: 'imperial' as const, label: '°F · in' },
+            { id: 'metric' as const, label: '°C · mm' },
+          ]}
+          onChange={(u) => setProfile({ units: u })}
+        />
+        <Label muted>{profile.units === 'auto' ? `Auto follows your climate: ${profile.climate === 'seattle' ? '°F and inches' : '°C and millimetres'}.` : 'Used for weather, alerts and growing tips.'}</Label>
+      </View>
+
       <DataCard />
 
       <Pressable accessibilityRole="button" onPress={() => router.push('/help')}>

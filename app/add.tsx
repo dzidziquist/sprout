@@ -1,3 +1,5 @@
+import { useUnits } from '@/hooks/useUnits';
+import { localizeTemps } from '@/lib/units';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -113,6 +115,22 @@ function Pill({ on, label, onPress, bg }: { on: boolean; label: string; onPress:
 }
 
 /** Care defaults a freshly picked species starts with. */
+/** A sensible first guess at the care type from the name someone typed. Leaning dry is the safer mistake. */
+export function guessGroup(name: string): SpeciesGroup {
+  const n = name.toLowerCase();
+  if (/(cact|succulent|string of|haworth|echever|sedum|crassul|agave|aloe|lithop|euphorb|jade|hoya|senecio|ceropeg|kalanch|peperomia)/.test(n)) return 'succulent';
+  if (/(fern|calathea|maranta|prayer|moss|carnivor|flytrap|pitcher|sundew|violet|fittonia|nerve|baby tear)/.test(n)) return 'moisture';
+  if (/(tomato|pepper|chil|bean|pea\b|lettuce|kale|herb|basil|squash|berry|onion|garlic|veg|fruit|lemon|lime|melon|cucumber|okra|yam|cassava)/.test(n)) return 'edible';
+  return 'tropical';
+}
+
+/** First suggested name for a species that nobody in the fam already has. */
+function freeName(id: SpeciesId, taken: string[]): string {
+  const used = new Set(taken.map((t) => t.toLowerCase()));
+  const pool = NAMES[id] ?? fallbackNames;
+  return pool.find((n) => !used.has(n.toLowerCase())) ?? `${pool[0]} ${taken.length + 1}`;
+}
+
 function defaultsFor(id: SpeciesId) {
   const sp = getSpecies(id);
   return { soil: sp.defaultSoil, light: sp.defaultLight, placement: (sp.edible ? 'covered_outdoor' : 'indoor') as Placement, name: (NAMES[id] ?? fallbackNames)[0] };
@@ -129,7 +147,8 @@ export default function AddPlantScreen() {
   const otherPreset = params.other ? OTHER.tropical.id : null;
   const preset = isSpeciesId(params.species) ? params.species : otherPreset;
   const presetDefaults = preset ? defaultsFor(preset) : null;
-  const { plants, addPlant } = usePlantStore();
+  const { plants, addPlant, profile } = usePlantStore();
+  const units = useUnits();
   const [speciesId, setSpeciesId] = useState<SpeciesId | null>(preset);
   const [query, setQuery] = useState('');
   const [nameIdx, setNameIdx] = useState(0);
@@ -153,19 +172,24 @@ export default function AddPlantScreen() {
 
   const results = useMemo(() => {
     const pool = category === 'all' ? SPECIES_LIST : SPECIES_LIST.filter((s) => s.category === category);
-    return searchSpecies(query, pool);
-  }, [query, category]);
+    const found = searchSpecies(query, pool);
+    if (query.trim()) return found;
+    // Browsing: what you told us you grow comes first.
+    const grows = (s: (typeof found)[number]) => (s.edible ? profile.grows.edibles : profile.grows.houseplants);
+    return [...found.filter(grows), ...found.filter((s) => !grows(s))];
+  }, [query, category, profile.grows]);
 
   const startOther = () => {
     haptics.tap();
-    const d = defaultsFor(OTHER.tropical.id);
-    setSpeciesId(OTHER.tropical.id);
+    const id = OTHER[guessGroup(query)].id;
+    const d = defaultsFor(id);
+    setSpeciesId(id);
     setCustomName(query.trim().replace(/^\w/, (ch) => ch.toUpperCase()));
     setSoil(d.soil);
     setLight(d.light);
     setPlacement(d.placement);
     setNameIdx(0);
-    setName(d.name);
+    setName(freeName(id, plants.map((p) => p.name)));
   };
 
   const setCareType = (group: SpeciesGroup) => {
@@ -185,7 +209,7 @@ export default function AddPlantScreen() {
     setLight(d.light);
     setPlacement(d.placement);
     setNameIdx(0);
-    setName(d.name);
+    setName(freeName(id, plants.map((p) => p.name)));
   };
 
   const inputStyle = [styles.search, { borderColor: c.line, color: c.ink, backgroundColor: c.card }];
@@ -196,6 +220,39 @@ export default function AddPlantScreen() {
     </GlassButton>
   );
 
+  // Plus members get photo ID first; for everyone else it waits below search, so the free path leads.
+  const identifyTile = (
+<Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Identify from a photo"
+      accessibilityHint={isPlus ? undefined : 'Part of PlantFam Plus'}
+      onPress={() => {
+        haptics.tap();
+        // Replace so confirming a match lands back on a single add screen.
+        router.replace('/identify');
+      }}
+      style={({ pressed }) => [styles.idTile, { backgroundColor: c.butter, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 4}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 3 }] }]}
+    >
+      <View style={[styles.idIcon, { backgroundColor: c.sun, borderColor: c.line }]}>
+        <Svg width={26} height={26} viewBox="0 0 24 24">
+          <Path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.3-2h5.2l1.3 2h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z" stroke={c.onBright} strokeWidth={2} strokeLinejoin="round" fill="none" />
+          <Path d="M12 9.2a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6z" stroke={c.onBright} strokeWidth={2} fill="none" />
+        </Svg>
+      </View>
+      <View style={{ flex: 1, gap: 2 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={[styles.idTitle, { color: c.ink }]}>Identify from a photo</Text>
+          {!isPlus && (
+            <View style={[styles.plusBadge, { backgroundColor: c.grape, borderColor: c.line }]}>
+              <Text style={[styles.plusBadgeText, { color: textOn(c.grape, c) }]}>Plus</Text>
+            </View>
+          )}
+        </View>
+        <Text style={[styles.idSub, { color: c.inkMuted }]}>Not sure who they are? Snap a leaf and we'll suggest a match.</Text>
+      </View>
+    </Pressable>
+  );
+
   if (!speciesId) {
     return (
       <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
@@ -203,35 +260,7 @@ export default function AddPlantScreen() {
           <Title style={{ flex: 1 }}>Who's joining the jungle?</Title>
           {close}
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Identify from a photo"
-          accessibilityHint={isPlus ? undefined : 'Part of PlantFam Plus'}
-          onPress={() => {
-            haptics.tap();
-            // Replace so confirming a match lands back on a single add screen.
-            router.replace('/identify');
-          }}
-          style={({ pressed }) => [styles.idTile, { backgroundColor: c.butter, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 4}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 3 }] }]}
-        >
-          <View style={[styles.idIcon, { backgroundColor: c.sun, borderColor: c.line }]}>
-            <Svg width={26} height={26} viewBox="0 0 24 24">
-              <Path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.3-2h5.2l1.3 2h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z" stroke={c.onBright} strokeWidth={2} strokeLinejoin="round" fill="none" />
-              <Path d="M12 9.2a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6z" stroke={c.onBright} strokeWidth={2} fill="none" />
-            </Svg>
-          </View>
-          <View style={{ flex: 1, gap: 2 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Text style={[styles.idTitle, { color: c.ink }]}>Identify from a photo</Text>
-              {!isPlus && (
-                <View style={[styles.plusBadge, { backgroundColor: c.grape, borderColor: c.line }]}>
-                  <Text style={[styles.plusBadgeText, { color: textOn(c.grape, c) }]}>Plus</Text>
-                </View>
-              )}
-            </View>
-            <Text style={[styles.idSub, { color: c.inkMuted }]}>Not sure who they are? Snap a leaf and we'll suggest a match.</Text>
-          </View>
-        </Pressable>
+        {isPlus && identifyTile}
         <TextInput
           value={query}
           onChangeText={(t) => {
@@ -285,6 +314,7 @@ export default function AddPlantScreen() {
             <Text style={[styles.idSub, { color: c.inkMuted }]}>Pick a care type and it gets the same smart checks, diary and family tree.</Text>
           </View>
         </Pressable>
+        {!isPlus && identifyTile}
       </ScrollView>
     );
   }
@@ -293,7 +323,11 @@ export default function AddPlantScreen() {
   const base = getSpecies(speciesId);
   const petToxic = pets === 'toxic' ? true : pets === 'safe' ? false : undefined;
   const sp = isOther ? { ...base, commonName: customName.trim() || 'New plant', latinName: customLatin.trim(), petToxic: petToxic ?? false } : base;
-  const suggestions = NAMES[speciesId] ?? fallbackNames;
+  const taken = new Set(plants.map((p) => p.name.toLowerCase()));
+  const pool = NAMES[speciesId] ?? fallbackNames;
+  const fresh = pool.filter((n) => !taken.has(n.toLowerCase()));
+  // Never offer a name that's already in the fam; number it if the list runs out.
+  const suggestions = fresh.length ? fresh : pool.map((n, i) => `${n} ${i + 2}`);
   const parents = plants.filter((p) => !p.archivedAt && (isOther ? !!p.custom && p.custom.commonName.toLowerCase() === customName.trim().toLowerCase() : p.speciesId === speciesId));
   const soilInfo = SOILS.find((s) => s.id === soil);
 
@@ -336,7 +370,7 @@ export default function AddPlantScreen() {
           </Text>
         </View>
       </View>
-      {!isOther && sp.tip && <Text style={[styles.note, { color: c.inkMuted }]}>{sp.tip}</Text>}
+      {!isOther && sp.tip && <Text style={[styles.note, { color: c.inkMuted }]}>{localizeTemps(sp.tip, units)}</Text>}
 
       {isOther && (
         <View style={{ gap: 10 }}>

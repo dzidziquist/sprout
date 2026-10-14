@@ -34,7 +34,8 @@ export const FREEZES_PER_MONTH = 2;
 
 const DAY_MS = 86400000;
 
-export type WeekStatus = 'kept' | 'repaired' | 'missed';
+/** kept: checks done, nothing overdue · repaired: a free pass covered a slip · missed · quiet: nothing was due and nothing checked (neutral). */
+export type WeekStatus = 'kept' | 'repaired' | 'missed' | 'quiet';
 
 export interface WeekRecord {
   /** Monday 00:00 local, ISO string. */
@@ -43,6 +44,10 @@ export interface WeekRecord {
 }
 
 export interface StreakResult {
+  /** At least one soil check ever: streaks only start after that. */
+  started: boolean;
+  /** A soil check has been done this week (so this week already counts). */
+  checkedThisWeek: boolean;
   /** Consecutive kept weeks, including the current one when it is on track. */
   current: number;
   best: number;
@@ -113,11 +118,15 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
 }
 
 export function computeStreak({ plants, events, climate, now }: StreakInput): StreakResult {
-  const empty: StreakResult = { current: 0, best: 0, thisWeek: 'clean', freezesLeft: FREEZES_PER_MONTH, weeks: [], reachedAt: [] };
+  const empty: StreakResult = { started: false, checkedThisWeek: false, current: 0, best: 0, thisWeek: 'clean', freezesLeft: FREEZES_PER_MONTH, weeks: [], reachedAt: [] };
   if (plants.length === 0) return empty;
   const first = Math.min(...plants.map((p) => new Date(p.createdAt).getTime()));
   const lapses = plants.flatMap((p) => lapsesFor(p, events, climate, now));
   const touches = (from: number, to: number) => lapses.some(([a, b]) => a < to && b > from);
+  // Streaks are earned: a week only counts once you've actually done a soil check in it.
+  const checkTimes = events.filter((e) => e.type === 'check').map((e) => new Date(e.at).getTime());
+  const checkedIn = (from: number, to: number) => checkTimes.some((t) => t >= from && t < to);
+  if (checkTimes.length === 0) return { ...empty, weeks: [] };
 
   const thisMonday = startOfWeek(now);
   const used = new Map<string, number>();
@@ -140,7 +149,7 @@ export function computeStreak({ plants, events, climate, now }: StreakInput): St
 
   for (let w = startOfWeek(new Date(first)); w < thisMonday; w = addWeeks(w, 1)) {
     const next = addWeeks(w, 1);
-    let status: WeekStatus = 'kept';
+    let status: WeekStatus = checkedIn(w.getTime(), next.getTime()) ? 'kept' : 'quiet';
     if (touches(w.getTime(), next.getTime())) {
       const k = monthKey(w);
       const n = used.get(k) ?? 0;
@@ -151,7 +160,7 @@ export function computeStreak({ plants, events, climate, now }: StreakInput): St
     }
     weeks.push({ start: w.toISOString(), status });
     if (status === 'missed') run = 0;
-    else bump(new Date(next.getTime() - 1));
+    else if (status !== 'quiet') bump(new Date(next.getTime() - 1));
   }
 
   const k = monthKey(thisMonday);
@@ -163,9 +172,10 @@ export function computeStreak({ plants, events, climate, now }: StreakInput): St
       left -= 1;
     } else thisWeek = 'open';
   }
-  if (thisWeek !== 'open') bump(now);
+  const checkedThisWeek = checkedIn(thisMonday.getTime(), now.getTime() + 1);
+  if (thisWeek !== 'open' && checkedThisWeek) bump(now);
   // An open current week doesn't break the run yet; it just isn't counted.
-  return { current: run, best, thisWeek, freezesLeft: left, weeks, reachedAt };
+  return { started: true, checkedThisWeek, current: run, best, thisWeek, freezesLeft: left, weeks, reachedAt };
 }
 
 /* ---------------------------------------------------------------- badges */

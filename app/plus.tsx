@@ -175,12 +175,12 @@ export default function PlusScreen() {
         <PlanCard c={c} on={plan === 'lifetime'} onPress={() => setPlan('lifetime')} name="Lifetime" price={offerings.lifetime.priceString} per="once" sub="pay once, yours forever" badge="Best value" />
       </View>
 
-      <Text style={[styles.honest, { color: c.ink }]}>No trial that charges you later. Cancel anytime in Settings.</Text>
+      <Text style={[styles.honest, { color: c.ink }]}>{plan === 'lifetime' ? 'One payment, no subscription, no trial that charges you later.' : 'Renews yearly. No trial that charges you later. Cancel anytime in Settings.'}</Text>
 
       <Button
-        title={busy === 'buy' ? 'One moment…' : plan === 'lifetime' ? `Get Lifetime for ${selected.priceString}` : `Get Yearly for ${selected.priceString}/yr`}
+        title={!available ? 'Available in the iPhone app' : busy === 'buy' ? 'One moment…' : plan === 'lifetime' ? `Get Lifetime for ${selected.priceString}` : `Get Yearly for ${selected.priceString}/yr`}
         raised
-        disabled={busy !== null || (available && !ready)}
+        disabled={!available || busy !== null || !ready}
         onPress={buy}
         style={styles.bigBtn}
         textStyle={styles.bigBtnText}

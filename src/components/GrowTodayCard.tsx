@@ -1,3 +1,5 @@
+import { useUnits } from '../hooks/useUnits';
+import { localizeTemps } from '../lib/units';
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -62,15 +64,16 @@ export function GrowTodayCard() {
   const climate = usePlantStore((s) => s.profile.climate);
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
   const forecast = useForecast(climate, edibles.length > 0);
+  const units = useUnits();
 
   const item = useMemo(() => {
     if (!edibles.length) return null;
-    const alert = weatherAlerts(edibles, forecast)[0];
+    const alert = weatherAlerts(edibles, forecast, units)[0];
     if (alert) return { title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
     const task = tasksFor(edibles, climate, new Date())[0];
-    if (task) return { title: task.title, body: task.body, icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
+    if (task) return { title: task.title, body: localizeTemps(task.body, units), icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
     return { title: `${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing`, body: 'All quiet in the patch. Peek at stages and harvests.', icon: GROW_ICON.sow, tint: c.mint, eyebrow: 'Grow patch' };
-  }, [edibles, forecast, climate, c]);
+  }, [edibles, forecast, climate, c, units]);
 
   if (!item) return null;
 

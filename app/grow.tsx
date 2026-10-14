@@ -1,3 +1,5 @@
+import { useUnits } from '@/hooks/useUnits';
+import { degrees, localizeTemps } from '@/lib/units';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -25,6 +27,7 @@ function weekday(iso: string, i: number) {
 }
 
 function WeatherStrip({ forecast, alerts, c }: { forecast: DailyForecast[] | null; alerts: GrowAlert[]; c: Palette }) {
+  const units = useUnits();
   if (!forecast) {
     return (
       <Sticker drop={0} bg={c.cloud} style={styles.offline}>
@@ -44,12 +47,12 @@ function WeatherStrip({ forecast, alerts, c }: { forecast: DailyForecast[] | nul
         return (
           <View
             key={d.date}
-            accessibilityLabel={`${weekday(d.date, i)}: high ${Math.round(d.maxC)}, low ${Math.round(d.minC)} degrees${tint ? ', alert' : ''}`}
+            accessibilityLabel={`${weekday(d.date, i)}: high ${degrees(d.maxC, units)}, low ${degrees(d.minC, units)} degrees${tint ? ', alert' : ''}`}
             style={[styles.day, { borderColor: c.line, backgroundColor: tint ?? c.card }, tint && { boxShadow: `0px 3px 0px ${c.drop}` }]}
           >
             <Text style={[styles.dayName, { color: c.ink }]} numberOfLines={1}>{weekday(d.date, i)}</Text>
-            <Text style={[styles.dayMax, { color: c.ink }]}>{Math.round(d.maxC)}°</Text>
-            <Text style={[styles.dayMin, { color: c.inkMuted }]}>{Math.round(d.minC)}°</Text>
+            <Text style={[styles.dayMax, { color: c.ink }]}>{degrees(d.maxC, units)}°</Text>
+            <Text style={[styles.dayMin, { color: c.inkMuted }]}>{degrees(d.minC, units)}°</Text>
             <View style={{ height: 14, justifyContent: 'center' }}>
               {d.precipMm >= 5 ? <Icon d={GROW_ICON.rain} color={c.ink} size={14} width={2.4} /> : null}
             </View>
@@ -75,6 +78,7 @@ function AlertCard({ alert, c }: { alert: GrowAlert; c: Palette }) {
 }
 
 function TaskRow({ task, done, onToggle, plants, c, last }: { task: GrowTask; done: boolean; onToggle: () => void; plants: Plant[]; c: Palette; last: boolean }) {
+  const units = useUnits();
   const who = task.plantIds.map((id) => plants.find((p) => p.id === id)?.name).filter(Boolean).join(', ');
   return (
     <Pressable
@@ -89,7 +93,7 @@ function TaskRow({ task, done, onToggle, plants, c, last }: { task: GrowTask; do
       </View>
       <View style={{ flex: 1, gap: 2, opacity: done ? 0.45 : 1 }}>
         <Text style={[styles.taskTitle, { color: c.ink }, done && styles.strike]}>{task.title}</Text>
-        <Text style={[styles.taskBody, { color: c.ink }]}>{task.body}</Text>
+        <Text style={[styles.taskBody, { color: c.ink }]}>{localizeTemps(task.body, units)}</Text>
         <View style={styles.taskHead}>
           {task.thisWeek && !done ? (
             <View style={[styles.weekPill, { backgroundColor: c.sun, borderColor: c.line }]}>
@@ -152,6 +156,7 @@ function StageTrack({ plant, pending, onPick, c }: { plant: Plant; pending?: Edi
 }
 
 function CropCard({ plant, total, now }: { plant: Plant; total?: string; now: Date }) {
+  const units = useUnits();
   const c = useColors();
   const router = useRouter();
   const climate = usePlantStore((s) => s.profile.climate);
@@ -221,10 +226,10 @@ function CropCard({ plant, total, now }: { plant: Plant; total?: string; now: Da
           </View>
         ) : (
           <View style={{ gap: 6 }}>
-            <Text style={[styles.tip, { color: c.ink }]}>{info ? info.tip : 'Tap the stage it’s at now and we’ll tailor the tips.'}</Text>
+            <Text style={[styles.tip, { color: c.ink }]}>{info ? localizeTemps(info.tip, units) : 'Tap the stage it’s at now and we’ll tailor the tips.'}</Text>
             <View style={styles.metaRow}>
               <Icon d={GROW_ICON.feed} color={c.inkMuted} size={16} />
-              <Text style={[styles.meta, { color: c.inkMuted }]}>{feedingAdvice(plant, climate, now)}</Text>
+              <Text style={[styles.meta, { color: c.inkMuted }]}>{localizeTemps(feedingAdvice(plant, climate, now), units)}</Text>
             </View>
             <View style={styles.metaRow}>
               <Icon d={GROW_ICON.harvest} color={c.inkMuted} size={16} />
@@ -255,7 +260,8 @@ export default function GrowPatch() {
 
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
   const forecast = useForecast(climate, edibles.length > 0);
-  const alerts = useMemo(() => weatherAlerts(edibles, forecast), [edibles, forecast]);
+  const units = useUnits();
+  const alerts = useMemo(() => weatherAlerts(edibles, forecast, units), [edibles, forecast, units]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const tasks = useMemo(() => tasksFor(edibles, climate, new Date()), [edibles, climate]);
   const stats = useMemo(() => harvestStats(events, edibles), [events, edibles]);

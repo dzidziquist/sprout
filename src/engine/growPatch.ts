@@ -1,3 +1,4 @@
+import { fmtRain, fmtTemp, type Units } from '../lib/units';
 import { CALENDAR, edibleGuide, type CalendarTask, type FeedWindow, type TaskKind, type TaskWindow } from '../data/edibles';
 import { isFeedingPaused } from './careEngine';
 import type { CareEvent, ClimateProfile, EdibleStage, Placement, Plant } from '../types';
@@ -190,15 +191,14 @@ function names(ids: string[], plants: Plant[]): string {
   return `${n.slice(0, -1).join(', ')} and ${n[n.length - 1]}`;
 }
 
-function fmtC(c: number) {
-  return `${Math.round(c)}°C`;
-}
+
 
 /**
  * Weather alerts for edibles that live outside (balcony, covered or not). Indoor plants don't feel the
  * forecast. Each kind appears once, naming every plant and day it affects. Most urgent first.
  */
-export function weatherAlerts(plants: Plant[], forecast: DailyForecast[] | null | undefined): GrowAlert[] {
+export function weatherAlerts(plants: Plant[], forecast: DailyForecast[] | null | undefined, units: Units = 'metric'): GrowAlert[] {
+  const fmtC = (c: number) => fmtTemp(c, units);
   if (!forecast?.length) return [];
   const outside = ediblePlants(plants).filter((p) => OUTSIDE.includes(p.placement));
   if (!outside.length) return [];
@@ -242,13 +242,13 @@ export function weatherAlerts(plants: Plant[], forecast: DailyForecast[] | null 
   const warmDays = forecast.filter((d) => d.minC > WARM_NIGHT_C);
   add('warm-nights', setters, warmDays, (who, days) => ({
     title: `Warm nights: ${fmtC(Math.max(...days.map((d) => d.minC)))}`,
-    body: `Pollen struggles above 24°C at night. Expect a few dropped flowers on ${who}.`,
+    body: `Pollen struggles above ${fmtC(WARM_NIGHT_C)} at night. Expect a few dropped flowers on ${who}.`,
   }));
 
   const rainDays = forecast.filter((d) => d.precipMm >= HEAVY_RAIN_MM);
   const exposed = outside.filter((p) => p.placement === 'outdoor');
   add('heavy-rain', exposed, rainDays, (who, days) => ({
-    title: `Heavy rain: ${Math.round(Math.max(...days.map((d) => d.precipMm)))} mm`,
+    title: `Heavy rain: ${fmtRain(Math.max(...days.map((d) => d.precipMm)), units)}`,
     body: `Tuck ${who} under cover or tip out saucers so roots don’t sit in water.`,
   }));
 
