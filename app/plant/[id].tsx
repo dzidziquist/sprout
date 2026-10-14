@@ -8,15 +8,21 @@ import { usePlantStore } from '@/store/plantStore';
 import { checkIntervalDays, isFeedingPaused, moodFor } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
+import { edibleGuide } from '@/data/edibles';
+import { feedingAdvice } from '@/engine/growPatch';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { usePlantActions } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
+import { StagePanel } from '@/components/StagePanel';
+import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
+import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
+import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
 import { choosePhoto, photoSrc } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { CareEvent } from '@/types';
+import type { CareEvent, Plant } from '@/types';
 
 const CAMERA = 'M3 9a3 3 0 0 1 3-3h1.5L9 4h6l1.5 2H18a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z';
 
@@ -28,7 +34,7 @@ function daysAgo(iso: string | undefined, now: Date) {
 
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-function describe(e: CareEvent): string {
+function describe(e: CareEvent, plants: Plant[]): string {
   switch (e.type) {
     case 'check':
       return e.result === 'damp' ? 'Soil check: damp, smart skip' : e.result === 'soggy' ? 'Soil check: soggy' : 'Soil check: dry, watered';
@@ -43,7 +49,10 @@ function describe(e: CareEvent): string {
     case 'pest':
       return 'Bug patrol';
     case 'cutting':
-      return 'Took a cutting';
+      {
+        const baby = plants.find((p) => p.id === e.note);
+        return baby ? `Took a cutting: ${baby.name}` : 'Took a cutting';
+      }
     case 'photo':
       return e.note ? `Photo: ${e.note}` : 'Photo added';
     case 'note':
@@ -83,6 +92,8 @@ export default function PlantDetail() {
   const parent = plants.find((p) => p.id === plant.parentId);
   const babies = plants.filter((p) => p.parentId === plant.id);
   const feedPaused = isFeedingPaused(profile.climate, plant.placement, now);
+  const guide = edibleGuide(plant.speciesId);
+  const feed = guide ? feedingAdvice(plant, profile.climate, now) : feedPaused ? 'Paused till March (grey season)' : 'Monthly while growing';
   const nextDays = Math.round((new Date(new Date(plant.nextCheckAt).toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000);
   const nextCheck = nextDays <= 0 ? 'Today' : nextDays === 1 ? 'Tomorrow' : nextDays < 7 ? `In ${nextDays} days` : new Date(plant.nextCheckAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
   const history = mine.slice(-6).reverse();
@@ -124,8 +135,13 @@ export default function PlantDetail() {
             <Image source={{ uri: photoSrc(plant.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={200} accessibilityLabel={`Photo of ${plant.name}`} />
           </View>
         ) : (
-          <View style={archived && { opacity: 0.6 }}>
+          <View style={[styles.heroArt, archived && { opacity: 0.6 }]}>
             <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} mood={archived ? 'happy' : moodFor(plant, now)} size={220} bg={tint} faces={archived ? 'off' : profile.faces} />
+            {plant.rooting && (
+              <View style={[styles.heroChip, { backgroundColor: c.card, borderColor: c.line }]}>
+                <Text style={[styles.heroChipText, { color: c.ink }]}>Rooting {METHOD_WORD[plant.rooting.method]}</Text>
+              </View>
+            )}
           </View>
         )}
       </View>
@@ -154,30 +170,48 @@ export default function PlantDetail() {
           </Sticker>
         )}
 
-        {!archived && (
+        {!archived && plant.rooting && <RootingStats rooting={plant.rooting} now={now} />}
+        {!archived && !plant.rooting && (
           <View style={styles.stats}>
             <Sticker drop={0} bg={c.ice} style={styles.stat}>
-              <Text style={[styles.statNum, { color: c.ink }]}>{plant.rooting ? `Day ${Math.max(1, Math.round((now.getTime() - new Date(plant.rooting.startedAt).getTime()) / 86400000))}` : `~${rhythm} days`}</Text>
-              <Text style={[styles.statLabel, { color: c.ink }]}>{plant.rooting ? 'of rooting' : 'check rhythm'}</Text>
+              <Text style={[styles.statNum, { color: c.ink }]}>~{rhythm} days</Text>
+              <Text style={[styles.statLabel, { color: c.ink }]}>check rhythm</Text>
             </Sticker>
             <Sticker drop={0} bg={c.butter} style={styles.stat}>
               <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
               <Text style={[styles.statLabel, { color: c.ink }]}>last watered</Text>
             </Sticker>
             <Sticker drop={0} bg={c.mint} style={styles.stat}>
-              <Text style={[styles.statNum, { color: c.ink }]}>{plant.rooting ? 'Rooting' : nextCheck}</Text>
+              <Text style={[styles.statNum, { color: c.ink }]}>{nextCheck}</Text>
               <Text style={[styles.statLabel, { color: c.ink }]}>next check</Text>
             </Sticker>
           </View>
         )}
 
-        {!archived && (
-          <Button title="Log care" raised onPress={actions.log} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
-        )}
         {!archived && plant.rooting && (
-          <Button title="Roots showing? Pot it up" bg={c.ice} onPress={() => router.push(`/pot-up/${plant.id}`)} style={{ minHeight: 48 }} />
+          <>
+            <Button title="Roots showing? Pot it up" raised onPress={() => router.push(`/pot-up/${plant.id}`)} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+            <Button title="Log care" bg={c.card} onPress={actions.log} style={{ minHeight: 48 }} />
+          </>
         )}
-        {!archived && species.edible && (
+        {!archived && !plant.rooting && (
+          <>
+            <Button title="Log care" raised onPress={actions.log} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+            {!guide?.regrows && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Take cuttings from ${plant.name}`}
+              onPress={() => router.push(`/cuttings/${plant.id}`)}
+              style={({ pressed }) => [styles.cutBtn, { backgroundColor: c.lavender, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 3}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 2 }] }]}
+            >
+              <Svg width={20} height={20} viewBox="0 0 24 24"><Path d={CUTTING_ICON} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+              <Text style={[styles.cutText, { color: c.ink }]}>Take cuttings</Text>
+            </Pressable>
+            )}
+          </>
+        )}
+        {!archived && !plant.rooting && guide && <StagePanel plant={plant} now={now} />}
+        {!archived && !plant.rooting && species.edible && !guide && (
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <Button title="Log harvest" bg={c.peach} onPress={() => router.push(`/harvest/${plant.id}`)} style={{ flex: 1, minHeight: 48 }} />
             <Button title="Grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={{ flex: 1, minHeight: 48 }} />
@@ -212,12 +246,15 @@ export default function PlantDetail() {
           </View>
         )}
 
+        {plant.rooting && !archived ? (
+          <RootingCare rooting={plant.rooting} now={now} pets={pets} />
+        ) : (
         <Sticker drop={0} style={{ overflow: 'hidden' }}>
           {[
             ['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
             ['Light', LIGHT_LABEL[plant.light]],
             ['Soil', SOIL_LABEL[plant.soil]],
-            ['Feed', feedPaused ? 'Paused till March (grey season)' : 'Monthly while growing'],
+            ['Feed', feed],
             ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
           ].map(([k, v], i, all) => (
             <View key={k} style={[styles.row, i < all.length - 1 && { borderBottomWidth: 2, borderColor: c.cloud }]}>
@@ -226,30 +263,21 @@ export default function PlantDetail() {
             </View>
           ))}
         </Sticker>
-        {species.tip && (
+        )}
+        {species.tip && !plant.rooting && (
           <Sticker drop={0} bg={c.butter} style={{ padding: 12 }}>
             <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
           </Sticker>
         )}
 
-        {(parent || babies.length > 0) && (
-          <View style={{ gap: 6 }}>
-            <Label>Offshoots</Label>
-            {parent && <Label muted>Cutting from {parent.name}</Label>}
-            {babies.length > 0 && (
-              <Label muted>
-                {babies.length} {babies.length === 1 ? 'baby' : 'babies'}: {babies.map((b) => b.name).join(', ')}
-              </Label>
-            )}
-          </View>
-        )}
+        <PlantPageOffshoots parent={parent} babies={babies} />
 
         {history.length > 0 && (
           <View style={{ gap: 8 }}>
             <Label>Recent care</Label>
             {history.map((e) => (
               <View key={e.id} style={styles.diaryRow}>
-                <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={1}>{describe(e)}</Text>
+                <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={1}>{describe(e, plants)}</Text>
                 <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
               </View>
             ))}
@@ -263,6 +291,11 @@ export default function PlantDetail() {
 const styles = StyleSheet.create({
   hero: { alignItems: 'center', borderBottomWidth: 2, paddingBottom: 4 },
   heroBar: { alignSelf: 'stretch', paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between' },
+  heroArt: { width: 220, alignItems: 'center' },
+  heroChip: { marginTop: -4, marginBottom: 8, borderWidth: 2, borderRadius: 14, paddingHorizontal: 10, height: 28, justifyContent: 'center' },
+  heroChipText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  cutBtn: { minHeight: 50, borderWidth: 2, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  cutText: { fontFamily: fonts.displaySemi, fontSize: 16 },
   heroPhoto: { width: 210, height: 210, borderRadius: 28, borderWidth: 2, overflow: 'hidden', marginVertical: 10 },
   body: { padding: 20, gap: 16 },
   archived: { padding: 14, gap: 4 },

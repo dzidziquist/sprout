@@ -10,6 +10,7 @@ import { POT_UP_AFTER_DAYS, rootingDays } from '@/engine/treeLayout';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
+import { METHOD_WORD } from '@/components/CuttingMethods';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import * as haptics from '@/lib/haptics';
@@ -19,12 +20,11 @@ import type { Soil } from '@/types';
 const SOILS: Soil[] = ['potting_mix', 'chunky_aroid', 'perlite_mix', 'gritty', 'coir', 'leca'];
 
 const SIZES = [
-  { label: 'Small', cm: 8, scale: 0.62 },
-  { label: 'Medium', cm: 12, scale: 0.8 },
-  { label: 'Large', cm: 15, scale: 1 },
+  { label: 'Tiny', cm: 8, scale: 0.62 },
+  { label: 'Small', cm: 10, scale: 0.8 },
+  { label: 'Medium', cm: 15, scale: 1 },
 ] as const;
 
-const METHOD_WORD = { water: 'in water', moss: 'in moss', soil: 'in soil', leca: 'in LECA' } as const;
 
 function PotIcon({ scale, c }: { scale: number; c: Palette }) {
   const s = 34 * scale;
@@ -48,7 +48,7 @@ export default function PotUpScreen() {
   const defaultSoil = plant ? speciesOf(plant).defaultSoil : 'potting_mix';
   const soils = [defaultSoil, ...SOILS.filter((s) => s !== defaultSoil)];
   const [soil, setSoil] = useState<Soil>(defaultSoil);
-  const [cm, setCm] = useState<number>(12);
+  const [cm, setCm] = useState<number>(10);
 
   const close = (
     <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>

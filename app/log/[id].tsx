@@ -46,6 +46,11 @@ export default function LogCareSheet() {
 
   const toggle = async (a: CareAction) => {
     haptics.tap();
+    if (a === 'cutting') {
+      // Cuttings get their own sheet: how many, what they root in, and their names.
+      router.push(`/cuttings/${plant.id}`);
+      return;
+    }
     if (a === 'photo') {
       if (sel.has('photo')) {
         setPhotoUri(null);
@@ -128,15 +133,15 @@ export default function LogCareSheet() {
       <Title style={{ fontSize: 26 }}>What did {plant.name} get?</Title>
 
       <View style={styles.grid}>
-        {TILES.map((t) => {
+        {TILES.filter((t) => t.id !== 'cutting' || (!plant.rooting && !plant.archivedAt)).map((t) => {
           const on = sel.has(t.id);
           const showThumb = t.id === 'photo' && on && photoUri;
           return (
             <Pressable
               key={t.id}
-              accessibilityRole="checkbox"
-              accessibilityLabel={t.id === 'photo' ? (on ? 'Photo attached. Tap to remove' : 'Add a photo') : t.label}
-              accessibilityState={{ checked: on }}
+              accessibilityRole={t.id === 'cutting' ? 'button' : 'checkbox'}
+              accessibilityLabel={t.id === 'photo' ? (on ? 'Photo attached. Tap to remove' : 'Add a photo') : t.id === 'cutting' ? 'Take cuttings' : t.label}
+              accessibilityState={t.id === 'cutting' ? undefined : { checked: on }}
               onPress={() => toggle(t.id)}
               style={[styles.tile, { backgroundColor: on ? tintOf(c, t.tint) : c.card, borderColor: c.line }, on && { boxShadow: `0px 4px 0px ${c.drop}` }]}
             >
@@ -153,9 +158,6 @@ export default function LogCareSheet() {
         })}
       </View>
 
-      {sel.has('cutting') && (
-        <Text style={[styles.hint, { color: c.ink, backgroundColor: c.lavender, borderColor: c.line }]}>A baby! It'll appear in {plant.name}'s Offshoots, rooting in water.</Text>
-      )}
       {photoUri && <Text style={[styles.hint, { color: c.ink, backgroundColor: c.butter, borderColor: c.line }]}>Photo ready for {plant.name}'s diary.</Text>}
 
       <TextInput
