@@ -7,7 +7,7 @@ import { usePlantStore, type CareAction } from '@/store/plantStore';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
-import { choosePhoto } from '@/lib/photos';
+import { choosePhoto, photoSrc } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
@@ -94,7 +94,7 @@ export default function LogCareSheet() {
       <View style={[styles.page, styles.saved, { backgroundColor: c.leaf }]}>
         <View style={[styles.circle, { backgroundColor: c.card, borderColor: c.line }]}>
           {photoUri ? (
-            <Image source={{ uri: photoUri }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel={`New photo of ${plant.name}`} />
+            <Image source={{ uri: photoSrc(photoUri) }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel={`New photo of ${plant.name}`} />
           ) : (
             <PlantBuddy speciesId={plant.speciesId} pot={plant.potColor} mood="happy" size={150} bg={c.card} faces={faces} />
           )}
@@ -141,7 +141,7 @@ export default function LogCareSheet() {
               style={[styles.tile, { backgroundColor: on ? tintOf(c, t.tint) : c.card, borderColor: c.line }, on && { boxShadow: `0px 4px 0px ${c.drop}` }]}
             >
               {showThumb ? (
-                <Image source={{ uri: photoUri }} style={[styles.thumb, { borderColor: c.line }]} contentFit="cover" />
+                <Image source={{ uri: photoSrc(photoUri) }} style={[styles.thumb, { borderColor: c.line }]} contentFit="cover" />
               ) : (
                 <Svg width={24} height={24} viewBox="0 0 24 24">
                   <Path d={t.icon} stroke={on ? textOn(tintOf(c, t.tint), c) : c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" />

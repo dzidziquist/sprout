@@ -4,6 +4,14 @@ import { Directory, File, Paths } from 'expo-file-system';
 
 export type PhotoSource = 'library' | 'camera';
 
+const DIARY = 'diary';
+
+/** Turns a stored photo reference into a displayable URI (relative diary paths resolve against Documents). */
+export function photoSrc(stored: string): string {
+  if (Platform.OS === 'web' || !stored.startsWith(`${DIARY}/`)) return stored;
+  return new File(Paths.document, stored).uri;
+}
+
 const PICKER_OPTIONS: ImagePicker.ImagePickerOptions = {
   mediaTypes: ['images'],
   quality: 0.7,
@@ -15,12 +23,14 @@ const PICKER_OPTIONS: ImagePicker.ImagePickerOptions = {
 function keep(uri: string): string {
   if (Platform.OS === 'web') return uri; // Web keeps the data/blob URI the picker returned.
   try {
-    const dir = new Directory(Paths.document, 'diary');
+    const dir = new Directory(Paths.document, DIARY);
     if (!dir.exists) dir.create({ intermediates: true, idempotent: true });
     const ext = (uri.split('?')[0].match(/\.(\w{3,4})$/)?.[1] ?? 'jpg').toLowerCase();
     const dest = new File(dir, `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}.${ext}`);
     new File(uri).copy(dest);
-    return dest.uri;
+    // Store a path relative to Documents: iOS moves the app container on every update,
+    // so an absolute file:// path would break after the next App Store release.
+    return `${DIARY}/${dest.name}`;
   } catch {
     // Copy failed (unusual): fall back to the picker's URI so the moment isn't lost.
     return uri;

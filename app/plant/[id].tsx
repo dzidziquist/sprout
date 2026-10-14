@@ -12,7 +12,7 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { usePlantActions } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
-import { choosePhoto } from '@/lib/photos';
+import { choosePhoto, photoSrc } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
@@ -119,7 +119,7 @@ export default function PlantDetail() {
         </View>
         {heroPhoto ? (
           <View style={[styles.heroPhoto, { borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
-            <Image source={{ uri: plant.photoUri }} style={StyleSheet.absoluteFill} contentFit="cover" transition={200} accessibilityLabel={`Photo of ${plant.name}`} />
+            <Image source={{ uri: photoSrc(plant.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={200} accessibilityLabel={`Photo of ${plant.name}`} />
           </View>
         ) : (
           <View style={archived && { opacity: 0.6 }}>
@@ -189,7 +189,7 @@ export default function PlantDetail() {
               {photos.map((e) => (
                 <View key={e.id} style={styles.photoItem}>
                   <View style={[styles.photo, { borderColor: c.line }]}>
-                    <Image source={{ uri: e.photoUri }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} accessibilityLabel={`${plant.name} on ${shortDate(e.at)}`} />
+                    <Image source={{ uri: photoSrc(e.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} accessibilityLabel={`${plant.name} on ${shortDate(e.at)}`} />
                   </View>
                   <Text style={[styles.photoDate, { color: c.inkMuted }]}>{shortDate(e.at)}</Text>
                 </View>
