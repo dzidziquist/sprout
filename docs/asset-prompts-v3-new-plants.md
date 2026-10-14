@@ -708,3 +708,13 @@ Pot balance: sun yellow 8, sky blue 7, coral 8, grape 7, bubblegum 6.
 | 34 | `radish` | Radish | sky blue #5AB8FF | [ ] | [ ] | [ ] |
 | 35 | `carrot` | Carrot | grape #A78BFA | [ ] | [ ] | [ ] |
 | 36 | `meyer-lemon` | Meyer lemon | sky blue #5AB8FF | [ ] | [ ] | [ ] |
+
+---
+
+## Owner's decision: redo the original 20 in this style too
+
+The original 19 buddies + the cutting jar were sliced from one ChatGPT sheet: ~150–170px, soft at the 220px hero size, a few with a neighbour's leaf clipped in (`pothos-thirsty`, `tomato-happy`), and their thirsty/snoozing moods are subtler than the new set. So that the whole jungle looks like one family, regenerate them with this doc's style block and workflow (same 1024px export, same names, overwrite the files in `assets/buddies/`):
+
+`monstera`, `pothos`, `fig` (fiddle-leaf fig), `calathea` (orbifolia), `snake`, `hoya`, `peace-lily`, `zz`, `string-of-pearls`, `pink-princess`, `aloe`, `spider`, `rubber`, `bird-of-paradise`, `basil`, `mint`, `tomato`, `pepper`, `spring-onion`, and `cutting` (a pothos cutting rooting in a glass jar of water, face on the jar).
+
+Do these first: they're on screen most. Use the current PNGs as the reference for which plant and pot colour each one is.

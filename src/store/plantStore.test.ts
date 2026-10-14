@@ -33,7 +33,7 @@ beforeEach(() => {
 describe('plant store', () => {
   it('reschedules when care-relevant details change, not when renamed', () => {
     const s = usePlantStore.getState();
-    const p = s.addPlant({ ...base, name: 'Queenie' }, now);
+    const p = s.addPlant({ ...base, name: 'Queenie' }, now, { firstCheck: 'scheduled' });
     s.updatePlant(p.id, { name: 'Queen' }, now);
     expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(p.nextCheckAt);
     s.updatePlant(p.id, { soil: 'gritty' }, now);
@@ -85,8 +85,13 @@ describe('plant store', () => {
 
   it('schedules "other" plants by their care type', () => {
     const s = usePlantStore.getState();
-    const cactus = s.addPlant({ ...base, speciesId: 'other-succulent', custom: { commonName: 'Bunny ear' }, soil: 'gritty', name: 'Bun' }, now);
-    const fern = s.addPlant({ ...base, speciesId: 'other-moisture', custom: { commonName: 'Bird nest fern' }, soil: 'gritty', name: 'Nest' }, now);
+    const cactus = s.addPlant({ ...base, speciesId: 'other-succulent', custom: { commonName: 'Bunny ear' }, soil: 'gritty', name: 'Bun' }, now, { firstCheck: 'scheduled' });
+    const fern = s.addPlant({ ...base, speciesId: 'other-moisture', custom: { commonName: 'Bird nest fern' }, soil: 'gritty', name: 'Nest' }, now, { firstCheck: 'scheduled' });
     expect(cactus.nextCheckAt > fern.nextCheckAt).toBe(true);
+  });
+
+  it('asks for a first soil check on the day a plant joins', () => {
+    const p = usePlantStore.getState().addPlant({ ...base, name: 'New' }, now);
+    expect(p.nextCheckAt).toBe(now.toISOString());
   });
 });

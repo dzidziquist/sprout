@@ -52,7 +52,11 @@ interface PlantState {
   undo: Record<string, Plant>;
   setProfile: (p: Partial<Profile>) => void;
   completeOnboarding: () => void;
-  addPlant: (p: NewPlant, now?: Date) => Plant;
+  /**
+   * New plants get their first soil check today by default: we don't know when it was last watered,
+   * and one real answer calibrates far better than a guess. Demo plants use the modelled schedule.
+   */
+  addPlant: (p: NewPlant, now?: Date, opts?: { firstCheck?: 'today' | 'scheduled' }) => Plant;
   /** Records a soil check and reschedules. Returns the kind message to show. */
   logCheck: (plantId: string, result: CheckResult, now?: Date) => string;
   undoLastCheck: (plantId: string) => void;
@@ -95,9 +99,10 @@ export const usePlantStore = create<PlantState>()(
       setProfile: (p) => set((s) => ({ profile: { ...s.profile, ...p } })),
       completeOnboarding: () => set({ onboarded: true }),
 
-      addPlant: (input, now = new Date()) => {
+      addPlant: (input, now = new Date(), opts) => {
         const base = { ...input, id: uid(), k: 1, createdAt: now.toISOString() };
-        const plant: Plant = { ...base, nextCheckAt: schedule(base, get().profile.climate, now) };
+        const today = (opts?.firstCheck ?? 'today') === 'today' && !input.rooting;
+        const plant: Plant = { ...base, nextCheckAt: today ? now.toISOString() : schedule(base, get().profile.climate, now) };
         set((s) => ({ plants: [...s.plants, plant] }));
         return plant;
       },
@@ -270,7 +275,7 @@ export const usePlantStore = create<PlantState>()(
 
       seedDemo: (now = new Date()) => {
         if (get().plants.length) return;
-        const add = get().addPlant;
+        const add = (p: NewPlant, at: Date) => get().addPlant(p, at, { firstCheck: 'scheduled' });
         const daysAgo = (d: number) => new Date(now.getTime() - d * 86400000).toISOString();
         const mother = add({ name: 'Kitchen Queen', speciesId: 'pothos', potColor: 'blue', soil: 'potting_mix', potMaterial: 'plastic', potDiameterCm: 18, light: 'medium', placement: 'indoor', room: 'Kitchen', origin: 'bought', acquiredAt: daysAgo(900) }, now);
         const queenie = add({ name: 'Queenie', speciesId: 'pothos', potColor: 'blue', soil: 'chunky_aroid', potMaterial: 'plastic', potDiameterCm: 15, light: 'bright', placement: 'indoor', room: 'Living room', origin: 'cutting', parentId: mother.id, acquiredAt: daysAgo(210) }, now);
