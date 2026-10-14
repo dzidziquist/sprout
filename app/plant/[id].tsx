@@ -83,7 +83,8 @@ export default function PlantDetail() {
   const parent = plants.find((p) => p.id === plant.parentId);
   const babies = plants.filter((p) => p.parentId === plant.id);
   const feedPaused = isFeedingPaused(profile.climate, plant.placement, now);
-  const nextCheck = new Date(plant.nextCheckAt).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+  const nextDays = Math.round((new Date(new Date(plant.nextCheckAt).toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000);
+  const nextCheck = nextDays <= 0 ? 'Today' : nextDays === 1 ? 'Tomorrow' : nextDays < 7 ? `In ${nextDays} days` : new Date(plant.nextCheckAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
   const history = mine.slice(-6).reverse();
   const photos = mine.filter((e) => e.type === 'photo' && e.photoUri).reverse();
   const heroPhoto = showPhoto && plant.photoUri;
