@@ -11,6 +11,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { colors } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { rescheduleRounds } from '@/lib/notifications';
+import { configurePurchases } from '@/lib/purchases';
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(() => usePlantStore.persist.hasHydrated());
@@ -45,6 +46,7 @@ export default function RootLayout() {
       }, 400);
     };
     sync();
+    configurePurchases();
     const unsub = usePlantStore.subscribe((s, prev) => {
       if (s.plants !== prev.plants || s.profile.round !== prev.profile.round) sync();
     });
@@ -71,6 +73,18 @@ export default function RootLayout() {
         <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
         <Stack.Screen name="add" options={{ presentation: 'modal' }} />
         <Stack.Screen name="plant/[id]" />
+        <Stack.Screen name="edit/[id]" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="plus" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="identify" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="grow" />
+        <Stack.Screen
+          name="pot-up/[id]"
+          options={{ presentation: 'formSheet', sheetAllowedDetents: [0.85, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}
+        />
+        <Stack.Screen
+          name="harvest/[id]"
+          options={{ presentation: 'formSheet', sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}
+        />
         <Stack.Screen
           name="log/[id]"
           options={{

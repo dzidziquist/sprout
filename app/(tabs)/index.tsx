@@ -1,3 +1,4 @@
+import { GrowTodayCard } from '@/components/GrowTodayCard';
 import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -141,7 +142,7 @@ export default function TodayScreen() {
         </Text>
       </View>
 
-      {/* GROW_CARD */}
+      <GrowTodayCard />
 
       <View style={{ gap: 12 }}>
         {round.map((p) => {

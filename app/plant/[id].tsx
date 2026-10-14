@@ -155,8 +155,8 @@ export default function PlantDetail() {
         {!archived && (
           <View style={styles.stats}>
             <Sticker drop={0} bg={c.ice} style={styles.stat}>
-              <Text style={[styles.statNum, { color: c.ink }]}>~{rhythm} days</Text>
-              <Text style={[styles.statLabel, { color: c.ink }]}>check rhythm</Text>
+              <Text style={[styles.statNum, { color: c.ink }]}>{plant.rooting ? `Day ${Math.max(1, Math.round((now.getTime() - new Date(plant.rooting.startedAt).getTime()) / 86400000))}` : `~${rhythm} days`}</Text>
+              <Text style={[styles.statLabel, { color: c.ink }]}>{plant.rooting ? 'of rooting' : 'check rhythm'}</Text>
             </Sticker>
             <Sticker drop={0} bg={c.butter} style={styles.stat}>
               <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
@@ -171,6 +171,15 @@ export default function PlantDetail() {
 
         {!archived && (
           <Button title="Log care" raised onPress={actions.log} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+        )}
+        {!archived && plant.rooting && (
+          <Button title="Roots showing? Pot it up" bg={c.ice} onPress={() => router.push(`/pot-up/${plant.id}`)} style={{ minHeight: 48 }} />
+        )}
+        {!archived && species.edible && (
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Button title="Log harvest" bg={c.peach} onPress={() => router.push(`/harvest/${plant.id}`)} style={{ flex: 1, minHeight: 48 }} />
+            <Button title="Grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={{ flex: 1, minHeight: 48 }} />
+          </View>
         )}
 
         {(photos.length > 0 || !archived) && (

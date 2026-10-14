@@ -4,6 +4,7 @@ import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { TabBar } from '@/components/TabBar';
 import { colors } from '@/theme/tokens';
 import { usePlantStore } from '@/store/plantStore';
+import { useColors } from '@/theme/theme';
 
 /**
  * iOS gets the system tab bar (Liquid Glass on iOS 26, SF Symbols, minimises on scroll).
@@ -11,6 +12,7 @@ import { usePlantStore } from '@/store/plantStore';
  */
 export default function TabLayout() {
   const onboarded = usePlantStore((s) => s.onboarded);
+  const c = useColors();
   if (!onboarded) return <Redirect href="/onboarding" />;
 
   if (Platform.OS === 'ios') {
@@ -36,7 +38,7 @@ export default function TabLayout() {
     );
   }
   return (
-    <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.white } }}>
+    <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: c.bg } }}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="jungle" />
       <Tabs.Screen name="offshoots" />

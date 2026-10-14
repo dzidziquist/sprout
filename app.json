@@ -39,8 +39,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "PlantFam opens your photos so you can pick a plant to identify. Only the photo you choose is used.",
-          "cameraPermission": "PlantFam uses the camera to snap a plant so we can help work out who it is.",
+          "photosPermission": "PlantFam opens your photos so you can add one to a plant's diary or identify a plant. Only the photos you choose are used.",
+          "cameraPermission": "PlantFam uses the camera so you can snap your plants for their photo diary or to identify them.",
           "microphonePermission": false
         }
       ]

@@ -61,6 +61,7 @@ export default function JungleScreen() {
   const potted = living.filter((p) => !p.rooting);
   const rooting = living.filter((p) => p.rooting);
   const memory = plants.filter((p) => p.archivedAt);
+  const edibles = potted.filter((p) => SPECIES[p.speciesId].edible);
   const rooms = new Set(potted.map((p) => p.room).filter(Boolean));
 
   return (
@@ -77,6 +78,19 @@ export default function JungleScreen() {
           <Svg width={20} height={20} viewBox="0 0 24 24"><Path d="M12 5v14M5 12h14" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" /></Svg>
         </GlassButton>
       </View>
+
+      {edibles.length > 0 && (
+        <Pressable accessibilityRole="button" accessibilityLabel="Open grow patch" onPress={() => router.push('/grow')}>
+          <Sticker bg={c.peach} style={styles.growLink}>
+            <PlantBuddy speciesId={edibles[0].speciesId} pot={edibles[0].potColor} mood="happy" size={52} bg={c.peach} />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.growTitle, { color: c.ink }]}>Grow patch</Text>
+              <Text style={[styles.growSub, { color: c.ink }]}>{edibles.length} {edibles.length === 1 ? 'crop' : 'crops'} · stages, weather and harvests</Text>
+            </View>
+            <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m9 6 6 6-6 6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+          </Sticker>
+        </Pressable>
+      )}
 
       {living.length === 0 ? (
         <Sticker bg={c.mint} style={styles.empty}>
@@ -151,6 +165,9 @@ const styles = StyleSheet.create({
   name: { fontFamily: fonts.displaySemi, fontSize: 17 },
   kind: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   empty: { alignItems: 'center', padding: 20, gap: 10 },
+  growLink: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 20 },
+  growTitle: { fontFamily: fonts.display, fontSize: 18 },
+  growSub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   emptyTitle: { fontFamily: fonts.display, fontSize: 22, textAlign: 'center' },
   emptySub: { fontFamily: fonts.bodyHeavy, fontSize: 14, textAlign: 'center' },
   memoryHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 2, borderRadius: 16, paddingHorizontal: 14, minHeight: 48 },

@@ -1,3 +1,4 @@
+import { PlusCard } from '@/components/PlusCard';
 import { useEffect, useMemo } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -140,7 +141,7 @@ export default function MeScreen() {
         <Label muted>One reminder, only on days a plant needs a soil check.</Label>
       </View>
 
-      {/* PLUS_CARD */}
+      <PlusCard />
 
       <View style={{ gap: 8 }}>
         <Label>Appearance</Label>
