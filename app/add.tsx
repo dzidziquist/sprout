@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
@@ -10,8 +10,12 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
-import { colors, fonts, potTint } from '@/theme/tokens';
+import { fonts } from '@/theme/tokens';
+import { textOn, useColors } from '@/theme/theme';
+import { usePlus } from '@/hooks/usePlus';
 import type { Light, Origin, Placement, PotMaterial, Soil, SpeciesId } from '@/types';
+
+const isSpeciesId = (v: unknown): v is SpeciesId => typeof v === 'string' && v in SPECIES;
 
 const NAMES: Partial<Record<SpeciesId, string[]>> = {
   monstera: ['Monty', 'Swiss Cheese', 'Big Leaf'],
@@ -67,7 +71,9 @@ const ORIGINS: { id: Origin; label: string }[] = [
   { id: 'gift', label: 'Gift' },
 ];
 
-function Pill({ on, label, onPress, bg = colors.mint }: { on: boolean; label: string; onPress: () => void; bg?: string }) {
+function Pill({ on, label, onPress, bg }: { on: boolean; label: string; onPress: () => void; bg?: string }) {
+  const c = useColors();
+  const fill = bg ?? c.mint;
   return (
     <Pressable
       accessibilityRole="button"
@@ -76,26 +82,38 @@ function Pill({ on, label, onPress, bg = colors.mint }: { on: boolean; label: st
         haptics.tap();
         onPress();
       }}
-      style={[styles.pill, { backgroundColor: on ? bg : colors.white }, on && { boxShadow: `0px 3px 0px ${colors.ink}` }]}
+      style={[styles.pill, { borderColor: c.line, backgroundColor: on ? fill : c.card }, on && { boxShadow: `0px 3px 0px ${c.drop}` }]}
     >
-      <Text style={styles.pillText}>{label}</Text>
+      <Text style={[styles.pillText, { color: on ? textOn(fill, c) : c.ink }]}>{label}</Text>
     </Pressable>
   );
+}
+
+/** Care defaults a freshly picked species starts with. */
+function defaultsFor(id: SpeciesId) {
+  const sp = SPECIES[id];
+  return { soil: sp.defaultSoil, light: sp.defaultLight, placement: (sp.edible ? 'covered_outdoor' : 'indoor') as Placement, name: (NAMES[id] ?? fallbackNames)[0] };
 }
 
 export default function AddPlantScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const c = useColors();
+  const { isPlus } = usePlus();
+  const params = useLocalSearchParams<{ species?: string }>();
+  // Arriving from photo ID (/add?species=pothos) skips the picker.
+  const preset = isSpeciesId(params.species) ? params.species : null;
+  const presetDefaults = preset ? defaultsFor(preset) : null;
   const { plants, addPlant } = usePlantStore();
-  const [speciesId, setSpeciesId] = useState<SpeciesId | null>(null);
+  const [speciesId, setSpeciesId] = useState<SpeciesId | null>(preset);
   const [query, setQuery] = useState('');
   const [nameIdx, setNameIdx] = useState(0);
-  const [name, setName] = useState('');
-  const [light, setLight] = useState<Light>('bright');
-  const [soil, setSoil] = useState<Soil>('potting_mix');
+  const [name, setName] = useState(presetDefaults?.name ?? '');
+  const [light, setLight] = useState<Light>(presetDefaults?.light ?? 'bright');
+  const [soil, setSoil] = useState<Soil>(presetDefaults?.soil ?? 'potting_mix');
   const [size, setSize] = useState(15);
   const [material, setMaterial] = useState<PotMaterial>('plastic');
-  const [placement, setPlacement] = useState<Placement>('indoor');
+  const [placement, setPlacement] = useState<Placement>(presetDefaults?.placement ?? 'indoor');
   const [room, setRoom] = useState('');
   const [origin, setOrigin] = useState<Origin>('bought');
   const [parentId, setParentId] = useState<string | undefined>();
@@ -107,35 +125,65 @@ export default function AddPlantScreen() {
 
   const pick = (id: SpeciesId) => {
     haptics.tap();
-    const sp = SPECIES[id];
+    const d = defaultsFor(id);
     setSpeciesId(id);
-    setSoil(sp.defaultSoil);
-    setLight(sp.defaultLight);
-    setPlacement(sp.edible ? 'covered_outdoor' : 'indoor');
-    const suggestions = NAMES[id] ?? fallbackNames;
+    setSoil(d.soil);
+    setLight(d.light);
+    setPlacement(d.placement);
     setNameIdx(0);
-    setName(suggestions[0]);
+    setName(d.name);
   };
+
+  const inputStyle = [styles.search, { borderColor: c.line, color: c.ink, backgroundColor: c.card }];
 
   const close = (
     <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>
-      <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={colors.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+      <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
     </GlassButton>
   );
 
   if (!speciesId) {
     return (
-      <ScrollView style={{ backgroundColor: colors.white }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
+      <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Title style={{ flex: 1 }}>Who's joining the jungle?</Title>
           {close}
         </View>
-        <TextInput value={query} onChangeText={setQuery} placeholder="Search plants" placeholderTextColor="#8A8A99" style={styles.search} accessibilityLabel="Search plants" />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Identify from a photo"
+          accessibilityHint={isPlus ? undefined : 'Part of PlantFam Plus'}
+          onPress={() => {
+            haptics.tap();
+            // Replace so confirming a match lands back on a single add screen.
+            router.replace('/identify');
+          }}
+          style={({ pressed }) => [styles.idTile, { backgroundColor: c.butter, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 4}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 3 }] }]}
+        >
+          <View style={[styles.idIcon, { backgroundColor: c.sun, borderColor: c.line }]}>
+            <Svg width={26} height={26} viewBox="0 0 24 24">
+              <Path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.3-2h5.2l1.3 2h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z" stroke={c.onBright} strokeWidth={2} strokeLinejoin="round" fill="none" />
+              <Path d="M12 9.2a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6z" stroke={c.onBright} strokeWidth={2} fill="none" />
+            </Svg>
+          </View>
+          <View style={{ flex: 1, gap: 2 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Text style={[styles.idTitle, { color: c.ink }]}>Identify from a photo</Text>
+              {!isPlus && (
+                <View style={[styles.plusBadge, { backgroundColor: c.grape, borderColor: c.line }]}>
+                  <Text style={[styles.plusBadgeText, { color: textOn(c.grape, c) }]}>Plus</Text>
+                </View>
+              )}
+            </View>
+            <Text style={[styles.idSub, { color: c.inkMuted }]}>Not sure who they are? Snap a leaf and we'll suggest a match.</Text>
+          </View>
+        </Pressable>
+        <TextInput value={query} onChangeText={setQuery} placeholder="Search plants" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Search plants" />
         <View style={styles.grid}>
           {results.map((s) => (
-            <Pressable key={s.id} accessibilityRole="button" accessibilityLabel={s.commonName} onPress={() => pick(s.id)} style={[styles.speciesTile, { backgroundColor: potTint[s.artPot] }]}>
+            <Pressable key={s.id} accessibilityRole="button" accessibilityLabel={s.commonName} onPress={() => pick(s.id)} style={[styles.speciesTile, { backgroundColor: c.potTint[s.artPot], borderColor: c.line }]}>
               <PlantBuddy speciesId={s.id} size={84} />
-              <Text style={styles.speciesName} numberOfLines={1}>{s.commonName}</Text>
+              <Text style={[styles.speciesName, { color: c.ink }]} numberOfLines={1}>{s.commonName}</Text>
             </Pressable>
           ))}
         </View>
@@ -168,26 +216,26 @@ export default function AddPlantScreen() {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: colors.white }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
+    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Back to plant list" onPress={() => setSpeciesId(null)}>
-          <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={colors.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+          <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
         </GlassButton>
         {close}
       </View>
 
-      <View style={[styles.hero, { backgroundColor: potTint[sp.artPot] }]}>
+      <View style={[styles.hero, { backgroundColor: c.potTint[sp.artPot], borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
         <PlantBuddy speciesId={speciesId} size={96} />
         <View style={{ flex: 1 }}>
-          <Text style={styles.heroKicker}>{sp.latinName}</Text>
-          <Text style={styles.heroName}>{sp.commonName}</Text>
-          <Text style={styles.heroKicker}>{sp.petToxic ? 'Toxic to cats and dogs' : 'Pet-friendly'}</Text>
+          <Text style={[styles.heroKicker, { color: c.inkMuted }]}>{sp.latinName}</Text>
+          <Text style={[styles.heroName, { color: c.ink }]}>{sp.commonName}</Text>
+          <Text style={[styles.heroKicker, { color: c.inkMuted }]}>{sp.petToxic ? 'Toxic to cats and dogs' : 'Pet-friendly'}</Text>
         </View>
       </View>
 
       <Label>Give them a name</Label>
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        <TextInput value={name} onChangeText={setName} style={[styles.search, { flex: 1, fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" />
+        <TextInput value={name} onChangeText={setName} style={[inputStyle, { flex: 1, fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Suggest another name"
@@ -197,11 +245,11 @@ export default function AddPlantScreen() {
             setNameIdx(n);
             setName(suggestions[n]);
           }}
-          style={styles.dice}
+          style={[styles.dice, { borderColor: c.line, backgroundColor: c.lavender }]}
         >
           <Svg width={24} height={24} viewBox="0 0 24 24">
-            <Path d="M7.5 3.5h9a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-9a4 4 0 0 1-4-4v-9a4 4 0 0 1 4-4z" stroke={colors.ink} strokeWidth={2} fill="none" />
-            <Path d="M8.5 8.5h.01M15.5 15.5h.01M15.5 8.5h.01M8.5 15.5h.01M12 12h.01" stroke={colors.ink} strokeWidth={3} strokeLinecap="round" />
+            <Path d="M7.5 3.5h9a4 4 0 0 1 4 4v9a4 4 0 0 1-4 4h-9a4 4 0 0 1-4-4v-9a4 4 0 0 1 4-4z" stroke={c.ink} strokeWidth={2} fill="none" />
+            <Path d="M8.5 8.5h.01M15.5 15.5h.01M15.5 8.5h.01M8.5 15.5h.01M12 12h.01" stroke={c.ink} strokeWidth={3} strokeLinecap="round" />
           </Svg>
         </Pressable>
       </View>
@@ -209,7 +257,7 @@ export default function AddPlantScreen() {
       <Label>How sunny is its spot?</Label>
       <View style={styles.wrap}>
         {LIGHTS.map((l) => (
-          <Pill key={l.id} on={light === l.id} bg={colors.sun} label={`${'☀'.repeat(l.suns)} ${l.label}`} onPress={() => setLight(l.id)} />
+          <Pill key={l.id} on={light === l.id} bg={c.sun} label={`${'☀'.repeat(l.suns)} ${l.label}`} onPress={() => setLight(l.id)} />
         ))}
       </View>
 
@@ -224,14 +272,14 @@ export default function AddPlantScreen() {
               haptics.tap();
               setSoil(s.id);
             }}
-            style={[styles.pill, styles.soilPill, { backgroundColor: soil === s.id ? colors.mint : colors.white }, soil === s.id && { boxShadow: `0px 3px 0px ${colors.ink}` }]}
+            style={[styles.pill, styles.soilPill, { borderColor: c.line, backgroundColor: soil === s.id ? c.mint : c.card }, soil === s.id && { boxShadow: `0px 3px 0px ${c.drop}` }]}
           >
-            <View style={[styles.swatch, { backgroundColor: s.swatch }]} />
-            <Text style={styles.pillText}>{SOIL_LABEL[s.id].replace(' (not ideal in pots)', '')}</Text>
+            <View style={[styles.swatch, { backgroundColor: s.swatch, borderColor: c.line }]} />
+            <Text style={[styles.pillText, { color: c.ink }]}>{SOIL_LABEL[s.id].replace(' (not ideal in pots)', '')}</Text>
           </Pressable>
         ))}
       </View>
-      {soilInfo && <Text style={[styles.note, soil === 'garden_soil' && { color: colors.warn }]}>{soilInfo.note}</Text>}
+      {soilInfo && <Text style={[styles.note, { color: soil === 'garden_soil' ? c.warn : c.inkMuted }]}>{soilInfo.note}</Text>}
 
       <Label>Pot</Label>
       <View style={styles.wrap}>
@@ -241,22 +289,22 @@ export default function AddPlantScreen() {
       </View>
       <View style={styles.wrap}>
         {MATERIALS.map((m) => (
-          <Pill key={m.id} on={material === m.id} bg={colors.peach} label={m.label} onPress={() => setMaterial(m.id)} />
+          <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
         ))}
       </View>
 
       <Label>Where does it live?</Label>
       <View style={styles.wrap}>
         {PLACES.map((p) => (
-          <Pill key={p.id} on={placement === p.id} bg={colors.ice} label={p.label} onPress={() => setPlacement(p.id)} />
+          <Pill key={p.id} on={placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id)} />
         ))}
       </View>
-      <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor="#8A8A99" style={styles.search} accessibilityLabel="Room" />
+      <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" />
 
       <Label>Where's it from?</Label>
       <View style={styles.wrap}>
         {ORIGINS.map((o) => (
-          <Pill key={o.id} on={origin === o.id} bg={colors.grape} label={o.label} onPress={() => setOrigin(o.id)} />
+          <Pill key={o.id} on={origin === o.id} bg={c.grape} label={o.label} onPress={() => setOrigin(o.id)} />
         ))}
       </View>
       {origin === 'cutting' && parents.length > 0 && (
@@ -264,7 +312,7 @@ export default function AddPlantScreen() {
           <Label muted>Cutting from which plant? It joins that plant's Offshoots.</Label>
           <View style={styles.wrap}>
             {parents.map((p) => (
-              <Pill key={p.id} on={parentId === p.id} bg={colors.lavender} label={p.name} onPress={() => setParentId(p.id)} />
+              <Pill key={p.id} on={parentId === p.id} bg={c.lavender} label={p.name} onPress={() => setParentId(p.id)} />
             ))}
           </View>
         </View>
@@ -278,18 +326,24 @@ export default function AddPlantScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 12 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  search: { minHeight: 50, borderRadius: 16, borderWidth: 2, borderColor: colors.ink, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15, color: colors.ink },
+  search: { minHeight: 50, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  idTile: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 20, borderWidth: 2, marginBottom: 4 },
+  idIcon: { width: 52, height: 52, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  idTitle: { fontFamily: fonts.display, fontSize: 18, flexShrink: 1 },
+  idSub: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 17 },
+  plusBadge: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, height: 22, justifyContent: 'center' },
+  plusBadgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  speciesTile: { width: '31%', flexGrow: 1, borderRadius: 18, borderWidth: 2, borderColor: colors.ink, alignItems: 'center', paddingVertical: 8, gap: 2 },
-  speciesName: { fontFamily: fonts.bodyHeavy, fontSize: 12, color: colors.ink, paddingHorizontal: 4 },
-  hero: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 22, borderWidth: 2, borderColor: colors.ink, boxShadow: `0px 4px 0px ${colors.ink}` },
-  heroKicker: { fontFamily: fonts.bodyHeavy, fontSize: 12, color: colors.inkMuted },
-  heroName: { fontFamily: fonts.display, fontSize: 22, color: colors.ink },
-  dice: { width: 50, height: 50, borderRadius: 16, borderWidth: 2, borderColor: colors.ink, backgroundColor: colors.lavender, alignItems: 'center', justifyContent: 'center' },
+  speciesTile: { width: '31%', flexGrow: 1, borderRadius: 18, borderWidth: 2, alignItems: 'center', paddingVertical: 8, gap: 2 },
+  speciesName: { fontFamily: fonts.bodyHeavy, fontSize: 12, paddingHorizontal: 4 },
+  hero: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 22, borderWidth: 2 },
+  heroKicker: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  heroName: { fontFamily: fonts.display, fontSize: 22 },
+  dice: { width: 50, height: 50, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  pill: { minHeight: 42, paddingHorizontal: 14, borderRadius: 21, borderWidth: 2, borderColor: colors.ink, justifyContent: 'center' },
+  pill: { minHeight: 42, paddingHorizontal: 14, borderRadius: 21, borderWidth: 2, justifyContent: 'center' },
   soilPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 6 },
-  swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: colors.ink },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 14, color: colors.ink },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: colors.inkMuted },
+  swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2 },
+  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
 });
