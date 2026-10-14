@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
 import { moodFor } from '@/engine/careEngine';
@@ -16,6 +17,7 @@ const BADGE: Record<Mood, { text: string; bg: string }> = {
 
 export default function JungleScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { plants, profile } = usePlantStore();
   const now = new Date();
   const potted = plants.filter((p) => !p.rooting);
@@ -33,8 +35,9 @@ export default function JungleScreen() {
         {potted.map((p) => {
           const mood = moodFor(p, now);
           return (
-            <Sticker key={p.id} style={styles.card}>
-              <View style={[styles.art, { backgroundColor: potTint[p.potColor] }]}>
+            <Pressable key={p.id} accessibilityRole="button" accessibilityLabel={`${p.name} details`} onPress={() => router.push(`/plant/${p.id}`)} style={styles.card}>
+            <Sticker>
+              <View style={[styles.art, { backgroundColor: potTint[p.potColor], borderTopLeftRadius: 20, borderTopRightRadius: 20 }]}>
                 <PlantBuddy speciesId={p.speciesId} mood={mood} pot={p.potColor} size={96} bg={potTint[p.potColor]} faces={profile.faces} />
                 <View style={[styles.badge, { backgroundColor: BADGE[mood].bg }]}>
                   <Text style={styles.badgeText}>{BADGE[mood].text}</Text>
@@ -45,6 +48,7 @@ export default function JungleScreen() {
                 <Text style={styles.kind}>{SPECIES[p.speciesId].commonName}</Text>
               </View>
             </Sticker>
+            </Pressable>
           );
         })}
       </View>
@@ -55,7 +59,7 @@ export default function JungleScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 16, backgroundColor: colors.white },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  card: { width: '47.5%', overflow: 'hidden' },
+  card: { width: '47.5%' },
   art: { height: 104, alignItems: 'center', justifyContent: 'flex-end', borderBottomWidth: 2, borderColor: colors.ink },
   badge: { position: 'absolute', top: 8, left: 8, borderWidth: 2, borderColor: colors.ink, borderRadius: 13, paddingHorizontal: 8, height: 26, justifyContent: 'center' },
   badgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11, color: colors.ink },

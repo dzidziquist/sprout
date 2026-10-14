@@ -7,7 +7,11 @@ export function Sticker({ style, children, drop = 4, bg = colors.white }: { styl
 }
 
 export function Title({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
-  return <Text style={[styles.title, style]}>{children}</Text>;
+  return (
+    <Text accessibilityRole="header" style={[styles.title, style]}>
+      {children}
+    </Text>
+  );
 }
 
 export function Label({ children, style, muted }: { children: React.ReactNode; style?: StyleProp<TextStyle>; muted?: boolean }) {

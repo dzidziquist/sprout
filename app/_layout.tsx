@@ -43,6 +43,17 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.white } }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="add" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="plant/[id]" />
+        <Stack.Screen
+          name="log/[id]"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.62, 1],
+            sheetGrabberVisible: true,
+            sheetCornerRadius: 38,
+            contentStyle: { backgroundColor: colors.white },
+          }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );

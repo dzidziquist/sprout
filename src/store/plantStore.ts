@@ -13,7 +13,9 @@ export interface Profile {
   faces: FaceStyle;
 }
 
-export type NewPlant = Omit<Plant, 'id' | 'k' | 'nextCheckAt' | 'createdAt' | 'lastCheckAt' | 'lastResult'>;
+export type CareAction = 'water' | 'wet' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
+
+export type NewPlant =Omit<Plant, 'id' | 'k' | 'nextCheckAt' | 'createdAt' | 'lastCheckAt' | 'lastResult'>;
 
 interface PlantState {
   profile: Profile;
@@ -29,6 +31,8 @@ interface PlantState {
   /** Records a soil check and reschedules. Returns the kind message to show. */
   logCheck: (plantId: string, result: CheckResult, now?: Date) => string;
   undoLastCheck: (plantId: string) => void;
+  /** Multi-select care log from the Log care sheet. Returns how many things were logged. */
+  logCare: (plantId: string, actions: CareAction[], note?: string, now?: Date) => number;
   takeCutting: (parentId: string, name: string, method: NonNullable<Plant['rooting']>['method'], now?: Date) => Plant | undefined;
   seedDemo: (now?: Date) => void;
 }
@@ -88,6 +92,34 @@ export const usePlantStore = create<PlantState>()(
           events: s.events.filter((e) => !(e.plantId === plantId && e.at === lastCheckAt)),
           undo: rest,
         });
+      },
+
+      logCare: (plantId, actions, note, now = new Date()) => {
+        const plant = get().plants.find((p) => p.id === plantId);
+        if (!plant || actions.length === 0) return 0;
+        // Watering and "still wet" are soil answers, so they go through the care engine.
+        if (actions.includes('water')) get().logCheck(plantId, 'dry', now);
+        else if (actions.includes('wet')) get().logCheck(plantId, 'damp', now);
+        const at = now.toISOString();
+        const extra: CareEvent[] = [];
+        for (const a of actions) {
+          if (a === 'feed') extra.push({ id: uid(), plantId, type: 'feed', at });
+          if (a === 'prune') extra.push({ id: uid(), plantId, type: 'prune', at });
+          if (a === 'pest') extra.push({ id: uid(), plantId, type: 'pest', at });
+          if (a === 'photo') extra.push({ id: uid(), plantId, type: 'photo', at });
+        }
+        if (note?.trim()) extra.push({ id: uid(), plantId, type: 'note', note: note.trim(), at });
+        if (actions.includes('repot')) {
+          extra.push({ id: uid(), plantId, type: 'repot', at });
+          // Fresh mix: forget most of what we learned about the old pot.
+          set((s) => ({ plants: s.plants.map((p) => (p.id === plantId ? { ...p, lastRepottedAt: at, k: Math.round(((p.k + 1) / 2) * 100) / 100 } : p)) }));
+        }
+        if (extra.length) set((s) => ({ events: [...s.events, ...extra] }));
+        if (actions.includes('cutting')) {
+          const babies = get().plants.filter((p) => p.parentId === plantId).length;
+          get().takeCutting(plantId, `${plant.name} baby ${babies + 1}`, 'water', now);
+        }
+        return actions.length;
       },
 
       takeCutting: (parentId, name, method, now = new Date()) => {
