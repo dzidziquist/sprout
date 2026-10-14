@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rootline — Today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B1B2F}a:hover{color:#000000}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; color: #1B1B2F; font-family: 'Nunito', sans-serif">
+  <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 14px">
+    <header style="display: flex; justify-content: space-between; align-items: center">
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 14px; font-weight: 800; color: #55556B">Tue 13 Oct · Accra</span>
+        <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 700">Plant round</h1>
+      </div>
+      <a href="Me.dc.html" aria-label="5 weeks on track" style="display: flex; align-items: center; gap: 4px; height: 44px; padding: 0 12px 0 8px; border-radius: 22px; background: #FFF1B8; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; text-decoration: none; font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 700">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c.6 3.4 5.5 5.2 5.5 10.2a5.5 5.5 0 0 1-11 0c0-2.8 1.5-4.4 2.8-5.4.2 1.9 1.1 3 2.3 3.4-.6-2.9-.3-5.6.4-8.2z" fill="#FF6B5B" stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round"></path><path d="M12 13c.8 1.4 2.4 2 2.4 4a2.4 2.4 0 0 1-4.8 0c0-1.3.9-2 2.4-4z" fill="#FFD23F"></path></svg>
+        5 wks
+      </a>
+    </header>
+
+    <section style="position: relative; height: 128px; border-radius: 24px; background: {{heroBg}}; border: 2px solid #1B1B2F; box-shadow: 0 5px 0 #1B1B2F; overflow: hidden">
+      <div style="position: absolute; left: 16px; top: 14px; right: 128px; display: flex; flex-direction: column; gap: 4px">
+        <h2 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 23px; line-height: 1.05; font-weight: 700">{{heroTitle}}</h2>
+        <p style="margin: 0; font-size: 13px; line-height: 1.3; font-weight: 800">{{heroSub}}</p>
+      </div>
+      <div style="position: absolute; left: 16px; bottom: 14px; display: flex; gap: 6px">
+        <sc-for list="{{segs}}" as="sg" hint-placeholder-count="3">
+          <div style="width: 48px; height: 12px; border-radius: 6px; border: 2px solid #1B1B2F; background: {{sg.fill}}"></div>
+        </sc-for>
+      </div>
+      <div style="position: absolute; right: -8px; bottom: -16px">
+        <dc-import name="PlantArt" species="monstera" mood="{{heroMood}}" pot="#FFD23F" bg="{{heroBg}}" size="144" hint-size="144px,144px"></dc-import>
+      </div>
+    </section>
+
+    <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 16px; background: #FFF1B8; border: 2px solid #1B1B2F">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7"></path></svg>
+      <span style="font-size: 13px; font-weight: 800">Harmattan mode: dry air dries pots faster, so checks come sooner.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{tasks}}" as="task" hint-placeholder-count="3">
+        <div style="background: #FFFFFF; border: 2px solid #1B1B2F; border-radius: 22px; box-shadow: 0 4px 0 #1B1B2F; padding: 10px; display: flex; gap: 12px; align-items: center">
+          <a href="PlantDetail.dc.html" aria-label="{{task.name}} details" style="width: 80px; height: 80px; border-radius: 16px; background: {{task.tone}}; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <dc-import name="PlantArt" species="{{task.species}}" mood="{{task.mood}}" pot="{{task.pot}}" bg="{{task.tone}}" size="74" hint-size="74px,74px"></dc-import>
+          </a>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; flex-direction: column">
+              <span style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.15">{{task.name}}</span>
+              <span style="font-size: 13px; font-weight: 800; color: {{task.lineColor}}">{{task.line}}</span>
+            </div>
+            <sc-if value="{{task.open}}" hint-placeholder-val="{{true}}">
+              <div role="group" aria-label="How does the soil feel?" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+                <button type="button" onClick="{{task.dry}}" style="height: 40px; border-radius: 13px; border: 2px solid #1B1B2F; background: #FFD23F; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; padding: 0">Dry</button>
+                <button type="button" onClick="{{task.damp}}" style="height: 40px; border-radius: 13px; border: 2px solid #1B1B2F; background: #D6EEFF; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; padding: 0">Damp</button>
+                <button type="button" onClick="{{task.soggy}}" style="height: 40px; border-radius: 13px; border: 2px solid #1B1B2F; background: #EDE7FF; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; padding: 0">Soggy</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{task.done}}" hint-placeholder-val="{{false}}">
+              <div style="display: flex; gap: 6px; align-items: center">
+                <span style="height: 32px; padding: 0 10px; border-radius: 16px; background: {{task.chipBg}}; border: 2px solid #1B1B2F; display: flex; align-items: center; font-size: 12px; font-weight: 800">{{task.chip}}</span>
+                <button type="button" onClick="{{task.undo}}" style="height: 32px; padding: 0 10px; border-radius: 16px; border: 2px solid #1B1B2F; background: #FFFFFF; color: #1B1B2F; font-size: 12px; font-weight: 800">Undo</button>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <nav aria-label="Main" style="position: absolute; left: 14px; right: 14px; bottom: 18px; height: 72px; background: #FFFFFF; border: 2px solid #1B1B2F; border-radius: 26px; box-shadow: 0 4px 0 #1B1B2F; display: flex; align-items: center; justify-content: space-around; padding: 0 6px">
+    <a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; border-radius: 18px; background: #3DDC84; border: 2px solid #1B1B2F; color: #1B1B2F; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>Today
+    </a>
+    <a href="Plants.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"></path><path d="M5 19 13 11"></path></svg>Jungle
+    </a>
+    <a href="AddPlant.dc.html" aria-label="Add a plant" style="width: 56px; height: 56px; border-radius: 20px; background: #FFD23F; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; color: #1B1B2F; display: flex; align-items: center; justify-content: center; transform: translateY(-14px)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    </a>
+    <a href="Lineage.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2.5"></circle><circle cx="6" cy="19" r="2.5"></circle><circle cx="18" cy="12" r="2.5"></circle><path d="M6 7.5v9M6 12h4a4 4 0 0 0 4-4V8M15.5 12H10"></path></svg>Family
+    </a>
+    <a href="Me.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Me
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var s = this.state || {};
+    var self = this;
+    var base = [
+      { id: 'a', name: 'Queenie', species: 'pothos', pot: '#5AB8FF', tone: '#FFF1B8', why: 'Probably dry. Last drink 9 days ago' },
+      { id: 'b', name: 'Big Fig', species: 'fig', pot: '#FF6B5B', tone: '#EDE7FF', why: 'Was damp on Saturday, peek again?' },
+      { id: 'c', name: 'Tommy', species: 'tomato', pot: '#FFD23F', tone: '#FFD9CF', why: 'Hot day: containers dry fast' }
+    ];
+    var outcome = {
+      dry: { mood: 'happy', line: 'Watered! Next check in ~8 days', chip: 'Watered', chipBg: '#3DDC84' },
+      damp: { mood: 'sleepy', line: 'Good call, skipping. +1 smart skip', chip: 'Skipped', chipBg: '#D6EEFF' },
+      soggy: { mood: 'thirsty', line: 'Too wet. Letting it dry; watch for gnats', chip: 'Flagged', chipBg: '#EDE7FF' }
+    };
+    var tasks = base.map(function (t) {
+      var st = s[t.id];
+      var o = st ? outcome[st] : null;
+      var patch = function (v) { var p = {}; p[t.id] = v; return function () { self.setState(p); }; };
+      return Object.assign({}, t, {
+        open: !st, done: !!st,
+        mood: o ? o.mood : 'thirsty',
+        line: o ? o.line : t.why,
+        lineColor: o ? '#14804A' : '#C2410C',
+        chip: o ? o.chip : '', chipBg: o ? o.chipBg : '#FFFFFF',
+        dry: patch('dry'), damp: patch('damp'), soggy: patch('soggy'), undo: patch(null)
+      });
+    });
+    var left = tasks.filter(function (t) { return t.open; }).length;
+    var done = 3 - left;
+    var segs = [0, 1, 2].map(function (i) { return { fill: i < done ? '#1B1B2F' : '#FFFFFF' }; });
+    return {
+      tasks: tasks, segs: segs,
+      heroBg: left === 0 ? '#D7F9E4' : '#FFD9CF',
+      heroMood: left === 0 ? 'happy' : 'thirsty',
+      heroTitle: left === 0 ? 'Round done!' : left + ' soil ' + (left === 1 ? 'check' : 'checks') + ' today',
+      heroSub: left === 0 ? 'Still on track: 5 weeks running.' : 'Feel 2–3 cm down. Skipping counts too.'
+    };
+  }
+}
+</script>
+</body>
+</html>

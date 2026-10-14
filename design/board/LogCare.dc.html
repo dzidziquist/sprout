@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rootline — Log care</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B1B2F}a:hover{color:#000000}
+button,input{font-family:inherit}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFF1B8; color: #1B1B2F; font-family: 'Nunito', sans-serif">
+  <div style="position: absolute; right: 26px; top: 50px"><dc-import name="PlantArt" species="pothos" mood="{{bgMood}}" pot="#5AB8FF" bg="#FFF1B8" size="200" hint-size="200px,200px"></dc-import></div>
+  <div style="position: absolute; inset: 0; background: #1B1B2F; opacity: 0.45"></div>
+
+  <sc-if value="{{editing}}" hint-placeholder-val="{{true}}">
+    <section aria-label="Log care for Queenie" style="position: absolute; left: 0; right: 0; bottom: 0; height: 500px; background: #FFFFFF; border-top: 2px solid #1B1B2F; border-radius: 30px 30px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+      <div style="align-self: center; width: 44px; height: 6px; border-radius: 3px; background: #1B1B2F"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <div style="display: flex; flex-direction: column">
+          <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700">What did Queenie get?</h1>
+          <span style="font-size: 14px; font-weight: 700; color: #55556B">Today · tap all that apply</span>
+        </div>
+        <a href="PlantDetail.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; color: #1B1B2F; flex-shrink: 0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <button type="button" onClick="{{a.water.toggle}}" aria-pressed="{{a.water.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.water.shadow}}; background: {{a.water.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"></path></svg>Watered
+        </button>
+        <button type="button" onClick="{{a.wet.toggle}}" aria-pressed="{{a.wet.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.wet.shadow}}; background: {{a.wet.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"></path><path d="m4 4 16 16"></path></svg>Still wet
+        </button>
+        <button type="button" onClick="{{a.feed.toggle}}" aria-pressed="{{a.feed.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.feed.shadow}}; background: {{a.feed.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v5l-4.5 7.5A3 3 0 0 0 8 20h8a3 3 0 0 0 2.5-4.5L14 8V3"></path><path d="M7.5 14h9"></path></svg>Fed
+        </button>
+        <button type="button" onClick="{{a.repot.toggle}}" aria-pressed="{{a.repot.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.repot.shadow}}; background: {{a.repot.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h10l1-9H6z"></path><path d="M12 11V5M9 7c1-2 5-2 6 0"></path></svg>Repotted
+        </button>
+        <button type="button" onClick="{{a.prune.toggle}}" aria-pressed="{{a.prune.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.prune.shadow}}; background: {{a.prune.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"></path></svg>Trimmed
+        </button>
+        <button type="button" onClick="{{a.pest.toggle}}" aria-pressed="{{a.pest.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.pest.shadow}}; background: {{a.pest.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="6" width="8" height="14" rx="4"></rect><path d="M12 20v-9M8 10H4M16 10h4M8 15H4M16 15h4M9 6 7 3M15 6l2-3"></path></svg>Bugs!
+        </button>
+        <button type="button" onClick="{{a.cut.toggle}}" aria-pressed="{{a.cut.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.cut.shadow}}; background: {{a.cut.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2.5"></circle><circle cx="6" cy="19" r="2.5"></circle><circle cx="18" cy="12" r="2.5"></circle><path d="M6 7.5v9M6 12h4a4 4 0 0 0 4-4V8M15.5 12H10"></path></svg>Cutting
+        </button>
+        <button type="button" onClick="{{a.photo.toggle}}" aria-pressed="{{a.photo.pressed}}" style="height: 86px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: {{a.photo.shadow}}; background: {{a.photo.bg}}; color: #1B1B2F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0; font-size: 13px; font-weight: 800">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3"></rect><circle cx="12" cy="13" r="3.5"></circle><path d="M8 6l1.5-2h5L16 6"></path></svg>Photo
+        </button>
+      </div>
+
+      <sc-if value="{{a.cut.on}}" hint-placeholder-val="{{false}}">
+        <div style="padding: 10px 12px; border-radius: 14px; background: #EDE7FF; border: 2px solid #1B1B2F; font-size: 14px; font-weight: 800">A baby! We'll add it to Queenie's family tree.</div>
+      </sc-if>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="care-note" style="font-size: 14px; font-weight: 800">Anything you noticed?</label>
+        <input id="care-note" type="text" placeholder="New leaf, yellow tips, a bug…" style="height: 50px; padding: 0 14px; border-radius: 16px; border: 2px solid #1B1B2F; background: #FFFFFF; font-size: 15px; font-weight: 700; color: #1B1B2F">
+      </div>
+
+      <button type="button" onClick="{{save}}" style="margin-top: auto; height: 58px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: 0 4px 0 #1B1B2F; background: {{saveBg}}; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 19px; font-weight: 700">{{saveLabel}}</button>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{saved}}" hint-placeholder-val="{{false}}">
+    <section aria-label="Saved" style="position: absolute; left: 0; right: 0; bottom: 0; height: 560px; background: #3DDC84; border-top: 2px solid #1B1B2F; border-radius: 30px 30px 0 0; padding: 26px 24px 24px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; overflow: hidden">
+      <div aria-hidden="true" style="position: absolute; left: 34px; top: 40px; width: 14px; height: 24px; border-radius: 4px; background: #FFD23F; border: 2px solid #1B1B2F; transform: rotate(-20deg)"></div>
+      <div aria-hidden="true" style="position: absolute; right: 44px; top: 34px; width: 18px; height: 18px; border-radius: 9px; background: #FF6B5B; border: 2px solid #1B1B2F"></div>
+      <div aria-hidden="true" style="position: absolute; left: 70px; top: 190px; width: 16px; height: 16px; border-radius: 8px; background: #5AB8FF; border: 2px solid #1B1B2F"></div>
+      <div aria-hidden="true" style="position: absolute; right: 60px; top: 170px; width: 12px; height: 26px; border-radius: 4px; background: #A78BFA; border: 2px solid #1B1B2F; transform: rotate(28deg)"></div>
+      <div aria-hidden="true" style="position: absolute; right: 120px; top: 60px; width: 10px; height: 20px; border-radius: 3px; background: #FFB3C7; border: 2px solid #1B1B2F; transform: rotate(50deg)"></div>
+      <div aria-hidden="true" style="position: absolute; left: 120px; top: 30px; width: 12px; height: 12px; border-radius: 6px; background: #FFFFFF; border: 2px solid #1B1B2F"></div>
+      <div style="width: 180px; height: 180px; border-radius: 90px; background: #FFFFFF; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center">
+        <dc-import name="PlantArt" species="pothos" mood="happy" pot="#5AB8FF" bg="#FFFFFF" size="160" hint-size="160px,160px"></dc-import>
+      </div>
+      <h1 style="margin: 8px 0 0; font-family: 'Fredoka', sans-serif; font-size: 32px; line-height: 1.05; font-weight: 700">Queenie says thanks!</h1>
+      <p style="margin: 0; font-size: 16px; font-weight: 800">{{savedSub}}</p>
+      <div style="display: flex; gap: 8px; margin-top: 6px">
+        <span style="height: 36px; padding: 0 14px; border-radius: 18px; background: #FFFFFF; border: 2px solid #1B1B2F; display: flex; align-items: center; font-weight: 800; font-size: 14px">{{pointsLabel}}</span>
+        <span style="height: 36px; padding: 0 14px; border-radius: 18px; background: #FFF1B8; border: 2px solid #1B1B2F; display: flex; align-items: center; font-weight: 800; font-size: 14px">Week 5 on track</span>
+      </div>
+      <a href="PlantDetail.dc.html" style="margin-top: auto; align-self: stretch; height: 58px; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: 0 4px 0 #1B1B2F; background: #FFFFFF; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Back to Queenie</a>
+    </section>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var s = st.sel || { water: true, photo: true };
+    var colors = { water: '#D6EEFF', wet: '#EDE7FF', feed: '#FFF1B8', repot: '#FFD9CF', prune: '#D7F9E4', pest: '#FFE1E8', cut: '#EDE7FF', photo: '#FFF1B8' };
+    var a = {};
+    var count = 0;
+    Object.keys(colors).forEach(function (k) {
+      var on = !!s[k];
+      if (on) count++;
+      a[k] = {
+        on: on, pressed: on ? 'true' : 'false',
+        bg: on ? colors[k] : '#FFFFFF',
+        shadow: on ? '0 4px 0 #1B1B2F' : 'none',
+        toggle: function () {
+          var next = Object.assign({}, s);
+          next[k] = !on;
+          if (k === 'water' && !on) next.wet = false;
+          if (k === 'wet' && !on) next.water = false;
+          self.setState({ sel: next });
+        }
+      };
+    });
+    return {
+      a: a,
+      editing: !st.saved, saved: !!st.saved,
+      bgMood: st.saved ? 'happy' : 'thirsty',
+      saveLabel: count === 0 ? 'Pick something first' : 'Save ' + count + (count === 1 ? ' thing' : ' things'),
+      saveBg: count === 0 ? '#EDEDF3' : '#3DDC84',
+      save: function () { if (count > 0) self.setState({ saved: true }); },
+      savedSub: count + (count === 1 ? ' thing' : ' things') + ' logged. Her rhythm just got smarter.',
+      pointsLabel: '+' + (count * 5) + ' care points'
+    };
+  }
+}
+</script>
+</body>
+</html>

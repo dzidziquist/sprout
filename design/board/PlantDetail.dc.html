@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rootline — Queenie</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B1B2F}a:hover{color:#000000}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; color: #1B1B2F; font-family: 'Nunito', sans-serif">
+  <div style="height: 290px; position: relative; background: #FFF1B8; border-bottom: 2px solid #1B1B2F">
+    <a href="Main.dc.html" aria-label="Back to Today" style="position: absolute; top: 22px; left: 20px; width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; display: flex; align-items: center; justify-content: center; color: #1B1B2F">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </a>
+    <div style="position: absolute; top: 26px; right: 20px; height: 36px; padding: 0 12px; border-radius: 18px; background: #FFFFFF; border: 2px solid #1B1B2F; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3"></rect><circle cx="12" cy="13" r="3.5"></circle></svg>
+      14 photos
+    </div>
+    <div style="position: absolute; left: 22px; top: 92px; max-width: 150px; padding: 10px 12px; border-radius: 18px 18px 18px 4px; background: #FFFFFF; border: 2px solid #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; line-height: 1.25">I'm good! Check my soil on Monday.</div>
+    <div style="position: absolute; right: 26px; bottom: -6px">
+      <dc-import name="PlantArt" species="pothos" mood="happy" pot="#5AB8FF" bg="#FFF1B8" size="230" hint-size="230px,230px"></dc-import>
+    </div>
+  </div>
+
+  <div style="padding: 16px 20px 0; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; flex-direction: column">
+      <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 32px; line-height: 1.1; font-weight: 700">Queenie</h1>
+      <span style="font-size: 14px; font-weight: 700; color: #55556B">Marble Queen pothos · Living room</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <div style="background: #D6EEFF; border: 2px solid #1B1B2F; border-radius: 16px; padding: 8px 10px; display: flex; flex-direction: column">
+        <span style="font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700">~8 days</span>
+        <span style="font-size: 12px; font-weight: 800">water rhythm</span>
+      </div>
+      <div style="background: #FFF1B8; border: 2px solid #1B1B2F; border-radius: 16px; padding: 8px 10px; display: flex; flex-direction: column">
+        <span style="font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700">Bright</span>
+        <span style="font-size: 12px; font-weight: 800">indirect light</span>
+      </div>
+      <div style="background: #FFD9CF; border: 2px solid #1B1B2F; border-radius: 16px; padding: 8px 10px; display: flex; flex-direction: column">
+        <span style="font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700">Toxic</span>
+        <span style="font-size: 12px; font-weight: 800">to cats &amp; dogs</span>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Plant sections" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border: 2px solid #1B1B2F; border-radius: 18px">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+        <button type="button" role="tab" aria-selected="{{t.selected}}" onClick="{{t.pick}}" style="height: 38px; border: none; border-radius: 13px; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">{{t.label}}</button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{showDiary}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; gap: 10px; align-items: center">
+          <div style="width: 40px; height: 40px; border-radius: 14px; background: #D6EEFF; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"></path></svg></div>
+          <div style="flex: 1; display: flex; justify-content: space-between"><span style="font-weight: 800; font-size: 15px">Had a big drink</span><span style="font-size: 13px; font-weight: 700; color: #55556B">Sun</span></div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-start">
+          <div style="width: 40px; height: 40px; border-radius: 14px; background: #D7F9E4; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"></path><path d="M5 19 13 11"></path></svg></div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; justify-content: space-between"><span style="font-weight: 800; font-size: 15px">New leaf! That's #23</span><span style="font-size: 13px; font-weight: 700; color: #55556B">4 Oct</span></div>
+            <div style="display: flex; gap: 8px">
+              <div style="width: 64px; height: 64px; border-radius: 14px; background: #FFF1B8; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center"><dc-import name="PlantArt" species="pothos" mood="happy" pot="#5AB8FF" bg="#FFF1B8" size="56" hint-size="56px,56px"></dc-import></div>
+              <div style="width: 64px; height: 64px; border-radius: 14px; background: #D7F9E4; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center"><dc-import name="PlantArt" species="pothos" mood="sleepy" pot="#5AB8FF" bg="#D7F9E4" size="56" hint-size="56px,56px"></dc-import></div>
+              <div style="width: 64px; height: 64px; border-radius: 14px; background: #1B1B2F; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600">+12</div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center">
+          <div style="width: 40px; height: 40px; border-radius: 14px; background: #FFD9CF; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h10l1-9H6z"></path><path d="M12 11V5M9 7c1-2 5-2 6 0"></path></svg></div>
+          <div style="flex: 1; display: flex; justify-content: space-between"><span style="font-weight: 800; font-size: 15px">Moved to a bigger home</span><span style="font-size: 13px; font-weight: 700; color: #55556B">20 Sep</span></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showCare}}" hint-placeholder-val="{{false}}">
+      <div style="border: 2px solid #1B1B2F; border-radius: 20px; overflow: hidden">
+        <div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 14px; border-bottom: 2px solid #EDEDF3"><span style="font-weight: 800; color: #55556B; font-size: 14px">Water</span><span style="font-weight: 800; font-size: 14px; text-align: right">When the top 2–3 cm is dry</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 14px; border-bottom: 2px solid #EDEDF3"><span style="font-weight: 800; color: #55556B; font-size: 14px">Light</span><span style="font-weight: 800; font-size: 14px; text-align: right">Bright, no harsh sun</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 14px; border-bottom: 2px solid #EDEDF3"><span style="font-weight: 800; color: #55556B; font-size: 14px">Feed</span><span style="font-weight: 800; font-size: 14px; text-align: right">Monthly, spring–summer</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 12px; padding: 11px 14px"><span style="font-weight: 800; color: #55556B; font-size: 14px">Grow tip</span><span style="font-weight: 800; font-size: 14px; text-align: right">Pinch tips to stay bushy</span></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showFamily}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: center; gap: 10px; border: 2px solid #1B1B2F; border-radius: 18px; padding: 8px 12px 8px 8px; background: #EDE7FF">
+          <div style="width: 52px; height: 52px; border-radius: 26px; background: #FFFFFF; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center"><dc-import name="PlantArt" species="pothos" mood="happy" pot="#FFD23F" bg="#FFFFFF" size="46" hint-size="46px,46px"></dc-import></div>
+          <div style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 12px; font-weight: 800; color: #55556B">Mum plant</span><span style="font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 600">Kitchen Queen · since 2022</span></div>
+        </div>
+        <a href="Lineage.dc.html" style="height: 44px; border-radius: 14px; border: 2px solid #1B1B2F; background: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600">See all 3 babies →</a>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 24px; background: #FFFFFF; border-top: 2px solid #1B1B2F; display: flex; gap: 10px">
+    <button type="button" aria-label="Add photo" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: 0 4px 0 #1B1B2F; background: #FFF1B8; color: #1B1B2F; display: flex; align-items: center; justify-content: center; padding: 0">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3"></rect><circle cx="12" cy="13" r="3.5"></circle><path d="M8 6l1.5-2h5L16 6"></path></svg>
+    </button>
+    <a href="LogCare.dc.html" style="height: 56px; flex: 1; border-radius: 18px; border: 2px solid #1B1B2F; box-shadow: 0 4px 0 #1B1B2F; background: #3DDC84; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">Log care</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var tab = (this.state && this.state.tab) || 'diary';
+    var tabs = [['diary', 'Diary'], ['care', 'Care'], ['family', 'Family']].map(function (t) {
+      var on = t[0] === tab;
+      return {
+        label: t[1], selected: on ? 'true' : 'false',
+        bg: on ? '#1B1B2F' : 'transparent', fg: on ? '#FFFFFF' : '#1B1B2F',
+        pick: function () { self.setState({ tab: t[0] }); }
+      };
+    });
+    return { tabs: tabs, showDiary: tab === 'diary', showCare: tab === 'care', showFamily: tab === 'family' };
+  }
+}
+</script>
+</body>
+</html>
