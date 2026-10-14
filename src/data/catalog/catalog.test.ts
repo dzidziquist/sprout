@@ -37,6 +37,32 @@ describe('catalogue data', () => {
     }
   });
 
+  it('covers the common houseplants, including the ids the illustrations are drawn for', () => {
+    expect(HOUSEPLANTS.length).toBeGreaterThanOrEqual(140);
+    const ids = new Set(HOUSEPLANTS.map((s) => s.id));
+    const required = ['philodendron-heartleaf', 'philodendron-brasil', 'alocasia-polly', 'anthurium', 'phalaenopsis', 'boston-fern', 'pilea', 'begonia-maculata', 'jade', 'echeveria', 'christmas-cactus', 'dracaena-marginata', 'croton', 'african-violet', 'aglaonema', 'parlor-palm', 'english-ivy', 'tradescantia', 'maranta', 'syngonium'];
+    for (const id of required) expect(ids.has(id), id).toBe(true);
+    const popular = HOUSEPLANTS.filter((s) => s.popular).length;
+    expect(popular).toBeGreaterThanOrEqual(30);
+    expect(popular).toBeLessThanOrEqual(50);
+  });
+
+  it('gives every houseplant a tip, a pet-safety flag and a houseplant or succulent category', () => {
+    for (const s of HOUSEPLANTS) {
+      expect(s.tip, s.id).toBeTruthy();
+      expect(typeof s.petToxic, s.id).toBe('boolean');
+      expect(['houseplant', 'succulent'], s.id).toContain(s.category);
+      expect(s.group, s.id).not.toBe('edible');
+    }
+  });
+
+  it('writes photo-ID synonyms as lowercase "genus species"', () => {
+    for (const s of ALL) {
+      for (const n of s.match?.species ?? []) expect(n, s.id).toMatch(/^[a-z-]+ [a-z-]+$/);
+      for (const g of [...(s.match?.genus ?? []), ...(s.match?.relatives ?? [])]) expect(g, s.id).toMatch(/^[a-z-]+$/);
+    }
+  });
+
   it('keeps houseplants inedible and edibles edible', () => {
     for (const s of HOUSEPLANTS) expect(s.edible, s.id).toBe(false);
     for (const s of EDIBLE_PLANTS) expect(s.edible, s.id).toBe(true);
@@ -84,6 +110,10 @@ describe('species helpers', () => {
   it('finds plants by common name, alias or Latin name', () => {
     expect(searchSpecies('pothos')[0].id).toBe('pothos');
     expect(searchSpecies('epipremnum')[0].id).toBe('pothos');
+    expect(searchSpecies("devil's ivy")[0].id).toBe('pothos');
+    expect(searchSpecies('sansevieria')[0].id).toBe('snake');
+    expect(searchSpecies('chinese money plant')[0].id).toBe('pilea');
+    expect(searchSpecies('prayer plant')[0].id).toBe('maranta');
     expect(searchSpecies('zzzzqq')).toEqual([]);
   });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SPECIES_LIST } from '../data/species';
+import { getSpecies, SPECIES_LIST } from '../data/species';
 import { buildIdentifyUrl, confidenceLabel, identifyPlant, matchCatalogue, normalizeLatin, parsePlantNet, PlantIdError, speciesFor, type PlantNetResult } from './plantId';
 
 const r = (latinName: string, score: number, commonNames: string[] = []): PlantNetResult => ({ latinName, score, commonNames });
@@ -18,7 +18,8 @@ describe('speciesFor', () => {
     ['Epipremnum aureum', 'pothos', true],
     ['Ficus lyrata', 'fig', true],
     ['Ficus elastica', 'rubber', true],
-    ['Ficus benjamina', 'fig', false],
+    ['Ficus benjamina', 'ficus-benjamina', true],
+    ['Ficus religiosa', 'fig', false],
     ['Goeppertia orbifolia', 'calathea', true],
     ['Calathea lutea', 'calathea', true],
     ['Dracaena trifasciata', 'snake', true],
@@ -27,22 +28,84 @@ describe('speciesFor', () => {
     ['Capsicum annuum', 'pepper', true],
     ['Allium fistulosum', 'spring-onion', true],
     ["Philodendron erubescens 'Pink Princess'", 'pink-princess', true],
-    ['Philodendron hederaceum', 'pink-princess', false],
+    ['Philodendron hederaceum', 'philodendron-heartleaf', true],
+    ["Philodendron hederaceum 'Brasil'", 'philodendron-heartleaf', true],
+    ['Philodendron gloriosum', 'philodendron-gloriosum', true],
+    ['Philodendron rugosum', 'pink-princess', false],
+    ['Philodendron selloum', 'philodendron-selloum', true],
+    ['Philodendron xanadu', 'philodendron-xanadu', true],
     ['Monstera deliciosa', 'monstera', true],
     ['Zamioculcas zamiifolia', 'zz', true],
     ['Curio rowleyanus', 'string-of-pearls', true],
+    // Synonyms and old names
+    ['Sansevieria trifasciata', 'snake', true],
+    ['Sansevieria masoniana', 'whale-fin', true],
+    ['Scindapsus pictus', 'satin-pothos', true],
+    ['Scindapsus aureus', 'pothos', true],
+    ['Calathea makoyana', 'peacock-plant', true],
+    ['Calathea lancifolia', 'rattlesnake-plant', true],
+    ['Calathea musaica', 'calathea-network', true],
+    ['Calathea warszewiczii', 'calathea', true],
+    ['Dracaena marginata', 'dracaena-marginata', true],
+    ['Dracaena reflexa', 'dracaena-marginata', true],
+    ['Dracaena surculosa', 'corn-plant', false],
+    ['Dypsis lutescens', 'areca-palm', true],
+    ['Saintpaulia ionantha', 'african-violet', true],
+    ['Schefflera arboricola', 'umbrella-tree', true],
+    ['Schlumbergera truncata', 'christmas-cactus', true],
+    ['Hatiora gaertneri', 'easter-cactus', true],
+    ['Echinocactus grusonii', 'golden-barrel', true],
+    ['Senecio radicans', 'string-of-bananas', true],
+    ['Rhoeo spathacea', 'moses-in-the-cradle', true],
+    ['Philodendron scandens', 'philodendron-heartleaf', true],
+    // Whole-genus entries
+    ['Echeveria agavoides', 'echeveria', true],
+    ['Haworthia cooperi', 'haworthia', true],
+    ['Aglaonema modestum', 'aglaonema', true],
+    ['Tradescantia sillamontana', 'tradescantia', true],
+    ['Hoya lacunosa', 'hoya', true],
+    ['Alocasia cuprea', 'alocasia-polly', false],
+    ['Begonia lucerna', 'rex-begonia', false],
   ])('%s → %s', (name, id, exact) => {
     expect(speciesFor(name)).toEqual({ id, exact });
   });
 
   it('does not map unrelated plants', () => {
     expect(speciesFor('Quercus robur')).toBeNull();
-    expect(speciesFor('Dracaena marginata')).toBeNull();
+    expect(speciesFor('Rhododendron simsii')).toBeNull();
     expect(speciesFor('Rosa canina')).toBeNull();
   });
 
-  it('maps every catalogue latin name to itself', () => {
-    for (const s of SPECIES_LIST) expect(speciesFor(s.latinName)?.id).toBe(s.id);
+  it('maps every catalogue latin name to itself, or a cultivar to its plain species', () => {
+    for (const s of SPECIES_LIST) {
+      const hit = speciesFor(s.latinName);
+      if (hit?.id === s.id) continue;
+      // Cultivars (e.g. 'Brasil') share their species' Latin name; photo ID can't tell them apart.
+      expect(s.latinName, s.id).toMatch(/'/);
+      expect(normalizeLatin(getSpecies(hit!.id).latinName), s.id).toBe(normalizeLatin(s.latinName));
+      expect(getSpecies(hit!.id).latinName, s.id).not.toMatch(/'/);
+    }
+  });
+
+  it('lets each genus be claimed by one entry at most', () => {
+    const seen = new Map<string, string>();
+    for (const s of SPECIES_LIST) {
+      for (const g of [...(s.match?.genus ?? []), ...(s.match?.relatives ?? [])]) {
+        expect(seen.get(g), `${g}: ${s.id}`).toBeUndefined();
+        seen.set(g, s.id);
+      }
+    }
+  });
+
+  it('never claims the same exact name for two entries', () => {
+    const seen = new Map<string, string>();
+    for (const s of SPECIES_LIST) {
+      const own = s.latinName.includes("'") ? [] : [normalizeLatin(s.latinName)];
+      for (const n of [...own, ...(s.match?.species ?? [])]) {
+        expect(seen.get(n), `${n}: ${s.id}`).toBeUndefined();
+        seen.set(n, s.id);
+      }
+    }
   });
 });
 
@@ -66,14 +129,14 @@ describe('matchCatalogue', () => {
   });
 
   it('ranks an exact match above a genus cousin with the same raw score', () => {
-    const out = matchCatalogue([r('Ficus benjamina', 0.3), r('Ficus elastica', 0.3)]);
+    const out = matchCatalogue([r('Ficus religiosa', 0.3), r('Ficus elastica', 0.3)]);
     expect(out[0]).toMatchObject({ speciesId: 'rubber', exact: true });
     expect(out[1]).toMatchObject({ speciesId: 'fig', exact: false, confidence: 'Long shot' });
     expect(out[1].score).toBeCloseTo(0.24);
   });
 
   it('returns at most three and caps the score at 1', () => {
-    const out = matchCatalogue([r('Hoya carnosa', 0.7), r('Hoya kerrii', 0.5), r('Aloe vera', 0.1), r('Mentha spicata', 0.05), r('Ocimum basilicum', 0.02)]);
+    const out = matchCatalogue([r('Hoya carnosa', 0.7), r('Hoya lacunosa', 0.5), r('Aloe vera', 0.1), r('Mentha spicata', 0.05), r('Ocimum basilicum', 0.02)]);
     expect(out).toHaveLength(3);
     expect(out[0]).toMatchObject({ speciesId: 'hoya', score: 1, confidence: 'Pretty sure' });
   });
