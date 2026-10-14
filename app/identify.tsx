@@ -10,7 +10,7 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Sticker, Title } from '@/components/ui';
 import { usePlus } from '@/hooks/usePlus';
-import { identifyPlant, plantIdConfigured, PlantIdError, type CatalogueMatch, type Confidence, type PlantIdErrorKind, type PlantNetResult } from '@/lib/plantId';
+import { identifyPlant, plantIdConfigured, PlantIdError, type CatalogueMatch, type Confidence, type PlantIdErrorKind, type PlantNetResult, speciesFor } from '@/lib/plantId';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
@@ -94,6 +94,15 @@ export default function IdentifyScreen() {
     haptics.tap();
     router.replace('/add');
   };
+
+  /** Plants Pl@ntNet knows but our list doesn't: add them as themselves, with the name filled in. */
+  const addAsItself = (r: PlantNetResult) => {
+    haptics.tap();
+    const common = r.commonNames[0] ? r.commonNames[0].replace(/^\w/, (ch) => ch.toUpperCase()) : r.latinName;
+    router.replace(`/add?other=1&name=${encodeURIComponent(common)}&latin=${encodeURIComponent(r.latinName)}`);
+  };
+  const topUnlisted = phase.kind === 'results' ? phase.results.find((r) => !speciesFor(r.latinName, r.genus)?.exact) : undefined;
+  const unlistedLeads = phase.kind === 'results' && !!topUnlisted && topUnlisted === phase.results[0];
 
   const photo = 'uri' in phase && phase.uri ? phase.uri : null;
 
@@ -186,6 +195,9 @@ export default function IdentifyScreen() {
                 setConfirm(m);
               }} />
             ))}
+            {unlistedLeads && topUnlisted && (
+              <Button title={`It's ${topUnlisted.commonNames[0] ?? topUnlisted.latinName}: add as itself`} bg={c.mint} onPress={() => addAsItself(topUnlisted)} style={{ minHeight: 50 }} />
+            )}
             <Button title="None of these" bg={c.card} onPress={toList} style={{ minHeight: 50 }} />
             <Button title="Try another photo" bg={c.cloud} onPress={() => setPhase({ kind: 'empty' })} style={{ minHeight: 46 }} />
           </>
@@ -202,7 +214,7 @@ export default function IdentifyScreen() {
                       <Text style={[styles.noticeTitle, { color: c.ink }]}>Not in our fam yet</Text>
                       <Text style={[styles.body, { color: c.ink }]}>
                         Pl@ntNet's best guess is <Text style={{ fontStyle: 'italic' }}>{phase.results[0].latinName}</Text>
-                        {phase.results[0].commonNames[0] ? ` (${phase.results[0].commonNames[0]})` : ''}, which isn't in our plant list yet. Pick the closest match from the list.
+                        {phase.results[0].commonNames[0] ? ` (${phase.results[0].commonNames[0]})` : ''}, which isn't in our plant list yet. Add it as itself: just pick how it likes its water.
                       </Text>
                     </>
                   ) : (
@@ -214,7 +226,10 @@ export default function IdentifyScreen() {
                 </View>
               </View>
             </Sticker>
-            <Button title="Try another photo" raised onPress={() => setPhase({ kind: 'empty' })} style={styles.bigBtn} textStyle={styles.bigBtnText} />
+            {phase.results.length > 0 && (
+              <Button title={`Add ${phase.results[0].commonNames[0] ?? phase.results[0].latinName}`} raised onPress={() => addAsItself(phase.results[0])} style={styles.bigBtn} textStyle={styles.bigBtnText} />
+            )}
+            <Button title="Try another photo" raised={phase.results.length === 0} bg={phase.results.length ? c.card : undefined} onPress={() => setPhase({ kind: 'empty' })} style={phase.results.length ? { minHeight: 50 } : styles.bigBtn} textStyle={phase.results.length ? undefined : styles.bigBtnText} />
             <Button title="Pick from the list" bg={c.card} onPress={toList} style={{ minHeight: 50 }} />
           </>
         )}

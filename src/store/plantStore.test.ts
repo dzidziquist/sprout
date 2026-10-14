@@ -82,4 +82,11 @@ describe('plant store', () => {
     expect(st.plants[0]).toMatchObject({ stage: 'harvesting', regrowCount: 2, photoUri: 'file:///photo.jpg' });
     expect(st.events.find((e) => e.type === 'harvest')).toMatchObject({ amount: 2, unit: 'bunch', note: 'first!' });
   });
+
+  it('schedules "other" plants by their care type', () => {
+    const s = usePlantStore.getState();
+    const cactus = s.addPlant({ ...base, speciesId: 'other-succulent', custom: { commonName: 'Bunny ear' }, soil: 'gritty', name: 'Bun' }, now);
+    const fern = s.addPlant({ ...base, speciesId: 'other-moisture', custom: { commonName: 'Bird nest fern' }, soil: 'gritty', name: 'Nest' }, now);
+    expect(cactus.nextCheckAt > fern.nextCheckAt).toBe(true);
+  });
 });

@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { SPECIES, SPECIES_LIST, getSpecies } from '@/data/species';
+import { OTHER, SPECIES, SPECIES_LIST, getSpecies, isOtherId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
@@ -13,7 +13,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import { usePlus } from '@/hooks/usePlus';
-import type { Light, Origin, Placement, PotMaterial, Soil, SpeciesId } from '@/types';
+import type { Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
 
 const isSpeciesId = (v: unknown): v is SpeciesId => typeof v === 'string' && v in SPECIES;
 
@@ -29,6 +29,29 @@ const NAMES: Partial<Record<SpeciesId, string[]>> = {
   'spring-onion': ['Scallie', 'Oniony', 'Spring'],
 };
 const fallbackNames = ['Sprout', 'Leafy', 'Bud', 'Twiggy'];
+
+const CATEGORIES: { id: PlantCategory | 'all'; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'houseplant', label: 'Houseplants' },
+  { id: 'succulent', label: 'Succulents' },
+  { id: 'vegetable', label: 'Veg' },
+  { id: 'herb', label: 'Herbs' },
+  { id: 'fruit', label: 'Fruit' },
+];
+const PAGE = 48;
+
+/** Care types for plants that aren't in the catalogue. */
+const CARE_TYPES: { group: SpeciesGroup; title: string; sub: string }[] = [
+  { group: 'tropical', title: 'Leafy tropical', sub: 'Philodendrons, aroids, most leafy houseplants' },
+  { group: 'succulent', title: 'Succulent or cactus', sub: 'Fat leaves or spines; likes to dry right out' },
+  { group: 'moisture', title: 'Moisture lover', sub: 'Ferns, prayer plants; likes to stay lightly damp' },
+  { group: 'edible', title: 'Something tasty', sub: 'Veg, herbs or fruit for the grow patch' },
+];
+const PETS: { id: 'toxic' | 'safe' | 'unsure'; label: string }[] = [
+  { id: 'unsure', label: 'Not sure' },
+  { id: 'safe', label: 'Pet-safe' },
+  { id: 'toxic', label: 'Toxic to pets' },
+];
 
 const LIGHTS: { id: Light; label: string; suns: number }[] = [
   { id: 'low', label: 'Shady', suns: 1 },
@@ -100,9 +123,11 @@ export default function AddPlantScreen() {
   const insets = useSafeAreaInsets();
   const c = useColors();
   const { isPlus } = usePlus();
-  const params = useLocalSearchParams<{ species?: string }>();
+  // /add?species=pothos (from photo ID) skips the picker; /add?other=1&name=…&latin=… starts an "other" plant.
+  const params = useLocalSearchParams<{ species?: string; other?: string; name?: string; latin?: string }>();
   // Arriving from photo ID (/add?species=pothos) skips the picker.
-  const preset = isSpeciesId(params.species) ? params.species : null;
+  const otherPreset = params.other ? OTHER.tropical.id : null;
+  const preset = isSpeciesId(params.species) ? params.species : otherPreset;
   const presetDefaults = preset ? defaultsFor(preset) : null;
   const { plants, addPlant } = usePlantStore();
   const [speciesId, setSpeciesId] = useState<SpeciesId | null>(preset);
@@ -117,11 +142,38 @@ export default function AddPlantScreen() {
   const [room, setRoom] = useState('');
   const [origin, setOrigin] = useState<Origin>('bought');
   const [parentId, setParentId] = useState<string | undefined>();
+  const [category, setCategory] = useState<PlantCategory | 'all'>('all');
+  const [limit, setLimit] = useState(PAGE);
+  // "Other" plants: the user's own species name, optional Latin name, and what they know about pets.
+  const [customName, setCustomName] = useState(typeof params.name === 'string' ? params.name : '');
+  const [customLatin, setCustomLatin] = useState(typeof params.latin === 'string' ? params.latin : '');
+  const [pets, setPets] = useState<'toxic' | 'safe' | 'unsure'>('unsure');
 
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return SPECIES_LIST.filter((s) => !q || s.commonName.toLowerCase().includes(q) || s.latinName.toLowerCase().includes(q));
-  }, [query]);
+    const pool = category === 'all' ? SPECIES_LIST : SPECIES_LIST.filter((s) => s.category === category);
+    return searchSpecies(query, pool);
+  }, [query, category]);
+
+  const startOther = () => {
+    haptics.tap();
+    const d = defaultsFor(OTHER.tropical.id);
+    setSpeciesId(OTHER.tropical.id);
+    setCustomName(query.trim().replace(/^\w/, (ch) => ch.toUpperCase()));
+    setSoil(d.soil);
+    setLight(d.light);
+    setPlacement(d.placement);
+    setNameIdx(0);
+    setName(d.name);
+  };
+
+  const setCareType = (group: SpeciesGroup) => {
+    haptics.tap();
+    const d = defaultsFor(OTHER[group].id);
+    setSpeciesId(OTHER[group].id);
+    setSoil(d.soil);
+    setLight(d.light);
+    setPlacement(d.placement);
+  };
 
   const pick = (id: SpeciesId) => {
     haptics.tap();
@@ -178,28 +230,76 @@ export default function AddPlantScreen() {
             <Text style={[styles.idSub, { color: c.inkMuted }]}>Not sure who they are? Snap a leaf and we'll suggest a match.</Text>
           </View>
         </Pressable>
-        <TextInput value={query} onChangeText={setQuery} placeholder="Search plants" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Search plants" />
+        <TextInput
+          value={query}
+          onChangeText={(t) => {
+            setQuery(t);
+            setLimit(PAGE);
+          }}
+          placeholder={`Search ${SPECIES_LIST.length} plants, veg and herbs`}
+          placeholderTextColor={c.inkMuted}
+          style={inputStyle}
+          accessibilityLabel="Search plants"
+          autoCorrect={false}
+        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }} style={{ marginHorizontal: -20, flexGrow: 0 }} contentInset={{ left: 20, right: 20 }}>
+          <View style={{ width: 12 }} />
+          {CATEGORIES.map((cat) => (
+            <Pill
+              key={cat.id}
+              on={category === cat.id}
+              label={cat.label}
+              onPress={() => {
+                setCategory(cat.id);
+                setLimit(PAGE);
+              }}
+            />
+          ))}
+          <View style={{ width: 12 }} />
+        </ScrollView>
+        {results.length === 0 && (
+          <Text style={[styles.note, { color: c.inkMuted }]}>No match for “{query.trim()}” in our list yet. You can still add it below.</Text>
+        )}
         <View style={styles.grid}>
-          {results.map((s) => (
+          {results.slice(0, limit).map((s) => (
             <Pressable key={s.id} accessibilityRole="button" accessibilityLabel={s.commonName} onPress={() => pick(s.id)} style={[styles.speciesTile, { backgroundColor: c.potTint[s.artPot], borderColor: c.line }]}>
               <PlantBuddy speciesId={s.id} size={84} />
               <Text style={[styles.speciesName, { color: c.ink }]} numberOfLines={1}>{s.commonName}</Text>
             </Pressable>
           ))}
         </View>
+        {results.length > limit && (
+          <Button title={`Show ${Math.min(PAGE, results.length - limit)} more`} bg={c.card} onPress={() => setLimit(limit + PAGE)} />
+        )}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Add a plant that isn't listed"
+          onPress={startOther}
+          style={({ pressed }) => [styles.idTile, { backgroundColor: c.mint, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 4}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 3 }] }]}
+        >
+          <PlantBuddy speciesId="other-tropical" size={56} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={[styles.idTitle, { color: c.ink }]}>{query.trim() ? `Add “${query.trim()}” anyway` : "Can't find it? Add it anyway"}</Text>
+            <Text style={[styles.idSub, { color: c.inkMuted }]}>Pick a care type and it gets the same smart checks, diary and family tree.</Text>
+          </View>
+        </Pressable>
       </ScrollView>
     );
   }
 
-  const sp = getSpecies(speciesId);
+  const isOther = isOtherId(speciesId);
+  const base = getSpecies(speciesId);
+  const petToxic = pets === 'toxic' ? true : pets === 'safe' ? false : undefined;
+  const sp = isOther ? { ...base, commonName: customName.trim() || 'New plant', latinName: customLatin.trim(), petToxic: petToxic ?? false } : base;
   const suggestions = NAMES[speciesId] ?? fallbackNames;
-  const parents = plants.filter((p) => p.speciesId === speciesId);
+  const parents = plants.filter((p) => !p.archivedAt && (isOther ? !!p.custom && p.custom.commonName.toLowerCase() === customName.trim().toLowerCase() : p.speciesId === speciesId));
   const soilInfo = SOILS.find((s) => s.id === soil);
 
   const save = () => {
     const plant = addPlant({
       name: name.trim() || suggestions[0],
       speciesId,
+      custom: isOther ? { commonName: customName.trim() || 'New plant', latinName: customLatin.trim() || undefined, petToxic } : undefined,
       potColor: sp.artPot,
       soil,
       potMaterial: material,
@@ -229,9 +329,48 @@ export default function AddPlantScreen() {
         <View style={{ flex: 1 }}>
           <Text style={[styles.heroKicker, { color: c.inkMuted }]}>{sp.latinName}</Text>
           <Text style={[styles.heroName, { color: c.ink }]}>{sp.commonName}</Text>
-          <Text style={[styles.heroKicker, { color: c.inkMuted }]}>{sp.petToxic ? 'Toxic to cats and dogs' : 'Pet-friendly'}</Text>
+          <Text style={[styles.heroKicker, { color: c.inkMuted }]}>
+            {isOther ? (petToxic === undefined ? 'Pet safety: not sure yet' : petToxic ? 'Toxic to cats and dogs' : 'Pet-friendly') : sp.petToxic ? 'Toxic to cats and dogs' : 'Pet-friendly'}
+          </Text>
         </View>
       </View>
+      {!isOther && sp.tip && <Text style={[styles.note, { color: c.inkMuted }]}>{sp.tip}</Text>}
+
+      {isOther && (
+        <View style={{ gap: 10 }}>
+          <Label>What kind of plant is it?</Label>
+          <TextInput value={customName} onChangeText={setCustomName} placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Kind of plant" />
+          <TextInput value={customLatin} onChangeText={setCustomLatin} placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Latin name" autoCapitalize="words" autoCorrect={false} />
+          <Label>How does it like its water?</Label>
+          <View style={{ gap: 8 }}>
+            {CARE_TYPES.map((t) => {
+              const on = speciesId === OTHER[t.group].id;
+              return (
+                <Pressable
+                  key={t.group}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                  onPress={() => setCareType(t.group)}
+                  style={[styles.careType, { borderColor: c.line, backgroundColor: on ? c.mint : c.card }, on && { boxShadow: `0px 3px 0px ${c.drop}` }]}
+                >
+                  <PlantBuddy speciesId={OTHER[t.group].id} size={44} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.careTitle, { color: c.ink }]}>{t.title}</Text>
+                    <Text style={[styles.careSub, { color: c.inkMuted }]}>{t.sub}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={[styles.note, { color: c.inkMuted }]}>Not sure? Leafy tropical is a safe start. Your soil checks fine-tune the rhythm either way.</Text>
+          <Label>Is it safe around pets?</Label>
+          <View style={styles.wrap}>
+            {PETS.map((p) => (
+              <Pill key={p.id} on={pets === p.id} bg={p.id === 'toxic' ? c.peach : c.mint} label={p.label} onPress={() => setPets(p.id)} />
+            ))}
+          </View>
+        </View>
+      )}
 
       <Label>Give them a name</Label>
       <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -334,6 +473,9 @@ const styles = StyleSheet.create({
   plusBadge: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, height: 22, justifyContent: 'center' },
   plusBadgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  careType: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderRadius: 18, padding: 8 },
+  careTitle: { fontFamily: fonts.displaySemi, fontSize: 16 },
+  careSub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   speciesTile: { width: '31%', flexGrow: 1, borderRadius: 18, borderWidth: 2, alignItems: 'center', paddingVertical: 8, gap: 2 },
   speciesName: { fontFamily: fonts.bodyHeavy, fontSize: 12, paddingHorizontal: 4 },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 22, borderWidth: 2 },

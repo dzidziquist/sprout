@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { speciesOf } from '@/data/species';
+import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { ARCHIVE_COPY, confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
@@ -13,7 +13,7 @@ import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { Light, Placement, PotMaterial, Soil } from '@/types';
+import type { Light, Placement, PotMaterial, Soil, SpeciesGroup } from '@/types';
 
 const LIGHTS: { id: Light; label: string; suns: number }[] = [
   { id: 'low', label: 'Shady', suns: 1 },
@@ -101,9 +101,15 @@ export default function EditPlantScreen() {
   const [placement, setPlacement] = useState<Placement>(plant?.placement ?? 'indoor');
   const [room, setRoom] = useState(plant?.room ?? '');
   const [confirming, setConfirming] = useState(false);
+  // "Other" plants (not in the catalogue) can change their species name, care type and pet info.
+  const [kind, setKind] = useState(plant?.custom?.commonName ?? '');
+  const [latin, setLatin] = useState(plant?.custom?.latinName ?? '');
+  const [otherId, setOtherId] = useState(plant?.speciesId ?? '');
+  const [pets, setPets] = useState<'toxic' | 'safe' | 'unsure'>(plant?.custom?.petToxic === true ? 'toxic' : plant?.custom?.petToxic === false ? 'safe' : 'unsure');
 
   if (!plant || !actions) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
   const sp = speciesOf(plant);
+  const isOther = isOtherId(plant.speciesId);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
   const back = () => (router.canGoBack() ? router.back() : router.replace(`/plant/${plant.id}`));
@@ -118,6 +124,12 @@ export default function EditPlantScreen() {
       potMaterial: material,
       placement,
       room: room.trim() || undefined,
+      ...(isOther
+        ? {
+            speciesId: otherId,
+            custom: { commonName: kind.trim() || sp.commonName, latinName: latin.trim() || undefined, petToxic: pets === 'toxic' ? true : pets === 'safe' ? false : undefined },
+          }
+        : {}),
     });
     haptics.success();
     back();
@@ -150,6 +162,26 @@ export default function EditPlantScreen() {
           <Text style={[styles.heroKicker, { color: c.inkMuted }]}>{sp.latinName}</Text>
         </View>
       </View>
+
+      {isOther && (
+        <View style={{ gap: 10 }}>
+          <Label>What kind of plant is it?</Label>
+          <TextInput value={kind} onChangeText={setKind} style={input} accessibilityLabel="Kind of plant" placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} />
+          <TextInput value={latin} onChangeText={setLatin} style={input} accessibilityLabel="Latin name" placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} autoCorrect={false} />
+          <Label>How does it like its water?</Label>
+          <View style={styles.wrap}>
+            {(Object.keys(OTHER) as SpeciesGroup[]).map((g) => (
+              <Pill key={g} on={otherId === OTHER[g].id} bg={c.mint} label={OTHER[g].commonName} onPress={() => setOtherId(OTHER[g].id)} />
+            ))}
+          </View>
+          <Label>Is it safe around pets?</Label>
+          <View style={styles.wrap}>
+            {([['unsure', 'Not sure'], ['safe', 'Pet-safe'], ['toxic', 'Toxic to pets']] as const).map(([id, label]) => (
+              <Pill key={id} on={pets === id} bg={id === 'toxic' ? c.peach : c.mint} label={label} onPress={() => setPets(id)} />
+            ))}
+          </View>
+        </View>
+      )}
 
       <Label>Name</Label>
       <TextInput value={name} onChangeText={setName} style={[input, { fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" placeholder={plant.name} placeholderTextColor={c.inkMuted} />

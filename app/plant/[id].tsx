@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { checkIntervalDays, isFeedingPaused, moodFor } from '@/engine/careEngine';
-import { speciesOf } from '@/data/species';
+import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { usePlantActions } from '@/components/PlantMenu';
@@ -74,6 +74,7 @@ export default function PlantDetail() {
 
   const now = new Date();
   const species = speciesOf(plant);
+  const pets = petToxicKnown(plant);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
   const rhythm = Math.round(checkIntervalDays({ group: species.group, plant, profile: profile.climate, at: now }));
@@ -212,18 +213,23 @@ export default function PlantDetail() {
 
         <Sticker drop={0} style={{ overflow: 'hidden' }}>
           {[
-            ['Water', 'When the top 2–3 cm feels dry'],
+            ['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
             ['Light', LIGHT_LABEL[plant.light]],
             ['Soil', SOIL_LABEL[plant.soil]],
             ['Feed', feedPaused ? 'Paused till March (grey season)' : 'Monthly while growing'],
-            ['Pets', species.petToxic ? 'Toxic to cats and dogs' : 'Pet-friendly'],
+            ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
           ].map(([k, v], i, all) => (
             <View key={k} style={[styles.row, i < all.length - 1 && { borderBottomWidth: 2, borderColor: c.cloud }]}>
               <Text style={[styles.rowKey, { color: c.inkMuted }]}>{k}</Text>
-              <Text style={[styles.rowVal, { color: k === 'Pets' && species.petToxic ? c.warn : c.ink }]}>{v}</Text>
+              <Text style={[styles.rowVal, { color: k === 'Pets' && pets !== false ? c.warn : c.ink }]}>{v}</Text>
             </View>
           ))}
         </Sticker>
+        {species.tip && (
+          <Sticker drop={0} bg={c.butter} style={{ padding: 12 }}>
+            <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
+          </Sticker>
+        )}
 
         {(parent || babies.length > 0) && (
           <View style={{ gap: 6 }}>
