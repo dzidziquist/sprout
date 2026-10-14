@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { usePlantStore } from '../store/plantStore';
 import { backupMyData, parseBackup, pickBackupText, type BackupData } from '../lib/export';
 import * as haptics from '../lib/haptics';
-import { Button, Label, Sticker } from './ui';
+import { Button, Sticker } from './ui';
 import { fonts } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 
@@ -73,7 +73,9 @@ export function DataCard() {
 
   return (
     <View style={{ gap: 8 }}>
-      <Label>Your data</Label>
+      <Text style={[styles.section, { color: c.inkMuted }]} accessibilityRole="header">
+        YOUR DATA
+      </Text>
       <Sticker drop={0} style={styles.card}>
         <Text style={[styles.body, { color: c.ink }]}>
           Your plants live only on this phone: no account, no tracking. {last ? `Last backup: ${last}.` : 'No backup yet.'}
@@ -91,6 +93,7 @@ export function DataCard() {
 
 const styles = StyleSheet.create({
   card: { padding: 12, gap: 10 },
+  section: { fontFamily: fonts.bodyHeavy, fontSize: 12, letterSpacing: 0.6, paddingHorizontal: 4 },
   body: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
   small: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
 });

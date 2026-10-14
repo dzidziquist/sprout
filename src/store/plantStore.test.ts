@@ -94,4 +94,14 @@ describe('plant store', () => {
     const p = usePlantStore.getState().addPlant({ ...base, name: 'New' }, now);
     expect(p.nextCheckAt).toBe(now.toISOString());
   });
+
+  it('erases everything but keeps the Plus purchase', () => {
+    usePlantStore.setState({ profile: { ...DEFAULT_PROFILE, plus: true, theme: 'dark' } });
+    usePlantStore.getState().addPlant({ ...base, name: 'Gone' }, now);
+    usePlantStore.getState().eraseEverything();
+    const st = usePlantStore.getState();
+    expect(st.plants).toEqual([]);
+    expect(st.onboarded).toBe(false);
+    expect(st.profile).toMatchObject({ plus: true, theme: 'system' });
+  });
 });

@@ -78,6 +78,8 @@ export default function RootLayout() {
         <Stack.Screen name="identify" options={{ presentation: 'modal' }} />
         <Stack.Screen name="grow" />
         <Stack.Screen name="help" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="privacy" />
         <Stack.Screen
           name="pot-up/[id]"
           options={{ presentation: 'formSheet', sheetAllowedDetents: [0.85, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}

@@ -1,61 +1,20 @@
 import { PlusCard } from '@/components/PlusCard';
-import { DataCard } from '@/components/DataCard';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Svg, { Circle, Path } from 'react-native-svg';
+import { GlassButton } from '@/components/GlassButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePlantStore, type FaceStyle, type Profile } from '@/store/plantStore';
+import { usePlantStore } from '@/store/plantStore';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
 import { BadgeSticker } from '@/components/BadgeSticker';
 import { badgesFor, computeStreak } from '@/engine/streak';
-import * as haptics from '@/lib/haptics';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import { requestPermission } from '@/lib/notifications';
 
-const TIMES = [
-  { label: '8:30 am', hour: 8, minute: 30 },
-  { label: '12:30 pm', hour: 12, minute: 30 },
-  { label: '6:30 pm', hour: 18, minute: 30 },
-];
-
-const FACE_NOTE: Record<FaceStyle, string> = {
-  full: 'Moods and little speech bubbles. Never guilt-trips.',
-  gentle: 'Soft smiles only, no worried faces.',
-  off: 'Plain plants and simple text.',
-};
-
-const THEMES: { id: Profile['theme']; label: string }[] = [
-  { id: 'system', label: 'System' },
-  { id: 'light', label: 'Light' },
-  { id: 'dark', label: 'Dark' },
-];
-
-function Segmented<T extends string>({ options, value, onChange, label }: { options: { id: T; label: string }[]; value: T | null; onChange: (v: T) => void; label: string }) {
-  const c = useColors();
-  return (
-    <View style={[styles.segment, { borderColor: c.line, backgroundColor: c.card }]} accessibilityRole="radiogroup" accessibilityLabel={label}>
-      {options.map((o) => {
-        const on = value === o.id;
-        return (
-          <Pressable
-            key={o.id}
-            accessibilityRole="radio"
-            accessibilityState={{ selected: on }}
-            onPress={() => {
-              haptics.tap();
-              onChange(o.id);
-            }}
-            style={[styles.segBtn, on && { backgroundColor: c.ink }]}
-          >
-            <Text style={[styles.segText, { color: on ? c.bg : c.ink }]} numberOfLines={1}>{o.label}</Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
+const GEAR =
+  'M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.8l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.8v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2z';
 
 export default function MeScreen() {
   const router = useRouter();
@@ -79,11 +38,18 @@ export default function MeScreen() {
     if (profile.streakFreezes !== streak.freezesLeft) setProfile({ streakFreezes: streak.freezesLeft });
   }, [streak.freezesLeft, profile.streakFreezes, setProfile]);
 
-  const roundValue = profile.round.enabled ? (TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null) : 'Off';
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={[styles.page, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 120 }]}>
-      <Title>Your green thumb</Title>
+      <View style={styles.headerRow}>
+        <Title style={{ flex: 1 }}>Your green thumb</Title>
+        <GlassButton accessibilityLabel="Settings" onPress={() => router.push('/settings')}>
+          <Svg width={22} height={22} viewBox="0 0 24 24">
+            <Path d={GEAR} stroke={c.ink} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            <Circle cx={12} cy={12} r={3} stroke={c.ink} strokeWidth={2} fill="none" />
+          </Svg>
+        </GlassButton>
+      </View>
 
       <StreakCard streak={streak} />
 
@@ -114,79 +80,12 @@ export default function MeScreen() {
         </View>
       </View>
 
-      <View style={{ gap: 8 }}>
-        <Label>Plant faces</Label>
-        <Segmented
-          label="Plant faces"
-          value={profile.faces}
-          options={(['full', 'gentle', 'off'] as FaceStyle[]).map((f) => ({ id: f, label: f[0].toUpperCase() + f.slice(1) }))}
-          onChange={(f) => setProfile({ faces: f })}
-        />
-        <Label muted>{FACE_NOTE[profile.faces]}</Label>
-      </View>
-
-      <View style={{ gap: 8 }}>
-        <Label>Daily plant round</Label>
-        <Segmented
-          label="Daily plant round"
-          value={roundValue}
-          options={[...TIMES.map((t) => ({ id: t.label, label: t.label })), { id: 'Off', label: 'Off' }]}
-          onChange={async (v) => {
-            if (v === 'Off') {
-              setProfile({ round: { ...profile.round, enabled: false } });
-              return;
-            }
-            const t = TIMES.find((x) => x.label === v)!;
-            const ok = Platform.OS === 'web' ? true : await requestPermission();
-            setProfile({ round: { enabled: ok, hour: t.hour, minute: t.minute } });
-          }}
-        />
-        <Label muted>One reminder, only on days a plant needs a soil check.</Label>
-      </View>
-
       <PlusCard />
 
-      <View style={{ gap: 8 }}>
-        <Label>Appearance</Label>
-        <Segmented label="Appearance" value={profile.theme} options={THEMES} onChange={(t) => setProfile({ theme: t })} />
-        <Label muted>{profile.theme === 'system' ? 'Follows your phone’s light or dark setting.' : profile.theme === 'dark' ? 'Easy on the eyes for late-night plant rounds.' : 'Bright and sunny, always.'}</Label>
-      </View>
-
-      <View style={{ gap: 8 }}>
-        <Label>Climate</Label>
-        <Segmented
-          label="Climate"
-          value={profile.climate}
-          options={[
-            { id: 'seattle' as const, label: 'Seattle' },
-            { id: 'accra' as const, label: 'Accra' },
-          ]}
-          onChange={(v) => setProfile({ climate: v, city: v === 'seattle' ? 'Seattle' : 'Accra' })}
-        />
-        <Label muted>{profile.climate === 'seattle' ? 'Marine: dark wet winters, dry summers. Seasons and grow-patch tasks follow this.' : 'Tropical: harmattan and two rainy seasons. Seasons and grow-patch tasks follow this.'}</Label>
-      </View>
-
-      <View style={{ gap: 8 }}>
-        <Label>Units</Label>
-        <Segmented
-          label="Units"
-          value={profile.units}
-          options={[
-            { id: 'auto' as const, label: 'Auto' },
-            { id: 'imperial' as const, label: '°F · in' },
-            { id: 'metric' as const, label: '°C · mm' },
-          ]}
-          onChange={(u) => setProfile({ units: u })}
-        />
-        <Label muted>{profile.units === 'auto' ? `Auto follows your climate: ${profile.climate === 'seattle' ? '°F and inches' : '°C and millimetres'}.` : 'Used for weather, alerts and growing tips.'}</Label>
-      </View>
-
-      <DataCard />
-
-      <Pressable accessibilityRole="button" onPress={() => router.push('/help')}>
-        <Sticker drop={0} bg={c.ice} style={{ padding: 12, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <Text style={[styles.statLabel, { color: c.ink, flex: 1, fontSize: 15 }]}>How PlantFam works</Text>
-          <Text style={[styles.statLabel, { color: c.ink }]}>›</Text>
+      <Pressable accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => router.push('/settings')}>
+        <Sticker drop={0} bg={c.cloud} style={styles.settingsRow}>
+          <Text style={[styles.settingsText, { color: c.ink }]}>Settings</Text>
+          <Text style={[styles.settingsSub, { color: c.inkMuted }]}>Reminders, look, climate, backups, privacy</Text>
         </Sticker>
       </Pressable>
     </ScrollView>
@@ -201,7 +100,8 @@ const styles = StyleSheet.create({
   statLabel: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   badges: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 10, rowGap: 14 },
-  segment: { flexDirection: 'row', gap: 4, padding: 4, borderWidth: 2, borderRadius: 16 },
-  segBtn: { flex: 1, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
-  segText: { fontFamily: fonts.displaySemi, fontSize: 15 },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  settingsRow: { padding: 14, gap: 2 },
+  settingsText: { fontFamily: fonts.display, fontSize: 18 },
+  settingsSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
 });

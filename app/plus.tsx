@@ -1,3 +1,4 @@
+import { TERMS_URL } from '@/config';
 import { useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -15,8 +16,6 @@ import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 
-const TERMS_URL = 'https://plantfam.app/terms';
-const PRIVACY_URL = 'https://plantfam.app/privacy';
 
 const BENEFITS: { icon: 'camera' | 'box' | 'heart'; title: string; body: string; tint: keyof Pick<Palette, 'butter' | 'ice' | 'blush'> }[] = [
   { icon: 'camera', title: 'Photo ID', body: 'Snap a leaf, get suggestions from Pl@ntNet, and you confirm who it is.', tint: 'butter' },
@@ -200,7 +199,7 @@ export default function PlusScreen() {
       <View style={styles.legal}>
         <Text accessibilityRole="link" onPress={() => Linking.openURL(TERMS_URL)} style={[styles.link, { color: c.inkMuted }]}>Terms of Use</Text>
         <Text style={[styles.small, { color: c.inkMuted }]}>·</Text>
-        <Text accessibilityRole="link" onPress={() => Linking.openURL(PRIVACY_URL)} style={[styles.link, { color: c.inkMuted }]}>Privacy Policy</Text>
+        <Text accessibilityRole="link" onPress={() => router.push('/privacy')} style={[styles.link, { color: c.inkMuted }]}>Privacy Policy</Text>
       </View>
     </ScrollView>
   );

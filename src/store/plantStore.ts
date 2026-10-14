@@ -82,6 +82,8 @@ interface PlantState {
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
   restoreBackup: (data: { profile: Partial<Profile>; plants: Plant[]; events: CareEvent[] }) => void;
+  /** Erase every plant, diary entry and setting on this phone and start onboarding again. Purchases stay with the Apple ID. */
+  eraseEverything: () => void;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
@@ -275,6 +277,10 @@ export const usePlantStore = create<PlantState>()(
           onboarded: true,
           profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, plus: s.profile.plus, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
         }));
+      },
+
+      eraseEverything: () => {
+        set({ plants: [], events: [], undo: {}, onboarded: false, profile: { ...DEFAULT_PROFILE, plus: get().profile.plus } });
       },
 
       seedDemo: (now = new Date()) => {

@@ -35,7 +35,7 @@ Without a key the app still works: Photo ID explains it isn't set up yet, and th
 - Current offering with packages `$rc_annual` (yearly) and `$rc_lifetime` (lifetime).
 
 ## 5. Before public launch
-- Replace placeholder Terms/Privacy URLs (`https://plantfam.app/terms`, `/privacy`) in `app/plus.tsx`.
+- Set `SUPPORT_EMAIL` and `PRIVACY_POLICY_URL` in `src/config.ts`. Host `docs/legal/privacy-policy.md` (fill in its contact line) and use that URL in App Store Connect. App Privacy answers are in `docs/legal/app-store-privacy.md`. Terms use Apple's standard EULA.
 - Add the Pl@ntNet logo next to "Photo ID powered by Pl@ntNet" (free-tier terms).
 - Swap in high-res buddy illustrations (`assets/buddies/{species}-{mood}.png`, same filenames).
 

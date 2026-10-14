@@ -80,3 +80,14 @@ export function choosePhoto(): Promise<string | null> {
     }
   });
 }
+
+/** Remove every diary photo from the phone (used by "Delete all my data"). */
+export function deleteAllPhotos(): void {
+  if (Platform.OS === 'web') return;
+  try {
+    const dir = new Directory(Paths.document, DIARY);
+    if (dir.exists) dir.delete();
+  } catch {
+    // Nothing to clean up, or the folder is already gone.
+  }
+}
