@@ -25,7 +25,7 @@ function names(list: string[]): string {
  */
 export function roundDigestFor(plants: Plant[], day: Date): RoundDigest | null {
   const endOfDay = at(day, 23, 59);
-  const due = plants.filter((p) => !p.rooting && new Date(p.nextCheckAt).getTime() <= endOfDay.getTime());
+  const due = plants.filter((p) => !p.rooting && !p.archivedAt && new Date(p.nextCheckAt).getTime() <= endOfDay.getTime());
   if (due.length === 0) return null;
   const n = due.map((p) => p.name);
   const body =

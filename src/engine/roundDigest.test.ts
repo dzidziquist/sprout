@@ -41,6 +41,11 @@ describe('round digest', () => {
     expect(d.body).toBe('A, B and 2 more would love a soil check. 5 mins, tops.');
     expect(d.plantIds).not.toContain('rootie');
   });
+
+  it('leaves archived plants out of the round', () => {
+    const gone = plant('Gifted', '2026-10-14T09:00:00', { archivedAt: '2026-10-01T00:00:00', archivedReason: 'gifted' });
+    expect(roundDigestFor([gone], day)).toBeNull();
+  });
 });
 
 describe('planning a week of rounds', () => {

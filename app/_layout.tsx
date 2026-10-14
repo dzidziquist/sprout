@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Appearance, Platform, View } from 'react-native';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
@@ -8,6 +9,7 @@ import { Nunito_700Bold, Nunito_800ExtraBold } from '@expo-google-fonts/nunito';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePlantStore } from '@/store/plantStore';
 import { colors } from '@/theme/tokens';
+import { useColors } from '@/theme/theme';
 import { rescheduleRounds } from '@/lib/notifications';
 
 function useHydrated() {
@@ -22,6 +24,13 @@ function useHydrated() {
 
 export default function RootLayout() {
   const hydrated = useHydrated();
+  const c = useColors();
+  const themePref = usePlantStore((s) => s.profile.theme);
+
+  // A forced Light/Dark choice also drives native chrome (tabs, sheets, alerts).
+  useEffect(() => {
+    if (Platform.OS !== 'web') Appearance.setColorScheme(themePref === 'system' ? null : themePref);
+  }, [themePref]);
   const [fontsLoaded, fontError] = useFonts({ Fredoka_600SemiBold, Fredoka_700Bold, Nunito_700Bold, Nunito_800ExtraBold });
 
   // Keep the daily plant round in sync with the latest checks and settings.
@@ -54,9 +63,10 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.white } }}>
+    <ThemeProvider value={c.scheme === 'dark' ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: c.bg, card: c.card } } : { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: c.bg } }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: c.bg }}>
+      <StatusBar style={c.scheme === 'dark' ? 'light' : 'dark'} />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
         <Stack.Screen name="add" options={{ presentation: 'modal' }} />
@@ -68,10 +78,11 @@ export default function RootLayout() {
             sheetAllowedDetents: [0.62, 1],
             sheetGrabberVisible: true,
             sheetCornerRadius: 38,
-            contentStyle: { backgroundColor: colors.white },
+            contentStyle: { backgroundColor: c.bg },
           }}
         />
       </Stack>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
+    </ThemeProvider>
   );
 }
