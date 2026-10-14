@@ -300,6 +300,7 @@ const PLURAL: Record<string, [string, string]> = {
   fruit: ['fruit', 'fruit'],
   handful: ['handful', 'handfuls'],
   bunch: ['bunch', 'bunches'],
+  bulb: ['bulb', 'bulbs'],
   grams: ['g', 'g'],
 };
 

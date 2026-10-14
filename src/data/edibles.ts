@@ -21,9 +21,9 @@ import type { ClimateProfile, EdibleStage, SpeciesId } from '../types';
 
 /** Catalogue id of an edible with a grow guide (see src/data/catalog/edibles.ts). */
 export type EdibleId = SpeciesId;
-export type HarvestUnit = 'fruit' | 'handful' | 'bunch' | 'grams';
+export type HarvestUnit = 'fruit' | 'handful' | 'bunch' | 'bulb' | 'grams';
 
-export const HARVEST_UNITS: HarvestUnit[] = ['fruit', 'handful', 'bunch', 'grams'];
+export const HARVEST_UNITS: HarvestUnit[] = ['fruit', 'handful', 'bunch', 'bulb', 'grams'];
 
 export interface StageInfo {
   /** Short label for the stage track (fits under a 30px dot). */
@@ -406,7 +406,7 @@ const GUIDES: EdibleGuide[] = [
   {
     id: 'garlic',
     stages: ['seed', 'seedling', 'growing', 'flowering', 'harvesting', 'resting'],
-    unit: 'grams',
+    unit: 'bulb',
     regrows: false,
     seattleOutdoorFeed: { from: 2, to: 4 }, // WSU: side-dress late April–May, stop once bulbs swell
     info: {
@@ -440,6 +440,20 @@ const GUIDES: EdibleGuide[] = [
       growing: { label: 'Vine', tip: 'Let it ramble. Young leaves are a tasty green. Go easy on nitrogen.', feed: 'Low-nitrogen, high-potash feed monthly' },
       harvesting: { label: 'Dig', tip: 'Tip out the pot after 3–4 months, before soil cools under 13°C.', feed: NO_FEED },
       resting: { label: 'Cure', tip: 'Cure somewhere warm (~27°C) for a week to sweeten, then store cool.', feed: NO_FEED },
+    },
+  },
+
+  {
+    id: 'potato',
+    stages: ['seedling', 'growing', 'flowering', 'harvesting', 'resting'],
+    unit: 'grams',
+    regrows: false,
+    info: {
+      seedling: { label: 'Plant', tip: 'Chitted seed potato 10 cm deep in a grow bag, with room to top up.', feed: 'No feed yet' },
+      growing: { label: 'Grow', tip: 'Top up with mix every time 15 cm of leaves show. Keep tubers in the dark.', feed: 'Balanced feed every 2 weeks' },
+      flowering: { label: 'Flower', tip: 'Flowers mean new potatoes are forming. Water evenly now.', feed: 'Balanced feed every 2 weeks' },
+      harvesting: { label: 'Dig', tip: 'Tip the bag out. New potatoes ~10 weeks; maincrop when foliage dies back.', feed: NO_FEED },
+      resting: { label: 'Done', tip: 'Bin blighted foliage and use fresh mix next year.', feed: NO_FEED },
     },
   },
 
@@ -780,6 +794,11 @@ export const CALENDAR: Record<ClimateProfile, CalendarTask[]> = {
     { id: 'sea-garlic-lift', kind: 'harvest', title: 'Lift the garlic', body: 'Lower third of leaves yellow? Stop watering, lift, and cure somewhere airy.', species: ['garlic'], when: [{ month: 5, from: 20 }, { month: 6 }] },
     { id: 'sea-sow-leek', kind: 'sow', title: 'Sow leeks', body: 'Sow thinly in a tray. They grow slowly to pencil thickness by early summer.', species: ['leek'], when: [{ month: 1, from: 15 }, { month: 2 }, { month: 3 }] },
     { id: 'sea-plant-leek', kind: 'plant', title: 'Plant leeks deep', body: 'Drop pencil-thick seedlings into 15 cm holes and water in. Deep = long white stems.', species: ['leek'], when: [{ month: 5 }, { month: 6, to: 15 }] },
+
+    // Potatoes in grow bags.
+    { id: 'sea-plant-potato', kind: 'plant', title: 'Plant seed potatoes', body: 'Chitted tubers 10 cm deep in a grow bag. Cover with fleece if frost threatens.', species: ['potato'], when: [{ month: 2, from: 15 }, { month: 3 }, { month: 4, to: 15 }] },
+    { id: 'sea-earth-potato', kind: 'care', title: 'Top up the potatoes', body: 'Add mix whenever 15 cm of leaves show. Light makes tubers green and toxic.', species: ['potato'], when: months(4, 5) },
+    { id: 'sea-dig-potato', kind: 'harvest', title: 'Dig potatoes', body: 'New potatoes after flowering; maincrop once the foliage dies back.', species: ['potato'], when: months(6, 7, 8) },
 
     // Sweet potato and the warm-climate crowd.
     { id: 'sea-sweet-slips', kind: 'plant', title: 'Plant slips', body: 'Only once nights stay above 15°C. A black pot in the sunniest corner.', species: ['sweet-potato'], when: [{ month: 5 }] },

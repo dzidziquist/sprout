@@ -36,7 +36,7 @@ describe('speciesFor', () => {
   });
 
   it('does not map unrelated plants', () => {
-    expect(speciesFor('Solanum tuberosum')).toBeNull();
+    expect(speciesFor('Quercus robur')).toBeNull();
     expect(speciesFor('Dracaena marginata')).toBeNull();
     expect(speciesFor('Rosa canina')).toBeNull();
   });

@@ -14,9 +14,9 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 
-const UNIT_LABEL: Record<HarvestUnit, string> = { fruit: 'Fruit', handful: 'Handful', bunch: 'Bunch', grams: 'Grams' };
-const STEP: Record<HarvestUnit, number> = { fruit: 1, handful: 1, bunch: 1, grams: 10 };
-const START: Record<HarvestUnit, number> = { fruit: 1, handful: 1, bunch: 1, grams: 50 };
+const UNIT_LABEL: Record<HarvestUnit, string> = { fruit: 'Fruit', handful: 'Handful', bunch: 'Bunch', bulb: 'Bulb', grams: 'Grams' };
+const STEP: Record<HarvestUnit, number> = { fruit: 1, handful: 1, bunch: 1, bulb: 1, grams: 10 };
+const START: Record<HarvestUnit, number> = { fruit: 1, handful: 1, bunch: 1, bulb: 1, grams: 50 };
 
 /** Little sticker confetti for the first-harvest party. */
 function Confetti({ c }: { c: Palette }) {
