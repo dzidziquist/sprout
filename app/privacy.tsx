@@ -6,7 +6,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker, Title } from '@/components/ui';
 import { PRIVACY_SECTIONS, PRIVACY_SUMMARY } from '@/data/privacy';
-import { PRIVACY_UPDATED, SUPPORT_EMAIL } from '@/config';
+import { PRIVACY_UPDATED, SUPPORT_EMAIL, SUPPORT_URL } from '@/config';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 
@@ -59,7 +59,13 @@ export default function PrivacyScreen() {
               . A real person answers.
             </>
           ) : (
-            'PlantFam is made by an independent developer. Contact details are on the App Store listing.'
+            <>
+              PlantFam is made by an independent developer. Get in touch at{' '}
+              <Text style={{ color: c.leafDeep, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(SUPPORT_URL)}>
+                {SUPPORT_URL.replace(/^https?:\/\//, '')}
+              </Text>
+              .
+            </>
           )}
         </Text>
       </View>

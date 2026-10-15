@@ -46,4 +46,4 @@ PlantFam is a plant-care app made by an independent developer. This policy is th
 
 ## Contact
 
-Questions about privacy: **[contact email — fill in before publishing]**.
+Questions about privacy: get in touch through [dzidziquist.com](https://dzidziquist.com).

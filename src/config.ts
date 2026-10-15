@@ -6,6 +6,9 @@ export const APP_VERSION = Constants.expoConfig?.version ?? '0.1.0';
 /** Where people reach a human. TODO(founder): set a support address before launch; the contact row hides while empty. */
 export const SUPPORT_EMAIL = '';
 
+/** Developer website, used for support and privacy contact until a dedicated address exists. */
+export const SUPPORT_URL = 'https://dzidziquist.com';
+
 /** Public copy of the privacy policy (docs/legal/privacy-policy.md), needed by App Store Connect. TODO(founder): host it and set the URL. */
 export const PRIVACY_POLICY_URL = '';
 

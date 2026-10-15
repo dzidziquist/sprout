@@ -12,7 +12,7 @@ import { usePlus } from '@/hooks/usePlus';
 import { requestPermission } from '@/lib/notifications';
 import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
-import { APP_VERSION, MANAGE_SUBSCRIPTIONS_URL, SUPPORT_EMAIL, TERMS_URL } from '@/config';
+import { APP_VERSION, MANAGE_SUBSCRIPTIONS_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 
@@ -203,7 +203,11 @@ export default function SettingsScreen() {
         <Row label="How PlantFam works" onPress={() => router.push('/help')} />
         <Row label="Privacy" onPress={() => router.push('/privacy')} />
         <Row label="Terms of use" onPress={() => Linking.openURL(TERMS_URL)} />
-        {SUPPORT_EMAIL ? <Row label="Contact support" value={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=PlantFam%20${APP_VERSION}`)} /> : null}
+        {SUPPORT_EMAIL ? (
+          <Row label="Contact support" value={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=PlantFam%20${APP_VERSION}`)} />
+        ) : (
+          <Row label="Contact & support" value={SUPPORT_URL.replace(/^https?:\/\//, '')} onPress={() => Linking.openURL(SUPPORT_URL)} />
+        )}
         <Row label="Credits" onPress={() => router.push('/privacy')} />
         <Row label="Version" value={APP_VERSION} last />
       </Section>
