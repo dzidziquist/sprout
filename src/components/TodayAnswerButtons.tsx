@@ -10,20 +10,26 @@ const ANSWERS: { result: CheckResult; word: string; means: string }[] = [
   { result: 'soggy', word: 'Soggy', means: 'skip' },
 ];
 
+/** Hydro and semi-hydro: you look at the water line, so there are only two answers. */
+const RESERVOIR_ANSWERS: typeof ANSWERS = [
+  { result: 'dry', word: 'Low', means: 'top up' },
+  { result: 'damp', word: 'Plenty', means: 'skip' },
+];
+
 /**
- * Dry / Damp / Soggy as three equal, neutral buttons. Nothing is pre-highlighted: the soil decides,
+ * Dry / Damp / Soggy (or Low / Plenty for LECA and water) as equal, neutral buttons. Nothing is pre-highlighted: the soil decides,
  * not the app. The chosen answer gets its colour afterwards, in the outcome chip.
  */
-export function TodayAnswerButtons({ name, onAnswer }: { name: string; onAnswer: (r: CheckResult) => void }) {
+export function TodayAnswerButtons({ name, reservoir, onAnswer }: { name: string; reservoir?: boolean; onAnswer: (r: CheckResult) => void }) {
   const c = useColors();
   return (
-    <View style={styles.row} accessibilityLabel={`How does ${name}'s soil feel?`}>
-      {ANSWERS.map((a) => (
+    <View style={styles.row} accessibilityLabel={reservoir ? `How's ${name}'s water level?` : `How does ${name}'s soil feel?`}>
+      {(reservoir ? RESERVOIR_ANSWERS : ANSWERS).map((a) => (
         <Pressable
           key={a.result}
           accessibilityRole="button"
-          accessibilityLabel={`${name}: ${a.result}`}
-          accessibilityHint={a.means === 'skip' ? 'Skip watering today' : 'Water it now'}
+          accessibilityLabel={`${name}: ${a.word.toLowerCase()}`}
+          accessibilityHint={a.means === 'skip' ? 'Skip watering today' : reservoir ? 'Top it up now' : 'Water it now'}
           onPress={() => onAnswer(a.result)}
           style={({ pressed }) => [
             styles.button,

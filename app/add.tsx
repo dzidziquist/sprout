@@ -8,6 +8,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { OTHER, SPECIES, SPECIES_LIST, getSpecies, isOtherId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
+import { isReservoir } from '@/engine/careEngine';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
@@ -66,10 +67,11 @@ const SOILS: { id: Soil; swatch: string; note: string }[] = [
   { id: 'chunky_aroid', swatch: '#C9A27E', note: 'Bark + perlite drains fast. Checks come a bit sooner.' },
   { id: 'gritty', swatch: '#D9CBB0', note: 'For succulents and cacti. Dries quickest; we let it go bone dry.' },
   { id: 'veg_mix', swatch: '#6B4A2E', note: 'Container mix for edibles, pH around 6–7.' },
-  { id: 'leca', swatch: '#E07A4F', note: 'Semi-hydro: you top up a reservoir and feed every watering.' },
+  { id: 'leca', swatch: '#E07A4F', note: 'Semi-hydro: clay balls over a reservoir. You check the water line, not the soil.' },
+  { id: 'water', swatch: '#7FC8E8', note: 'Hydroponic: roots in water (a jar, Kratky, or a countertop hydro garden). Water line checks plus a fresh change every 2 weeks.' },
   { id: 'moss', swatch: '#7CB86A', note: 'Sphagnum stays damp: great for rooting, easy to overwater.' },
   { id: 'garden_soil', swatch: '#5A4632', note: "Garden soil packs down and stays soggy in pots. Repot when you can." },
-  { id: 'unsure', swatch: '#FFFFFF', note: 'No problem. We start cautious and learn from your soil checks.' },
+  { id: 'unsure', swatch: '#FFFFFF', note: 'No problem. We start cautious and learn from your checks.' },
 ];
 const POT_SIZES: { label: string; cm: number }[] = [
   { label: 'Small', cm: 10 },
@@ -169,6 +171,10 @@ export default function AddPlantScreen() {
   const [customName, setCustomName] = useState(typeof params.name === 'string' ? params.name : '');
   const [customLatin, setCustomLatin] = useState(typeof params.latin === 'string' ? params.latin : '');
   const [pets, setPets] = useState<'toxic' | 'safe' | 'unsure'>('unsure');
+  // Hydro growers: new plants follow the medium of the last plant added in LECA or water.
+  const lastHydro = profile.grows.hydro ? [...plants].reverse().find((p) => !p.archivedAt && isReservoir(p.soil))?.soil : undefined;
+  const mediumFor = (speciesSoil: Soil) => lastHydro ?? speciesSoil;
+  const soilBase = speciesId && !isReservoir(getSpecies(speciesId).defaultSoil) ? getSpecies(speciesId).defaultSoil : 'potting_mix';
 
   const results = useMemo(() => {
     const pool = category === 'all' ? SPECIES_LIST : SPECIES_LIST.filter((s) => s.category === category);
@@ -185,7 +191,7 @@ export default function AddPlantScreen() {
     const d = defaultsFor(id);
     setSpeciesId(id);
     setCustomName(query.trim().replace(/^\w/, (ch) => ch.toUpperCase()));
-    setSoil(d.soil);
+    setSoil(mediumFor(d.soil));
     setLight(d.light);
     setPlacement(d.placement);
     setNameIdx(0);
@@ -196,7 +202,7 @@ export default function AddPlantScreen() {
     haptics.tap();
     const d = defaultsFor(OTHER[group].id);
     setSpeciesId(OTHER[group].id);
-    setSoil(d.soil);
+    setSoil(mediumFor(d.soil));
     setLight(d.light);
     setPlacement(d.placement);
   };
@@ -205,7 +211,7 @@ export default function AddPlantScreen() {
     haptics.tap();
     const d = defaultsFor(id);
     setSpeciesId(id);
-    setSoil(d.soil);
+    setSoil(mediumFor(d.soil));
     setLight(d.light);
     setPlacement(d.placement);
     setNameIdx(0);
@@ -393,7 +399,7 @@ export default function AddPlantScreen() {
               );
             })}
           </View>
-          <Text style={[styles.note, { color: c.inkMuted }]}>Not sure? Leafy tropical is a safe start. Your soil checks fine-tune the rhythm either way.</Text>
+          <Text style={[styles.note, { color: c.inkMuted }]}>Not sure? Leafy tropical is a safe start. Your checks fine-tune the rhythm either way.</Text>
           <Label>Is it safe around pets?</Label>
           <View style={styles.wrap}>
             {PETS.map((p) => (
@@ -431,6 +437,17 @@ export default function AddPlantScreen() {
         ))}
       </View>
 
+      {profile.grows.hydro && (
+        <>
+          <Label>What does it grow in?</Label>
+          <View style={styles.wrap}>
+            <Pill on={!isReservoir(soil)} bg={c.peach} label="Soil" onPress={() => setSoil(soilBase)} />
+            <Pill on={soil === 'leca'} bg={c.peach} label="LECA" onPress={() => setSoil('leca')} />
+            <Pill on={soil === 'water'} bg={c.ice} label="Water · hydro" onPress={() => setSoil('water')} />
+          </View>
+        </>
+      )}
+
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ expanded: showMore }}
@@ -451,12 +468,12 @@ export default function AddPlantScreen() {
         </View>
         <Text style={[styles.moreLink, { color: c.leafDeep }]}>{showMore ? 'Done' : 'Change'}</Text>
       </Pressable>
-      {!showMore && <Text style={[styles.note, { color: c.inkMuted }]}>Good defaults are set. Your soil checks fine-tune everything over time.</Text>}
+      {!showMore && <Text style={[styles.note, { color: c.inkMuted }]}>Good defaults are set. Your checks fine-tune everything over time.</Text>}
       {showMore && (
         <View style={{ gap: 12 }}>
           <Label>What's it potted in?</Label>
           <View style={styles.wrap}>
-            {SOILS.map((s) => (
+            {(profile.grows.hydro ? [...SOILS.filter((s) => isReservoir(s.id)), ...SOILS.filter((s) => !isReservoir(s.id))] : SOILS).map((s) => (
               <Pressable
                 key={s.id}
                 accessibilityRole="button"

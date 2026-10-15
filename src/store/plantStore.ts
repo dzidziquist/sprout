@@ -11,7 +11,8 @@ export interface Profile {
   climate: ClimateProfile;
   city: string;
   faces: FaceStyle;
-  grows: { houseplants: boolean; edibles: boolean; cuttings: boolean };
+  /** hydro: grows in LECA or water too (shows the medium choice up front when adding). */
+  grows: { houseplants: boolean; edibles: boolean; cuttings: boolean; hydro?: boolean };
   /** Daily plant round reminder. */
   round: { enabled: boolean; hour: number; minute: number };
   /** Appearance: follow the phone, or force light/dark. */
@@ -34,7 +35,7 @@ export const DEFAULT_PROFILE: Profile = {
   climate: 'seattle',
   city: 'Seattle',
   faces: 'full',
-  grows: { houseplants: true, edibles: true, cuttings: true },
+  grows: { houseplants: true, edibles: true, cuttings: true, hydro: false },
   round: { enabled: true, hour: 8, minute: 30 },
   theme: 'system',
   plus: false,
@@ -44,7 +45,7 @@ export const DEFAULT_PROFILE: Profile = {
   idUsage: { day: '', count: 0 },
 };
 
-export type CareAction = 'water' | 'wet' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
+export type CareAction = 'water' | 'wet' | 'refresh' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
 
 export type NewPlant =Omit<Plant, 'id' | 'k' | 'nextCheckAt' | 'createdAt' | 'lastCheckAt' | 'lastResult'>;
 
@@ -151,7 +152,8 @@ export const usePlantStore = create<PlantState>()(
         const plant = get().plants.find((p) => p.id === plantId);
         if (!plant || actions.length === 0) return 0;
         // Watering and "still wet" are soil answers, so they go through the care engine.
-        if (actions.includes('water')) get().logCheck(plantId, 'dry', now);
+        // A full water change (hydro) refills the reservoir too.
+        if (actions.includes('water') || actions.includes('refresh')) get().logCheck(plantId, 'dry', now);
         else if (actions.includes('wet')) get().logCheck(plantId, 'damp', now);
         const at = now.toISOString();
         const extra: CareEvent[] = [];
@@ -160,6 +162,10 @@ export const usePlantStore = create<PlantState>()(
           if (a === 'prune') extra.push({ id: uid(), plantId, type: 'prune', at });
           if (a === 'pest') extra.push({ id: uid(), plantId, type: 'pest', at });
           if (a === 'photo') extra.push({ id: uid(), plantId, type: 'photo', at });
+          if (a === 'refresh') extra.push({ id: uid(), plantId, type: 'refresh', at });
+        }
+        if (actions.includes('refresh')) {
+          set((s) => ({ plants: s.plants.map((p) => (p.id === plantId ? { ...p, lastRefreshedAt: at } : p)) }));
         }
         if (note?.trim()) extra.push({ id: uid(), plantId, type: 'note', note: note.trim(), at });
         if (actions.includes('repot')) {
@@ -298,6 +304,7 @@ export const usePlantStore = create<PlantState>()(
         add({ name: 'Snakey', speciesId: 'snake', potColor: 'coral', soil: 'gritty', potMaterial: 'terracotta', potDiameterCm: 15, light: 'medium', placement: 'indoor', room: 'Bedroom', origin: 'bought', acquiredAt: daysAgo(500) }, now);
         add({ name: 'Tommy', speciesId: 'tomato', potColor: 'yellow', soil: 'veg_mix', potMaterial: 'fabric', potDiameterCm: 38, light: 'direct', placement: 'covered_outdoor', room: 'Balcony', origin: 'bought', acquiredAt: daysAgo(200) }, now);
         add({ name: 'Chili', speciesId: 'pepper', potColor: 'coral', soil: 'veg_mix', potMaterial: 'fabric', potDiameterCm: 25, light: 'direct', placement: 'covered_outdoor', room: 'Balcony', origin: 'bought', acquiredAt: daysAgo(180) }, now);
+        add({ name: 'Bamboo', speciesId: 'lucky-bamboo', potColor: 'blue', soil: 'water', potMaterial: 'glazed', potDiameterCm: 10, light: 'medium', placement: 'indoor', room: 'Kitchen', origin: 'gift', acquiredAt: daysAgo(90) }, now);
         add({ name: 'Scallie', speciesId: 'spring-onion', potColor: 'blue', soil: 'veg_mix', potMaterial: 'plastic', potDiameterCm: 15, light: 'bright', placement: 'indoor', room: 'Kitchen', origin: 'cutting', acquiredAt: daysAgo(60) }, now);
         set((s) => ({
           plants: s.plants.map((p) =>
@@ -310,7 +317,7 @@ export const usePlantStore = create<PlantState>()(
         const dueIds = new Set([queenie.id]);
         set((s) => ({
           plants: s.plants.map((p) =>
-            dueIds.has(p.id) || p.name === 'Big Fig' || p.name === 'Cal'
+            dueIds.has(p.id) || p.name === 'Big Fig' || p.name === 'Cal' || p.name === 'Bamboo'
               ? { ...p, nextCheckAt: daysAgo(0) }
               : p,
           ),

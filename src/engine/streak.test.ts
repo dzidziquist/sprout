@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { badgesFor, computeStreak, lapsesFor, startOfWeek } from './streak';
-import type { CareEvent, CheckResult, Plant } from '../types';
+import type { CareEvent, CheckResult, Climate, ClimateProfile, Plant } from '../types';
 
 // Pothos in standard mix under a grow light: a 7-day interval in May/June, which keeps the maths readable.
 function plant(id: string, extra: Partial<Plant> = {}): Plant {
@@ -163,13 +163,31 @@ describe('badges', () => {
     expect(grand([plant('n')])).toBeUndefined();
     // Archived before the birthday: doesn't count.
     expect(grand([{ ...old, archivedAt: '2026-05-01T09:00:00', archivedReason: 'died' }])).toBeUndefined();
+    // A plant owned for years but added to the app this month (or the demo fam) isn't a grandma yet.
+    expect(grand([plant('d', { acquiredAt: '2023-06-01T09:00:00', createdAt: '2026-06-20T09:00:00' })])).toBeUndefined();
   });
 
-  it('celebrate surviving winter, but not in Accra where there is none', () => {
-    const veteran = plant('v', { createdAt: '2025-10-01T09:00:00', acquiredAt: '2025-10-01T09:00:00' });
-    const winter = (events: CareEvent[], climate: 'seattle' | 'accra') => badgesFor({ plants: [veteran], events, climate, now: new Date('2026-04-01T12:00:00') }).find((x) => x.id === 'survived-winter');
-    expect(winter([check('v', '2026-03-05T09:00:00')], 'seattle')?.earnedAt).toBe('2026-03-05T09:00:00');
-    expect(winter([check('v', '2026-02-20T09:00:00')], 'seattle')?.earnedAt).toBeUndefined();
-    expect(winter([check('v', '2026-03-05T09:00:00')], 'accra')?.earnedAt).toBeUndefined();
+  it('name one hard season per climate, with art that fits, and never a badge you cannot earn', () => {
+    const city = (place: string, model: 'seattle' | 'accra', frost: boolean): Climate => ({ model, shift: 0, place, lat: 0, lon: 0, frost });
+    const season = (climate: ClimateProfile) => badgesFor({ plants: [plant('a')], events: [], climate, now }).find((x) => x.id === 'season')!;
+    expect([season('seattle').title, season('seattle').art]).toEqual(['Survived grey season', 'season']);
+    expect([season(city('Toronto, Canada', 'seattle', true)).title, season(city('Toronto, Canada', 'seattle', true)).art]).toEqual(['Survived winter', 'survived-winter']);
+    expect(season(city('London, UK', 'seattle', false)).title).toBe('Survived cool season');
+    // Harmattan has no badge art yet: the line icon, not the raincloud.
+    expect([season('accra').title, season('accra').art]).toEqual(['Survived harmattan', null]);
+    expect(season(city('Lagos, Nigeria', 'accra', false)).title).toBe('Survived dry season');
+    // Every climate gets the same 13 milestones: one season badge, nothing locked forever.
+    for (const climate of ['seattle', 'accra', city('Toronto, Canada', 'seattle', true)] as ClimateProfile[]) {
+      const ids = badgesFor({ plants: [plant('a')], events: [], climate, now }).map((b) => b.id);
+      expect(ids).toHaveLength(13);
+      expect(ids.filter((id) => id === 'season')).toHaveLength(1);
+    }
+  });
+
+  it('count checks of hydro plants (Low / Plenty) like soil checks', () => {
+    const p = plant('h', { soil: 'water' });
+    const b = badgesFor({ plants: [p], events: [check('h', '2026-06-10T09:00:00', 'damp'), check('h', '2026-06-12T09:00:00', 'dry')], climate: 'seattle', now });
+    expect(b.find((x) => x.id === 'first-check')?.earnedAt).toBe('2026-06-10T09:00:00');
+    expect(b.find((x) => x.id === 'first-skip')?.earnedAt).toBe('2026-06-10T09:00:00');
   });
 });

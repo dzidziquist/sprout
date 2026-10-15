@@ -56,7 +56,7 @@ export default function MeScreen() {
       <View style={styles.stats}>
         <Sticker drop={0} bg={c.ice} style={styles.stat}>
           <Text style={[styles.statNum, { color: c.ink }]}>{checks.length}</Text>
-          <Text style={[styles.statLabel, { color: c.ink }]}>soil checks</Text>
+          <Text style={[styles.statLabel, { color: c.ink }]}>checks</Text>
         </Sticker>
         <Sticker drop={0} bg={c.lavender} style={styles.stat}>
           <Text style={[styles.statNum, { color: c.ink }]}>{skips}</Text>

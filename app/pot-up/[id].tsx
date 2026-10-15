@@ -18,7 +18,7 @@ import * as haptics from '@/lib/haptics';
 import type { Soil } from '@/types';
 
 /** Mixes that make sense for a freshly rooted cutting; the species' own default is always offered first. */
-const SOILS: Soil[] = ['potting_mix', 'chunky_aroid', 'perlite_mix', 'gritty', 'coir', 'leca'];
+const SOILS: Soil[] = ['potting_mix', 'chunky_aroid', 'perlite_mix', 'gritty', 'coir', 'leca', 'water'];
 
 const SIZES = [
   { label: 'Tiny', cm: 8, scale: 0.62 },

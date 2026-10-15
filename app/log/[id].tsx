@@ -9,6 +9,7 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { choosePhoto, photoSrc } from '@/lib/photos';
+import { isReservoir } from '@/engine/careEngine';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
@@ -18,6 +19,7 @@ type Tint = 'ice' | 'lavender' | 'butter' | 'peach' | 'mint' | 'blush';
 const TILES: { id: CareAction; label: string; tint: Tint; icon: string }[] = [
   { id: 'water', label: 'Watered', tint: 'ice', icon: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z' },
   { id: 'wet', label: 'Still wet', tint: 'lavender', icon: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11zM4 4l16 16' },
+  { id: 'refresh', label: 'Fresh water', tint: 'mint', icon: 'M4 14a8 8 0 0 0 16 0M4 14h16M8 10c0-2 1.5-3 1.5-5M12 10c0-2 1.5-3 1.5-5M16 10c0-2 1.5-3 1.5-5' },
   { id: 'feed', label: 'Fed', tint: 'butter', icon: 'M9 3h6M10 3v5l-4.5 7.5A3 3 0 0 0 8 20h8a3 3 0 0 0 2.5-4.5L14 8V3M7.5 14h9' },
   { id: 'repot', label: 'Repotted', tint: 'peach', icon: 'M7 20h10l1-9H6zM12 11V5M9 7c1-2 5-2 6 0' },
   { id: 'prune', label: 'Trimmed', tint: 'mint', icon: 'M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12' },
@@ -44,6 +46,8 @@ export default function LogCareSheet() {
   const [saved, setSaved] = useState(0);
 
   if (!plant) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
+  const hydro = isReservoir(plant.soil);
+  const tiles = TILES.filter((t) => (t.id !== 'cutting' || (!plant.rooting && !plant.archivedAt)) && (t.id !== 'refresh' || hydro));
 
   const toggle = async (a: CareAction) => {
     haptics.tap();
@@ -74,8 +78,11 @@ export default function LogCareSheet() {
       else {
         next.add(a);
         // Watered and Still wet are opposite answers.
-        if (a === 'water') next.delete('wet');
-        if (a === 'wet') next.delete('water');
+        if (a === 'water' || a === 'refresh') next.delete('wet');
+        if (a === 'wet') {
+          next.delete('water');
+          next.delete('refresh');
+        }
       }
       return next;
     });
@@ -107,7 +114,7 @@ export default function LogCareSheet() {
         </View>
         <Title style={{ textAlign: 'center', color: textOn(c.leaf, c) }}>{plant.name} says thanks!</Title>
         <Text style={[styles.savedSub, { color: textOn(c.leaf, c) }]}>
-          {saved} {saved === 1 ? 'thing' : 'things'} logged. {sel.has('water') || sel.has('wet') ? 'The rhythm just got smarter.' : photoUri ? 'Added to the photo diary.' : ''}
+          {saved} {saved === 1 ? 'thing' : 'things'} logged. {sel.has('water') || sel.has('wet') || sel.has('refresh') ? 'The rhythm just got smarter.' : photoUri ? 'Added to the photo diary.' : ''}
         </Text>
         <Button title={`Back to ${plant.name}`} raised bg={c.card} onPress={() => router.back()} style={{ alignSelf: 'stretch', minHeight: 56 }} />
       </View>
@@ -134,17 +141,18 @@ export default function LogCareSheet() {
       <Title style={{ fontSize: 26 }}>What did {plant.name} get?</Title>
 
       <View style={styles.grid}>
-        {TILES.filter((t) => t.id !== 'cutting' || (!plant.rooting && !plant.archivedAt)).map((t) => {
+        {tiles.map((t) => {
+          const label = hydro && t.id === 'water' ? 'Topped up' : hydro && t.id === 'wet' ? 'Plenty left' : t.label;
           const on = sel.has(t.id);
           const showThumb = t.id === 'photo' && on && photoUri;
           return (
             <Pressable
               key={t.id}
               accessibilityRole={t.id === 'cutting' ? 'button' : 'checkbox'}
-              accessibilityLabel={t.id === 'photo' ? (on ? 'Photo attached. Tap to remove' : 'Add a photo') : t.id === 'cutting' ? 'Take cuttings' : t.label}
+              accessibilityLabel={t.id === 'photo' ? (on ? 'Photo attached. Tap to remove' : 'Add a photo') : t.id === 'cutting' ? 'Take cuttings' : label}
               accessibilityState={t.id === 'cutting' ? undefined : { checked: on }}
               onPress={() => toggle(t.id)}
-              style={[styles.tile, { backgroundColor: on ? tintOf(c, t.tint) : c.card, borderColor: c.line }, on && { boxShadow: `0px 4px 0px ${c.drop}` }]}
+              style={[styles.tile, tiles.length === 9 && { width: '31%' }, { backgroundColor: on ? tintOf(c, t.tint) : c.card, borderColor: c.line }, on && { boxShadow: `0px 4px 0px ${c.drop}` }]}
             >
               {showThumb ? (
                 <Image source={{ uri: photoSrc(photoUri) }} style={[styles.thumb, { borderColor: c.line }]} contentFit="cover" />
@@ -153,7 +161,7 @@ export default function LogCareSheet() {
                   <Path d={t.icon} stroke={on ? textOn(tintOf(c, t.tint), c) : c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
                 </Svg>
               )}
-              <Text style={[styles.tileText, { color: on ? textOn(tintOf(c, t.tint), c) : c.ink }]} maxFontSizeMultiplier={1.3}>{t.label}</Text>
+              <Text style={[styles.tileText, { color: on ? textOn(tintOf(c, t.tint), c) : c.ink }]} maxFontSizeMultiplier={1.3}>{label}</Text>
             </Pressable>
           );
         })}

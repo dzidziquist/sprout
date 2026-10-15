@@ -4,9 +4,12 @@ import {
   checkIntervalDays,
   isDue,
   isFeedingPaused,
+  isMixOld,
+  isRefreshDue,
   K_MAX,
   K_MIN,
   moodFor,
+  refreshDueAt,
   seasonMultiplier,
   updateK,
   type IntervalInput,
@@ -144,5 +147,45 @@ describe('due and mood', () => {
     expect(moodFor({ nextCheckAt: '2026-10-12T00:00:00' }, now)).toBe('thirsty');
     expect(moodFor({ nextCheckAt: '2026-10-15T00:00:00', lastResult: 'damp', lastCheckAt: '2026-10-12T09:00:00' }, now)).toBe('snoozing');
     expect(moodFor({ nextCheckAt: '2026-10-20T00:00:00', lastResult: 'dry', lastCheckAt: '2026-10-12T09:00:00' }, now)).toBe('happy');
+  });
+});
+
+describe('hydro and semi-hydro', () => {
+  const at = july;
+  const check = (soil: 'leca' | 'water', result: 'dry' | 'damp') =>
+    applyCheck({ group: 'tropical', plant: { ...basePlant, soil }, profile: 'seattle', at }, result);
+
+  it('checks water culture on the reservoir cadence, ignoring pot size and material', () => {
+    expect(interval({ soil: 'water' })).toBeCloseTo(7 * 0.85, 1);
+    expect(interval({ soil: 'water', potDiameterCm: 32, potMaterial: 'terracotta' })).toBe(interval({ soil: 'water' }));
+  });
+
+  it('answers Low with a top-up and Plenty with a skip, never an overwatering flag', () => {
+    const low = check('water', 'dry');
+    expect(low.watered).toBe(true);
+    expect(low.message).toMatch(/Topped up/);
+    const plenty = check('leca', 'damp');
+    expect(plenty.watered).toBe(false);
+    expect(plenty.message).toMatch(/Plenty left/);
+    expect(plenty.flags).toEqual([]);
+    // Peeks again in about half a rhythm, not the soil's 2 days.
+    const days = (new Date(plenty.nextCheckAt).getTime() - at.getTime()) / 86400000;
+    expect(days).toBeGreaterThanOrEqual(2);
+    expect(days).toBeLessThan(interval({ soil: 'leca' }));
+  });
+
+  it('never calls a reservoir an old mix', () => {
+    expect(isMixOld({ ...basePlant, soil: 'water', acquiredAt: '2020-01-01T00:00:00Z' }, at)).toBe(false);
+  });
+
+  it('asks for fresh water every 2 weeks in water and a flush monthly in LECA, from the last refresh or repot', () => {
+    const joined = '2026-07-01T09:00:00.000Z';
+    expect(refreshDueAt({ soil: 'potting_mix', createdAt: joined })).toBeUndefined();
+    expect(refreshDueAt({ soil: 'water', createdAt: joined })?.toISOString()).toBe('2026-07-15T09:00:00.000Z');
+    expect(refreshDueAt({ soil: 'leca', createdAt: joined })?.toISOString()).toBe('2026-07-29T09:00:00.000Z');
+    expect(refreshDueAt({ soil: 'water', createdAt: joined, lastRefreshedAt: '2026-07-10T09:00:00.000Z' })?.toISOString()).toBe('2026-07-24T09:00:00.000Z');
+    expect(refreshDueAt({ soil: 'water', createdAt: joined, lastRepottedAt: '2026-07-12T09:00:00.000Z' })?.toISOString()).toBe('2026-07-26T09:00:00.000Z');
+    expect(isRefreshDue({ soil: 'water', createdAt: joined }, new Date('2026-07-16T00:00:00Z'))).toBe(true);
+    expect(isRefreshDue({ soil: 'water', createdAt: joined }, new Date('2026-07-10T00:00:00Z'))).toBe(false);
   });
 });

@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { checkIntervalDays, isFeedingPaused, moodFor } from '@/engine/careEngine';
+import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { edibleGuide } from '@/data/edibles';
@@ -35,12 +35,15 @@ function daysAgo(iso: string | undefined, now: Date) {
 
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-function describe(e: CareEvent, plants: Plant[]): string {
+function describe(e: CareEvent, plants: Plant[], reservoir: boolean): string {
   switch (e.type) {
     case 'check':
+      if (reservoir) return e.result === 'dry' ? 'Water check: low, topped up' : 'Water check: plenty, skipped';
       return e.result === 'damp' ? 'Soil check: damp, smart skip' : e.result === 'soggy' ? 'Soil check: soggy' : 'Soil check: dry, watered';
     case 'water':
-      return 'Watered';
+      return reservoir ? 'Topped up' : 'Watered';
+    case 'refresh':
+      return 'Fresh water + nutrients';
     case 'feed':
       return 'Fed';
     case 'repot':
@@ -94,7 +97,19 @@ export default function PlantDetail() {
   const babies = plants.filter((p) => p.parentId === plant.id);
   const feedPaused = isFeedingPaused(profile.climate, plant.placement, now);
   const guide = edibleGuide(plant.speciesId);
-  const feed = guide ? feedingAdvice(plant, profile.climate, now) : feedPaused ? 'Paused till spring' : 'Monthly while growing';
+  const hydro = isReservoir(plant.soil);
+  const feed = hydro
+    ? feedPaused
+      ? 'Quarter-strength nutrients till spring'
+      : 'Weak nutrients with every top-up'
+    : guide
+      ? feedingAdvice(plant, profile.climate, now)
+      : feedPaused
+        ? 'Paused till spring'
+        : 'Monthly while growing';
+  const refreshAt = refreshDueAt(plant);
+  const refreshDays = refreshAt ? Math.round((new Date(refreshAt.toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000) : 0;
+  const refresh = refreshDays <= 0 ? 'Due now' : refreshDays === 1 ? 'Tomorrow' : `In ${refreshDays} days`;
   const nextDays = Math.round((new Date(new Date(plant.nextCheckAt).toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000);
   const nextCheck = nextDays <= 0 ? 'Today' : nextDays === 1 ? 'Tomorrow' : nextDays < 7 ? `In ${nextDays} days` : new Date(plant.nextCheckAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
   const history = mine.slice(-6).reverse();
@@ -179,10 +194,17 @@ export default function PlantDetail() {
               <Text style={[styles.statNum, { color: c.ink }]}>~{rhythm} days</Text>
               <Text style={[styles.statLabel, { color: c.ink }]}>check rhythm</Text>
             </Sticker>
-            <Sticker drop={0} bg={c.butter} style={styles.stat}>
-              <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
-              <Text style={[styles.statLabel, { color: c.ink }]}>last watered</Text>
-            </Sticker>
+            {hydro ? (
+              <Sticker drop={0} bg={refreshDays <= 0 ? c.peach : c.butter} style={styles.stat}>
+                <Text style={[styles.statNum, { color: c.ink }]}>{refresh}</Text>
+                <Text style={[styles.statLabel, { color: c.ink }]}>{plant.soil === 'water' ? 'fresh water' : 'flush'}</Text>
+              </Sticker>
+            ) : (
+              <Sticker drop={0} bg={c.butter} style={styles.stat}>
+                <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
+                <Text style={[styles.statLabel, { color: c.ink }]}>last watered</Text>
+              </Sticker>
+            )}
             <Sticker drop={0} bg={c.mint} style={styles.stat}>
               <Text style={[styles.statNum, { color: c.ink }]}>{nextCheck}</Text>
               <Text style={[styles.statLabel, { color: c.ink }]}>next check</Text>
@@ -252,13 +274,18 @@ export default function PlantDetail() {
           <RootingCare rooting={plant.rooting} now={now} pets={pets} />
         ) : (
         <Sticker drop={0} style={{ overflow: 'hidden' }}>
-          {[
-            ['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
+          {(hydro
+            ? [
+                ['Water', plant.soil === 'water' ? 'Top up as the level drops; keep the crown dry' : 'Keep the water line at the bottom third of the pot'],
+                ['Fresh water', plant.soil === 'water' ? 'Swap it all out every 2 weeks' : 'Flush with plain water monthly'],
+              ]
+            : [['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
+          ]).concat([
             ['Light', LIGHT_LABEL[plant.light]],
-            ['Soil', SOIL_LABEL[plant.soil]],
+            [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
             ['Feed', feed],
             ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
-          ].map(([k, v], i, all) => (
+          ]).map(([k, v], i, all) => (
             <View key={k} style={[styles.row, i < all.length - 1 && { borderBottomWidth: 2, borderColor: c.cloud }]}>
               <Text style={[styles.rowKey, { color: c.inkMuted }]}>{k}</Text>
               <Text style={[styles.rowVal, { color: k === 'Pets' && pets !== false ? c.warn : c.ink }]}>{v}</Text>
@@ -279,7 +306,7 @@ export default function PlantDetail() {
             <Label>Recent care</Label>
             {history.map((e) => (
               <View key={e.id} style={styles.diaryRow}>
-                <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={1}>{describe(e, plants)}</Text>
+                <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={1}>{describe(e, plants, hydro)}</Text>
                 <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
               </View>
             ))}

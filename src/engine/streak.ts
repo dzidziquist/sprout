@@ -194,8 +194,7 @@ export type BadgeId =
   | 'generous'
   | 'grandma-plant'
   | 'streak-4'
-  | 'season'
-  | 'survived-winter';
+  | 'season';
 
 export interface Badge {
   id: BadgeId;
@@ -203,6 +202,8 @@ export interface Badge {
   /** Shown on a locked badge: how to earn it, in a curious tone. */
   hint: string;
   earnedAt?: string;
+  /** Which illustration to show, when it isn't the one named after the badge id. null: the line icon. */
+  art?: string | null;
 }
 
 function nth(events: CareEvent[], pred: (e: CareEvent) => boolean, n = 1): string | undefined {
@@ -240,16 +241,25 @@ function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimatePr
   return survivedFrom(plants, events, climate, modelOf(climate) === 'seattle' ? 10 : 11);
 }
 
-/** "Survived winter": in the fam before Dec 1 and checked after Mar 1. Accra has no winter to survive. */
-function winterSurvivor(plants: Plant[], events: CareEvent[], climate: ClimateProfile): string | undefined {
-  return modelOf(climate) === 'accra' ? undefined : survivedFrom(plants, events, climate, 11);
+/**
+ * The hard season the season badge celebrates, and its art. Seattle has its grey season; other
+ * cities on the Seattle model get "winter" (with the snowflake art) when they freeze, or a milder
+ * "cool season". Tropical climates get harmattan / dry season, which has no art of its own yet.
+ */
+function hardSeason(climate: ClimateProfile): { name: string; art: string | null } {
+  if (modelOf(climate) === 'accra') return { name: localizeClimateText('harmattan', climate), art: null };
+  if (typeof climate !== 'string' && climate.frost) return { name: 'winter', art: 'survived-winter' };
+  return { name: localizeClimateText('grey season', climate), art: 'season' };
 }
 
-/** "Grandma plant": the first plant to reach its first birthday in the fam while still in it (or archived after). */
+/**
+ * "Grandma plant": the first plant to turn one in the fam (a year after it was added, so a demo or
+ * a long-owned plant added today doesn't earn it on day one), while still in it or archived after.
+ */
 function grandmaPlant(plants: Plant[], now: Date): string | undefined {
   let earliest: number | undefined;
   for (const p of plants) {
-    const birthday = new Date(p.acquiredAt);
+    const birthday = new Date(p.createdAt);
     birthday.setFullYear(birthday.getFullYear() + 1);
     const t = birthday.getTime();
     if (t > now.getTime()) continue;
@@ -272,11 +282,11 @@ export function badgesFor({ plants, events, climate, now }: StreakInput, streak?
   const isCheck = (e: CareEvent) => e.type === 'check';
   const isSkip = (e: CareEvent) => e.type === 'check' && e.result === 'damp';
   const fifth = [...plants].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[4]?.createdAt;
-  const seasonName = localizeClimateText(modelOf(climate) === 'seattle' ? 'grey season' : 'harmattan', climate);
+  const season = hardSeason(climate);
   return [
-    { id: 'first-check', title: 'First soil check', hint: 'Feel the soil of any plant', earnedAt: nth(events, isCheck) },
-    { id: 'first-skip', title: 'Smart skip', hint: 'Answer "Damp" and skip a watering', earnedAt: nth(events, isSkip) },
-    { id: 'ten-skips', title: '10 smart skips', hint: 'Skip when the soil is still damp, 10 times', earnedAt: nth(events, isSkip, 10) },
+    { id: 'first-check', title: 'First check', hint: 'Check any plant’s soil or water', earnedAt: nth(events, isCheck) },
+    { id: 'first-skip', title: 'Smart skip', hint: 'Skip when it’s "Damp" or "Plenty"', earnedAt: nth(events, isSkip) },
+    { id: 'ten-skips', title: '10 smart skips', hint: 'Skip a watering it didn’t need, 10 times', earnedAt: nth(events, isSkip, 10) },
     { id: 'first-photo', title: 'First diary photo', hint: 'Add a photo to a plant', earnedAt: nth(events, (e) => e.type === 'photo' && !!e.photoUri) },
     { id: 'first-cutting', title: 'First cutting', hint: 'Take a cutting from a plant', earnedAt: nth(events, (e) => e.type === 'cutting') },
     { id: 'first-roots', title: 'First roots', hint: 'Pot up a rooted cutting', earnedAt: nth(events, (e) => e.type === 'rooted') },
@@ -286,7 +296,6 @@ export function badgesFor({ plants, events, climate, now }: StreakInput, streak?
     { id: 'generous', title: 'Generous', hint: 'Give a plant a new home', earnedAt: firstGift(plants) },
     { id: 'grandma-plant', title: 'Grandma plant', hint: 'Keep a plant in the fam for a year', earnedAt: grandmaPlant(plants, now) },
     { id: 'streak-4', title: '4-week streak', hint: 'Keep everyone checked for 4 weeks', earnedAt: s.reachedAt[3] },
-    { id: 'season', title: `Survived ${seasonName}`, hint: `Keep a plant going through ${seasonName}`, earnedAt: seasonSurvivor(plants, events, climate) },
-    { id: 'survived-winter', title: 'Survived winter', hint: 'Keep a plant going through winter', earnedAt: winterSurvivor(plants, events, climate) },
+    { id: 'season', title: `Survived ${season.name}`, hint: `Keep a plant going through ${season.name}`, earnedAt: seasonSurvivor(plants, events, climate), art: season.art },
   ];
 }

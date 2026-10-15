@@ -27,7 +27,10 @@ export const SEASON_ART: Record<SeasonArt, ImageSourcePropType> = {
   'season-winter': require('../../assets/art/season-winter.png'),
 };
 
-/** Milestone art per badge, with the locked (faded) variant. Badges without art keep the line icon. */
+/**
+ * Milestone art per badge (or per `Badge.art` key), with the locked (faded) variant. Badges without art keep
+ * the line icon. 'survived-winter' is the season badge's art in climates that freeze.
+ */
 export const BADGE_ART: Partial<Record<string, { earned: ImageSourcePropType; locked: ImageSourcePropType }>> = {
   'first-roots': { earned: require('../../assets/art/badge-first-root.png'), locked: require('../../assets/art/badge-first-root-locked.png') },
   'first-harvest': { earned: require('../../assets/art/badge-first-harvest.png'), locked: require('../../assets/art/badge-first-harvest-locked.png') },

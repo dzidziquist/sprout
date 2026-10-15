@@ -19,6 +19,12 @@ const SECTIONS: { title: string; body: string; buddy: SpeciesId | 'cutting'; moo
     tint: 'mint',
   },
   {
+    title: 'Hydro and LECA too',
+    body: 'Plants in water, LECA or a countertop hydro garden get water-line checks instead: Low means top up, Plenty means skip. We also remind you to swap in fresh water and nutrients (every 2 weeks in water, a monthly flush for LECA). Turn on “Soil + hydro” in Settings to pick it up front.',
+    buddy: 'spider',
+    tint: 'ice',
+  },
+  {
     title: 'It learns each plant',
     body: 'Every answer tunes that plant’s rhythm. Damp or soggy? We wait longer next time. Bone dry? We check a bit sooner. When unsure, we err on the side of waiting.',
     buddy: 'calathea',
@@ -33,7 +39,7 @@ const SECTIONS: { title: string; body: string; buddy: SpeciesId | 'cutting'; moo
   },
   {
     title: 'What the faces mean',
-    body: 'Thirsty: ready for a soil check (not “dying”). Snoozing: recently damp, resting. Happy: all good. Prefer calmer faces? Me → Plant faces.',
+    body: 'Thirsty: ready for a check (not “dying”). Snoozing: recently damp, resting. Happy: all good. Prefer calmer faces? Me → Plant faces.',
     buddy: 'monstera',
     mood: 'snoozing',
     tint: 'lavender',

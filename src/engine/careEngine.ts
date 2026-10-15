@@ -36,7 +36,7 @@ export const POT_MATERIAL_MULTIPLIER: Record<PotMaterial, number> = {
 };
 
 /** Below 1 the mix dries faster than standard potting mix, so checks come sooner. */
-export const SOIL_MULTIPLIER: Record<Exclude<Soil, 'leca'>, number> = {
+export const SOIL_MULTIPLIER: Record<Exclude<Soil, ReservoirMedium>, number> = {
   gritty: 0.6,
   chunky_aroid: 0.7,
   perlite_mix: 0.85,
@@ -50,8 +50,18 @@ export const SOIL_MULTIPLIER: Record<Exclude<Soil, 'leca'>, number> = {
   garden_soil: 1.35,
 };
 
-/** LECA / pon has no drying curve; we check the reservoir on its own cadence. */
+/**
+ * Hydro and semi-hydro: no soil to dry out. LECA / pon sits over a reservoir; water culture, Kratky
+ * jars and countertop hydro gardens have roots straight in water. We check the water line on its
+ * own cadence, and remind about fresh water + nutrients (a full change for water, a flush for LECA).
+ */
+export type ReservoirMedium = 'leca' | 'water';
+export const isReservoir = (soil: Soil): soil is ReservoirMedium => soil === 'leca' || soil === 'water';
+
 export const RESERVOIR_BASE_DAYS = 7;
+
+/** Days between full water changes (water culture) or flushes (LECA). Nutrient salts build up otherwise. */
+export const REFRESH_DAYS: Record<ReservoirMedium, number> = { water: 14, leca: 28 };
 
 /** Organic mixes break down and hold more water as they age. */
 export const OLD_MIX_MONTHS = 24;
@@ -145,7 +155,7 @@ function monthsBetween(fromIso: string, to: Date): number {
 }
 
 export function isMixOld(plant: IntervalInput['plant'], at: Date): boolean {
-  if (plant.soil === 'gritty' || plant.soil === 'leca') return false;
+  if (plant.soil === 'gritty' || isReservoir(plant.soil)) return false;
   return monthsBetween(plant.lastRepottedAt ?? plant.acquiredAt, at) >= OLD_MIX_MONTHS;
 }
 
@@ -154,7 +164,7 @@ export function checkIntervalDays({ group, plant, profile, at }: IntervalInput):
   const season = seasonMultiplier(profile, plant.placement, at);
   const light = LIGHT_MULTIPLIER[plant.light];
   let days: number;
-  if (plant.soil === 'leca') {
+  if (isReservoir(plant.soil)) {
     days = RESERVOIR_BASE_DAYS * light * season * plant.k;
   } else {
     days =
@@ -203,6 +213,18 @@ export function applyCheck(
 
   let days: number;
   let message: string;
+  if (isReservoir(input.plant.soil)) {
+    // Two answers only: "Low" (topped up) or "Plenty" (skip). Nothing to rot, so no soggy flag.
+    const full = checkIntervalDays({ ...input, plant: updated });
+    if (result === 'dry') {
+      days = full;
+      message = `Topped up! Next peek in ~${Math.round(days)} days`;
+    } else {
+      days = Math.min(full, Math.max(RECHECK_DAYS.damp, Math.round(full / 2)));
+      message = 'Plenty left, skipping. +1 smart skip';
+    }
+    return { k, nextCheckAt: addDays(input.at, days).toISOString(), watered: result === 'dry', message, flags };
+  }
   if (result === 'dry') {
     days = checkIntervalDays({ ...input, plant: updated });
     message = `Watered! Next check in ~${Math.round(days)} days`;
@@ -215,6 +237,21 @@ export function applyCheck(
     message = 'Too wet. Letting it dry; watch for gnats';
   }
   return { k, nextCheckAt: addDays(input.at, days).toISOString(), watered: result === 'dry', message, flags };
+}
+
+/**
+ * When a hydro or semi-hydro plant next needs fresh water and nutrients, counted from the last
+ * refresh, repot or (failing both) when it joined the fam. Undefined for soil plants.
+ */
+export function refreshDueAt(plant: Pick<Plant, 'soil' | 'lastRefreshedAt' | 'lastRepottedAt' | 'createdAt'>): Date | undefined {
+  if (!isReservoir(plant.soil)) return undefined;
+  const from = [plant.lastRefreshedAt, plant.lastRepottedAt, plant.createdAt].filter(Boolean).sort().pop()!;
+  return addDays(new Date(from), REFRESH_DAYS[plant.soil]);
+}
+
+export function isRefreshDue(plant: Parameters<typeof refreshDueAt>[0], now: Date): boolean {
+  const due = refreshDueAt(plant);
+  return !!due && due.getTime() <= now.getTime();
 }
 
 /** Start-of-life schedule: first check after one full interval, with k = 1. */

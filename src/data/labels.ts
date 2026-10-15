@@ -12,6 +12,7 @@ export const SOIL_LABEL: Record<Soil, string> = {
   moss: 'Sphagnum moss',
   garden_soil: 'Garden soil (not ideal in pots)',
   leca: 'LECA · semi-hydro',
+  water: 'Water · hydroponic',
   unsure: 'Not sure yet',
 };
 

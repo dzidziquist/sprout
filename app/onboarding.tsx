@@ -93,6 +93,10 @@ export default function Onboarding() {
             </Choice>
           ))}
         </View>
+        <Choice on={!!profile.grows.hydro} bg={c.ice} onPress={() => setProfile({ grows: { ...profile.grows, hydro: !profile.grows.hydro } })} style={styles.hydroRow}>
+          <Text style={styles.choiceTitle}>💧 Hydro or LECA</Text>
+          <Text style={styles.choiceSub}>Plants in water, clay balls or a countertop hydro garden</Text>
+        </Choice>
 
         <Label>Plant faces</Label>
         <View style={styles.segment}>
@@ -177,6 +181,7 @@ const makeStyles = (c: Palette) =>
   choiceSub: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.inkMuted },
   row3: { flexDirection: 'row', gap: 8 },
   growTile: { flex: 1, height: 116, alignItems: 'center', justifyContent: 'center' },
+  hydroRow: { paddingVertical: 12, paddingHorizontal: 14, gap: 2 },
   segment: { flexDirection: 'row', gap: 4, padding: 4, borderWidth: 2, borderColor: c.line, borderRadius: 16 },
   segBtn: { flex: 1, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   segText: { fontFamily: fonts.displaySemi, fontSize: 15, color: c.ink },

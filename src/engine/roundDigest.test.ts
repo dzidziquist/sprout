@@ -73,3 +73,14 @@ describe('planning a week of rounds', () => {
     expect(plan[0].digest.plantIds).toEqual(['cal']);
   });
 });
+
+describe('round digest wording', () => {
+  const day = new Date('2026-10-14T08:00:00');
+  it('asks for a water check when only hydro plants are due, and just "a check" for a mix', () => {
+    const jar = plant('Jar', '2026-10-14T09:00:00', { soil: 'water' });
+    const pot = plant('Pot', '2026-10-14T09:00:00');
+    expect(roundDigestFor([jar], day)?.body).toBe('Jar would love a water check. 1 min, tops.');
+    expect(roundDigestFor([pot], day)?.body).toBe('Pot would love a soil check. 1 min, tops.');
+    expect(roundDigestFor([jar, pot], day)?.body).toBe('Jar and Pot would love a check. 2 mins, tops.');
+  });
+});

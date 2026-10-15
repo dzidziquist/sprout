@@ -1,4 +1,5 @@
 import type { Plant } from '../types';
+import { isReservoir } from './careEngine';
 
 export interface RoundDigest {
   title: string;
@@ -28,10 +29,12 @@ export function roundDigestFor(plants: Plant[], day: Date): RoundDigest | null {
   const due = plants.filter((p) => !p.rooting && !p.archivedAt && new Date(p.nextCheckAt).getTime() <= endOfDay.getTime());
   if (due.length === 0) return null;
   const n = due.map((p) => p.name);
+  const water = due.filter((p) => isReservoir(p.soil)).length;
+  const check = water === 0 ? 'a soil check' : water === due.length ? 'a water check' : 'a check';
   const body =
     due.length === 1
-      ? `${n[0]} would love a soil check. 1 min, tops.`
-      : `${names(n)} would love a soil check. ${due.length <= 3 ? '2 mins' : '5 mins'}, tops.`;
+      ? `${n[0]} would love ${check}. 1 min, tops.`
+      : `${names(n)} would love ${check}. ${due.length <= 3 ? '2 mins' : '5 mins'}, tops.`;
   return { title: 'Plant round 🌱', body, plantIds: due.map((p) => p.id) };
 }
 

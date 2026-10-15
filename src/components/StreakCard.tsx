@@ -11,7 +11,7 @@ const FREEZE = 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5
 function copyFor(s: StreakResult): string {
   if (s.thisWeek === 'covered') return 'A free pass has this week covered. No stress.';
   if (s.thisWeek === 'open') return 'New week, fresh sprout. Check in whenever you can.';
-  return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next soil check adds this week.';
+  return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next check adds this week.';
 }
 
 /** Weekly streak, drawn as a growing sprout. No flames, no guilt. */
@@ -31,7 +31,7 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
           <Text style={[styles.big, { color: c.ink }]} accessibilityRole="header">
             {streak.started ? `${streak.current} ${weeks} growing` : 'Your streak starts here'}
           </Text>
-          <Text style={[styles.sub, { color: c.ink }]}>{streak.started ? copyFor(streak) : 'Do your first soil check and the first sprout appears.'}</Text>
+          <Text style={[styles.sub, { color: c.ink }]}>{streak.started ? copyFor(streak) : 'Do your first check and the first sprout appears.'}</Text>
         </View>
       </View>
 

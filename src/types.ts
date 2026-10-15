@@ -17,6 +17,8 @@ export type Soil =
   | 'moss'
   | 'garden_soil'
   | 'leca'
+  /** Roots straight in water: water culture, Kratky jars, countertop hydro gardens. */
+  | 'water'
   | 'unsure';
 
 export type Light = 'low' | 'medium' | 'bright' | 'direct';
@@ -131,6 +133,8 @@ export interface Plant {
   rooting?: { method: 'water' | 'moss' | 'soil' | 'leca'; startedAt: string };
   acquiredAt: string;
   lastRepottedAt?: string;
+  /** LECA and water only: when the reservoir last got fresh water and nutrients (or a flush). */
+  lastRefreshedAt?: string;
   /** Learned per-plant drying coefficient; 1 = matches the model. */
   k: number;
   lastCheckAt?: string;
@@ -163,6 +167,7 @@ export type CareEventType =
   | 'rooted'
   | 'stage'
   | 'regrow'
+  | 'refresh'
   | 'archived';
 
 export interface CareEvent {

@@ -32,6 +32,7 @@ const SOILS: { id: Soil; swatch: string }[] = [
   { id: 'coir', swatch: '#9A6B45' },
   { id: 'moisture_control', swatch: '#5E4330' },
   { id: 'leca', swatch: '#E07A4F' },
+  { id: 'water', swatch: '#7FC8E8' },
   { id: 'moss', swatch: '#7CB86A' },
   { id: 'garden_soil', swatch: '#5A4632' },
   { id: 'unsure', swatch: '#FFFFFF' },
@@ -222,7 +223,7 @@ export default function EditPlantScreen() {
         ))}
       </View>
       <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" />
-      <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next soil check.</Text>
+      <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next check.</Text>
 
       <Button title="Save changes" raised onPress={save} style={{ minHeight: 56, marginTop: 6 }} textStyle={{ fontSize: 18, fontFamily: fonts.display }} />
 

@@ -89,6 +89,7 @@ Soil sets `M_mix`, a drying-speed multiplier on the check interval. Below 1 mean
 | Garden soil in a pot | 1.35 + warning | Compacts, waterlogs, can carry disease |
 | Mix older than 2 years | ×1.10 | Breakdown reduces air space |
 | LECA / pon (semi-hydro) | n/a | Separate "check the reservoir" mode (~7-day base), feed every watering |
+| Water / hydroponic (water culture, Kratky, countertop gardens) | n/a | Same reservoir mode; full water + nutrient change every 14 days (LECA: flush every 28) |
 
 The soil type also drives the **repot nudge** (organic mixes at 18–24 months), **degradation prompts** (sunken soil, water running straight through, sour smell, white salt crust → flush with 2–3× the pot volume) and **reuse advice** for edibles: reuse mix after a healthy crop, refreshed with ~50% new mix, but never after blight.
 
@@ -165,3 +166,9 @@ Users type their city (Open-Meteo geocoder; never GPS). Three years of that city
 - **Tropical** (coldest month ≥ 18°C): Accra model, driest month aligned with Accra's January.
 
 Season multipliers, feeding pauses, grow-patch tasks (with month names translated) and the grey-season badge all follow the shift; weather uses the city's own coordinates; units follow the country. If the history call fails, a latitude guess is used. Soil checks then tune each plant's rhythm, so the approximation fades within a few rounds. A future step: more calibrated models (e.g. Mediterranean, arid) as users arrive from those climates.
+
+## Owner decision (Oct 15, 2026): hydroponic growers are first-class
+
+Plants in **LECA** or **water** (water culture, Kratky jars, countertop hydro gardens) skip the soil question. Their check is the water line: **Low** (top up with weak nutrients) or **Plenty** (skip, peek again in about half a rhythm). There's no "soggy" answer and no overwatering flag. A **fresh water** reminder counts from the last refresh or repot: a full change every 14 days in water, a flush every 28 in LECA. It shows on the plant page and in the round, and logging "Fresh water" counts as a top-up. Growers who pick **Hydro or LECA** in onboarding or Settings ("Soil + hydro") get a Soil / LECA / Water choice up front when adding a plant, and new plants follow the medium of their last hydro plant. Copy across the app says "check" rather than "soil check" wherever both apply, and milestones count water checks the same as soil checks.
+
+Milestones: one season badge per climate (grey season for Seattle, **winter** with the snowflake art where it freezes, cool season where it doesn't, harmattan / dry season in the tropics), so nobody sees a duplicate or a badge they can't earn. **Grandma plant** counts a year from when the plant joined the fam, not when it was bought.

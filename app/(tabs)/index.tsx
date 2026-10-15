@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { isDue, moodFor } from '@/engine/careEngine';
+import { isDue, isRefreshDue, isReservoir, moodFor } from '@/engine/careEngine';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { ART, SEASON_ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
@@ -35,11 +35,23 @@ function sameDay(a: Date, b: Date) {
 }
 
 function reason(plant: Plant, now: Date): string {
-  if (!plant.lastCheckAt) return 'Say hi: first soil check';
+  const water = isReservoir(plant.soil);
+  if (!plant.lastCheckAt) return water ? 'Say hi: first water check' : 'Say hi: first soil check';
   const days = Math.round((now.getTime() - new Date(plant.lastCheckAt).getTime()) / DAY);
   const ago = days <= 0 ? 'earlier today' : days === 1 ? 'yesterday' : `${days} days ago`;
+  if (water) {
+    const fresh = isRefreshDue(plant, now) ? ' Fresh water due too.' : '';
+    if (plant.lastResult === 'dry') return `Last checked ${ago}. How’s the water?${fresh}`;
+    return `Had plenty ${ago}, peek again?${fresh}`;
+  }
   if (plant.lastResult === 'damp' || plant.lastResult === 'soggy') return `Was ${plant.lastResult} ${ago}, peek again?`;
   return `Last checked ${ago}. How’s the soil?`;
+}
+
+/** "soil checks", "water checks", or just "checks" when the round has both. */
+function checkWord(plants: Plant[]): '' | 'soil ' | 'water ' {
+  const water = plants.filter((p) => isReservoir(p.soil)).length;
+  return water === 0 ? 'soil ' : water === plants.length ? 'water ' : '';
 }
 
 function inDays(iso: string, now: Date): string {
@@ -93,23 +105,28 @@ export default function TodayScreen() {
 
   const answer = (id: string, r: CheckResult) => {
     swipeRefs.current[id]?.close();
-    setMessages((m) => ({ ...m, [id]: logCheck(id, r) }));
+    const p = plants.find((x) => x.id === id);
+    const fresh = p && r === 'dry' && isRefreshDue(p, now) ? ' Time for fresh water + nutrients: log it in Care.' : '';
+    setMessages((m) => ({ ...m, [id]: logCheck(id, r) + fresh }));
     if (left === 1) haptics.success();
     else haptics.answer();
   };
 
   const firstEver = !events.some((e) => e.type === 'check');
-  const heroTitle = living.length === 0 ? 'Your jungle is waiting' : round.length === 0 ? 'All caught up!' : allDone ? 'Round done!' : `${left} soil ${left === 1 ? 'check' : 'checks'} left`;
+  const dueNow = round.filter((p) => isDue(p, now));
+  const word = checkWord(dueNow);
+  const how = word === 'water ' ? 'Peek at the water line' : word === '' ? 'Feel the soil or peek at the water' : 'Feel the soil';
+  const heroTitle = living.length === 0 ? 'Your jungle is waiting' : round.length === 0 ? 'All caught up!' : allDone ? 'Round done!' : `${left} ${word}${left === 1 ? 'check' : 'checks'} left`;
   const heroSub =
     living.length === 0
       ? 'Add your first plant and we’ll learn its rhythm together.'
       : round.length === 0
-        ? 'Nobody needs a soil check today. Enjoy the green.'
+        ? 'Nobody needs a check today. Enjoy the green.'
         : allDone
           ? 'Everyone in the fam is happy. Nice judgement!'
           : firstEver
-            ? 'Say hi to the fam: feel the soil, then tap what you found.'
-            : 'Feel the soil, then tap what you found.';
+            ? `Say hi to the fam: ${how.toLowerCase()}, then tap what you found.`
+            : `${how}, then tap what you found.`;
 
   return (
     <ScrollView
@@ -153,7 +170,8 @@ export default function TodayScreen() {
             const due = isDue(p, now);
             const mood = moodFor(p, now);
             const tint = c.potTint[p.potColor];
-            const outcome = !due && p.lastResult ? OUTCOME[p.lastResult] : undefined;
+            const water = isReservoir(p.soil);
+            const outcome = !due && p.lastResult ? (water && p.lastResult === 'dry' ? { ...OUTCOME.dry, text: 'Topped up' } : OUTCOME[p.lastResult]) : undefined;
             const card = (
               <PlantMenu plant={p}>
                 <Sticker style={styles.card}>
@@ -166,7 +184,7 @@ export default function TodayScreen() {
                       <Text style={[styles.reason, { color: due ? c.inkMuted : c.good }]}>{due ? reason(p, now) : messages[p.id] ?? 'Logged'}</Text>
                     </View>
                     {due ? (
-                      <TodayAnswerButtons name={p.name} onAnswer={(r) => answer(p.id, r)} />
+                      <TodayAnswerButtons name={p.name} reservoir={water} onAnswer={(r) => answer(p.id, r)} />
                     ) : (
                       <View style={styles.answers}>
                         {outcome && <Chip bg={outcome.bg} style={styles.tallChip}>{outcome.text}</Chip>}
@@ -201,7 +219,7 @@ export default function TodayScreen() {
                 renderRightActions={() => (
                   <View style={styles.swipeActions}>
                     <SwipeAction label="Skip" bg={c.sky} slash onPress={() => answer(p.id, 'damp')} />
-                    <SwipeAction label="Water" bg={c.leaf} onPress={() => answer(p.id, 'dry')} />
+                    <SwipeAction label={isReservoir(p.soil) ? 'Top up' : 'Water'} bg={c.leaf} onPress={() => answer(p.id, 'dry')} />
                   </View>
                 )}
               >

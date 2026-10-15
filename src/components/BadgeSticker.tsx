@@ -19,7 +19,6 @@ const ICON: Record<BadgeId, string> = {
   'grandma-plant': 'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4M9 15l2 2 4-4',
   'streak-4': 'M12 21v-9M12 12C12 8 9 5 4 5c0 4 3 7 8 7zM12 15c0-3 3-6 8-6 0 4-3 6-8 6z',
   season: 'M7 19h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 12.5 3.5 3.5 0 0 0 7 19zM17 3v2M21 7h-2M20 4l-1.5 1.5',
-  'survived-winter': 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9',
 };
 
 const fill = (c: Palette): Record<BadgeId, string> => ({
@@ -36,7 +35,6 @@ const fill = (c: Palette): Record<BadgeId, string> => ({
   'grandma-plant': c.peach,
   'streak-4': c.leaf,
   season: c.grape,
-  'survived-winter': c.ice,
 });
 
 /** Milestone sticker. Earned: colourful with the date. Locked: faded, with a hint on how to earn it. */
@@ -45,6 +43,7 @@ export function BadgeSticker({ badge }: { badge: Badge }) {
   const earned = !!badge.earnedAt;
   const bg = earned ? fill(c)[badge.id] : c.cloud;
   const fg = earned ? textOn(bg, c) : c.inkMuted;
+  const art = BADGE_ART[badge.art === undefined ? badge.id : (badge.art ?? '')];
   const date = earned ? new Date(badge.earnedAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
   return (
     <View
@@ -52,8 +51,8 @@ export function BadgeSticker({ badge }: { badge: Badge }) {
       accessible
       accessibilityLabel={earned ? `${badge.title}, earned ${date}` : `${badge.title}, locked. ${badge.hint}`}
     >
-      {BADGE_ART[badge.id] ? (
-        <Image source={earned ? BADGE_ART[badge.id]!.earned : BADGE_ART[badge.id]!.locked} style={styles.art} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+      {art ? (
+        <Image source={earned ? art.earned : art.locked} style={styles.art} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
       ) : (
         <View style={[styles.circle, { backgroundColor: bg, borderColor: earned ? c.line : c.inkMuted }, earned ? { boxShadow: `0px 3px 0px ${c.drop}` } : { opacity: 0.6, borderStyle: 'dashed' }]}>
           <Svg width={30} height={30} viewBox="0 0 24 24">

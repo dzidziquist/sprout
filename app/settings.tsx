@@ -136,7 +136,7 @@ export default function SettingsScreen() {
       </View>
       <Title>Settings</Title>
 
-      <Section title="Reminders" footer="One reminder a day, and only when a plant is ready for a soil check. Nothing due means no notification.">
+      <Section title="Reminders" footer="One reminder a day, and only when a plant is ready for a check. Nothing due means no notification.">
         <Field label="Daily plant round" last>
           <Segmented
             label="Daily plant round"
@@ -180,8 +180,19 @@ export default function SettingsScreen() {
       </Section>
 
       <Section title="Where you grow" footer="Seasons, feeding pauses and grow-patch tasks follow your climate. We never use your location.">
-        <Field label="Your city" last>
+        <Field label="Your city">
           <PlacePicker value={profile.climate} onPick={(climate, city) => setProfile({ climate, city })} />
+        </Field>
+        <Field label="Grows in" last note={profile.grows.hydro ? 'Adding a plant asks soil, LECA or water up front. Hydro plants get water-line checks and fresh-water reminders.' : 'Growing in LECA or water too? Turn this on to pick it up front when adding plants.'}>
+          <Segmented
+            label="Grows in"
+            value={profile.grows.hydro ? 'hydro' : 'soil'}
+            options={[
+              { id: 'soil' as const, label: 'Soil' },
+              { id: 'hydro' as const, label: 'Soil + hydro' },
+            ]}
+            onChange={(v) => setProfile({ grows: { ...profile.grows, hydro: v === 'hydro' } })}
+          />
         </Field>
       </Section>
 
