@@ -49,7 +49,10 @@
       ]
     ],
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "8c38ef09-43ce-46dd-b05f-0bcc755365d1"
+      }
     },
     "owner": "dzidziquist",
     "icon": "./assets/icon.png"
