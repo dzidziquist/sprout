@@ -8,13 +8,16 @@ A playful plant-care app where plants have moods, care is a soil check rather th
 
 ## Status
 
-**Research + mockup: done.** **App build: phase 1 (foundation) done**: Expo app with the care engine, plant round, jungle, Offshoots and settings, running on demo plants.
+**Research, mockup and app: built.** All phases are in: plant round, 217-plant catalogue, Offshoots, grow patch, photo diary, Plus, settings and privacy. Next: TestFlight.
 
 ### Run it
 
+Needs **Node 20.19.4 or newer** (Node 22 LTS recommended; `.nvmrc` says 22). Older Node breaks Metro with errors like `_DependencyGraph.default is not a constructor`.
+
 ```bash
-npm install
-npm start        # Expo dev server (scan with Expo Go / dev client)
+nvm use          # or install Node 22
+npm ci           # installs exactly what package-lock.json lists
+npx expo start -c   # Expo dev server, cache cleared (needs a dev build for purchases/native tabs)
 npm test         # care engine unit tests
 npm run ts:check # TypeScript
 ```
