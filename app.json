@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "PlantFam",
+    "slug": "plantfam",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "plantfam",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.dzidziquist.plantfam",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.dzidziquist.plantfam"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "color": "#3DDC84"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#3DDC84",
+          "image": "./assets/art/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PlantFam opens your photos so you can add one to a plant's diary or identify a plant. Only the photos you choose are used.",
+          "cameraPermission": "PlantFam uses the camera so you can snap your plants for their photo diary or to identify them.",
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "extra": {
+      "router": {}
+    },
+    "owner": "dzidziquist",
+    "icon": "./assets/icon.png"
+  }
+}

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PlantFam — Grow patch</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B1B2F}a:hover{color:#000000}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; color: #1B1B2F; font-family: 'Nunito', sans-serif">
+  <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 14px">
+    <header style="display: flex; justify-content: space-between; align-items: center">
+      <div style="display: flex; flex-direction: column">
+        <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 700">Grow patch</h1>
+        <span style="font-size: 14px; font-weight: 800; color: #55556B">Balcony · 3 crops growing</span>
+      </div>
+      <span style="height: 34px; padding: 0 12px; border-radius: 17px; background: #FFF1B8; border: 2px solid #1B1B2F; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-8A5.5 5.5 0 0 1 17 8.5a4.5 4.5 0 0 1 0 9.5z" fill="#D6EEFF" stroke="#1B1B2F" stroke-width="2" stroke-linejoin="round"></path></svg>
+        9°C tonight
+      </span>
+    </header>
+
+    <nav aria-label="Collection sections" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border: 2px solid #1B1B2F; border-radius: 18px">
+      <a href="Plants.dc.html" style="height: 36px; border-radius: 13px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">Houseplants</a>
+      <a href="Grow.dc.html" aria-current="page" style="height: 36px; border-radius: 13px; background: #1B1B2F; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">Grow patch</a>
+      <a href="Plants.dc.html" style="height: 36px; border-radius: 13px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">Wishlist</a>
+    </nav>
+
+    <div style="display: flex; gap: 8px">
+      <sc-for list="{{crops}}" as="c" hint-placeholder-count="3">
+        <button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="flex: 1; height: 44px; border-radius: 16px; border: 2px solid #1B1B2F; box-shadow: {{c.shadow}}; background: {{c.bg}}; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600; padding: 0">{{c.name}}</button>
+      </sc-for>
+    </div>
+
+    <section style="border: 2px solid #1B1B2F; border-radius: 24px; box-shadow: 0 5px 0 #1B1B2F; overflow: hidden">
+      <div style="height: 128px; background: {{cur.tone}}; border-bottom: 2px solid #1B1B2F; position: relative">
+        <div style="position: absolute; left: 16px; top: 14px; display: flex; flex-direction: column; gap: 2px; max-width: 200px">
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 24px; font-weight: 700; line-height: 1.1">{{cur.title}}</span>
+          <span style="font-size: 13px; font-weight: 800">{{cur.kind}}</span>
+          <span style="margin-top: 6px; align-self: flex-start; height: 28px; padding: 0 10px; border-radius: 14px; background: #FFFFFF; border: 2px solid #1B1B2F; display: flex; align-items: center; font-size: 13px; font-weight: 800">{{cur.day}}</span>
+        </div>
+        <div style="position: absolute; right: 8px; bottom: -4px">
+          <dc-import name="PlantArt" species="{{cur.species}}" mood="{{cur.mood}}" pot="{{cur.pot}}" bg="{{cur.tone}}" size="132" hint-size="132px,132px"></dc-import>
+        </div>
+      </div>
+      <div style="padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; position: relative">
+          <sc-for list="{{cur.stages}}" as="s" hint-placeholder-count="7">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+              <div style="width: 30px; height: 30px; border-radius: 15px; border: 2px solid #1B1B2F; background: {{s.bg}}; box-shadow: {{s.ring}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">{{s.mark}}</div>
+              <span style="font-size: 11px; font-weight: 800; color: {{s.fg}}">{{s.label}}</span>
+            </div>
+          </sc-for>
+        </div>
+        <span style="font-size: 14px; font-weight: 800">{{cur.next}}</span>
+      </div>
+    </section>
+
+    <section style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 20px; background: {{cur.tipTone}}; border: 2px solid #1B1B2F">
+      <div style="width: 40px; height: 40px; border-radius: 20px; background: #FFFFFF; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <sc-if value="{{cur.heat}}" hint-placeholder-val="{{true}}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"></path></svg>
+        </sc-if>
+        <sc-if value="{{cur.idea}}" hint-placeholder-val="{{false}}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg>
+        </sc-if>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+        <span style="font-size: 14px; font-weight: 800; line-height: 1.35">{{cur.tip}}</span>
+        <button type="button" onClick="{{tipDone}}" style="align-self: flex-start; height: 38px; padding: 0 14px; border-radius: 13px; border: 2px solid #1B1B2F; background: {{tipBg}}; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">{{tipLabel}}</button>
+      </div>
+    </section>
+
+    <section style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 20px; border: 2px solid #1B1B2F">
+      <div style="flex: 1; display: flex; flex-direction: column">
+        <span style="font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700">Harvest basket</span>
+        <span style="font-size: 13px; font-weight: 800; color: #55556B">{{basket}}</span>
+      </div>
+      <button type="button" onClick="{{pick}}" style="height: 44px; padding: 0 14px; border-radius: 15px; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; background: #3DDC84; color: #1B1B2F; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">{{pickLabel}}</button>
+    </section>
+  </div>
+
+  <nav aria-label="Main" style="position: absolute; left: 14px; right: 14px; bottom: 18px; height: 72px; background: #FFFFFF; border: 2px solid #1B1B2F; border-radius: 26px; box-shadow: 0 4px 0 #1B1B2F; display: flex; align-items: center; justify-content: space-around; padding: 0 6px">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>Today
+    </a>
+    <a href="Plants.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; border-radius: 18px; background: #5AB8FF; border: 2px solid #1B1B2F; color: #1B1B2F; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"></path><path d="M5 19 13 11"></path></svg>Jungle
+    </a>
+    <a href="AddPlant.dc.html" aria-label="Add a plant" style="width: 56px; height: 56px; border-radius: 20px; background: #FFD23F; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; color: #1B1B2F; display: flex; align-items: center; justify-content: center; transform: translateY(-14px)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    </a>
+    <a href="Lineage.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2.5"></circle><circle cx="6" cy="19" r="2.5"></circle><circle cx="18" cy="12" r="2.5"></circle><path d="M6 7.5v9M6 12h4a4 4 0 0 0 4-4V8M15.5 12H10"></path></svg>Offshoots
+    </a>
+    <a href="Me.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Me
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var which = st.crop || 'tomato';
+    var picked = st.picked || { tomato: 86, pepper: 31, onion: 6 };
+    var labels = ['Sow', 'Sprout', 'Leaves', 'Move', 'Flower', 'Fruit', 'Pick'];
+    var crops = {
+      tomato: { name: 'Tommy', title: 'Tommy', kind: 'Sungold cherry · 10 gal pot', species: 'tomato', pot: '#FFD23F', tone: '#FFD9CF', at: 6, day: 'Season wrap-up', mood: 'thirsty',
+        next: 'Nights are under 10°C, so no more ripening outside.',
+        tip: 'Pick every green tomato before frost (usually mid-Nov). They ripen on the counter in ~2 weeks, no light needed.',
+        tipAction: 'Picked them', unit: 'tomatoes' },
+      pepper: { name: 'Chili', title: 'Chili Pepper', kind: 'Scotch bonnet · 5 gal pot', species: 'pepper', pot: '#5AB8FF', tone: '#FFF1B8', at: 6, day: 'Last picks', mood: 'happy',
+        next: 'Pick the last pods, then keep me for next year?',
+        tip: 'Overwinter me: prune back, move to a bright ~13°C spot indoors, water every ~2 weeks, no feed.',
+        tipAction: 'Bring indoors', unit: 'peppers' },
+      onion: { name: 'Scallie', title: 'Scallie', kind: 'Spring onion · regrown from scraps', species: 'onion', pot: '#A78BFA', tone: '#D7F9E4', at: 6, day: 'Regrowth 3 of ~4', mood: 'happy',
+        next: 'Ready to snip. Cut 2–3 cm above the white base.',
+        tip: 'Hardy all winter outside. Keep me under the eave so I don\'t sit soggy in the rain.',
+        tipAction: 'Moved it', unit: 'cuts' }
+    };
+    var c = crops[which];
+    var stages = labels.map(function (l, i) {
+      var done = i < c.at, now = i === c.at;
+      return {
+        label: l, mark: done ? '✓' : (i + 1),
+        bg: done ? '#3DDC84' : now ? '#FFD23F' : '#FFFFFF',
+        ring: now ? '0 0 0 3px #FFFFFF, 0 0 0 5px #1B1B2F' : 'none',
+        fg: now || done ? '#1B1B2F' : '#55556B'
+      };
+    });
+    var cropList = ['tomato', 'pepper', 'onion'].map(function (k) {
+      var on = k === which;
+      return {
+        name: crops[k].name, pressed: on ? 'true' : 'false',
+        bg: on ? crops[k].tone : '#FFFFFF', shadow: on ? '0 3px 0 #1B1B2F' : 'none',
+        pick: function () { self.setState({ crop: k, tip: false }); }
+      };
+    });
+    return {
+      crops: cropList,
+      cur: Object.assign({}, c, { stages: stages, heat: which === 'tomato', idea: which !== 'tomato', tipTone: which === 'tomato' ? '#D6EEFF' : '#D7F9E4' }),
+      tipDone: function () { self.setState({ tip: !st.tip }); },
+      tipLabel: st.tip ? 'Logged ✓' : c.tipAction,
+      tipBg: st.tip ? '#3DDC84' : '#FFFFFF',
+      basket: picked.tomato + ' tomatoes · ' + picked.pepper + ' peppers · ' + picked.onion + ' onion cuts',
+      pickLabel: '+1 ' + (which === 'onion' ? 'cut' : which),
+      pick: function () { var n = Object.assign({}, picked); n[which] = n[which] + 1; self.setState({ picked: n }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# What EAS uploads for a build. This replaces .gitignore for EAS, so it repeats it.
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.log
+.DS_Store
+ios/
+android/
+
+# Not part of the app: full-size art originals (the app ships the resized copies in assets/art and
+# assets/buddies), design boards and research notes. Skipping them keeps the upload ~130 MB smaller.
+assets/incoming/
+design/
+docs/
+scripts/

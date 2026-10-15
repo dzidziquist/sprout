@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PlantFam — My jungle</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B1B2F}a:hover{color:#000000}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; color: #1B1B2F; font-family: 'Nunito', sans-serif">
+  <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 14px">
+    <header style="display: flex; justify-content: space-between; align-items: center">
+      <div style="display: flex; flex-direction: column">
+        <h1 style="margin: 0; font-family: 'Fredoka', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 700">My jungle</h1>
+        <span style="font-size: 14px; font-weight: 800; color: #55556B">6 plants · 3 rooms</span>
+      </div>
+      <a href="Main.dc.html" aria-label="Search" style="width: 44px; height: 44px; border-radius: 22px; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; color: #1B1B2F">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      </a>
+    </header>
+
+    <div role="tablist" aria-label="Collection sections" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border: 2px solid #1B1B2F; border-radius: 18px">
+      <button type="button" role="tab" aria-selected="{{houseSel}}" onClick="{{showHouse}}" style="height: 36px; border: none; border-radius: 13px; background: {{houseBg}}; color: {{houseFg}}; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">Houseplants</button>
+      <a href="Grow.dc.html" style="height: 36px; border-radius: 13px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">Grow patch</a>
+      <button type="button" role="tab" aria-selected="{{wishSel}}" onClick="{{showWish}}" style="height: 36px; border: none; border-radius: 13px; background: {{wishBg}}; color: {{wishFg}}; font-family: 'Fredoka', sans-serif; font-size: 15px; font-weight: 600">Wishlist</button>
+    </div>
+
+    <sc-if value="{{isWish}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #3F3F55">Plants you're hunting. We'll nudge you if a friend's tree has a cutting to spare.</p>
+        <sc-for list="{{wishes}}" as="w" hint-placeholder-count="3">
+          <div style="display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 22px; border: 2px solid #1B1B2F; box-shadow: 0 4px 0 #1B1B2F">
+            <div style="width: 72px; height: 72px; border-radius: 16px; background: {{w.tone}}; border: 2px dashed #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+              <dc-import name="PlantArt" species="{{w.species}}" mood="sleepy" pot="#FFFFFF" bg="{{w.tone}}" size="64" hint-size="64px,64px"></dc-import>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 600; line-height: 1.15">{{w.name}}</span>
+              <span style="font-size: 12px; font-weight: 800; color: #55556B">{{w.note}}</span>
+              <span style="align-self: flex-start; margin-top: 4px; height: 26px; padding: 0 9px; border-radius: 13px; border: 2px solid #1B1B2F; background: {{w.tagBg}}; display: flex; align-items: center; font-size: 12px; font-weight: 800">{{w.tag}}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isHouse}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; gap: 8px">
+      <sc-for list="{{filters}}" as="f" hint-placeholder-count="3">
+        <button type="button" onClick="{{f.pick}}" aria-pressed="{{f.pressed}}" style="height: 40px; padding: 0 14px; border-radius: 20px; border: 2px solid #1B1B2F; box-shadow: {{f.shadow}}; background: {{f.bg}}; color: #1B1B2F; font-size: 14px; font-weight: 800">{{f.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <sc-for list="{{plants}}" as="p" hint-placeholder-count="6">
+        <a href="PlantDetail.dc.html" style="border: 2px solid #1B1B2F; border-radius: 22px; box-shadow: 0 4px 0 #1B1B2F; overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: #1B1B2F; background: #FFFFFF">
+          <div style="height: 100px; background: {{p.tone}}; border-bottom: 2px solid #1B1B2F; display: flex; align-items: flex-end; justify-content: center; position: relative">
+            <dc-import name="PlantArt" species="{{p.species}}" mood="{{p.mood}}" pot="{{p.pot}}" bg="{{p.tone}}" size="96" hint-size="96px,96px"></dc-import>
+            <span style="position: absolute; top: 8px; left: 8px; height: 26px; padding: 0 9px; border-radius: 13px; border: 2px solid #1B1B2F; background: {{p.badgeBg}}; display: flex; align-items: center; font-size: 12px; font-weight: 800">{{p.badge}}</span>
+          </div>
+          <div style="padding: 6px 12px 8px; display: flex; flex-direction: column">
+            <span style="font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; line-height: 1.15">{{p.name}}</span>
+            <span style="font-size: 12px; font-weight: 800; color: #55556B">{{p.kind}}</span>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+    </div>
+    </sc-if>
+  </div>
+
+  <nav aria-label="Main" style="position: absolute; left: 14px; right: 14px; bottom: 18px; height: 72px; background: #FFFFFF; border: 2px solid #1B1B2F; border-radius: 26px; box-shadow: 0 4px 0 #1B1B2F; display: flex; align-items: center; justify-content: space-around; padding: 0 6px">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>Today
+    </a>
+    <a href="Plants.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; border-radius: 18px; background: #5AB8FF; border: 2px solid #1B1B2F; color: #1B1B2F; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"></path><path d="M5 19 13 11"></path></svg>Jungle
+    </a>
+    <a href="AddPlant.dc.html" aria-label="Add a plant" style="width: 56px; height: 56px; border-radius: 20px; background: #FFD23F; border: 2px solid #1B1B2F; box-shadow: 0 3px 0 #1B1B2F; color: #1B1B2F; display: flex; align-items: center; justify-content: center; transform: translateY(-14px)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    </a>
+    <a href="Lineage.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2.5"></circle><circle cx="6" cy="19" r="2.5"></circle><circle cx="18" cy="12" r="2.5"></circle><path d="M6 7.5v9M6 12h4a4 4 0 0 0 4-4V8M15.5 12H10"></path></svg>Offshoots
+    </a>
+    <a href="Me.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 60px; height: 54px; color: #55556B; text-decoration: none; font-size: 12px; font-weight: 800">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Me
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var filter = (this.state && this.state.filter) || 'all';
+    var tab = (this.state && this.state.tab) || 'house';
+    var all = [
+      { name: 'Queenie', kind: 'Marble Queen pothos', species: 'pothos', pot: '#5AB8FF', tone: '#FFF1B8', mood: 'thirsty' },
+      { name: 'Big Fig', kind: 'Fiddle-leaf fig', species: 'fig', pot: '#FF6B5B', tone: '#EDE7FF', mood: 'thirsty' },
+      { name: 'Cal', kind: 'Calathea orbifolia', species: 'calathea', pot: '#A78BFA', tone: '#D6EEFF', mood: 'thirsty' },
+      { name: 'Monty', kind: 'Monstera', species: 'monstera', pot: '#FFD23F', tone: '#D7F9E4', mood: 'happy' },
+      { name: 'Snakey', kind: 'Snake plant', species: 'snake', pot: '#FF6B5B', tone: '#FFE1E8', mood: 'sleepy' },
+      { name: 'Waxy', kind: 'Hoya carnosa', species: 'hoya', pot: '#FFB3C7', tone: '#D7F9E4', mood: 'happy' }
+    ];
+    var badge = { thirsty: ['Thirsty', '#FFD9CF'], happy: ['Happy', '#3DDC84'], sleepy: ['Resting', '#EDE7FF'] };
+    var plants = all.filter(function (p) {
+      return filter === 'all' || (filter === 'thirsty' ? p.mood === 'thirsty' : p.mood !== 'thirsty');
+    }).map(function (p) { return Object.assign({}, p, { badge: badge[p.mood][0], badgeBg: badge[p.mood][1] }); });
+    var filters = [['all', 'All 6'], ['thirsty', 'Thirsty 3'], ['fine', 'Doing fine 3']].map(function (f) {
+      var on = f[0] === filter;
+      return {
+        label: f[1], pressed: on ? 'true' : 'false',
+        bg: on ? '#1B1B2F' : '#FFFFFF', shadow: 'none',
+        pick: function () { self.setState({ filter: f[0] }); }
+      };
+    });
+    filters.forEach(function (f, i) { if (f.pressed === 'true') { f.bg = ['#FFD23F', '#FFD9CF', '#3DDC84'][i]; f.shadow = '0 3px 0 #1B1B2F'; } });
+    var wishes = [
+      { name: 'Hoya kerrii splash', species: 'hoya', tone: '#FFE1E8', note: 'Heart leaves with silver flecks', tag: 'Hunting', tagBg: '#FFD23F' },
+      { name: 'Monstera Thai Constellation', species: 'monstera', tone: '#D7F9E4', note: 'Tissue culture made it affordable', tag: 'Check patent before sharing cuttings', tagBg: '#EDE7FF' },
+      { name: 'Calathea White Fusion', species: 'calathea', tone: '#D6EEFF', note: 'A friend has one, ask for a division?', tag: 'Friend has one', tagBg: '#3DDC84' }
+    ];
+    var house = tab === 'house';
+    return {
+      plants: plants, filters: filters, wishes: wishes,
+      isHouse: house, isWish: !house,
+      houseSel: house ? 'true' : 'false', wishSel: house ? 'false' : 'true',
+      houseBg: house ? '#1B1B2F' : 'transparent', houseFg: house ? '#FFFFFF' : '#1B1B2F',
+      wishBg: house ? 'transparent' : '#1B1B2F', wishFg: house ? '#1B1B2F' : '#FFFFFF',
+      showHouse: function () { self.setState({ tab: 'house' }); },
+      showWish: function () { self.setState({ tab: 'wish' }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

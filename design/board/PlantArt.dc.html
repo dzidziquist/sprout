@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PlantFam — Plant buddy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: {{px}}; height: {{px}}; position: relative">
+  <sc-if value="{{isMonstera}}" hint-placeholder-val="{{true}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M50 68C47 58 38 52 28 48M50 68C53 57 62 50 72 45M50 68C49 54 50 42 52 31" fill="none"></path>
+        <g transform="translate(28 48) rotate(-62) scale(0.85)">
+          <path d="M0 0C-4 -2 -16 -6 -16 -17C-16 -26 -8 -31 0 -30C8 -31 16 -26 16 -17C16 -6 4 -2 0 0Z" fill="#22B864"></path>
+          <path d="M-16 -12L-6 -14M-16 -20L-6 -20M-12 -27L-5 -24M16 -12L6 -14M16 -20L6 -20M12 -27L5 -24" stroke="{{bg}}" stroke-width="2.4"></path>
+        </g>
+        <g transform="translate(72 45) rotate(60) scale(0.85)">
+          <path d="M0 0C-4 -2 -16 -6 -16 -17C-16 -26 -8 -31 0 -30C8 -31 16 -26 16 -17C16 -6 4 -2 0 0Z" fill="#3DDC84"></path>
+          <path d="M-16 -12L-6 -14M-16 -20L-6 -20M-12 -27L-5 -24M16 -12L6 -14M16 -20L6 -20M12 -27L5 -24" stroke="{{bg}}" stroke-width="2.4"></path>
+        </g>
+        <g transform="translate(52 31) rotate(4) scale(0.95)">
+          <path d="M0 0C-4 -2 -16 -6 -16 -17C-16 -26 -8 -31 0 -30C8 -31 16 -26 16 -17C16 -6 4 -2 0 0Z" fill="#22B864"></path>
+          <path d="M-16 -12L-6 -14M-16 -20L-6 -20M-12 -27L-5 -24M16 -12L6 -14M16 -20L6 -20M12 -27L5 -24" stroke="{{bg}}" stroke-width="2.4"></path>
+          <path d="M0 -2V-22" fill="none"></path>
+        </g>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isPothos}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M27 70C17 72 13 82 15 94M73 70C84 72 88 82 86 92" fill="none"></path>
+        <g transform="translate(17 80) rotate(-110) scale(0.8)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(15 92) rotate(-80) scale(0.7)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#22B864"></path></g>
+        <g transform="translate(84 80) rotate(110) scale(0.8)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#22B864"></path></g>
+        <g transform="translate(86 91) rotate(82) scale(0.7)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(34 66) rotate(-62) scale(1.05)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(66 66) rotate(62) scale(1.05)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#22B864"></path></g>
+        <g transform="translate(42 65) rotate(-26) scale(1.25)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#22B864"></path></g>
+        <g transform="translate(58 65) rotate(26) scale(1.25)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(50 63) scale(1.45)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#7CEBA8"></path></g>
+      </g>
+      <g fill="#FFFFFF" opacity="0.85">
+        <path d="M44 52c-3 -1 -5 2 -4 4 2 0 4 -1 4 -4z"></path><path d="M53 47c2 -1 5 1 4 3 -2 0 -4 -1 -4 -3z"></path><path d="M60 55c2 0 3 2 2 3 -1 0 -2 -1 -2 -3z"></path>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isFig}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M50 70C50 55 49 40 50 20" fill="none" stroke-width="2.6"></path>
+        <g transform="translate(50 62) rotate(-62) scale(0.8)"><path d="M0 0C-3 -1 -9 -4 -9 -11C-9 -16 -5 -17 -5 -21C-5 -25 -2 -28 0 -28C2 -28 5 -25 5 -21C5 -17 9 -16 9 -11C9 -4 3 -1 0 0Z" fill="#22B864"></path></g>
+        <g transform="translate(50 58) rotate(58) scale(0.82)"><path d="M0 0C-3 -1 -9 -4 -9 -11C-9 -16 -5 -17 -5 -21C-5 -25 -2 -28 0 -28C2 -28 5 -25 5 -21C5 -17 9 -16 9 -11C9 -4 3 -1 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(50 47) rotate(-46) scale(0.9)"><path d="M0 0C-3 -1 -9 -4 -9 -11C-9 -16 -5 -17 -5 -21C-5 -25 -2 -28 0 -28C2 -28 5 -25 5 -21C5 -17 9 -16 9 -11C9 -4 3 -1 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(50 43) rotate(48) scale(0.9)"><path d="M0 0C-3 -1 -9 -4 -9 -11C-9 -16 -5 -17 -5 -21C-5 -25 -2 -28 0 -28C2 -28 5 -25 5 -21C5 -17 9 -16 9 -11C9 -4 3 -1 0 0Z" fill="#22B864"></path></g>
+        <g transform="translate(50 32) rotate(-28) scale(0.8)"><path d="M0 0C-3 -1 -9 -4 -9 -11C-9 -16 -5 -17 -5 -21C-5 -25 -2 -28 0 -28C2 -28 5 -25 5 -21C5 -17 9 -16 9 -11C9 -4 3 -1 0 0Z" fill="#22B864"></path></g>
+        <g transform="translate(50 28) rotate(32) scale(0.78)"><path d="M0 0C-3 -1 -9 -4 -9 -11C-9 -16 -5 -17 -5 -21C-5 -25 -2 -28 0 -28C2 -28 5 -25 5 -21C5 -17 9 -16 9 -11C9 -4 3 -1 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(50 21) scale(0.66)"><path d="M0 0C-3 -1 -9 -4 -9 -11C-9 -16 -5 -17 -5 -21C-5 -25 -2 -28 0 -28C2 -28 5 -25 5 -21C5 -17 9 -16 9 -11C9 -4 3 -1 0 0Z" fill="#7CEBA8"></path></g>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isCalathea}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M50 68L32 44M50 68L68 42M50 68L50 28M50 68L39 57M50 68L62 56" fill="none"></path>
+        <g transform="translate(31 42) rotate(-35)"><ellipse rx="14" ry="11" fill="#3DDC84"></ellipse><path d="M-8 -9Q-6 0 -8 9M0 -11Q2 0 0 11M8 -9Q10 0 8 9" stroke="#C9F7DC" stroke-width="2" fill="none"></path></g>
+        <g transform="translate(69 40) rotate(35)"><ellipse rx="14" ry="11" fill="#22B864"></ellipse><path d="M-8 -9Q-6 0 -8 9M0 -11Q2 0 0 11M8 -9Q10 0 8 9" stroke="#A8F0C6" stroke-width="2" fill="none"></path></g>
+        <g transform="translate(50 24) rotate(80)"><ellipse rx="14" ry="11" fill="#3DDC84"></ellipse><path d="M-8 -9Q-6 0 -8 9M0 -11Q2 0 0 11M8 -9Q10 0 8 9" stroke="#C9F7DC" stroke-width="2" fill="none"></path></g>
+        <g transform="translate(39 57) rotate(-15) scale(0.72)"><ellipse rx="14" ry="11" fill="#7CEBA8"></ellipse></g>
+        <g transform="translate(62 56) rotate(15) scale(0.72)"><ellipse rx="14" ry="11" fill="#7CEBA8"></ellipse></g>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isSnake}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M40 70C33 56 28 40 26 22C34 38 40 54 45 70Z" fill="#22B864"></path>
+        <path d="M55 70C59 52 64 36 73 20C71 40 65 56 60 70Z" fill="#22B864"></path>
+        <path d="M45 70C41 52 40 30 45 6C50 30 52 52 53 70Z" fill="#3DDC84"></path>
+        <path d="M50 70C50 58 54 46 59 34C59 48 58 58 57 70Z" fill="#7CEBA8"></path>
+      </g>
+      <g stroke="#FFD23F" stroke-width="2" stroke-linecap="round">
+        <path d="M44 22l3 -0.5M43 34l5 -0.5M43 46l6 -0.5M31 38l3 0.5M34 50l3 0.5M67 34l-3 0.5M64 46l-3 0.5"></path>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isHoya}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M46 66C38 52 28 42 31 28C34 16 52 12 62 22M70 70C81 72 87 80 84 92" fill="none"></path>
+        <ellipse cx="40" cy="54" rx="7" ry="4.2" transform="rotate(-60 40 54)" fill="#22B864"></ellipse>
+        <ellipse cx="31" cy="41" rx="7" ry="4.2" transform="rotate(-100 31 41)" fill="#3DDC84"></ellipse>
+        <ellipse cx="33" cy="27" rx="6.5" ry="4" transform="rotate(-50 33 27)" fill="#22B864"></ellipse>
+        <ellipse cx="46" cy="17" rx="6.5" ry="4" transform="rotate(10 46 17)" fill="#3DDC84"></ellipse>
+        <ellipse cx="57" cy="60" rx="7" ry="4.2" transform="rotate(30 57 60)" fill="#3DDC84"></ellipse>
+        <ellipse cx="80" cy="77" rx="6.5" ry="4" transform="rotate(60 80 77)" fill="#22B864"></ellipse>
+        <ellipse cx="85" cy="88" rx="6" ry="3.8" transform="rotate(100 85 88)" fill="#3DDC84"></ellipse>
+        <g fill="#FFB3C7">
+          <circle cx="63" cy="27" r="3"></circle><circle cx="58" cy="30.5" r="3"></circle><circle cx="68" cy="30.5" r="3"></circle><circle cx="60" cy="35.5" r="3"></circle><circle cx="66" cy="35.5" r="3"></circle>
+        </g>
+      </g>
+      <g fill="#E0245E"><circle cx="63" cy="27" r="0.9"></circle><circle cx="58" cy="30.5" r="0.9"></circle><circle cx="68" cy="30.5" r="0.9"></circle><circle cx="60" cy="35.5" r="0.9"></circle><circle cx="66" cy="35.5" r="0.9"></circle></g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isCutting}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M50 70C50 58 49 48 50 34" fill="none"></path>
+        <g transform="translate(50 40) rotate(-48) scale(1.05)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#3DDC84"></path></g>
+        <g transform="translate(50 34) rotate(36) scale(1.15)"><path d="M0 0C-3 -3 -10 -6 -10 -12C-10 -17 -4 -18 0 -14C4 -18 10 -17 10 -12C10 -6 3 -3 0 0Z" fill="#22B864"></path></g>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isTomato}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M70 66V10" fill="none" stroke="#B08455" stroke-width="2.4"></path>
+        <path d="M50 66C50 50 48 34 51 14M50 52C42 46 34 44 26 46M50 40C58 34 64 30 70 30M51 26C44 22 38 20 32 22" fill="none"></path>
+        <path d="M26 46c-4-6 0-12 6-10 2-5 9-4 9 1 5 0 6 7 1 9-2 5-10 5-11 0-3 3-7 3-5 0z" fill="#3DDC84"></path>
+        <path d="M70 30c3-6 10-6 11-1 5 0 6 7 1 9-1 5-9 5-10 1-4 2-8-1-6-5z" fill="#22B864"></path>
+        <path d="M32 22c-3-6 2-11 7-9 2-5 9-3 8 2 4 1 4 7 0 8-2 4-9 4-10 0-3 2-7 0-5-1z" fill="#3DDC84"></path>
+        <path d="M51 14c-2-5 3-9 7-7 3-3 8 0 6 4" fill="#22B864"></path>
+        <circle cx="38" cy="56" r="7" fill="#FF6B5B"></circle>
+        <circle cx="62" cy="48" r="6.5" fill="#FF6B5B"></circle>
+        <circle cx="56" cy="60" r="5" fill="#FFB3A8"></circle>
+        <circle cx="44" cy="34" r="5" fill="#7CEBA8"></circle>
+        <path d="M35 50l3 2 3-2M59 42l3 2 3-2" fill="none" stroke-width="1.4"></path>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isPepper}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M50 66C50 54 49 42 50 26M50 50C42 44 36 40 30 40M50 42C58 36 64 34 70 34" fill="none"></path>
+        <ellipse cx="30" cy="36" rx="10" ry="6" transform="rotate(-25 30 36)" fill="#22B864"></ellipse>
+        <ellipse cx="70" cy="30" rx="10" ry="6" transform="rotate(25 70 30)" fill="#3DDC84"></ellipse>
+        <ellipse cx="50" cy="20" rx="7" ry="11" fill="#3DDC84"></ellipse>
+        <ellipse cx="38" cy="26" rx="8" ry="5" transform="rotate(-50 38 26)" fill="#7CEBA8"></ellipse>
+        <ellipse cx="63" cy="18" rx="8" ry="5" transform="rotate(40 63 18)" fill="#22B864"></ellipse>
+        <path d="M38 42c-7 5-10 16-6 24 4-5 10-13 10-23z" fill="#FF6B5B"></path>
+        <path d="M62 40c7 6 10 16 5 23-3-6-8-13-8-22z" fill="#FF9F1C"></path>
+        <path d="M53 46c2 7 1 13-4 17-2-6-1-12 1-17z" fill="#FF6B5B"></path>
+        <path d="M36 41l5 1M64 39l-5 1M51 45h4" fill="none" stroke="#22B864" stroke-width="2.4"></path>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isOnion}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <g stroke="#1B1B2F" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M38 66C36 46 30 28 24 12C30 22 36 34 42 66Z" fill="#22B864"></path>
+        <path d="M44 66C44 44 44 24 46 6C49 24 50 44 50 66Z" fill="#3DDC84"></path>
+        <path d="M52 66C54 46 58 28 66 10C64 28 60 46 57 66Z" fill="#22B864"></path>
+        <path d="M58 66C62 52 68 40 78 30C72 42 66 54 62 66Z" fill="#7CEBA8"></path>
+        <path d="M33 66C32 54 28 44 20 36C26 42 32 52 37 66Z" fill="#7CEBA8"></path>
+      </g>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isPotted}}" hint-placeholder-val="{{true}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <path d="M29 70h42l-4.5 23.5a4 4 0 0 1-3.9 3.2H37.4a4 4 0 0 1-3.9-3.2z" fill="{{pot}}" stroke="#1B1B2F" stroke-width="2" stroke-linejoin="round"></path>
+      <rect x="25" y="63" width="50" height="10" rx="5" fill="{{pot}}" stroke="#1B1B2F" stroke-width="2"></rect>
+      <path d="M34 77l1.4 11" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="2.4" stroke-linecap="round"></path>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isJar}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <rect x="31" y="58" width="38" height="39" rx="9" fill="#D6EEFF" stroke="#1B1B2F" stroke-width="2"></rect>
+      <path d="M33 70h34v18a7 7 0 0 1-7 7H40a7 7 0 0 1-7-7z" fill="#5AB8FF" opacity="0.55"></path>
+      <path d="M50 70C46 74 44 77 41 78M50 70C53 74 56 76 59 75M50 70C49 74 48 77 49 80" stroke="#FFFFFF" stroke-width="1.6" fill="none" stroke-linecap="round"></path>
+      <rect x="28" y="53" width="44" height="8" rx="4" fill="#A8D8FF" stroke="#1B1B2F" stroke-width="2"></rect>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isHappy}}" hint-placeholder-val="{{true}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <ellipse cx="44" cy="{{eyeY}}" rx="1.9" ry="2.4" fill="#1B1B2F"></ellipse>
+      <ellipse cx="56" cy="{{eyeY}}" rx="1.9" ry="2.4" fill="#1B1B2F"></ellipse>
+      <path d="{{smile}}" stroke="#1B1B2F" stroke-width="1.9" fill="none" stroke-linecap="round"></path>
+      <circle cx="39.5" cy="{{cheekY}}" r="2.4" fill="#FF7A9C" opacity="0.75"></circle>
+      <circle cx="60.5" cy="{{cheekY}}" r="2.4" fill="#FF7A9C" opacity="0.75"></circle>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isThirsty}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <ellipse cx="44" cy="{{eyeY}}" rx="1.9" ry="2.4" fill="#1B1B2F"></ellipse>
+      <ellipse cx="56" cy="{{eyeY}}" rx="1.9" ry="2.4" fill="#1B1B2F"></ellipse>
+      <path d="{{brows}}" stroke="#1B1B2F" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
+      <path d="{{wobble}}" stroke="#1B1B2F" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="{{sweat}}" fill="#5AB8FF" stroke="#1B1B2F" stroke-width="1.2"></path>
+    </svg>
+  </sc-if>
+
+  <sc-if value="{{isSleepy}}" hint-placeholder-val="{{false}}">
+    <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+      <path d="{{sleepEyes}}" stroke="#1B1B2F" stroke-width="1.8" fill="none" stroke-linecap="round"></path>
+      <circle cx="50" cy="{{mouthY}}" r="1.5" fill="#1B1B2F"></circle>
+      <circle cx="39.5" cy="{{cheekY}}" r="2.4" fill="#FF7A9C" opacity="0.6"></circle>
+      <circle cx="60.5" cy="{{cheekY}}" r="2.4" fill="#FF7A9C" opacity="0.6"></circle>
+    </svg>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"species":{"editor":"enum","options":["monstera","pothos","fig","calathea","snake","hoya","cutting","tomato","pepper","onion"],"default":"monstera"},"mood":{"editor":"enum","options":["happy","thirsty","sleepy"],"default":"happy"},"pot":{"editor":"color","options":["#FF6B5B","#FFD23F","#5AB8FF","#A78BFA","#FFB3C7"],"default":"#FF6B5B"},"size":{"editor":"int","min":24,"max":400,"default":120},"bg":{"editor":"color","default":"#FFFFFF"},"$preview":{"width":120,"height":120}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var sp = this.props.species || 'monstera';
+    var mood = this.props.mood || 'happy';
+    var size = Number(this.props.size) || 120;
+    var jar = sp === 'cutting';
+    // face sits on the pot (y≈81) or on the jar (y≈80)
+    var y = jar ? 79 : 81;
+    return {
+      px: size + 'px',
+      bg: this.props.bg || '#FFFFFF',
+      pot: this.props.pot || '#FF6B5B',
+      isMonstera: sp === 'monstera', isPothos: sp === 'pothos', isFig: sp === 'fig',
+      isCalathea: sp === 'calathea', isSnake: sp === 'snake', isHoya: sp === 'hoya', isCutting: jar,
+      isTomato: sp === 'tomato', isPepper: sp === 'pepper', isOnion: sp === 'onion',
+      isPotted: !jar, isJar: jar,
+      isHappy: mood === 'happy', isThirsty: mood === 'thirsty', isSleepy: mood === 'sleepy',
+      eyeY: y, cheekY: y + 4.5, mouthY: y + 5.5,
+      smile: 'M46.5 ' + (y + 4.5) + ' Q50 ' + (y + 8.5) + ' 53.5 ' + (y + 4.5),
+      wobble: 'M45.5 ' + (y + 7) + ' Q47.75 ' + (y + 5) + ' 50 ' + (y + 7) + ' Q52.25 ' + (y + 9) + ' 54.5 ' + (y + 7),
+      brows: 'M41.5 ' + (y - 3.5) + ' L46 ' + (y - 5.5) + ' M58.5 ' + (y - 3.5) + ' L54 ' + (y - 5.5),
+      sweat: 'M64 ' + (y - 10) + ' q-2.8 3.6 0 5.6 q2.8 -2 0 -5.6z',
+      sleepEyes: 'M41.5 ' + y + ' q2.5 2.2 5 0 M53.5 ' + y + ' q2.5 2.2 5 0'
+    };
+  }
+}
+</script>
+</body>
+</html>

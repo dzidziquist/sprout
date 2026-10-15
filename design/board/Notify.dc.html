@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PlantFam — Daily plant round notification</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1B1B2F}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #2B2550; color: #FFFFFF; font-family: 'Nunito', sans-serif">
+  <div aria-hidden="true" style="position: absolute; left: -60px; top: 420px; width: 300px; height: 300px; border-radius: 150px; background: #3A3270"></div>
+  <div aria-hidden="true" style="position: absolute; right: -80px; top: 120px; width: 260px; height: 260px; border-radius: 130px; background: #352D66"></div>
+  <div style="position: absolute; left: 0; right: 0; top: 70px; display: flex; flex-direction: column; align-items: center">
+    <span style="font-size: 18px; font-weight: 700; color: #D9D4F5">Wednesday 14 October</span>
+    <span style="font-family: 'Fredoka', sans-serif; font-size: 84px; font-weight: 600; line-height: 1">8:30</span>
+  </div>
+
+  <div style="position: absolute; left: 12px; right: 12px; top: 270px; display: flex; flex-direction: column; gap: 10px">
+    <div style="background: #FFFFFF; color: #1B1B2F; border-radius: 22px; border: 2px solid #1B1B2F; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <div style="width: 26px; height: 26px; border-radius: 8px; background: #3DDC84; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"></path><path d="M5 19 13 11"></path></svg></div>
+        <span style="font-size: 13px; font-weight: 800; color: #55556B; flex: 1">PLANTFAM</span>
+        <span style="font-size: 13px; font-weight: 700; color: #55556B">now</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 700">Morning plant round 🌱</span>
+          <span style="font-size: 15px; font-weight: 700; line-height: 1.35">Queenie and Cal would love a soil check. Big Fig is happily snoozing. 2 min, tops.</span>
+        </div>
+        <div style="width: 58px; height: 58px; border-radius: 14px; background: #FFF1B8; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+          <dc-import name="PlantArt" species="pothos" mood="thirsty" pot="#5AB8FF" bg="#FFF1B8" size="52" hint-size="52px,52px"></dc-import>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; color: #1B1B2F; border-radius: 22px; border: 2px solid #1B1B2F; padding: 12px; display: flex; flex-direction: column; gap: 6px; opacity: 0.92">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <div style="width: 26px; height: 26px; border-radius: 8px; background: #3DDC84; border: 2px solid #1B1B2F; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B1B2F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"></path><path d="M5 19 13 11"></path></svg></div>
+        <span style="font-size: 13px; font-weight: 800; color: #55556B; flex: 1">PLANTFAM</span>
+        <span style="font-size: 13px; font-weight: 700; color: #55556B">Mon</span>
+      </div>
+      <span style="font-family: 'Fredoka', sans-serif; font-size: 17px; font-weight: 700">Roots spotted? 👀</span>
+      <span style="font-size: 14px; font-weight: 700; line-height: 1.35">Queenie's baby is 3 weeks in water. Peek for 2–5 cm roots before potting up.</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
