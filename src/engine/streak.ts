@@ -189,9 +189,13 @@ export type BadgeId =
   | 'first-cutting'
   | 'first-roots'
   | 'first-harvest'
+  | 'propagator'
   | 'fam-5'
+  | 'generous'
+  | 'grandma-plant'
   | 'streak-4'
-  | 'season';
+  | 'season'
+  | 'survived-winter';
 
 export interface Badge {
   id: BadgeId;
@@ -207,12 +211,10 @@ function nth(events: CareEvent[], pred: (e: CareEvent) => boolean, n = 1): strin
 }
 
 /**
- * "Survived the grey season" (Seattle): a plant that was in the fam before Nov 1 and got a soil check
- * after Mar 1 the following year, without being archived in between. Accra uses harmattan
- * (in the fam before Dec 1, checked after Mar 1).
+ * A plant that was in the fam before the season started (`modelStart`, a 0-based month in the model city)
+ * and got a soil check after Mar 1 the following year, without being archived in between.
  */
-function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimateProfile): string | undefined {
-  const modelStart = modelOf(climate) === 'seattle' ? 10 : 11; // Nov / Dec (0-based) in the model city
+function survivedFrom(plants: Plant[], events: CareEvent[], climate: ClimateProfile, modelStart: number): string | undefined {
   // In the user's own calendar (Sydney's "grey season" starts in May).
   const startMonth = (modelStart - shiftOf(climate) + 12) % 12;
   const toSpring = (2 - modelStart + 12) % 12; // months from season start to the model's March
@@ -233,6 +235,38 @@ function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimatePr
   return earliest;
 }
 
+/** "Survived the grey season" (Seattle) or harmattan (Accra): in the fam before Nov 1 (Dec 1 in Accra). */
+function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimateProfile): string | undefined {
+  return survivedFrom(plants, events, climate, modelOf(climate) === 'seattle' ? 10 : 11);
+}
+
+/** "Survived winter": in the fam before Dec 1 and checked after Mar 1. Accra has no winter to survive. */
+function winterSurvivor(plants: Plant[], events: CareEvent[], climate: ClimateProfile): string | undefined {
+  return modelOf(climate) === 'accra' ? undefined : survivedFrom(plants, events, climate, 11);
+}
+
+/** "Grandma plant": the first plant to reach its first birthday in the fam while still in it (or archived after). */
+function grandmaPlant(plants: Plant[], now: Date): string | undefined {
+  let earliest: number | undefined;
+  for (const p of plants) {
+    const birthday = new Date(p.acquiredAt);
+    birthday.setFullYear(birthday.getFullYear() + 1);
+    const t = birthday.getTime();
+    if (t > now.getTime()) continue;
+    if (p.archivedAt && new Date(p.archivedAt).getTime() < t) continue;
+    if (earliest === undefined || t < earliest) earliest = t;
+  }
+  return earliest === undefined ? undefined : new Date(earliest).toISOString();
+}
+
+/** "Generous": the first plant given to a new home. */
+function firstGift(plants: Plant[]): string | undefined {
+  return plants
+    .filter((p) => p.archivedReason === 'gifted' && p.archivedAt)
+    .map((p) => p.archivedAt!)
+    .sort()[0];
+}
+
 export function badgesFor({ plants, events, climate, now }: StreakInput, streak?: StreakResult): Badge[] {
   const s = streak ?? computeStreak({ plants, events, climate, now });
   const isCheck = (e: CareEvent) => e.type === 'check';
@@ -246,9 +280,13 @@ export function badgesFor({ plants, events, climate, now }: StreakInput, streak?
     { id: 'first-photo', title: 'First diary photo', hint: 'Add a photo to a plant', earnedAt: nth(events, (e) => e.type === 'photo' && !!e.photoUri) },
     { id: 'first-cutting', title: 'First cutting', hint: 'Take a cutting from a plant', earnedAt: nth(events, (e) => e.type === 'cutting') },
     { id: 'first-roots', title: 'First roots', hint: 'Pot up a rooted cutting', earnedAt: nth(events, (e) => e.type === 'rooted') },
+    { id: 'propagator', title: 'Propagator', hint: 'Root 3 cuttings', earnedAt: nth(events, (e) => e.type === 'rooted', 3) },
     { id: 'first-harvest', title: 'First harvest', hint: 'Log a harvest from an edible', earnedAt: nth(events, (e) => e.type === 'harvest') },
     { id: 'fam-5', title: '5-plant fam', hint: 'Welcome 5 plants home', earnedAt: fifth },
+    { id: 'generous', title: 'Generous', hint: 'Give a plant a new home', earnedAt: firstGift(plants) },
+    { id: 'grandma-plant', title: 'Grandma plant', hint: 'Keep a plant in the fam for a year', earnedAt: grandmaPlant(plants, now) },
     { id: 'streak-4', title: '4-week streak', hint: 'Keep everyone checked for 4 weeks', earnedAt: s.reachedAt[3] },
     { id: 'season', title: `Survived ${seasonName}`, hint: `Keep a plant going through ${seasonName}`, earnedAt: seasonSurvivor(plants, events, climate) },
+    { id: 'survived-winter', title: 'Survived winter', hint: 'Keep a plant going through winter', earnedAt: winterSurvivor(plants, events, climate) },
   ];
 }

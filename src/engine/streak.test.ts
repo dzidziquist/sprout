@@ -139,4 +139,37 @@ describe('badges', () => {
     expect(title([check('n', '2026-03-05T09:00:00')], [newbie])?.earnedAt).toBeUndefined();
     expect(title([], [veteran])?.title).toBe('Survived grey season');
   });
+
+  it('record the third cutting rooted as a propagator', () => {
+    const events = [ev('a', 'rooted', '2026-06-05T09:00:00'), ev('a', 'rooted', '2026-06-10T09:00:00'), ev('a', 'rooted', '2026-06-20T09:00:00')];
+    const at = (id: string) => badgesFor({ plants: [plant('a')], events, climate: 'seattle', now }).find((x) => x.id === id)?.earnedAt;
+    expect(at('propagator')).toBe('2026-06-20T09:00:00');
+    expect(at('first-roots')).toBe('2026-06-05T09:00:00');
+  });
+
+  it('record the first plant given to a new home as generous', () => {
+    const gone = plant('g', { archivedAt: '2026-06-20T09:00:00', archivedReason: 'gifted' });
+    const died = plant('d', { archivedAt: '2026-06-10T09:00:00', archivedReason: 'died' });
+    const earned = (plants: Plant[]) => badgesFor({ plants, events: [], climate: 'seattle', now }).find((x) => x.id === 'generous')?.earnedAt;
+    expect(earned([gone, died])).toBe('2026-06-20T09:00:00');
+    expect(earned([died])).toBeUndefined();
+  });
+
+  it('mark the first birthday of a plant still in the fam as grandma plant', () => {
+    const old = plant('o', { acquiredAt: '2025-06-01T09:00:00', createdAt: '2025-06-01T09:00:00' });
+    const grand = (plants: Plant[]) => badgesFor({ plants, events: [], climate: 'seattle', now }).find((x) => x.id === 'grandma-plant')?.earnedAt;
+    expect(new Date(grand([old])!).getTime()).toBe(new Date('2026-06-01T09:00:00').getTime());
+    // Not yet a year: joined Jun 1 2026.
+    expect(grand([plant('n')])).toBeUndefined();
+    // Archived before the birthday: doesn't count.
+    expect(grand([{ ...old, archivedAt: '2026-05-01T09:00:00', archivedReason: 'died' }])).toBeUndefined();
+  });
+
+  it('celebrate surviving winter, but not in Accra where there is none', () => {
+    const veteran = plant('v', { createdAt: '2025-10-01T09:00:00', acquiredAt: '2025-10-01T09:00:00' });
+    const winter = (events: CareEvent[], climate: 'seattle' | 'accra') => badgesFor({ plants: [veteran], events, climate, now: new Date('2026-04-01T12:00:00') }).find((x) => x.id === 'survived-winter');
+    expect(winter([check('v', '2026-03-05T09:00:00')], 'seattle')?.earnedAt).toBe('2026-03-05T09:00:00');
+    expect(winter([check('v', '2026-02-20T09:00:00')], 'seattle')?.earnedAt).toBeUndefined();
+    expect(winter([check('v', '2026-03-05T09:00:00')], 'accra')?.earnedAt).toBeUndefined();
+  });
 });

@@ -13,9 +13,13 @@ const ICON: Record<BadgeId, string> = {
   'first-cutting': 'M6 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 21.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM8 6l12 12M8 18 20 6',
   'first-roots': 'M12 3v9M12 12c-2 2-5 3-7 8M12 12c2 2 5 3 7 8M12 12v9M7 7c2-3 8-3 10 0',
   'first-harvest': 'M12 8.5a6.5 6.5 0 1 0 .01 0zM8.5 5.5 12 8.5l3.5-3M12 8.5V3.5',
+  propagator: 'M12 21v-8M12 13c-4 0-6-3-6-6 4 0 6 2 6 6zM12 13c4 0 6-3 6-6-4 0-6 2-6 6z',
   'fam-5': 'M4 11 12 4l8 7v9H4zM10 20v-5h4v5',
+  generous: 'M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7C10 3 6 4 7.5 7M12 7c2-4 6-3 4.5 0',
+  'grandma-plant': 'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4M9 15l2 2 4-4',
   'streak-4': 'M12 21v-9M12 12C12 8 9 5 4 5c0 4 3 7 8 7zM12 15c0-3 3-6 8-6 0 4-3 6-8 6z',
   season: 'M7 19h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 12.5 3.5 3.5 0 0 0 7 19zM17 3v2M21 7h-2M20 4l-1.5 1.5',
+  'survived-winter': 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9',
 };
 
 const fill = (c: Palette): Record<BadgeId, string> => ({
@@ -26,9 +30,13 @@ const fill = (c: Palette): Record<BadgeId, string> => ({
   'first-cutting': c.grape,
   'first-roots': c.orange,
   'first-harvest': c.coral,
+  propagator: c.mint,
   'fam-5': c.bubblegum,
+  generous: c.blush,
+  'grandma-plant': c.peach,
   'streak-4': c.leaf,
   season: c.grape,
+  'survived-winter': c.ice,
 });
 
 /** Milestone sticker. Earned: colourful with the date. Locked: faded, with a hint on how to earn it. */

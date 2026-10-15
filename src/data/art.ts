@@ -38,4 +38,8 @@ export const BADGE_ART: Partial<Record<string, { earned: ImageSourcePropType; lo
   'first-check': { earned: require('../../assets/art/badge-first-new-leaf.png'), locked: require('../../assets/art/badge-first-new-leaf-locked.png') },
   season: { earned: require('../../assets/art/badge-survived-grey-season.png'), locked: require('../../assets/art/badge-survived-grey-season-locked.png') },
   'first-skip': { earned: require('../../assets/art/badge-knows-when-to-wait.png'), locked: require('../../assets/art/badge-knows-when-to-wait-locked.png') },
+  propagator: { earned: require('../../assets/art/badge-propagator.png'), locked: require('../../assets/art/badge-propagator-locked.png') },
+  generous: { earned: require('../../assets/art/badge-generous.png'), locked: require('../../assets/art/badge-generous-locked.png') },
+  'grandma-plant': { earned: require('../../assets/art/badge-grandma-plant.png'), locked: require('../../assets/art/badge-grandma-plant-locked.png') },
+  'survived-winter': { earned: require('../../assets/art/badge-survived-winter.png'), locked: require('../../assets/art/badge-survived-winter-locked.png') },
 };
