@@ -15,7 +15,7 @@ To let Claude run future builds, add an `EXPO_TOKEN` to the cloud environment's 
 ## 2. Environment variables (EAS → Project → Environment variables, "production")
 | Variable | What for | Where to get it |
 |---|---|---|
-| `EXPO_PUBLIC_PLANTNET_KEY` | Photo ID (Plus) | my.plantnet.org → API key; whitelist bundle id `com.dzidziquist.plantfam` |
+| `EXPO_PUBLIC_PLANTNET_KEY` | Photo ID (free, 5 a day per phone; Pl@ntNet free tier is 500 a day shared) | my.plantnet.org → API key; whitelist bundle id `com.dzidziquist.plantfam` |
 | `EXPO_PUBLIC_PLANTNET_PROXY` | Optional: a tiny server that adds the key so it isn't shipped in the app | Recommended before a public launch |
 | `EXPO_PUBLIC_RC_IOS_KEY` | In-app purchases | RevenueCat → Project → API keys (Apple) |
 | `EXPO_PUBLIC_RC_ANDROID_KEY` | Android purchases (later) | RevenueCat → API keys (Google) |
@@ -25,8 +25,8 @@ Without a key the app still works: Photo ID explains it isn't set up yet, and th
 ## 3. App Store Connect
 - Agreements, tax and banking: accept the Paid Apps agreement.
 - In-app purchases:
-  - `plantfam_plus_yearly`: auto-renewable subscription, **$19.99/yr, no free trial or intro offer**
-  - `plantfam_plus_lifetime`: non-consumable, **$49.99**
+  - `plantfam_plus_yearly`: auto-renewable subscription, **$7.99/yr, no free trial or intro offer**
+  - `plantfam_plus_lifetime`: non-consumable, **$19.99**
 - Privacy: photos stay on device (diary); photo ID sends the chosen photo to Pl@ntNet. No tracking.
 
 ## 4. RevenueCat

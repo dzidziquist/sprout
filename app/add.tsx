@@ -220,12 +220,10 @@ export default function AddPlantScreen() {
     </GlassButton>
   );
 
-  // Plus members get photo ID first; for everyone else it waits below search, so the free path leads.
   const identifyTile = (
 <Pressable
       accessibilityRole="button"
       accessibilityLabel="Identify from a photo"
-      accessibilityHint={isPlus ? undefined : 'Part of PlantFam Plus'}
       onPress={() => {
         haptics.tap();
         // Replace so confirming a match lands back on a single add screen.
@@ -242,11 +240,9 @@ export default function AddPlantScreen() {
       <View style={{ flex: 1, gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Text style={[styles.idTitle, { color: c.ink }]}>Identify from a photo</Text>
-          {!isPlus && (
-            <View style={[styles.plusBadge, { backgroundColor: c.grape, borderColor: c.line }]}>
-              <Text style={[styles.plusBadgeText, { color: textOn(c.grape, c) }]}>Plus</Text>
-            </View>
-          )}
+          <View style={[styles.plusBadge, { backgroundColor: c.leaf, borderColor: c.line }]}>
+            <Text style={[styles.plusBadgeText, { color: textOn(c.leaf, c) }]}>Free</Text>
+          </View>
         </View>
         <Text style={[styles.idSub, { color: c.inkMuted }]}>Not sure who they are? Snap a leaf and we'll suggest a match.</Text>
       </View>
@@ -260,7 +256,7 @@ export default function AddPlantScreen() {
           <Title style={{ flex: 1 }}>Who's joining the jungle?</Title>
           {close}
         </View>
-        {isPlus && identifyTile}
+        {identifyTile}
         <TextInput
           value={query}
           onChangeText={(t) => {
@@ -314,7 +310,6 @@ export default function AddPlantScreen() {
             <Text style={[styles.idSub, { color: c.inkMuted }]}>Pick a care type and it gets the same smart checks, diary and family tree.</Text>
           </View>
         </Pressable>
-        {!isPlus && identifyTile}
       </ScrollView>
     );
   }

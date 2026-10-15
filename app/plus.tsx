@@ -18,9 +18,9 @@ import type { SpeciesId } from '@/types';
 
 
 const BENEFITS: { icon: 'camera' | 'box' | 'heart'; title: string; body: string; tint: keyof Pick<Palette, 'butter' | 'ice' | 'blush'> }[] = [
-  { icon: 'camera', title: 'Photo ID', body: 'Snap a leaf, get suggestions from Pl@ntNet, and you confirm who it is.', tint: 'butter' },
+  { icon: 'heart', title: 'Keep PlantFam growing', body: 'Everything you use every day stays free, photo ID included. Plus pays for new plants, art and features.', tint: 'blush' },
   { icon: 'box', title: 'Spreadsheet export', body: 'Your whole care diary as a CSV for Numbers, Excel or Sheets. (Backups stay free for everyone.)', tint: 'ice' },
-  { icon: 'heart', title: 'Back an indie developer', body: 'PlantFam is built by one indie developer. Plus keeps it growing.', tint: 'blush' },
+  { icon: 'camera', title: 'Supporter perks as they bloom', body: 'Gift-a-cutting cards, your plant year in review and extra art packs come to Plus first.', tint: 'butter' },
 ];
 
 function BenefitIcon({ kind, color }: { kind: 'camera' | 'box' | 'heart'; color: string }) {
@@ -137,14 +137,14 @@ export default function PlusScreen() {
   return (
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 28 }]}>
       <View style={styles.header}>
-        <Title style={{ flex: 1, fontSize: 26 }}>{from === 'identify' ? 'Photo ID is a Plus thing' : 'PlantFam Plus'}</Title>
+        <Title style={{ flex: 1, fontSize: 26 }}>PlantFam Plus</Title>
         {close}
       </View>
 
       <Sticker bg={c.leaf} style={styles.hero}>
         <Buddies c={c} ids={['pothos', 'monstera', 'pepper']} />
-        <Text style={[styles.heroTitle, { color: textOn(c.leaf, c) }]}>Superpowers for your fam</Text>
-        <Text style={[styles.heroBody, { color: textOn(c.leaf, c) }]}>The plant round, care diary and Offshoots stay free forever. Plus adds a few extras.</Text>
+        <Text style={[styles.heroTitle, { color: textOn(c.leaf, c) }]}>Help PlantFam grow</Text>
+        <Text style={[styles.heroBody, { color: textOn(c.leaf, c) }]}>Everything you need stays free, photo ID included. Plus is a small way to back an indie app.</Text>
       </Sticker>
 
       <View style={{ gap: 10 }}>
@@ -169,7 +169,7 @@ export default function PlusScreen() {
           name="Yearly"
           price={offerings.annual.priceString}
           per="per year"
-          sub={`about ${offerings.annual.perMonthString ?? '$1.67'}/month`}
+          sub={`about ${offerings.annual.perMonthString ?? '$0.67'}/month`}
         />
         <PlanCard c={c} on={plan === 'lifetime'} onPress={() => setPlan('lifetime')} name="Lifetime" price={offerings.lifetime.priceString} per="once" sub="pay once, yours forever" badge="Best value" />
       </View>

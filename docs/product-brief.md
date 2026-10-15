@@ -149,3 +149,10 @@ Reuse the founder's proven VinylRecordTracker stack: **Expo (SDK 54) + Expo Rout
 2. ~~Where are you growing now?~~ **Seattle**, now the default profile (see above).
 3. **Business model:** free core + lifetime unlock, or free core + annual?
 4. **Repo:** `dzidziquist/plantfam` needs to be created by you (my GitHub access can't create repos).
+
+## Owner decisions (Oct 15, 2026): cheap to use, cheap to run
+
+- **Photo ID is free for everyone.** iPhone's Photos app already names plants (Visual Look Up), so charging for ID would be charging for something people have. Ours adds value by dropping the plant straight into the fam with care settings. Each phone gets 5 IDs a day, which keeps us inside Pl@ntNet's free tier (500/day, commercial use allowed, credit line + logo required). Past that, the app points people to Look Up in Photos.
+- **PlantFam Plus is a low-cost supporter tier:** $7.99/yr or $19.99 lifetime, no trial that converts. It holds spreadsheet export now; gift-a-cutting cards, a plant year in review and art packs land there first as they're built.
+- **Running costs stay near zero:** no backend; data is on device; Open-Meteo is free; RevenueCat is free under $2.5k monthly tracked revenue; Pl@ntNet free tier. The main fixed cost is the $99/yr Apple Developer Program.
+- **If growth outpaces the free ID quota:** add a tiny proxy that holds the key and shares the daily 500 fairly, then consider Pl@ntNet Pro (about €5 per 1,000 IDs) once Plus revenue covers it.

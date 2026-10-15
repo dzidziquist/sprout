@@ -36,7 +36,7 @@ export function PlusCard() {
         </View>
         <View style={{ flex: 1, gap: 2 }}>
           <Text style={[styles.title, { color: ink }]}>Get PlantFam Plus</Text>
-          <Text style={[styles.body, { color: ink }]}>Photo ID, spreadsheet export, and a high five for an indie dev.</Text>
+          <Text style={[styles.body, { color: ink }]}>From $7.99 a year. Spreadsheet export, supporter perks, and a high five for an indie dev.</Text>
         </View>
         <View style={[styles.arrow, { backgroundColor: c.card, borderColor: c.line }]}>
           <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="m9 6 6 6-6 6" stroke={c.ink} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>

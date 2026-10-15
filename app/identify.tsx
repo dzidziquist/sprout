@@ -1,3 +1,4 @@
+import { usePlantStore } from '@/store/plantStore';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -9,13 +10,16 @@ import { getSpecies } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Sticker, Title } from '@/components/ui';
-import { usePlus } from '@/hooks/usePlus';
 import { identifyPlant, plantIdConfigured, PlantIdError, type CatalogueMatch, type Confidence, type PlantIdErrorKind, type PlantNetResult, speciesFor } from '@/lib/plantId';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 
-type Problem = PlantIdErrorKind | 'camera-denied' | 'camera-failed';
+type Problem = PlantIdErrorKind | 'camera-denied' | 'camera-failed' | 'daily-limit';
+
+/** Photo ID is free for everyone; a small per-phone allowance keeps the shared free Pl@ntNet quota fair. */
+export const DAILY_IDS = 5;
+const today = () => new Date().toDateString();
 
 type Phase =
   | { kind: 'empty' }
@@ -27,7 +31,8 @@ const PROBLEMS: Record<Problem, { title: string; body: string; retry?: boolean }
   'no-key': { title: "Photo ID isn't set up yet", body: "This build doesn't have its Pl@ntNet key, so we can't look plants up. You can still pick your plant from the list." },
   'bad-key': { title: 'Photo ID is having a moment', body: "Our plant-ID service didn't accept this app's key. We're on it! Pick from the list for now." },
   offline: { title: 'You seem to be offline', body: 'Photo ID needs the internet. Try again once you’re back online, or pick from the list.', retry: true },
-  quota: { title: 'Photo ID is all booked up today', body: "We've used up today's free identifications. Try again tomorrow, or pick from the list." },
+  quota: { title: 'Photo ID is all booked up today', body: "Everyone's free identifications for today are used up. Try again tomorrow, or use Look Up in your iPhone's Photos app, then search the name here." },
+  'daily-limit': { title: `That's ${DAILY_IDS} plant IDs today`, body: "Photo ID is free, with a few looks a day. More tomorrow! Meanwhile, Look Up in your iPhone's Photos app can name plants too; then search the name here." },
   'bad-image': { title: "That photo didn't work", body: 'Try another one: a single leaf or flower, in focus, in good light.' },
   server: { title: "Pl@ntNet didn't answer", body: 'Their service had a hiccup. Give it another go in a moment.', retry: true },
   'camera-denied': { title: 'The camera is switched off', body: 'Allow camera access for PlantFam in Settings, or choose a photo from your library instead.' },
@@ -44,20 +49,16 @@ export default function IdentifyScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { isPlus } = usePlus();
+  const { profile, setProfile } = usePlantStore();
   const [phase, setPhase] = useState<Phase>(() => (plantIdConfigured() ? { kind: 'empty' } : { kind: 'error', problem: 'no-key' }));
   const [confirm, setConfirm] = useState<CatalogueMatch | null>(null);
   const abort = useRef<AbortController | null>(null);
 
-  // Photo ID is part of Plus: show the paywall first. Plus comes back here after a purchase.
-  useEffect(() => {
-    if (!isPlus) router.replace('/plus?from=identify');
-  }, [isPlus, router]);
   useEffect(() => () => abort.current?.abort(), []);
-
-  if (!isPlus) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
+  const usedToday = profile.idUsage.day === today() ? profile.idUsage.count : 0;
 
   const run = async (uri: string, mimeType?: string) => {
+    if (usedToday >= DAILY_IDS) return setPhase({ kind: 'error', uri, mimeType, problem: 'daily-limit' });
     abort.current?.abort();
     const ctrl = new AbortController();
     abort.current = ctrl;
@@ -65,6 +66,8 @@ export default function IdentifyScreen() {
     try {
       const out = await identifyPlant(uri, { mimeType, signal: ctrl.signal });
       if (ctrl.signal.aborted) return;
+      const st = usePlantStore.getState().profile.idUsage;
+      setProfile({ idUsage: { day: today(), count: (st.day === today() ? st.count : 0) + 1 } });
       if (out.matches.length) haptics.success();
       setPhase({ kind: 'results', uri, ...out });
     } catch (e) {
@@ -161,6 +164,11 @@ export default function IdentifyScreen() {
         )}
 
         {phase.kind === 'empty' && pickButtons}
+        {phase.kind === 'empty' && (
+          <Text style={[styles.body, { color: c.inkMuted, textAlign: 'center' }]}>
+            Free · {Math.max(0, DAILY_IDS - usedToday)} of {DAILY_IDS} looks left today
+          </Text>
+        )}
 
         {phase.kind === 'loading' && <Text style={[styles.body, { color: c.inkMuted, textAlign: 'center' }]}>Comparing your photo with thousands of plants. This takes a few seconds.</Text>}
 
@@ -178,7 +186,7 @@ export default function IdentifyScreen() {
         {phase.kind === 'error' && (
           <View style={{ gap: 10 }}>
             {PROBLEMS[phase.problem].retry && phase.uri && <Button title="Try again" raised onPress={() => run(phase.uri!, phase.mimeType)} style={styles.bigBtn} textStyle={styles.bigBtnText} />}
-            {phase.problem !== 'no-key' && phase.problem !== 'bad-key' && phase.problem !== 'quota' && pickButtons}
+            {phase.problem !== 'no-key' && phase.problem !== 'bad-key' && phase.problem !== 'quota' && phase.problem !== 'daily-limit' && pickButtons}
             <Button title="Pick from the list" bg={c.card} onPress={toList} style={{ minHeight: 50 }} />
           </View>
         )}

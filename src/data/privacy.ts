@@ -22,7 +22,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     title: 'What leaves your phone, and why',
     body: [
       'Weather (grow patch): PlantFam asks Open-Meteo for a 7-day forecast for your city (Seattle or Accra), using the city’s fixed coordinates, never your location. Like any website, Open-Meteo sees the request’s IP address.',
-      'Photo ID (PlantFam Plus, only when you use it): the one photo you choose is sent to Pl@ntNet to suggest a species. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.',
+      'Photo ID (only when you use it): the one photo you choose is sent to Pl@ntNet to suggest a species. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.',
       'Purchases (PlantFam Plus): Apple handles payment. RevenueCat checks whether you have Plus using an anonymous app ID and your purchase receipts. We never see your name, email or card.',
       'Reminders are scheduled on your phone. No notification server is involved.',
     ],

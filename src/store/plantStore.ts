@@ -26,6 +26,8 @@ export interface Profile {
   lastBackupAt?: string;
   /** Temperatures and rain: 'auto' follows the climate (Seattle °F, Accra °C). */
   units: 'auto' | 'imperial' | 'metric';
+  /** Photo IDs used today on this phone (free, with a small daily allowance). */
+  idUsage: { day: string; count: number };
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -39,6 +41,7 @@ export const DEFAULT_PROFILE: Profile = {
   streakFreezes: 2,
   coachDismissed: false,
   units: 'auto',
+  idUsage: { day: '', count: 0 },
 };
 
 export type CareAction = 'water' | 'wet' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';

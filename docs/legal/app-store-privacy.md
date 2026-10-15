@@ -13,7 +13,7 @@ Use these when filling in **App Privacy** in App Store Connect. They describe wh
 |---|---|---|---|---|
 | Purchases → Purchase History | **Yes** (RevenueCat, only for Plus buyers) | App Functionality (unlocking Plus) | No (anonymous RevenueCat app user ID, no account) | No |
 | Identifiers → User ID | **Yes** (RevenueCat's anonymous app user ID) | App Functionality | No | No |
-| User Content → Photos or Videos | **Yes**, conservatively: only the single photo a Plus member chooses for photo ID, sent to Pl@ntNet | App Functionality | No | No |
+| User Content → Photos or Videos | **Yes**, conservatively: only the single photo someone chooses for photo ID, sent to Pl@ntNet | App Functionality | No | No |
 | Location | **No**: climate is a city the user picks; weather uses that city's fixed coordinates | | | |
 | Contact info, health, financial info, browsing, diagnostics, usage data | **No** | | | |
 

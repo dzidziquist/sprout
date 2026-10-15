@@ -33,8 +33,8 @@ export interface PlusOfferings {
 }
 
 export const FALLBACK_OFFERINGS: PlusOfferings = {
-  annual: { id: 'annual', priceString: '$19.99', perMonthString: '$1.67', pkg: null },
-  lifetime: { id: 'lifetime', priceString: '$49.99', pkg: null },
+  annual: { id: 'annual', priceString: '$7.99', perMonthString: '$0.67', pkg: null },
+  lifetime: { id: 'lifetime', priceString: '$19.99', pkg: null },
   live: false,
 };
 
