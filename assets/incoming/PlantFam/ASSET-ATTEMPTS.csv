@@ -1,0 +1,177 @@
+timestamp_utc,asset_id,filename,attempt,status,details
+2026-10-15T03:18:56.908034+00:00,buddy-monstera-happy,buddy-monstera-happy.png,1,NOT STARTED,Reset stale COMPLETE status: output file missing
+2026-10-15T03:19:17.617902+00:00,buddy-monstera-happy,buddy-monstera-happy.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T03:21:01.517474+00:00,buddy-pothos-thirsty,buddy-pothos-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:21:01.642977+00:00,buddy-monstera-happy,buddy-monstera-happy.png,3,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:21:15.181418+00:00,buddy-monstera-thirsty,buddy-monstera-thirsty.png,1,NOT STARTED,Reset stale COMPLETE status: output file missing
+2026-10-15T03:21:15.303930+00:00,buddy-monstera-thirsty,buddy-monstera-thirsty.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T03:22:38.787539+00:00,buddy-monstera-thirsty,buddy-monstera-thirsty.png,3,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:22:56.877721+00:00,buddy-monstera-snoozing,buddy-monstera-snoozing.png,1,NOT STARTED,Reset stale COMPLETE status: output file missing
+2026-10-15T03:22:57.044695+00:00,buddy-monstera-snoozing,buddy-monstera-snoozing.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T03:24:28.727474+00:00,buddy-monstera-snoozing,buddy-monstera-snoozing.png,3,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:24:42.529252+00:00,buddy-pothos-happy,buddy-pothos-happy.png,1,NOT STARTED,Reset stale COMPLETE status: output file missing
+2026-10-15T03:24:42.744500+00:00,buddy-pothos-happy,buddy-pothos-happy.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T03:26:40.575448+00:00,buddy-pothos-happy,buddy-pothos-happy.png,3,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:27:00.870940+00:00,buddy-fig-happy,buddy-fig-happy.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T03:28:18.081933+00:00,buddy-fig-happy,buddy-fig-happy.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:29:42.715062+00:00,buddy-fig-thirsty,buddy-fig-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:31:01.439661+00:00,buddy-fig-snoozing,buddy-fig-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:32:16.092937+00:00,buddy-calathea-happy,buddy-calathea-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:33:42.677789+00:00,buddy-calathea-thirsty,buddy-calathea-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:34:50.392680+00:00,buddy-calathea-snoozing,buddy-calathea-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:35:03.501158+00:00,buddy-snake-happy,buddy-snake-happy.png,1,NOT STARTED,Reset stale COMPLETE status: output file missing
+2026-10-15T03:35:04.085757+00:00,buddy-snake-happy,buddy-snake-happy.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T03:36:22.228567+00:00,buddy-snake-happy,buddy-snake-happy.png,3,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:37:40.848219+00:00,buddy-snake-thirsty,buddy-snake-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:39:15.788493+00:00,buddy-snake-snoozing,buddy-snake-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:41:06.200249+00:00,buddy-hoya-happy,buddy-hoya-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:42:22.780912+00:00,buddy-hoya-thirsty,buddy-hoya-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:43:54.792296+00:00,buddy-hoya-snoozing,buddy-hoya-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T03:44:33.882492+00:00,buddy-peace-lily-happy,buddy-peace-lily-happy.png,1,FAILED,attempt 1/3: image generation HTTP 429 usage_limit_reached; tool reported 997 seconds until reset; next status NOT STARTED
+2026-10-15T04:01:15.908849+00:00,buddy-peace-lily-happy,buddy-peace-lily-happy.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T04:03:15.195275+00:00,buddy-peace-lily-happy,buddy-peace-lily-happy.png,3,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:04:51.881399+00:00,buddy-peace-lily-thirsty,buddy-peace-lily-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:06:14.078056+00:00,buddy-peace-lily-snoozing,buddy-peace-lily-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:07:58.302652+00:00,buddy-zz-happy,buddy-zz-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:09:26.009685+00:00,buddy-zz-thirsty,buddy-zz-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:11:21.305920+00:00,buddy-zz-snoozing,buddy-zz-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:13:08.249228+00:00,buddy-string-of-pearls-happy,buddy-string-of-pearls-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:14:24.160075+00:00,buddy-string-of-pearls-thirsty,buddy-string-of-pearls-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:16:07.040600+00:00,buddy-string-of-pearls-snoozing,buddy-string-of-pearls-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:17:51.170669+00:00,buddy-pink-princess-happy,buddy-pink-princess-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:19:16.817439+00:00,buddy-pink-princess-thirsty,buddy-pink-princess-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:21:00.333946+00:00,buddy-pink-princess-snoozing,buddy-pink-princess-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:22:50.951171+00:00,buddy-aloe-happy,buddy-aloe-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:24:24.120056+00:00,buddy-aloe-thirsty,buddy-aloe-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:26:00.981044+00:00,buddy-aloe-snoozing,buddy-aloe-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:27:49.663947+00:00,buddy-spider-happy,buddy-spider-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:29:48.205098+00:00,buddy-spider-thirsty,buddy-spider-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:34:44.552700+00:00,buddy-spider-snoozing,buddy-spider-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:36:13.127913+00:00,buddy-rubber-happy,buddy-rubber-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:37:31.113308+00:00,buddy-rubber-thirsty,buddy-rubber-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:38:37.093062+00:00,buddy-rubber-snoozing,buddy-rubber-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:39:46.402966+00:00,buddy-bird-of-paradise-happy,buddy-bird-of-paradise-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:41:14.894222+00:00,buddy-bird-of-paradise-thirsty,buddy-bird-of-paradise-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:42:31.911076+00:00,buddy-bird-of-paradise-snoozing,buddy-bird-of-paradise-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:44:06.218844+00:00,buddy-basil-happy,buddy-basil-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:45:33.801853+00:00,buddy-basil-thirsty,buddy-basil-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:46:51.359557+00:00,buddy-basil-snoozing,buddy-basil-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:49:16.983543+00:00,buddy-mint-happy,buddy-mint-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:50:37.019299+00:00,buddy-mint-thirsty,buddy-mint-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:52:02.727992+00:00,buddy-mint-snoozing,buddy-mint-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:53:53.011133+00:00,buddy-tomato-happy,buddy-tomato-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:55:42.206565+00:00,buddy-tomato-thirsty,buddy-tomato-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:57:22.059815+00:00,buddy-tomato-snoozing,buddy-tomato-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:58:38.502700+00:00,buddy-pepper-happy,buddy-pepper-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T04:59:45.424300+00:00,buddy-pepper-thirsty,buddy-pepper-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:01:26.675986+00:00,buddy-pepper-snoozing,buddy-pepper-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:03:36.623691+00:00,buddy-spring-onion-happy,buddy-spring-onion-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:05:24.652951+00:00,buddy-spring-onion-thirsty,buddy-spring-onion-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:06:53.597938+00:00,buddy-spring-onion-snoozing,buddy-spring-onion-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:08:32.041588+00:00,buddy-cutting-happy,buddy-cutting-happy.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:10:14.039601+00:00,buddy-cutting-thirsty,buddy-cutting-thirsty.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:11:31.230977+00:00,buddy-cutting-snoozing,buddy-cutting-snoozing.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:12:52.662332+00:00,app-icon-1024.png,app-icon-1024.png,1,COMPLETE,1024x1024; transparent pixels=no; subject visually verified
+2026-10-15T05:14:15.658755+00:00,app-icon-dark-1024.png,app-icon-dark-1024.png,1,COMPLETE,1024x1024; transparent pixels=no; subject visually verified
+2026-10-15T05:15:36.909922+00:00,app-icon-tinted-1024.png,app-icon-tinted-1024.png,1,IN PROGRESS,Validation failed: transparent pixels required but missing
+2026-10-15T05:17:30.976307+00:00,app-icon-tinted-1024.png,app-icon-tinted-1024.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:18:59.432034+00:00,logo-sticker.png,logo-sticker.png,1,COMPLETE,1536x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:20:31.081509+00:00,splash.png,splash.png,1,IN PROGRESS,Validation failed: dimensions 1536x1024; expected 1024x1024
+2026-10-15T05:20:50.388650+00:00,splash.png,splash.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:23:04.517957+00:00,onboarding-welcome.png,onboarding-welcome.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:27:54.418243+00:00,grow-houseplants.png,grow-houseplants.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:29:34.366311+00:00,grow-edibles.png,grow-edibles.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:31:34.754486+00:00,grow-cuttings.png,grow-cuttings.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:39:01.148626+00:00,season-grey.png,season-grey.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:41:08.881419+00:00,season-dry-summer.png,season-dry-summer.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:43:16.423502+00:00,season-winter.png,season-winter.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:45:02.076438+00:00,season-spring.png,season-spring.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:46:38.821157+00:00,season-harmattan.png,season-harmattan.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:49:16.720579+00:00,season-rains.png,season-rains.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:54:00.424324+00:00,celebrate-thanks.png,celebrate-thanks.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:56:19.214491+00:00,moment-new-leaf.png,moment-new-leaf.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T05:58:20.818316+00:00,moment-roots.png,moment-roots.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:00:04.891723+00:00,moment-harvest.png,moment-harvest.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:02:09.135687+00:00,moment-smart-skip.png,moment-smart-skip.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:04:29.104902+00:00,empty-jungle.png,empty-jungle.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:07:00.705083+00:00,empty-caught-up.png,empty-caught-up.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:08:56.799159+00:00,error-offline.png,error-offline.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:10:47.411413+00:00,memorial.png,memorial.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:12:53.601060+00:00,away-mode.png,away-mode.png,1,COMPLETE,1536x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:19:35.664030+00:00,badge-knows-when-to-wait.png,badge-knows-when-to-wait.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:22:00.310282+00:00,badge-knows-when-to-wait-locked.png,badge-knows-when-to-wait-locked.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:24:26.605330+00:00,badge-offshoots.png,badge-offshoots.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:26:35.346845+00:00,badge-offshoots-locked.png,badge-offshoots-locked.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:28:52.767841+00:00,badge-propagator.png,badge-propagator.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:31:30.899006+00:00,badge-propagator-locked.png,badge-propagator-locked.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:34:08.340617+00:00,badge-first-root.png,badge-first-root.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:36:54.265832+00:00,badge-first-root-locked.png,badge-first-root-locked.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:39:15.660745+00:00,badge-first-harvest.png,badge-first-harvest.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:41:45.697955+00:00,badge-first-harvest-locked.png,badge-first-harvest-locked.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:49:53.225308+00:00,badge-first-new-leaf.png,badge-first-new-leaf.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:52:03.546597+00:00,badge-first-new-leaf-locked.png,badge-first-new-leaf-locked.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T06:57:52.097663+00:00,badge-generous.png,badge-generous.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:00:11.118612+00:00,badge-generous-locked.png,badge-generous-locked.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:03:39.690205+00:00,badge-generous-locked.png,badge-generous-locked.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:03:44.055572+00:00,badge-survived-grey-season.png,badge-survived-grey-season.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:05:16.318019+00:00,badge-survived-grey-season.png,badge-survived-grey-season.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:05:20.704193+00:00,badge-survived-grey-season-locked.png,badge-survived-grey-season-locked.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:06:54.035097+00:00,badge-survived-grey-season-locked.png,badge-survived-grey-season-locked.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:07:05.163524+00:00,badge-survived-winter.png,badge-survived-winter.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:09:00.810631+00:00,badge-survived-winter.png,badge-survived-winter.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:10:31.838532+00:00,badge-survived-winter-locked.png,badge-survived-winter-locked.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:12:14.519782+00:00,badge-grandma-plant.png,badge-grandma-plant.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:12:38.073108+00:00,badge-survived-winter-locked.png,badge-survived-winter-locked.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T07:12:38.171205+00:00,badge-grandma-plant-locked.png,badge-grandma-plant-locked.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:14:05.674136+00:00,badge-grandma-plant-locked.png,badge-grandma-plant-locked.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:14:17.592066+00:00,badge-week-streak.png,badge-week-streak.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:15:48.380681+00:00,badge-week-streak.png,badge-week-streak.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:15:53.167233+00:00,badge-week-streak-locked.png,badge-week-streak-locked.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:17:12.169335+00:00,badge-week-streak-locked.png,badge-week-streak-locked.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:17:24.587485+00:00,badge-jungle-10.png,badge-jungle-10.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:18:48.201413+00:00,badge-jungle-10.png,badge-jungle-10.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:18:53.117847+00:00,badge-jungle-10-locked.png,badge-jungle-10-locked.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:20:39.098993+00:00,badge-jungle-10-locked.png,badge-jungle-10-locked.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:20:51.337605+00:00,badge-photo-diary.png,badge-photo-diary.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:22:40.168460+00:00,badge-photo-diary.png,badge-photo-diary.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:22:45.008233+00:00,badge-photo-diary-locked.png,badge-photo-diary-locked.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:24:25.884558+00:00,badge-photo-diary-locked.png,badge-photo-diary-locked.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:24:38.707480+00:00,share-tree-bg.png,share-tree-bg.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:25:37.291507+00:00,share-tree-bg.png,share-tree-bg.png,2,IN PROGRESS,Validation failed: output file missing
+2026-10-15T07:26:45.609042+00:00,share-tree-bg.png,share-tree-bg.png,3,COMPLETE,1024x1536; transparent pixels=no; subject visually verified
+2026-10-15T07:28:50.146254+00:00,share-harvest-bg.png,share-harvest-bg.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:28:50.146226+00:00,share-harvest-bg.png,share-harvest-bg.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:29:26.195828+00:00,share-harvest-bg.png,share-harvest-bg.png,3,COMPLETE,1024x1536; transparent pixels=no; subject visually verified
+2026-10-15T07:30:51.228654+00:00,share-gift.png,share-gift.png,1,COMPLETE,1536x1024; transparent pixels=no; subject visually verified
+2026-10-15T07:31:36.411873+00:00,share-gift.png,share-gift.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T07:32:42.738254+00:00,recap-cover.png,recap-cover.png,1,COMPLETE,1024x1536; transparent pixels=no; subject visually verified
+2026-10-15T07:32:54.126673+00:00,recap-cover.png,recap-cover.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T07:33:41.668954+00:00,recap-cover.png,recap-cover.png,3,COMPLETE,1024x1536; transparent pixels=no; subject visually verified
+2026-10-15T07:33:46.551438+00:00,widget-small.png,widget-small.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:35:10.554713+00:00,widget-small.png,widget-small.png,2,COMPLETE,1024x1024; transparent pixels=no; subject visually verified
+2026-10-15T07:35:15.458456+00:00,widget-medium.png,widget-medium.png,1,IN PROGRESS,Claimed by resume
+2026-10-15T07:36:31.179247+00:00,widget-medium.png,widget-medium.png,2,COMPLETE,1536x1024; transparent pixels=no; subject visually verified
+2026-10-15T07:38:45.308135+00:00,store-bg-1.png,store-bg-1.png,1,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:40:24.432402+00:00,store-bg-2.png,store-bg-2.png,1,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:41:10.878785+00:00,store-bg-1.png,store-bg-1.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T07:41:10.878792+00:00,store-bg-2.png,store-bg-2.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T07:41:59.995417+00:00,store-bg-3.png,store-bg-3.png,1,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:43:52.140209+00:00,store-bg-4.png,store-bg-4.png,1,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:44:44.997498+00:00,store-bg-3.png,store-bg-3.png,2,IN PROGRESS,Claimed by resume
+2026-10-15T07:45:53.389687+00:00,store-bg-5.png,store-bg-5.png,1,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:48:43.329337+00:00,notif-avatar.png,notif-avatar.png,1,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T07:52:10.518053+00:00,store-bg-3.png,store-bg-3.png,3,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:52:28.835333+00:00,store-bg-4.png,store-bg-4.png,2,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:52:28.914496+00:00,store-bg-5.png,store-bg-5.png,2,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:52:28.992560+00:00,store-bg-2.png,store-bg-2.png,3,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:52:29.069748+00:00,store-bg-1.png,store-bg-1.png,3,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T07:52:29.198655+00:00,notif-avatar.png,notif-avatar.png,2,COMPLETE,1024x1024; transparent pixels=yes; subject visually verified
+2026-10-15T08:04:48.045848+00:00,store-bg-1.png,store-bg-1.png,4,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T08:05:45.453883+00:00,store-bg-2.png,store-bg-2.png,4,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T08:07:08.611488+00:00,store-bg-3.png,store-bg-3.png,4,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T08:08:13.571772+00:00,store-bg-4.png,store-bg-4.png,3,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T08:09:38.831637+00:00,store-bg-5.png,store-bg-5.png,3,COMPLETE,1290x2796; transparent pixels=no; subject visually verified
+2026-10-15T08:10:42.854356+00:00,share-tree-bg.png,share-tree-bg.png,4,COMPLETE,1024x1536; transparent pixels=no; subject visually verified
+2026-10-15T08:11:43.693856+00:00,share-harvest-bg.png,share-harvest-bg.png,4,COMPLETE,1024x1536; transparent pixels=no; subject visually verified
+2026-10-15T08:13:08.686446+00:00,share-gift.png,share-gift.png,3,COMPLETE,1536x1024; transparent pixels=no; subject visually verified
+2026-10-15T08:14:35.235400+00:00,recap-cover.png,recap-cover.png,4,COMPLETE,1024x1536; transparent pixels=no; subject visually verified

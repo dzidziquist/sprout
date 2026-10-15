@@ -1,0 +1,124 @@
+asset_id,filename,subject,expression_or_state,reference_image,status,output_file
+buddy-monstera-happy,buddy-monstera-happy.png,Monstera deliciosa,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-monstera-happy.png
+buddy-monstera-thirsty,buddy-monstera-thirsty.png,Monstera deliciosa,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-monstera-thirsty.png
+buddy-monstera-snoozing,buddy-monstera-snoozing.png,Monstera deliciosa,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-monstera-snoozing.png
+buddy-pothos-happy,buddy-pothos-happy.png,Marble Queen pothos,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pothos-happy.png
+buddy-pothos-thirsty,buddy-pothos-thirsty.png,Marble Queen pothos,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pothos-thirsty.png
+buddy-pothos-snoozing,buddy-pothos-snoozing.png,Marble Queen pothos,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pothos-snoozing.png
+buddy-fig-happy,buddy-fig-happy.png,Fiddle-leaf fig,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-fig-happy.png
+buddy-fig-thirsty,buddy-fig-thirsty.png,Fiddle-leaf fig,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-fig-thirsty.png
+buddy-fig-snoozing,buddy-fig-snoozing.png,Fiddle-leaf fig,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-fig-snoozing.png
+buddy-calathea-happy,buddy-calathea-happy.png,Calathea orbifolia,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-calathea-happy.png
+buddy-calathea-thirsty,buddy-calathea-thirsty.png,Calathea orbifolia,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-calathea-thirsty.png
+buddy-calathea-snoozing,buddy-calathea-snoozing.png,Calathea orbifolia,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-calathea-snoozing.png
+buddy-snake-happy,buddy-snake-happy.png,Snake plant,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-snake-happy.png
+buddy-snake-thirsty,buddy-snake-thirsty.png,Snake plant,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-snake-thirsty.png
+buddy-snake-snoozing,buddy-snake-snoozing.png,Snake plant,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-snake-snoozing.png
+buddy-hoya-happy,buddy-hoya-happy.png,Hoya carnosa,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-hoya-happy.png
+buddy-hoya-thirsty,buddy-hoya-thirsty.png,Hoya carnosa,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-hoya-thirsty.png
+buddy-hoya-snoozing,buddy-hoya-snoozing.png,Hoya carnosa,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-hoya-snoozing.png
+buddy-peace-lily-happy,buddy-peace-lily-happy.png,Peace lily,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-peace-lily-happy.png
+buddy-peace-lily-thirsty,buddy-peace-lily-thirsty.png,Peace lily,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-peace-lily-thirsty.png
+buddy-peace-lily-snoozing,buddy-peace-lily-snoozing.png,Peace lily,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-peace-lily-snoozing.png
+buddy-zz-happy,buddy-zz-happy.png,ZZ plant,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-zz-happy.png
+buddy-zz-thirsty,buddy-zz-thirsty.png,ZZ plant,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-zz-thirsty.png
+buddy-zz-snoozing,buddy-zz-snoozing.png,ZZ plant,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-zz-snoozing.png
+buddy-string-of-pearls-happy,buddy-string-of-pearls-happy.png,String of pearls,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-string-of-pearls-happy.png
+buddy-string-of-pearls-thirsty,buddy-string-of-pearls-thirsty.png,String of pearls,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-string-of-pearls-thirsty.png
+buddy-string-of-pearls-snoozing,buddy-string-of-pearls-snoozing.png,String of pearls,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-string-of-pearls-snoozing.png
+buddy-pink-princess-happy,buddy-pink-princess-happy.png,Philodendron Pink Princess,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pink-princess-happy.png
+buddy-pink-princess-thirsty,buddy-pink-princess-thirsty.png,Philodendron Pink Princess,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pink-princess-thirsty.png
+buddy-pink-princess-snoozing,buddy-pink-princess-snoozing.png,Philodendron Pink Princess,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pink-princess-snoozing.png
+buddy-aloe-happy,buddy-aloe-happy.png,Aloe vera,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-aloe-happy.png
+buddy-aloe-thirsty,buddy-aloe-thirsty.png,Aloe vera,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-aloe-thirsty.png
+buddy-aloe-snoozing,buddy-aloe-snoozing.png,Aloe vera,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-aloe-snoozing.png
+buddy-spider-happy,buddy-spider-happy.png,Spider plant,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-spider-happy.png
+buddy-spider-thirsty,buddy-spider-thirsty.png,Spider plant,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-spider-thirsty.png
+buddy-spider-snoozing,buddy-spider-snoozing.png,Spider plant,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-spider-snoozing.png
+buddy-rubber-happy,buddy-rubber-happy.png,Rubber plant,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-rubber-happy.png
+buddy-rubber-thirsty,buddy-rubber-thirsty.png,Rubber plant,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-rubber-thirsty.png
+buddy-rubber-snoozing,buddy-rubber-snoozing.png,Rubber plant,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-rubber-snoozing.png
+buddy-bird-of-paradise-happy,buddy-bird-of-paradise-happy.png,Bird of paradise,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-bird-of-paradise-happy.png
+buddy-bird-of-paradise-thirsty,buddy-bird-of-paradise-thirsty.png,Bird of paradise,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-bird-of-paradise-thirsty.png
+buddy-bird-of-paradise-snoozing,buddy-bird-of-paradise-snoozing.png,Bird of paradise,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-bird-of-paradise-snoozing.png
+buddy-basil-happy,buddy-basil-happy.png,Basil,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-basil-happy.png
+buddy-basil-thirsty,buddy-basil-thirsty.png,Basil,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-basil-thirsty.png
+buddy-basil-snoozing,buddy-basil-snoozing.png,Basil,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-basil-snoozing.png
+buddy-mint-happy,buddy-mint-happy.png,Mint,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-mint-happy.png
+buddy-mint-thirsty,buddy-mint-thirsty.png,Mint,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-mint-thirsty.png
+buddy-mint-snoozing,buddy-mint-snoozing.png,Mint,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-mint-snoozing.png
+buddy-tomato-happy,buddy-tomato-happy.png,Cherry tomato,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-tomato-happy.png
+buddy-tomato-thirsty,buddy-tomato-thirsty.png,Cherry tomato,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-tomato-thirsty.png
+buddy-tomato-snoozing,buddy-tomato-snoozing.png,Cherry tomato,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-tomato-snoozing.png
+buddy-pepper-happy,buddy-pepper-happy.png,Chili pepper,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pepper-happy.png
+buddy-pepper-thirsty,buddy-pepper-thirsty.png,Chili pepper,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pepper-thirsty.png
+buddy-pepper-snoozing,buddy-pepper-snoozing.png,Chili pepper,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-pepper-snoozing.png
+buddy-spring-onion-happy,buddy-spring-onion-happy.png,Spring onion,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-spring-onion-happy.png
+buddy-spring-onion-thirsty,buddy-spring-onion-thirsty.png,Spring onion,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-spring-onion-thirsty.png
+buddy-spring-onion-snoozing,buddy-spring-onion-snoozing.png,Spring onion,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-spring-onion-snoozing.png
+buddy-cutting-happy,buddy-cutting-happy.png,Pothos cutting in jar,happy,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-cutting-happy.png
+buddy-cutting-thirsty,buddy-cutting-thirsty.png,Pothos cutting in jar,thirsty,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-cutting-thirsty.png
+buddy-cutting-snoozing,buddy-cutting-snoozing.png,Pothos cutting in jar,snoozing,user-supplied PlantFam reference images,COMPLETE,assets/buddies/buddy-cutting-snoozing.png
+app-icon-1024.png,app-icon-1024.png,PlantFam app icon,light,user-supplied PlantFam reference images,COMPLETE,assets/brand/app-icon-1024.png
+app-icon-dark-1024.png,app-icon-dark-1024.png,PlantFam app icon,dark,user-supplied PlantFam reference images,COMPLETE,assets/brand/app-icon-dark-1024.png
+app-icon-tinted-1024.png,app-icon-tinted-1024.png,PlantFam app icon,tinted monochrome,user-supplied PlantFam reference images,COMPLETE,assets/brand/app-icon-tinted-1024.png
+logo-sticker.png,logo-sticker.png,PlantFam wordmark,brand lockup,user-supplied PlantFam reference images,COMPLETE,assets/brand/logo-sticker.png
+splash.png,splash.png,Monstera buddy,splash illustration,user-supplied PlantFam reference images,COMPLETE,assets/brand/splash.png
+onboarding-welcome.png,onboarding-welcome.png,Welcome hero,onboarding illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/onboarding-welcome.png
+grow-houseplants.png,grow-houseplants.png,Houseplants grow tile,onboarding illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/grow-houseplants.png
+grow-edibles.png,grow-edibles.png,Edibles grow tile,onboarding illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/grow-edibles.png
+grow-cuttings.png,grow-cuttings.png,Cuttings grow tile,onboarding illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/grow-cuttings.png
+season-grey.png,season-grey.png,Seattle grey season,season spot illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/season-grey.png
+season-dry-summer.png,season-dry-summer.png,Dry summer,season spot illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/season-dry-summer.png
+season-winter.png,season-winter.png,Winter,season spot illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/season-winter.png
+season-spring.png,season-spring.png,Spring,season spot illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/season-spring.png
+season-harmattan.png,season-harmattan.png,Harmattan,season spot illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/season-harmattan.png
+season-rains.png,season-rains.png,Rainy season,season spot illustration,user-supplied PlantFam reference images,COMPLETE,assets/onboarding/season-rains.png
+celebrate-thanks.png,celebrate-thanks.png,Pothos thank-you burst,celebration illustration,user-supplied PlantFam reference images,COMPLETE,assets/celebration/celebrate-thanks.png
+moment-new-leaf.png,moment-new-leaf.png,New leaf milestone,celebration illustration,user-supplied PlantFam reference images,COMPLETE,assets/celebration/moment-new-leaf.png
+moment-roots.png,moment-roots.png,Roots spotted milestone,celebration illustration,user-supplied PlantFam reference images,COMPLETE,assets/celebration/moment-roots.png
+moment-harvest.png,moment-harvest.png,First harvest,celebration illustration,user-supplied PlantFam reference images,COMPLETE,assets/celebration/moment-harvest.png
+moment-smart-skip.png,moment-smart-skip.png,Smart skip,celebration illustration,user-supplied PlantFam reference images,COMPLETE,assets/celebration/moment-smart-skip.png
+empty-jungle.png,empty-jungle.png,Empty garden state,empty/error/gentle state,user-supplied PlantFam reference images,COMPLETE,assets/states/empty-jungle.png
+empty-caught-up.png,empty-caught-up.png,All caught up state,empty/error/gentle state,user-supplied PlantFam reference images,COMPLETE,assets/states/empty-caught-up.png
+error-offline.png,error-offline.png,Offline state,empty/error/gentle state,user-supplied PlantFam reference images,COMPLETE,assets/states/error-offline.png
+memorial.png,memorial.png,Plant memorial state,empty/error/gentle state,user-supplied PlantFam reference images,COMPLETE,assets/states/memorial.png
+away-mode.png,away-mode.png,Away mode road trip,empty/error/gentle state,user-supplied PlantFam reference images,COMPLETE,assets/states/away-mode.png
+badge-knows-when-to-wait.png,badge-knows-when-to-wait.png,calm plant with hourglass,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-knows-when-to-wait.png
+badge-knows-when-to-wait-locked.png,badge-knows-when-to-wait-locked.png,calm plant with hourglass,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-knows-when-to-wait-locked.png
+badge-offshoots.png,badge-offshoots.png,parent plant and cutting,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-offshoots.png
+badge-offshoots-locked.png,badge-offshoots-locked.png,parent plant and cutting,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-offshoots-locked.png
+badge-propagator.png,badge-propagator.png,family-tree branch with leaf,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-propagator.png
+badge-propagator-locked.png,badge-propagator-locked.png,family-tree branch with leaf,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-propagator-locked.png
+badge-first-root.png,badge-first-root.png,water jar with roots,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-first-root.png
+badge-first-root-locked.png,badge-first-root-locked.png,water jar with roots,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-first-root-locked.png
+badge-first-harvest.png,badge-first-harvest.png,basket with tomato and chili,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-first-harvest.png
+badge-first-harvest-locked.png,badge-first-harvest-locked.png,basket with tomato and chili,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-first-harvest-locked.png
+badge-first-new-leaf.png,badge-first-new-leaf.png,unfurling leaf with sparkle,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-first-new-leaf.png
+badge-first-new-leaf-locked.png,badge-first-new-leaf-locked.png,unfurling leaf with sparkle,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-first-new-leaf-locked.png
+badge-generous.png,badge-generous.png,gift box with leaf,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-generous.png
+badge-generous-locked.png,badge-generous-locked.png,gift box with leaf,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-generous-locked.png
+badge-survived-grey-season.png,badge-survived-grey-season.png,raincloud over happy plant,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-survived-grey-season.png
+badge-survived-grey-season-locked.png,badge-survived-grey-season-locked.png,raincloud over happy plant,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-survived-grey-season-locked.png
+badge-survived-winter.png,badge-survived-winter.png,snowflake beside plant,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-survived-winter.png
+badge-survived-winter-locked.png,badge-survived-winter-locked.png,snowflake beside plant,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-survived-winter-locked.png
+badge-grandma-plant.png,badge-grandma-plant.png,plant wearing glasses,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-grandma-plant.png
+badge-grandma-plant-locked.png,badge-grandma-plant-locked.png,plant wearing glasses,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-grandma-plant-locked.png
+badge-week-streak.png,badge-week-streak.png,chunky flame,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-week-streak.png
+badge-week-streak-locked.png,badge-week-streak-locked.png,chunky flame,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-week-streak-locked.png
+badge-jungle-10.png,badge-jungle-10.png,three plant buddies,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-jungle-10.png
+badge-jungle-10-locked.png,badge-jungle-10-locked.png,three plant buddies,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-jungle-10-locked.png
+badge-photo-diary.png,badge-photo-diary.png,camera with leaf,unlocked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-photo-diary.png
+badge-photo-diary-locked.png,badge-photo-diary-locked.png,camera with leaf,locked badge,user-supplied PlantFam reference images,COMPLETE,assets/badges/badge-photo-diary-locked.png
+share-tree-bg.png,share-tree-bg.png,Family tree card background,sharing card,user-supplied PlantFam reference images,COMPLETE,assets/sharing/share-tree-bg.png
+share-harvest-bg.png,share-harvest-bg.png,Harvest recap card,sharing card,user-supplied PlantFam reference images,COMPLETE,assets/sharing/share-harvest-bg.png
+share-gift.png,share-gift.png,Gift a cutting card,sharing card,user-supplied PlantFam reference images,COMPLETE,assets/sharing/share-gift.png
+recap-cover.png,recap-cover.png,Year in review cover,sharing card,user-supplied PlantFam reference images,COMPLETE,assets/sharing/recap-cover.png
+widget-small.png,widget-small.png,Small home-screen widget,widget background,user-supplied PlantFam reference images,COMPLETE,assets/widgets/widget-small.png
+widget-medium.png,widget-medium.png,Medium home-screen widget,widget background,user-supplied PlantFam reference images,COMPLETE,assets/widgets/widget-medium.png
+store-bg-1.png,store-bg-1.png,App Store screenshot background,colorway 1,user-supplied PlantFam reference images,COMPLETE,assets/store/store-bg-1.png
+store-bg-2.png,store-bg-2.png,App Store screenshot background,colorway 2,user-supplied PlantFam reference images,COMPLETE,assets/store/store-bg-2.png
+store-bg-3.png,store-bg-3.png,App Store screenshot background,colorway 3,user-supplied PlantFam reference images,COMPLETE,assets/store/store-bg-3.png
+store-bg-4.png,store-bg-4.png,App Store screenshot background,colorway 4,user-supplied PlantFam reference images,COMPLETE,assets/store/store-bg-4.png
+store-bg-5.png,store-bg-5.png,App Store screenshot background,colorway 5,user-supplied PlantFam reference images,COMPLETE,assets/store/store-bg-5.png
+notif-avatar.png,notif-avatar.png,Thirsty Marble Queen pothos pot face,notification avatar,user-supplied PlantFam reference images,COMPLETE,assets/widgets/notif-avatar.png
