@@ -9,7 +9,7 @@ export const SUPPORT_EMAIL = '';
 /** Developer website, used for support and privacy contact until a dedicated address exists. */
 export const SUPPORT_URL = 'https://dzidziquist.com';
 
-/** Public copy of the privacy policy (docs/legal/privacy-policy.md), needed by App Store Connect. TODO(founder): host it and set the URL. */
+/** Public privacy policy, hosted on Notion (page "PlantFam Privacy Policy"). TODO(founder): publish it to the web and paste its notion.site URL here. */
 export const PRIVACY_POLICY_URL = '';
 
 /** Apple's standard licence agreement covers PlantFam's terms of use, including subscriptions. */

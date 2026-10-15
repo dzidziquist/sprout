@@ -2,7 +2,7 @@
 
 Use these when filling in **App Privacy** in App Store Connect. They describe what the code does today (Oct 2026); revisit if you add a server, analytics or accounts.
 
-**Privacy Policy URL:** host `docs/legal/privacy-policy.md` (any static page works) and paste the URL into App Store Connect and `PRIVACY_POLICY_URL` in `src/config.ts`.
+**Privacy Policy URL:** the policy is hosted on Notion as the page "PlantFam Privacy Policy" (id `3fabc232dc2181d59c4de6716ad9eb84`). In Notion: Share → Publish → Publish to web, then paste the public `notion.site` URL into App Store Connect and `PRIVACY_POLICY_URL` in `src/config.ts`. `docs/legal/privacy-policy.md` is the copy kept in the repo; update both together.
 
 ## Data Used to Track You
 **None.** No tracking, no ad networks, no data brokers, no App Tracking Transparency prompt needed.
