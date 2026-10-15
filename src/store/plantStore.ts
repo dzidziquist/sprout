@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { applyCheck, initialNextCheck } from '../engine/careEngine';
+import { addDays, applyCheck, initialNextCheck, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { speciesOf } from '../data/species';
 import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant } from '../types';
 
@@ -55,9 +55,13 @@ interface PlantState {
   events: CareEvent[];
   /** Set after the user has seen onboarding. */
   onboarded: boolean;
-  /** Plant state before its last check, so the round can offer Undo. Not persisted. */
-  undo: Record<string, Plant>;
-  setProfile: (p: Partial<Profile>) => void;
+  /**
+   * What the last check changed, so the round can offer Undo: the plant's schedule before it, and the
+   * events the check itself created (care logged alongside it stays). Not persisted.
+   */
+  undo: Record<string, CheckUndo>;
+  /** Changing the climate re-paces every upcoming check to the new seasons. */
+  setProfile: (p: Partial<Profile>, now?: Date) => void;
   completeOnboarding: () => void;
   /**
    * New plants get their first soil check today by default: we don't know when it was last watered,
@@ -90,6 +94,23 @@ interface PlantState {
   eraseEverything: () => void;
 }
 
+type CheckUndo = { before: Pick<Plant, 'k' | 'nextCheckAt' | 'lastCheckAt' | 'lastResult'>; eventIds: string[] };
+
+/**
+ * Scale the time left until each upcoming check by how the season multiplier changes between the old
+ * and new climate today. Overdue plants stay due; rooting cuttings and archived plants have no checks.
+ */
+function repace(plants: Plant[], from: ClimateProfile, to: ClimateProfile, now: Date): Plant[] {
+  return plants.map((p) => {
+    if (p.rooting || p.archivedAt) return p;
+    const left = new Date(p.nextCheckAt).getTime() - now.getTime();
+    if (left <= 0) return p;
+    const ratio = seasonMultiplier(to, p.placement, now) / seasonMultiplier(from, p.placement, now);
+    const days = Math.min(MAX_INTERVAL_DAYS, (left * ratio) / 86400000);
+    return { ...p, nextCheckAt: addDays(now, days).toISOString() };
+  });
+}
+
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
 function schedule(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimateProfile, at: Date): string {
@@ -105,7 +126,12 @@ export const usePlantStore = create<PlantState>()(
       onboarded: false,
       undo: {},
 
-      setProfile: (p) => set((s) => ({ profile: { ...s.profile, ...p } })),
+      setProfile: (p, now = new Date()) =>
+        set((s) => {
+          const profile = { ...s.profile, ...p };
+          const moved = p.climate !== undefined && JSON.stringify(p.climate) !== JSON.stringify(s.profile.climate);
+          return moved ? { profile, plants: repace(s.plants, s.profile.climate, profile.climate, now) } : { profile };
+        }),
       completeOnboarding: () => set({ onboarded: true }),
 
       addPlant: (input, now = new Date(), opts) => {
@@ -130,20 +156,23 @@ export const usePlantStore = create<PlantState>()(
               : p,
           ),
           events: [...s.events, ...events],
-          undo: { ...s.undo, [plantId]: plant },
+          undo: {
+            ...s.undo,
+            [plantId]: { before: { k: plant.k, nextCheckAt: plant.nextCheckAt, lastCheckAt: plant.lastCheckAt, lastResult: plant.lastResult }, eventIds: events.map((e) => e.id) },
+          },
         }));
         return out.message;
       },
 
       undoLastCheck: (plantId) => {
         const s = get();
-        const before = s.undo[plantId];
-        if (!before) return;
-        const lastCheckAt = s.plants.find((p) => p.id === plantId)?.lastCheckAt;
+        const entry = s.undo[plantId];
+        if (!entry) return;
         const { [plantId]: _used, ...rest } = s.undo;
+        const ids = new Set(entry.eventIds);
         set({
-          plants: s.plants.map((p) => (p.id === plantId ? before : p)),
-          events: s.events.filter((e) => !(e.plantId === plantId && e.at === lastCheckAt)),
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, ...entry.before } : p)),
+          events: s.events.filter((e) => !ids.has(e.id)),
           undo: rest,
         });
       },

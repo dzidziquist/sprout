@@ -20,6 +20,12 @@ export async function requestPermission(): Promise<boolean> {
 }
 
 /**
+ * How far ahead rounds are scheduled. Rescheduling only happens while the app runs, so this is how long
+ * reminders keep coming if it's never opened. At most one a day keeps it well under iOS's 64 pending.
+ */
+const HORIZON_DAYS = 30;
+
+/**
  * One plant round a day, at the user's chosen time, only on days something new is due.
  * Rescheduled whenever plants change, so it always reflects the latest checks.
  */
@@ -29,7 +35,7 @@ export async function rescheduleRounds(plants: Plant[], hour: number, minute: nu
   if (!enabled) return;
   const { granted } = await Notifications.getPermissionsAsync();
   if (!granted) return;
-  for (const { fireAt, digest } of planRounds(plants, new Date(), hour, minute, 7)) {
+  for (const { fireAt, digest } of planRounds(plants, new Date(), hour, minute, HORIZON_DAYS)) {
     await Notifications.scheduleNotificationAsync({
       content: { title: digest.title, body: digest.body, data: { route: '/' } },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: fireAt },

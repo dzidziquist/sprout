@@ -105,3 +105,35 @@ describe('plant store', () => {
     expect(st.profile).toMatchObject({ plus: true, theme: 'system' });
   });
 });
+
+describe('review fixes', () => {
+  it('undoing a check keeps the other care logged alongside it', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Queenie' }, now);
+    s.logCare(p.id, ['water', 'feed', 'repot'], 'New pot!', now);
+    expect(usePlantStore.getState().events.map((e) => e.type).sort()).toEqual(['check', 'feed', 'note', 'repot', 'water']);
+    usePlantStore.getState().undoLastCheck(p.id);
+    const after = usePlantStore.getState();
+    expect(after.events.map((e) => e.type).sort()).toEqual(['feed', 'note', 'repot']);
+    const plant = after.plants[0];
+    expect(plant.lastCheckAt).toBeUndefined();
+    expect(plant.nextCheckAt).toBe(p.nextCheckAt);
+    // The repot itself stays.
+    expect(plant.lastRepottedAt).toBe(now.toISOString());
+  });
+
+  it('re-paces upcoming checks when the climate changes', () => {
+    const winter = new Date('2026-12-15T09:00:00');
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Queenie' }, winter, { firstCheck: 'scheduled' });
+    const before = new Date(p.nextCheckAt).getTime() - winter.getTime();
+    // Seattle December (×1.55 indoors) → Accra December (×0.8): checks come much sooner.
+    usePlantStore.getState().setProfile({ climate: 'accra', city: 'Accra' }, winter);
+    const after = new Date(usePlantStore.getState().plants[0].nextCheckAt).getTime() - winter.getTime();
+    expect(after / before).toBeCloseTo(0.8 / 1.55, 2);
+    // Other profile changes leave schedules alone.
+    const stamp = usePlantStore.getState().plants[0].nextCheckAt;
+    usePlantStore.getState().setProfile({ faces: 'off' }, winter);
+    expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(stamp);
+  });
+});
