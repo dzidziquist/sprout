@@ -1,4 +1,5 @@
 import { fmtRain, fmtTemp, type Units } from '../lib/units';
+import { climateDate, localizeClimateText, modelOf } from '../lib/climate';
 import { CALENDAR, edibleGuide, type CalendarTask, type FeedWindow, type TaskKind, type TaskWindow } from '../data/edibles';
 import { isFeedingPaused } from './careEngine';
 import type { CareEvent, ClimateProfile, EdibleStage, Placement, Plant } from '../types';
@@ -42,7 +43,7 @@ function inFeedWindow(w: FeedWindow, date: Date): boolean {
 
 /** The Seattle outdoor feeding window for this plant, when it has one and lives outside. */
 function outdoorFeedWindow(plant: Pick<Plant, 'placement' | 'speciesId'>, climate: ClimateProfile): FeedWindow | undefined {
-  if (climate !== 'seattle' || !OUTSIDE.includes(plant.placement)) return undefined;
+  if (modelOf(climate) !== 'seattle' || !OUTSIDE.includes(plant.placement)) return undefined;
   return edibleGuide(plant.speciesId)?.seattleOutdoorFeed;
 }
 
@@ -54,7 +55,7 @@ function outdoorFeedWindow(plant: Pick<Plant, 'placement' | 'speciesId'>, climat
 export function edibleFeedingPaused(plant: Pick<Plant, 'placement' | 'stage' | 'speciesId'>, climate: ClimateProfile, date: Date): boolean {
   if (plant.stage === 'resting' || plant.stage === 'seed') return true;
   const w = outdoorFeedWindow(plant, climate);
-  if (w) return !inFeedWindow(w, date);
+  if (w) return !inFeedWindow(w, climateDate(climate, date));
   return isFeedingPaused(climate, plant.placement, date);
 }
 
@@ -66,11 +67,11 @@ export function feedingAdvice(plant: Plant, climate: ClimateProfile, date: Date)
   if (plant.stage !== 'seed' && plant.stage !== 'resting' && edibleFeedingPaused(plant, climate, date)) {
     const w = outdoorFeedWindow(plant, climate);
     if (!w) return 'Feeding paused for winter';
-    const m = date.getMonth();
+    const m = climateDate(climate, date).getMonth();
     // After the window and before November: the plant is finishing its season.
     if (m >= w.from && m < 10) return guide?.fruitingFeed ? 'No feed now: ripening season' : 'No feed now: winding down';
     // Before the window in spring: say when it starts.
-    if (m < w.from && m >= 1) return `No feed yet: starts in ${MONTH_NAMES[w.from]}`;
+    if (m < w.from && m >= 1) return localizeClimateText(`No feed yet: starts in ${MONTH_NAMES[w.from]}`, climate);
     return 'Feeding paused for winter';
   }
   return info.feed;
@@ -113,9 +114,11 @@ const KIND_ORDER: TaskKind[] = ['protect', 'harvest', 'plant', 'sow', 'feed', 'c
  * tasks (high-potash at fruit swell, pollination while flowering). Each task appears once, listing every
  * plant it applies to. Tasks due this week come first.
  */
-export function tasksFor(plants: Plant[], climate: ClimateProfile, date: Date): GrowTask[] {
+export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Date): GrowTask[] {
   const mine = ediblePlants(plants);
   if (!mine.length) return [];
+  // Calendar windows are written in the model city's months; read them on the matching day there.
+  const date = climateDate(climate, realDate);
   const y = date.getFullYear();
   const monthStart = new Date(y, date.getMonth(), 1).getTime();
   const monthEnd = new Date(y, date.getMonth() + 1, 0, 23, 59, 59).getTime();
@@ -123,18 +126,18 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, date: Date): 
   const weekEnd = dayStart + 7 * DAY - 1;
   const out: GrowTask[] = [];
 
-  for (const task of CALENDAR[climate]) {
+  for (const task of CALENDAR[modelOf(climate)]) {
     if (!overlaps(task, monthStart, monthEnd, y)) continue;
     const plantIds = mine.filter((p) => (task.species as string[]).includes(p.speciesId)).map((p) => p.id);
     if (!plantIds.length) continue;
     // A window that has already closed this month isn't worth showing.
     if (!overlaps(task, dayStart, monthEnd, y)) continue;
-    out.push({ id: task.id, kind: task.kind, title: task.title, body: task.body, plantIds, thisWeek: overlaps(task, dayStart, weekEnd, y) });
+    out.push({ id: task.id, kind: task.kind, title: localizeClimateText(task.title, climate), body: localizeClimateText(task.body, climate), plantIds, thisWeek: overlaps(task, dayStart, weekEnd, y) });
   }
 
   // Stage triggers, driven by guide flags.
   const guide = (p: Plant) => edibleGuide(p.speciesId);
-  const swelling = mine.filter((p) => (p.stage === 'fruiting' || p.stage === 'harvesting') && guide(p)?.fruitingFeed && !edibleFeedingPaused(p, climate, date));
+  const swelling = mine.filter((p) => (p.stage === 'fruiting' || p.stage === 'harvesting') && guide(p)?.fruitingFeed && !edibleFeedingPaused(p, climate, realDate));
   if (swelling.length) {
     out.push({ id: 'stage-potash', kind: 'feed', title: 'High-potash feed', body: 'Fruit is swelling: switch to a tomato feed every 10–14 days.', plantIds: swelling.map((p) => p.id), thisWeek: true });
   }

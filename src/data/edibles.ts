@@ -1,4 +1,4 @@
-import type { ClimateProfile, EdibleStage, SpeciesId } from '../types';
+import type { ClimateModel, EdibleStage, SpeciesId } from '../types';
 
 /*
  * Grow patch knowledge for edibles. Facts come from docs/research/notes/edible_container_growing.md
@@ -716,7 +716,7 @@ const ACC_ALL = [
   'lemongrass', 'lemon-balm', 'bay-laurel', 'scent-leaf', 'ginger', ...BERRIES, 'meyer-lemon', 'common-fig', 'cape-gooseberry', 'passion-fruit', 'pineapple',
 ];
 
-export const CALENDAR: Record<ClimateProfile, CalendarTask[]> = {
+export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
   seattle: [
     { id: 'sea-plan', kind: 'care', title: 'Pick your seeds', body: 'Go early and small: cherries like Sungold, Sweet Million or Stupice (≤75 days).', species: ['tomato', 'pepper'], when: months(0, 1) },
     { id: 'sea-overwinter-care', kind: 'care', title: 'Winter pepper check', body: 'Water about every 2 weeks, no feed. Peek under leaves for aphids.', species: ['pepper'], when: months(10, 11, 0, 1, 2) },
@@ -788,7 +788,7 @@ export const CALENDAR: Record<ClimateProfile, CalendarTask[]> = {
     { id: 'sea-sow-radish-fall', kind: 'sow', title: 'Autumn radishes', body: 'Quick radishes sown until mid-September still size up before winter.', species: ['radish'], when: [{ month: 7 }, { month: 8, to: 15 }] },
 
     // Garlic and leeks.
-    { id: 'sea-plant-garlic', kind: 'plant', title: 'Plant garlic', body: 'Western WA plants late Oct–mid Nov. Cloves pointy end up, tops 5 cm deep, then mulch.', species: ['garlic'], when: [{ month: 9, from: 15 }, { month: 10, to: 15 }] },
+    { id: 'sea-plant-garlic', kind: 'plant', title: 'Plant garlic', body: 'Plant late Oct–mid Nov. Cloves pointy end up, tops 5 cm deep, then mulch.', species: ['garlic'], when: [{ month: 9, from: 15 }, { month: 10, to: 15 }] },
     { id: 'sea-garlic-feed', kind: 'feed', title: 'Feed the garlic', body: 'Compost or balanced feed when tops are 15–20 cm. Stop once bulbs swell.', species: ['garlic'], when: [{ month: 3, from: 15 }, { month: 4 }] },
     { id: 'sea-garlic-scapes', kind: 'harvest', title: 'Snap the scapes', body: 'Hardnecks send up curly flower stalks. Snip them as they curl and cook them.', species: ['garlic'], when: months(5) },
     { id: 'sea-garlic-lift', kind: 'harvest', title: 'Lift the garlic', body: 'Lower third of leaves yellow? Stop watering, lift, and cure somewhere airy.', species: ['garlic'], when: [{ month: 5, from: 20 }, { month: 6 }] },
@@ -823,7 +823,7 @@ export const CALENDAR: Record<ClimateProfile, CalendarTask[]> = {
     { id: 'sea-net-berries', kind: 'protect', title: 'Net the berries', body: 'Birds love ripening berries. Net the pot and keep fruit off wet soil.', species: BERRIES, when: [{ month: 4, from: 15 }, { month: 5 }, { month: 6 }] },
     { id: 'sea-pick-strawberries', kind: 'harvest', title: 'Pick strawberries', body: 'Fully red, on a dry morning. Everbearers keep going into September.', species: ['strawberry'], when: all(5, 8) },
     { id: 'sea-runners', kind: 'care', title: 'Snip runners', body: 'Cut runners for bigger fruit, or pin a few into small pots for new plants.', species: ['strawberry'], when: months(6, 7) },
-    { id: 'sea-blueberry-feed', kind: 'feed', title: 'Feed blueberries', body: 'Acid (ericaceous) feed in spring only. Seattle’s soft tap water suits them.', species: ['blueberry'], when: [{ month: 2, from: 15 }, { month: 3 }, { month: 4 }] },
+    { id: 'sea-blueberry-feed', kind: 'feed', title: 'Feed blueberries', body: 'Acid (ericaceous) feed in spring only. Soft tap water or rainwater suits them.', species: ['blueberry'], when: [{ month: 2, from: 15 }, { month: 3 }, { month: 4 }] },
     { id: 'sea-pick-blueberries', kind: 'harvest', title: 'Pick blueberries', body: 'Wait a few days after they turn blue: they sweeten on the bush.', species: ['blueberry'], when: months(6, 7) },
     { id: 'sea-pick-raspberries', kind: 'harvest', title: 'Pick raspberries', body: 'Ripe ones slip off the core. Autumn types keep cropping into October.', species: ['raspberry'], when: all(6, 9) },
     { id: 'sea-prune-berries', kind: 'care', title: 'Prune berries', body: 'Blueberries: remove dead and oldest wood. Autumn raspberries: cut all canes down.', species: ['blueberry', 'raspberry'], when: months(0, 1) },

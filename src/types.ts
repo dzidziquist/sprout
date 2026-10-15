@@ -26,7 +26,29 @@ export type PotMaterial = 'plastic' | 'glazed' | 'terracotta' | 'fabric';
 /** Where the pot lives, which picks the column of the season table. */
 export type Placement = 'indoor' | 'growlight' | 'outdoor' | 'covered_outdoor';
 
-export type ClimateProfile = 'seattle' | 'accra';
+/** The two climates PlantFam is calibrated on: cool marine with frost (Seattle) and tropical wet/dry (Accra). */
+export type ClimateModel = 'seattle' | 'accra';
+
+/**
+ * Anywhere else: one of the calibrated models, shifted by whole months so its seasons line up with the
+ * user's (Sydney runs Seattle's year six months apart; Toronto lines its coldest month up with Seattle's).
+ */
+export interface Climate {
+  model: ClimateModel;
+  /** Months to add to the user's calendar month to get the model's month. */
+  shift: number;
+  /** City the user picked (shown in the app), e.g. "Toronto, Canada". */
+  place: string;
+  /** ISO country code, for units (US → °F). */
+  country?: string;
+  lat: number;
+  lon: number;
+  /** Any month averaging nights at or below freezing. */
+  frost: boolean;
+}
+
+/** A preset model (exactly Seattle or Accra) or a shifted climate for anywhere else. */
+export type ClimateProfile = ClimateModel | Climate;
 
 export type Origin = 'bought' | 'cutting' | 'swap' | 'gift';
 

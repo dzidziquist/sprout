@@ -1,3 +1,5 @@
+import { PlacePicker } from '@/components/PlacePicker';
+import { resolveUnits } from '@/lib/units';
 import { useState } from 'react';
 import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -163,7 +165,7 @@ export default function SettingsScreen() {
             onChange={(f) => setProfile({ faces: f })}
           />
         </Field>
-        <Field label="Units" last note={profile.units === 'auto' ? `Auto follows your climate: ${profile.climate === 'seattle' ? '°F and inches' : '°C and millimetres'}.` : 'Used for weather, alerts and growing tips.'}>
+        <Field label="Units" last note={profile.units === 'auto' ? `Auto follows your city: ${resolveUnits(profile) === 'imperial' ? '°F and inches' : '°C and millimetres'}.` : 'Used for weather, alerts and growing tips.'}>
           <Segmented
             label="Units"
             value={profile.units}
@@ -178,16 +180,8 @@ export default function SettingsScreen() {
       </Section>
 
       <Section title="Where you grow" footer="Seasons, feeding pauses and grow-patch tasks follow your climate. We never use your location.">
-        <Field label="Climate" last>
-          <Segmented
-            label="Climate"
-            value={profile.climate}
-            options={[
-              { id: 'seattle' as const, label: 'Seattle' },
-              { id: 'accra' as const, label: 'Accra' },
-            ]}
-            onChange={(v) => setProfile({ climate: v, city: v === 'seattle' ? 'Seattle' : 'Accra' })}
-          />
+        <Field label="Your city" last>
+          <PlacePicker value={profile.climate} onPick={(climate, city) => setProfile({ climate, city })} />
         </Field>
       </Section>
 

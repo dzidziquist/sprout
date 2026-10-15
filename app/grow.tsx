@@ -1,3 +1,4 @@
+import { placeName } from '@/lib/climate';
 import { useUnits } from '@/hooks/useUnits';
 import { degrees, localizeTemps } from '@/lib/units';
 import { useMemo, useState } from 'react';
@@ -18,7 +19,6 @@ import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { EdibleStage, Plant } from '@/types';
 
-const CITY_NAME = { seattle: 'Seattle', accra: 'Accra' } as const;
 
 function weekday(iso: string, i: number) {
   if (i === 0) return 'Today';
@@ -291,7 +291,7 @@ export default function GrowPatch() {
       <View>
         <Title style={{ fontSize: 36, lineHeight: 40 }}>Grow patch</Title>
         <Label muted>
-          {CITY_NAME[climate]}
+          {placeName(climate)}
           {edibles.length ? ` · ${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing` : ''}
         </Label>
       </View>
@@ -314,7 +314,7 @@ export default function GrowPatch() {
 
           {tasks.length > 0 && (
             <View style={{ gap: 8 }}>
-              <Text style={[styles.section, { color: c.ink }]}>This month in {CITY_NAME[climate]}</Text>
+              <Text style={[styles.section, { color: c.ink }]}>This month in {placeName(climate)}</Text>
               <Sticker drop={4} style={{ overflow: 'hidden' }}>
                 {tasks.map((t, i) => (
                   <TaskRow key={t.id} task={t} done={done.has(t.id)} onToggle={() => toggle(t.id)} plants={edibles} c={c} last={i === tasks.length - 1} />

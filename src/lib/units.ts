@@ -2,9 +2,14 @@
 export type Units = 'imperial' | 'metric';
 
 /** 'auto' follows the climate: Seattle reads °F and inches, Accra reads °C and mm. */
-export function resolveUnits(profile: { units?: 'auto' | Units; climate: 'seattle' | 'accra' }): Units {
+/** Countries that use °F and inches day to day. */
+const IMPERIAL = new Set(['US', 'LR', 'MM', 'BS', 'BZ', 'KY', 'PW', 'FM', 'MH']);
+
+export function resolveUnits(profile: { units?: 'auto' | Units; climate: 'seattle' | 'accra' | { country?: string } }): Units {
   if (profile.units === 'imperial' || profile.units === 'metric') return profile.units;
-  return profile.climate === 'seattle' ? 'imperial' : 'metric';
+  const c = profile.climate;
+  if (typeof c === 'string') return c === 'seattle' ? 'imperial' : 'metric';
+  return c.country && IMPERIAL.has(c.country.toUpperCase()) ? 'imperial' : 'metric';
 }
 
 export const toF = (c: number) => (c * 9) / 5 + 32;

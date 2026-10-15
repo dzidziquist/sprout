@@ -1,6 +1,6 @@
 # PlantFam Privacy Policy
 
-_Last updated: October 14, 2026_
+_Last updated: October 15, 2026_
 
 Your plants live on your phone. No account, no ads, no tracking, and nothing is sold.
 
@@ -14,7 +14,8 @@ PlantFam is a plant-care app made by an independent developer. This policy is th
 
 ## What leaves your phone, and why
 
-- Weather (grow patch): PlantFam asks Open-Meteo for a 7-day forecast for your city (Seattle or Accra), using the city’s fixed coordinates, never your location. Like any website, Open-Meteo sees the request’s IP address.
+- Your city: when you search for where you grow, the name you type goes to Open-Meteo’s free geocoder, and the city you pick has its past weather looked up once to learn its seasons. PlantFam never uses your location or GPS.
+- Weather (grow patch): a 7-day forecast is fetched from Open-Meteo for your city’s coordinates. Like any website, Open-Meteo sees the request’s IP address.
 - Photo ID (only when you use it): the one photo you choose is sent to Pl@ntNet to suggest a species. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.
 - Purchases (PlantFam Plus): Apple handles payment. RevenueCat checks whether you have Plus using an anonymous app ID and your purchase receipts. We never see your name, email or card.
 - Reminders are scheduled on your phone. No notification server is involved.
@@ -23,7 +24,7 @@ PlantFam is a plant-care app made by an independent developer. This policy is th
 
 - No analytics, ads or tracking SDKs, and no tracking across other apps or websites.
 - We don’t sell, rent or share your data.
-- We don’t use your location. Climate is a city you pick.
+- We don’t use your location. Climate comes from a city you type.
 
 ## Permissions
 

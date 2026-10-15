@@ -40,7 +40,7 @@ const SECTIONS: { title: string; body: string; buddy: SpeciesId | 'cutting'; moo
   },
   {
     title: 'Seasons change the rhythm',
-    body: 'In Seattle’s grey season (roughly October to April) plants drink less, so checks space out, and feeding pauses mid-October to March. Summer heat brings checks closer together.',
+    body: 'Your city sets the seasons. In cool, dark months plants drink less, so checks space out and feeding pauses; summer heat or a dry season brings checks closer. Pick your city in Settings.',
     buddy: 'snake',
     tint: 'butter',
   },

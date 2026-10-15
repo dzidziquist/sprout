@@ -17,4 +17,4 @@ export const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/d
 
 export const MANAGE_SUBSCRIPTIONS_URL = 'https://apps.apple.com/account/subscriptions';
 
-export const PRIVACY_UPDATED = 'October 14, 2026';
+export const PRIVACY_UPDATED = 'October 15, 2026';

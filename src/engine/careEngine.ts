@@ -1,4 +1,5 @@
-import type { CheckResult, ClimateProfile, Light, Placement, Plant, PotMaterial, Soil, SpeciesGroup } from '../types';
+import { climateDate, climateMonth, modelOf } from '../lib/climate';
+import type { CheckResult, ClimateModel, ClimateProfile, Light, Placement, Plant, PotMaterial, Soil, SpeciesGroup } from '../types';
 
 /*
  * PlantFam schedules soil CHECKS, not waterings.
@@ -67,7 +68,7 @@ export function potSizeMultiplier(diameterCm: number): number {
 type SeasonRow = [indoor: number, growlight: number, outdoor: number];
 
 /** Month (Jan..Dec) → multiplier per placement. Seattle values from WSU/NOAA-derived defaults. */
-export const SEASON_TABLE: Record<ClimateProfile, SeasonRow[]> = {
+export const SEASON_TABLE: Record<ClimateModel, SeasonRow[]> = {
   seattle: [
     [1.5, 1.1, 2.5],
     [1.4, 1.1, 2.2],
@@ -103,7 +104,7 @@ export const SEASON_TABLE: Record<ClimateProfile, SeasonRow[]> = {
 const COVERED_OUTDOOR_DAMPING = 0.7;
 
 export function seasonMultiplier(profile: ClimateProfile, placement: Placement, date: Date): number {
-  const [indoor, growlight, outdoor] = SEASON_TABLE[profile][date.getMonth()];
+  const [indoor, growlight, outdoor] = SEASON_TABLE[modelOf(profile)][climateMonth(profile, date)];
   switch (placement) {
     case 'indoor':
       return indoor;
@@ -118,9 +119,10 @@ export function seasonMultiplier(profile: ClimateProfile, placement: Placement, 
 
 /** Feeding pauses through the dark months unless the plant is under a grow light. */
 export function isFeedingPaused(profile: ClimateProfile, placement: Placement, date: Date): boolean {
-  if (placement === 'growlight' || profile !== 'seattle') return false;
-  const m = date.getMonth();
-  const d = date.getDate();
+  if (placement === 'growlight' || modelOf(profile) !== 'seattle') return false;
+  const local = climateDate(profile, date);
+  const m = local.getMonth();
+  const d = local.getDate();
   // Oct 15 → Feb 28
   return m > 9 || m < 2 || (m === 9 && d >= 15);
 }

@@ -93,7 +93,7 @@ export default function PlantDetail() {
   const babies = plants.filter((p) => p.parentId === plant.id);
   const feedPaused = isFeedingPaused(profile.climate, plant.placement, now);
   const guide = edibleGuide(plant.speciesId);
-  const feed = guide ? feedingAdvice(plant, profile.climate, now) : feedPaused ? 'Paused till March (grey season)' : 'Monthly while growing';
+  const feed = guide ? feedingAdvice(plant, profile.climate, now) : feedPaused ? 'Paused till spring' : 'Monthly while growing';
   const nextDays = Math.round((new Date(new Date(plant.nextCheckAt).toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000);
   const nextCheck = nextDays <= 0 ? 'Today' : nextDays === 1 ? 'Tomorrow' : nextDays < 7 ? `In ${nextDays} days` : new Date(plant.nextCheckAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
   const history = mine.slice(-6).reverse();

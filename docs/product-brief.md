@@ -156,3 +156,12 @@ Reuse the founder's proven VinylRecordTracker stack: **Expo (SDK 54) + Expo Rout
 - **PlantFam Plus is a low-cost supporter tier:** $7.99/yr or $19.99 lifetime, no trial that converts. It holds spreadsheet export now; gift-a-cutting cards, a plant year in review and art packs land there first as they're built.
 - **Running costs stay near zero:** no backend; data is on device; Open-Meteo is free; RevenueCat is free under $2.5k monthly tracked revenue; Pl@ntNet free tier. The main fixed cost is the $99/yr Apple Developer Program.
 - **If growth outpaces the free ID quota:** add a tiny proxy that holds the key and shares the daily 500 fairly, then consider Pl@ntNet Pro (about €5 per 1,000 IDs) once Plus revenue covers it.
+
+## Owner decision (Oct 15, 2026): PlantFam works anywhere
+
+Users type their city (Open-Meteo geocoder; never GPS). Three years of that city's daily weather give monthly normals, which map it onto one of the two calibrated climate models and shift the calendar to line up the seasons (`src/lib/climate.ts`):
+- **Cold-winter places** (coldest month < 12°C): Seattle model, aligned on the month spring warms past 12°C (planting-out time).
+- **Mild winters** (12–18°C, e.g. Sydney, LA): Seattle model, coolest month aligned with Seattle's January.
+- **Tropical** (coldest month ≥ 18°C): Accra model, driest month aligned with Accra's January.
+
+Season multipliers, feeding pauses, grow-patch tasks (with month names translated) and the grey-season badge all follow the shift; weather uses the city's own coordinates; units follow the country. If the history call fails, a latitude guess is used. Soil checks then tune each plant's rhythm, so the approximation fades within a few rounds. A future step: more calibrated models (e.g. Mediterranean, arid) as users arrive from those climates.

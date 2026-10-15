@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { DailyForecast } from '../engine/growPatch';
-import type { ClimateProfile } from '../types';
+import type { ClimateModel, ClimateProfile } from '../types';
 
 export type { DailyForecast };
 
@@ -9,7 +9,7 @@ export type { DailyForecast };
  * Every failure (offline, timeout, odd payload) returns null so the Grow patch just hides weather.
  */
 
-export const CITY_COORDS: Record<ClimateProfile, { lat: number; lon: number }> = {
+export const CITY_COORDS: Record<ClimateModel, { lat: number; lon: number }> = {
   seattle: { lat: 47.61, lon: -122.33 },
   accra: { lat: 5.6, lon: -0.19 },
 };
@@ -38,7 +38,16 @@ export function parseForecast(json: unknown): DailyForecast[] | null {
   return out.length ? out.slice(0, 7) : null;
 }
 
-const cache = new Map<ClimateProfile, { at: number; days: DailyForecast[] }>();
+const cache = new Map<string, { at: number; days: DailyForecast[] }>();
+
+/** Forecast coordinates: the picked city's own, or the model city's for a preset. */
+export function coordsFor(climate: ClimateProfile): { lat: number; lon: number } {
+  return typeof climate === 'string' ? CITY_COORDS[climate] : { lat: climate.lat, lon: climate.lon };
+}
+const keyOf = (climate: ClimateProfile) => {
+  const { lat, lon } = coordsFor(climate);
+  return `${lat.toFixed(2)},${lon.toFixed(2)}`;
+};
 
 export function clearForecastCache() {
   cache.clear();
@@ -46,7 +55,7 @@ export function clearForecastCache() {
 
 /** Cached forecast if it's fresh, without fetching. */
 export function cachedForecast(climate: ClimateProfile, now = Date.now()): DailyForecast[] | null {
-  const hit = cache.get(climate);
+  const hit = cache.get(keyOf(climate));
   return hit && now - hit.at < CACHE_MS ? hit.days : null;
 }
 
@@ -57,7 +66,7 @@ export async function fetchForecast(
   const now = opts.now ?? Date.now();
   const fresh = cachedForecast(climate, now);
   if (fresh) return fresh;
-  const { lat, lon } = CITY_COORDS[climate];
+  const { lat, lon } = coordsFor(climate);
   const doFetch = opts.fetchImpl ?? (typeof fetch === 'function' ? fetch : undefined);
   if (!doFetch) return null;
   const ctrl = typeof AbortController === 'function' ? new AbortController() : undefined;
@@ -66,7 +75,7 @@ export async function fetchForecast(
     const res = await doFetch(forecastUrl(lat, lon), { signal: ctrl?.signal });
     if (!res.ok) return null;
     const days = parseForecast(await res.json());
-    if (days) cache.set(climate, { at: now, days });
+    if (days) cache.set(keyOf(climate), { at: now, days });
     return days;
   } catch {
     return null;
@@ -88,6 +97,7 @@ export function useForecast(climate: ClimateProfile, enabled = true): DailyForec
     return () => {
       live = false;
     };
-  }, [climate, enabled]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyOf(climate), enabled]);
   return days;
 }

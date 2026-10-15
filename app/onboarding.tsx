@@ -1,3 +1,4 @@
+import { PlacePicker } from '@/components/PlacePicker';
 import { useMemo, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -9,12 +10,7 @@ import { requestPermission } from '@/lib/notifications';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { light, textOn, useColors, type Palette } from '@/theme/theme';
-import type { ClimateProfile } from '@/types';
 
-const CLIMATES: { id: ClimateProfile; city: string; blurb: string }[] = [
-  { id: 'seattle', city: 'Seattle', blurb: 'Marine · dark wet winters, dry summers' },
-  { id: 'accra', city: 'Accra', blurb: 'Tropical · harmattan and two rainy seasons' },
-];
 
 const TIMES = [
   { label: 'Morning', hour: 8, minute: 30 },
@@ -92,15 +88,7 @@ export default function Onboarding() {
       <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 24 }]}>
         <Progress step={1} />
         <Title>Where does your jungle live?</Title>
-        <View style={{ gap: 10 }}>
-          {CLIMATES.map((c) => (
-            <Choice key={c.id} on={profile.climate === c.id} onPress={() => setProfile({ climate: c.id, city: c.city })} style={{ padding: 14 }}>
-              <Text style={styles.choiceTitle}>{c.city}</Text>
-              <Text style={styles.choiceSub}>{c.blurb}</Text>
-            </Choice>
-          ))}
-          <Label muted>More cities are coming. Seattle's profile suits most temperate homes for now.</Label>
-        </View>
+        <PlacePicker value={profile.climate} onPick={(climate, city) => setProfile({ climate, city })} />
 
         <Label>What do you grow? Pick all</Label>
         <View style={styles.row3}>

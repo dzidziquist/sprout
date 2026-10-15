@@ -1,5 +1,6 @@
 import { checkIntervalDays } from './careEngine';
 import { speciesOf } from '../data/species';
+import { localizeClimateText, modelOf, shiftOf } from '../lib/climate';
 import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
 
 /*
@@ -211,7 +212,10 @@ function nth(events: CareEvent[], pred: (e: CareEvent) => boolean, n = 1): strin
  * (in the fam before Dec 1, checked after Mar 1).
  */
 function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimateProfile): string | undefined {
-  const startMonth = climate === 'seattle' ? 10 : 11; // Nov / Dec (0-based)
+  const modelStart = modelOf(climate) === 'seattle' ? 10 : 11; // Nov / Dec (0-based) in the model city
+  // In the user's own calendar (Sydney's "grey season" starts in May).
+  const startMonth = (modelStart - shiftOf(climate) + 12) % 12;
+  const toSpring = (2 - modelStart + 12) % 12; // months from season start to the model's March
   let earliest: string | undefined;
   for (const p of plants) {
     const joined = new Date(p.createdAt < p.acquiredAt ? p.createdAt : p.acquiredAt);
@@ -219,7 +223,7 @@ function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimatePr
     let year = joined.getFullYear();
     if (joined.getTime() >= new Date(year, startMonth, 1).getTime()) year += 1;
     const seasonStart = new Date(year, startMonth, 1);
-    const springAfter = new Date(seasonStart.getFullYear() + 1, 2, 1).getTime();
+    const springAfter = new Date(seasonStart.getFullYear(), seasonStart.getMonth() + toSpring, 1).getTime();
     const check = events
       .filter((e) => e.plantId === p.id && e.type === 'check' && new Date(e.at).getTime() >= springAfter)
       .filter((e) => !p.archivedAt || e.at <= p.archivedAt)
@@ -234,7 +238,7 @@ export function badgesFor({ plants, events, climate, now }: StreakInput, streak?
   const isCheck = (e: CareEvent) => e.type === 'check';
   const isSkip = (e: CareEvent) => e.type === 'check' && e.result === 'damp';
   const fifth = [...plants].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[4]?.createdAt;
-  const seasonName = climate === 'seattle' ? 'grey season' : 'harmattan';
+  const seasonName = localizeClimateText(modelOf(climate) === 'seattle' ? 'grey season' : 'harmattan', climate);
   return [
     { id: 'first-check', title: 'First soil check', hint: 'Feel the soil of any plant', earnedAt: nth(events, isCheck) },
     { id: 'first-skip', title: 'Smart skip', hint: 'Answer "Damp" and skip a watering', earnedAt: nth(events, isSkip) },

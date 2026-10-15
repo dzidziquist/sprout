@@ -14,12 +14,12 @@ Use these when filling in **App Privacy** in App Store Connect. They describe wh
 | Purchases → Purchase History | **Yes** (RevenueCat, only for Plus buyers) | App Functionality (unlocking Plus) | No (anonymous RevenueCat app user ID, no account) | No |
 | Identifiers → User ID | **Yes** (RevenueCat's anonymous app user ID) | App Functionality | No | No |
 | User Content → Photos or Videos | **Yes**, conservatively: only the single photo someone chooses for photo ID, sent to Pl@ntNet | App Functionality | No | No |
-| Location | **No**: climate is a city the user picks; weather uses that city's fixed coordinates | | | |
+| Location | **No**: the user types a city name; no device location or GPS is ever read. (Coarse location from a typed city isn't "collected" location data under Apple's definition, but mention it in the policy, which we do.) | | | |
 | Contact info, health, financial info, browsing, diagnostics, usage data | **No** | | | |
 
 Notes:
 - Plants, diary, photos and settings never leave the phone, so they aren't "collected".
-- Weather calls to Open-Meteo send only a city's coordinates, with no user data, so there's nothing to declare.
+- Calls to Open-Meteo send only a typed city name (geocoding) or a city's coordinates (history and forecast), with no user data, so there's nothing to declare.
 - If you route photo ID through your own proxy (`EXPO_PUBLIC_PLANTNET_PROXY`), the answer stays the same as long as the proxy doesn't store images or logs that identify people.
 - RevenueCat publishes its own App Store privacy guidance; check it matches the table above when you create the RevenueCat project.
 
