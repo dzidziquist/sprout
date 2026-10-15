@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { Badge, BadgeId } from '@/engine/streak';
+import { BADGE_ART } from '@/data/art';
 
 const ICON: Record<BadgeId, string> = {
   'first-check': 'M3 17c3-1.5 6-1.5 9 0s6 1.5 9 0M12 3v9M8.5 8.5 12 12l3.5-3.5',
@@ -43,11 +44,15 @@ export function BadgeSticker({ badge }: { badge: Badge }) {
       accessible
       accessibilityLabel={earned ? `${badge.title}, earned ${date}` : `${badge.title}, locked. ${badge.hint}`}
     >
-      <View style={[styles.circle, { backgroundColor: bg, borderColor: earned ? c.line : c.inkMuted }, earned ? { boxShadow: `0px 3px 0px ${c.drop}` } : { opacity: 0.6, borderStyle: 'dashed' }]}>
-        <Svg width={30} height={30} viewBox="0 0 24 24">
-          <Path d={ICON[badge.id]} stroke={fg} strokeWidth={2.1} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        </Svg>
-      </View>
+      {BADGE_ART[badge.id] ? (
+        <Image source={earned ? BADGE_ART[badge.id]!.earned : BADGE_ART[badge.id]!.locked} style={styles.art} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+      ) : (
+        <View style={[styles.circle, { backgroundColor: bg, borderColor: earned ? c.line : c.inkMuted }, earned ? { boxShadow: `0px 3px 0px ${c.drop}` } : { opacity: 0.6, borderStyle: 'dashed' }]}>
+          <Svg width={30} height={30} viewBox="0 0 24 24">
+            <Path d={ICON[badge.id]} stroke={fg} strokeWidth={2.1} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </Svg>
+        </View>
+      )}
       <Text style={[styles.title, { color: earned ? c.ink : c.inkMuted }]} numberOfLines={2}>{badge.title}</Text>
       <Text style={[styles.sub, { color: c.inkMuted }]} numberOfLines={2}>{earned ? date : badge.hint}</Text>
     </View>
@@ -56,6 +61,7 @@ export function BadgeSticker({ badge }: { badge: Badge }) {
 
 const styles = StyleSheet.create({
   wrap: { width: '31%', alignItems: 'center', gap: 4, paddingVertical: 4 },
+  art: { width: 72, height: 72 },
   circle: { width: 62, height: 62, borderRadius: 31, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   title: { fontFamily: fonts.bodyHeavy, fontSize: 13, textAlign: 'center', lineHeight: 16 },
   sub: { fontFamily: fonts.body, fontSize: 11, textAlign: 'center', lineHeight: 14 },

@@ -1,3 +1,4 @@
+import { ART } from '@/data/art';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -101,7 +102,7 @@ export default function LogCareSheet() {
           {photoUri ? (
             <Image source={{ uri: photoSrc(photoUri) }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel={`New photo of ${plant.name}`} />
           ) : (
-            <PlantBuddy speciesId={plant.speciesId} pot={plant.potColor} mood="happy" size={150} bg={c.card} faces={faces} />
+            <Image source={ART.thanks} style={{ width: 150, height: 150 }} contentFit="contain" accessibilityElementsHidden />
           )}
         </View>
         <Title style={{ textAlign: 'center', color: textOn(c.leaf, c) }}>{plant.name} says thanks!</Title>

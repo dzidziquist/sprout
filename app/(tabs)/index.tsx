@@ -1,7 +1,7 @@
 import { SoilCheckCoach } from '@/components/SoilCheckCoach';
 import { GrowTodayCard } from '@/components/GrowTodayCard';
 import { useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -9,6 +9,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { isDue, moodFor } from '@/engine/careEngine';
 import { PlantBuddy } from '@/components/PlantBuddy';
+import { ART, SEASON_ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Chip, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
@@ -136,7 +137,13 @@ export default function TodayScreen() {
           {round.length > 0 && <TodayProgress done={done} total={round.length} />}
           {living.length === 0 && <Button title="Add a plant" raised bg={c.leaf} onPress={() => router.push('/add')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
         </View>
-        <PlantBuddy speciesId="monstera" mood={calm ? 'happy' : 'thirsty'} size={84} bg={heroBg} faces={profile.faces} />
+        {living.length === 0 ? (
+          <Image source={ART.emptyJungle} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+        ) : round.length === 0 || allDone ? (
+          <Image source={ART.caughtUp} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+        ) : (
+          <PlantBuddy speciesId="monstera" mood="thirsty" size={84} bg={heroBg} faces={profile.faces} />
+        )}
       </Sticker>
 
       {round.length > 0 && (
@@ -205,8 +212,9 @@ export default function TodayScreen() {
         </View>
       )}
 
-      <View style={[styles.banner, { backgroundColor: c.butter, borderColor: c.line }]}>
-        <Text style={[styles.bannerText, { color: c.ink }]}>
+      <View style={[styles.banner, { backgroundColor: c.butter, borderColor: c.line, flexDirection: 'row', alignItems: 'center', gap: 10 }]}>
+        <Image source={SEASON_ART[season.art]} style={{ width: 52, height: 52 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+        <Text style={[styles.bannerText, { color: c.ink, flex: 1 }]}>
           <Text style={{ fontFamily: fonts.bodyHeavy }}>{season.title}: </Text>
           {season.body}
         </Text>

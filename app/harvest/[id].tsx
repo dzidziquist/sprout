@@ -1,5 +1,6 @@
+import { ART } from '@/data/art';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
@@ -82,7 +83,11 @@ export default function HarvestSheet() {
       <View style={[styles.done, { backgroundColor: bg, paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
         {saved.first ? <Confetti c={c} /> : null}
         <View style={[styles.circle, { backgroundColor: c.card, borderColor: c.line, boxShadow: `0px 5px 0px ${c.drop}` }]}>
-          <PlantBuddy speciesId={plant.speciesId} pot={plant.potColor} mood="happy" size={160} bg={c.card} faces={faces} />
+          {saved.first ? (
+            <Image source={ART.harvest} style={{ width: 150, height: 150 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+          ) : (
+            <PlantBuddy speciesId={plant.speciesId} pot={plant.potColor} mood="happy" size={160} bg={c.card} faces={faces} />
+          )}
         </View>
         {saved.first ? (
           <View style={[styles.ribbon, { backgroundColor: c.coral, borderColor: c.line }]}>

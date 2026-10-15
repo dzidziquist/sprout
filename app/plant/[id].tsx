@@ -1,3 +1,4 @@
+import { ART } from '@/data/art';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -158,6 +159,7 @@ export default function PlantDetail() {
 
         {archived && (
           <Sticker drop={0} bg={plant.archivedReason === 'gifted' ? c.blush : c.cloud} style={styles.archived}>
+            {plant.archivedReason !== 'gifted' && <Image source={ART.memorial} style={{ width: 96, height: 96, alignSelf: 'center' }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
             <Text style={[styles.archivedTitle, { color: c.ink }]}>
               {plant.archivedReason === 'gifted' ? `Gifted away on ${shortDate(plant.archivedAt!)}` : `In memory since ${shortDate(plant.archivedAt!)}`}
             </Text>

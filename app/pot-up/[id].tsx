@@ -1,5 +1,6 @@
+import { ART } from '@/data/art';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -84,7 +85,7 @@ export default function PotUpScreen() {
 
       <View style={styles.hero}>
         <View style={styles.heroArt}>
-          <PlantBuddy speciesId="cutting" mood="happy" size={140} bg={c.ice} faces={faces} />
+          <Image source={ART.roots} style={{ width: 140, height: 140 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         </View>
         <Title style={{ textAlign: 'center' }}>{plant.name} has roots! 🌱</Title>
         <Text style={styles.heroSub}>

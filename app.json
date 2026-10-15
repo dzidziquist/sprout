@@ -33,7 +33,10 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#3DDC84"
+          "backgroundColor": "#3DDC84",
+          "image": "./assets/art/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
         }
       ],
       [
@@ -48,6 +51,7 @@
     "extra": {
       "router": {}
     },
-    "owner": "dzidziquist"
+    "owner": "dzidziquist",
+    "icon": "./assets/icon.png"
   }
 }

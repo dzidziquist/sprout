@@ -1,8 +1,9 @@
+import { ART } from '@/data/art';
 import { placeName } from '@/lib/climate';
 import { useUnits } from '@/hooks/useUnits';
 import { degrees, localizeTemps } from '@/lib/units';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
@@ -31,7 +32,7 @@ function WeatherStrip({ forecast, alerts, c }: { forecast: DailyForecast[] | nul
   if (!forecast) {
     return (
       <Sticker drop={0} bg={c.cloud} style={styles.offline}>
-        <Icon d={GROW_ICON.rain} color={c.inkMuted} />
+        <Image source={ART.offline} style={{ width: 56, height: 56 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         <Text style={[styles.offlineText, { color: c.inkMuted }]}>No forecast right now. Weather alerts pop up here once we can see it.</Text>
       </Sticker>
     );

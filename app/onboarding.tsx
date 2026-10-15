@@ -1,9 +1,10 @@
 import { PlacePicker } from '@/components/PlacePicker';
 import { useMemo, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore, type FaceStyle } from '@/store/plantStore';
+import { ART } from '@/data/art';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { requestPermission } from '@/lib/notifications';
@@ -57,22 +58,9 @@ export default function Onboarding() {
   if (step === 0) {
     return (
       <View style={[w.welcome, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
-        <View style={w.logoRow}>
-          <View style={w.logoBadge}>
-            <PlantBuddy speciesId="monstera" size={34} />
-          </View>
-          <Text style={w.logoText}>PlantFam</Text>
-        </View>
+        <Image source={ART.logo} style={{ width: 200, height: 130 }} resizeMode="contain" accessibilityLabel="PlantFam" />
         <View style={w.cluster}>
-          <View style={[w.tile, { backgroundColor: light.butter, left: 0, top: 40, transform: [{ rotate: '-6deg' }] }]}>
-            <PlantBuddy speciesId="pothos" size={130} />
-          </View>
-          <View style={[w.tile, { backgroundColor: light.lavender, right: 0, top: 0, transform: [{ rotate: '5deg' }] }]}>
-            <PlantBuddy speciesId="monstera" size={140} />
-          </View>
-          <View style={[w.tile, { backgroundColor: light.ice, left: 90, top: 170, transform: [{ rotate: '-2deg' }] }]}>
-            <PlantBuddy speciesId="calathea" mood="thirsty" size={120} />
-          </View>
+          <Image source={ART.welcome} style={{ width: '100%', height: 300 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         </View>
         <View style={{ gap: 10 }}>
           <Title style={{ fontSize: 42, lineHeight: 44, color: light.ink }}>Your plants, but happier.</Title>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -8,6 +8,7 @@ import { isDue, moodFor } from '@/engine/careEngine';
 import { rootingDays } from '@/engine/treeLayout';
 import { speciesOf } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
+import { ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
@@ -229,7 +230,7 @@ export default function JungleScreen() {
 
       {living.length === 0 ? (
         <Sticker bg={c.mint} style={styles.empty}>
-          <PlantBuddy speciesId="pothos" pot="blue" mood="happy" size={130} bg={c.mint} />
+          <Image source={ART.emptyJungle} style={{ width: 150, height: 150 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
           <Text style={[styles.emptyTitle, { color: c.ink }]}>A jungle starts with one leaf</Text>
           <Text style={[styles.emptySub, { color: c.ink }]}>Add a plant and it’ll live here, with its mood, rhythm and family tree.</Text>
           <Button title="Add your first plant" raised onPress={() => router.push('/add')} style={{ alignSelf: 'stretch' }} />
