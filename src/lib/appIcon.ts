@@ -6,11 +6,14 @@ import { Platform } from 'react-native';
  * The native module is required lazily: it's missing on web and in Expo Go.
  */
 
-export type AppIconId = 'Night';
+export type AppIconId = 'Night' | 'Cactus' | 'Sunny' | 'Party';
 
 export const APP_ICONS: { id: AppIconId | null; label: string; preview: number }[] = [
   { id: null, label: 'Classic', preview: require('../../assets/icon.png') },
   { id: 'Night', label: 'Night', preview: require('../../assets/icons/icon-night.png') },
+  { id: 'Cactus', label: 'Cactus', preview: require('../../assets/icons/icon-cactus.png') },
+  { id: 'Sunny', label: 'Sunny', preview: require('../../assets/icons/icon-sunny.png') },
+  { id: 'Party', label: 'Party', preview: require('../../assets/icons/icon-party.png') },
 ];
 
 type Mod = typeof import('expo-alternate-app-icons');

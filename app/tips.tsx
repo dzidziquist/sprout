@@ -29,8 +29,8 @@ const WHERE: { icon: Why; title: string; body: string; tint: keyof Pick<Palette,
 const THANKS: { icon: Why; title: string; body: string; tint: keyof Pick<Palette, 'butter' | 'mint' | 'lavender'> }[] = [
   { icon: 'medal', title: 'A supporter badge', body: 'A PlantFam supporter sticker joins your milestones.', tint: 'mint' },
   { icon: 'star', title: 'Gold plant cards', body: 'Pick gold for any plant in Edit plant.', tint: 'butter' },
-  { icon: 'hat', title: 'A party hat', body: 'Your buddy on the Me tab dresses up.', tint: 'lavender' },
-  { icon: 'moon', title: 'A night-time app icon', body: 'Switch to it in Settings → App icon.', tint: 'lavender' },
+  { icon: 'hat', title: 'A party buddy', body: 'Your buddy on the Me tab dresses up.', tint: 'lavender' },
+  { icon: 'moon', title: 'Four extra app icons', body: 'Night, Cactus, Sunny or Party, in Settings → App icon.', tint: 'lavender' },
 ];
 
 const TIPS: { id: TipId; name: string; sub: string }[] = [

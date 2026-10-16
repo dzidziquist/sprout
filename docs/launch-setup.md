@@ -46,7 +46,7 @@ Without a key the app still works: Photo ID explains it isn't set up yet, and th
   - `plantfam_tip_small`: **$2.99** ("Seed")
   - `plantfam_tip_medium`: **$4.99** ("Sprout")
   - `plantfam_tip_large`: **$9.99** ("Big leaf")
-  Review note: "Optional tips. The app is fully free; tips unlock no features. As a thank-you, tippers get a few cosmetic extras (a supporter badge, a gold card colour, a party hat on their buddy, a night-time alternate app icon)." 
+  Review note: "Optional tips. The app is fully free; tips unlock no features. As a thank-you, tippers get a few cosmetic extras (a supporter badge, a gold card colour, a party buddy, alternate app icons)." 
 - Privacy: photos stay on device (diary); photo ID sends the chosen photo to Pl@ntNet. No tracking.
 
 ## 4. RevenueCat

@@ -57,6 +57,30 @@
               "foregroundImage": "./assets/icons/icon-night-foreground.png",
               "backgroundColor": "#0C1F4E"
             }
+          },
+          {
+            "name": "Cactus",
+            "ios": "./assets/icons/icon-cactus.png",
+            "android": {
+              "foregroundImage": "./assets/icons/icon-cactus-foreground.png",
+              "backgroundColor": "#FFD23F"
+            }
+          },
+          {
+            "name": "Sunny",
+            "ios": "./assets/icons/icon-sunny.png",
+            "android": {
+              "foregroundImage": "./assets/icons/icon-sunny-foreground.png",
+              "backgroundColor": "#8CC8FF"
+            }
+          },
+          {
+            "name": "Party",
+            "ios": "./assets/icons/icon-party.png",
+            "android": {
+              "foregroundImage": "./assets/icons/icon-party-foreground.png",
+              "backgroundColor": "#C9B8FF"
+            }
           }
         ]
       ]

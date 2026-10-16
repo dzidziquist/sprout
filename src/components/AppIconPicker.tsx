@@ -42,9 +42,9 @@ export function AppIconPicker() {
 
 const styles = StyleSheet.create({
   title: { fontFamily: fonts.bodyHeavy, fontSize: 12, letterSpacing: 0.6, paddingHorizontal: 4 },
-  group: { flexDirection: 'row', gap: 18, padding: 14, borderRadius: 20, borderWidth: 2 },
+  group: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 12, padding: 14, borderRadius: 20, borderWidth: 2 },
   option: { alignItems: 'center', gap: 6 },
-  preview: { width: 64, height: 64, borderRadius: 15 },
+  preview: { width: 54, height: 54, borderRadius: 13 },
   label: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   footer: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17, paddingHorizontal: 4 },
 });
