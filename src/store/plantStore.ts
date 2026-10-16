@@ -15,6 +15,8 @@ export interface Profile {
   grows: { houseplants: boolean; edibles: boolean; cuttings: boolean; hydro?: boolean };
   /** Daily plant round reminder. */
   round: { enabled: boolean; hour: number; minute: number };
+  /** "Photo day" nudge for progress photos, riding along with the round. */
+  photos: 'off' | 'weekly' | 'monthly';
   /** Appearance: follow the phone, or force light/dark. */
   theme: 'system' | 'light' | 'dark';
   /** Cached PlantFam Plus entitlement (RevenueCat is the source of truth on device). */
@@ -37,6 +39,7 @@ export const DEFAULT_PROFILE: Profile = {
   faces: 'full',
   grows: { houseplants: true, edibles: true, cuttings: true, hydro: false },
   round: { enabled: true, hour: 8, minute: 30 },
+  photos: 'monthly',
   theme: 'system',
   plus: false,
   streakFreezes: 2,

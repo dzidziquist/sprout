@@ -32,7 +32,7 @@ const SECTIONS: { title: string; body: string; buddy: SpeciesId | 'cutting'; moo
   },
   {
     title: 'One plant round a day',
-    body: 'At most one gentle reminder, only on days a plant is ready for a check. Nothing due means no notification. Skipping a day is fine; nobody gets nagged.',
+    body: 'At most one gentle reminder, only on days a plant is ready for a check. Nothing due means no notification. Once a month (or weekly, in Settings) it also asks for a progress photo of anyone the diary hasn’t seen lately. Skipping a day is fine; nobody gets nagged.',
     buddy: 'fig',
     mood: 'thirsty',
     tint: 'peach',

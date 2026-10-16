@@ -47,6 +47,12 @@ function confirm(title: string, body: string, action: string): Promise<boolean> 
 }
 
 /** A group of settings with a heading, iOS-style. */
+const PHOTO_NOTE = {
+  weekly: 'Sundays: a nudge to snap anyone without a photo this week. It rides along with the plant round.',
+  monthly: 'First Sunday of the month: a nudge to snap anyone without a recent photo, so the diary shows them growing.',
+  off: 'No photo nudges. You can still add photos from any plant’s page.',
+} as const;
+
 function Section({ title, children, footer }: { title: string; children: React.ReactNode; footer?: string }) {
   const c = useColors();
   return (
@@ -136,8 +142,8 @@ export default function SettingsScreen() {
       </View>
       <Title>Settings</Title>
 
-      <Section title="Reminders" footer="One reminder a day, and only when a plant is ready for a check. Nothing due means no notification.">
-        <Field label="Daily plant round" last>
+      <Section title="Reminders" footer="At most one reminder a day: when a plant is ready for a check, or on photo day. Nothing due means no notification.">
+        <Field label="Daily plant round">
           <Segmented
             label="Daily plant round"
             value={roundValue}
@@ -149,6 +155,18 @@ export default function SettingsScreen() {
               setProfile({ round: { enabled: ok, hour: t.hour, minute: t.minute } });
               if (!ok) Alert.alert('Notifications are off', 'Turn on notifications for PlantFam in your iPhone Settings to get the plant round.', [{ text: 'Not now' }, { text: 'Open Settings', onPress: () => Linking.openSettings() }]);
             }}
+          />
+        </Field>
+        <Field label="Progress photos" last note={PHOTO_NOTE[profile.photos ?? 'monthly']}>
+          <Segmented
+            label="Progress photos"
+            value={profile.photos ?? 'monthly'}
+            options={[
+              { id: 'weekly' as const, label: 'Weekly' },
+              { id: 'monthly' as const, label: 'Monthly' },
+              { id: 'off' as const, label: 'Off' },
+            ]}
+            onChange={(v) => setProfile({ photos: v })}
           />
         </Field>
       </Section>

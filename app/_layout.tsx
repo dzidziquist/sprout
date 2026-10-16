@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Appearance, Platform, View } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { Fredoka_600SemiBold, Fredoka_700Bold } from '@expo-google-fonts/fredoka';
@@ -10,7 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePlantStore } from '@/store/plantStore';
 import { colors } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
-import { rescheduleRounds } from '@/lib/notifications';
+import { rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
 import { configurePurchases } from '@/lib/purchases';
 
 function useHydrated() {
@@ -33,6 +33,9 @@ export default function RootLayout() {
     if (Platform.OS !== 'web') Appearance.setColorScheme(themePref === 'system' ? null : themePref);
   }, [themePref]);
   const [fontsLoaded, fontError] = useFonts({ Fredoka_600SemiBold, Fredoka_700Bold, Nunito_700Bold, Nunito_800ExtraBold });
+  const router = useRouter();
+  // Tapping a photo-day notification opens that plant's page.
+  useNotificationRoute(hydrated && !!(fontsLoaded || fontError), (route) => router.push(route as never));
 
   // Keep the daily plant round in sync with the latest checks and settings.
   useEffect(() => {
@@ -41,14 +44,14 @@ export default function RootLayout() {
     const sync = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        const { plants, profile } = usePlantStore.getState();
-        rescheduleRounds(plants, profile.round.hour, profile.round.minute, profile.round.enabled).catch(() => {});
+        const { plants, events, profile } = usePlantStore.getState();
+        rescheduleRounds(plants, events, profile.round, profile.photos ?? 'monthly').catch(() => {});
       }, 400);
     };
     sync();
     configurePurchases();
     const unsub = usePlantStore.subscribe((s, prev) => {
-      if (s.plants !== prev.plants || s.profile.round !== prev.profile.round) sync();
+      if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos) sync();
     });
     return () => {
       clearTimeout(timer);
