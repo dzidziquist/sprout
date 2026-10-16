@@ -186,7 +186,7 @@ PlantFam ships **completely free, with no in-app purchases**: it's published fro
 
 The tip jar page became **Support PlantFam** (Me tab card, Settings → Support PlantFam):
 - **Ways to help (free):** rate PlantFam (Apple's in-app rating prompt), tell a plant friend (share sheet), suggest a plant or idea (support email or site). Nothing is rewarded for these: Apple doesn't allow rewards for ratings.
-- **Gifts your fam grows into**, earned with milestones (`src/engine/rewards.ts`): gold plant cards at 3, the party buddy at 5, four extra app icons (Night, Cactus, Sunny, Party) at 7, and the PlantFam gold medal badge at 10. They're cosmetic; every feature stays free.
+- **Gifts your fam grows into**, earned with milestones (`src/engine/rewards.ts`): gold plant cards at 3 (a gold card background with a gold outline and sparkles; the buddy art keeps its own pot), the party buddy at 5, four extra app icons (Night, Cactus, Sunny, Party) at 7, and the PlantFam gold medal badge at 10. They're cosmetic; every feature stays free.
 
 ## Owner decision (Oct 16, 2026): ask where people grow
 

@@ -9,6 +9,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { isDue, isRefreshDue, isReservoir, moodFor } from '@/engine/careEngine';
 import { PlantBuddy } from '@/components/PlantBuddy';
+import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ART, SEASON_ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Chip, Label, Sticker, Title } from '@/components/ui';
@@ -175,8 +176,9 @@ export default function TodayScreen() {
             const card = (
               <PlantMenu plant={p}>
                 <Sticker style={styles.card}>
-                  <View style={[styles.thumb, { backgroundColor: tint, borderColor: c.line }]}>
+                  <View style={[styles.thumb, { backgroundColor: tint, borderColor: c.line }, goldFrame(p.potColor)]}>
                     <PlantBuddy speciesId={p.speciesId} mood={mood} pot={p.potColor} size={74} bg={tint} faces={profile.faces} />
+                    <GoldSparkles pot={p.potColor} size={0.8} />
                   </View>
                   <View style={{ flex: 1, gap: 6 }}>
                     <View>

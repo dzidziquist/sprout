@@ -8,6 +8,7 @@ import { isDue, moodFor } from '@/engine/careEngine';
 import { rootingDays } from '@/engine/treeLayout';
 import { speciesOf } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
+import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
@@ -53,8 +54,9 @@ function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
   return (
     <PlantMenu plant={plant} style={{ flex: 1 }}>
       <Sticker drop={faded ? 0 : 4} style={[{ flex: 1 }, faded && { opacity: 0.55 }]}>
-        <View style={[styles.art, { backgroundColor: tint, borderColor: c.line }]}>
+        <View style={[styles.art, { backgroundColor: tint, borderColor: c.line }, goldFrame(plant.potColor)]}>
           <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} mood={faded ? 'happy' : mood} pot={plant.potColor} size={96} bg={tint} faces={faded ? 'off' : faces} />
+          <GoldSparkles pot={plant.potColor} />
           <View style={[styles.badge, { backgroundColor: badge.bg, borderColor: c.line }]}>
             <Text style={[styles.badgeText, { color: textOn(badge.bg, c) }]}>{badge.text}</Text>
           </View>

@@ -8,6 +8,7 @@ import { useRewards } from '@/hooks/useRewards';
 import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
+import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ARCHIVE_COPY, confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
@@ -171,7 +172,8 @@ export default function EditPlantScreen() {
         </Pressable>
       </View>
 
-      <View style={[styles.hero, { backgroundColor: tint, borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
+      <View style={[styles.hero, { backgroundColor: tint, borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }, goldFrame(potColor)]}>
+        <GoldSparkles pot={potColor} />
         <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={potColor} size={88} bg={tint} faces={faces} />
         <View style={{ flex: 1 }}>
           <Text style={[styles.heroKicker, { color: c.inkMuted }]}>Species</Text>
