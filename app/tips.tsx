@@ -21,7 +21,7 @@ type Why = 'heart' | 'camera' | 'sprout';
 const WHERE: { icon: Why; title: string; body: string; tint: keyof Pick<Palette, 'butter' | 'ice' | 'blush'> }[] = [
   { icon: 'heart', title: 'Keeps PlantFam free', body: 'No ads, no subscriptions, nothing locked. Tips cover the $99 a year Apple charges to be on the App Store.', tint: 'blush' },
   { icon: 'camera', title: 'Room for photo ID to grow', body: 'Photo ID runs on a free shared allowance. Tips are set aside for more if PlantFam gets popular.', tint: 'ice' },
-  { icon: 'sprout', title: 'New plants, art and features', body: 'Widgets, share cards and a plant year in review are next, free for everyone.', tint: 'butter' },
+  { icon: 'sprout', title: 'More plants with their own buddy', body: 'PlantFam knows 217 plants and 20 have their own illustration. Tips pay for more species and art, plus free features like widgets and a plant year in review.', tint: 'butter' },
 ];
 
 const TIPS: { id: TipId; name: string; sub: string }[] = [
