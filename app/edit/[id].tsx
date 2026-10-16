@@ -53,7 +53,8 @@ const PLACES: { id: Placement; label: string }[] = [
   { id: 'indoor', label: 'Indoors' },
   { id: 'growlight', label: 'Grow light' },
   { id: 'covered_outdoor', label: 'Balcony, covered' },
-  { id: 'outdoor', label: 'Outside' },
+  { id: 'outdoor', label: 'Outside, in a pot' },
+  { id: 'ground', label: 'Garden bed' },
 ];
 
 const nearestSize = (cm: number) => POT_SIZES.reduce((a, b) => (Math.abs(b.cm - cm) < Math.abs(a.cm - cm) ? b : a)).cm;
@@ -202,7 +203,7 @@ export default function EditPlantScreen() {
           </Pill>
         ))}
       </View>
-      {soil === 'garden_soil' && <Text style={[styles.note, { color: c.warn }]}>Garden soil packs down and stays soggy in pots. Repot when you can.</Text>}
+      {soil === 'garden_soil' && placement !== 'ground' && <Text style={[styles.note, { color: c.warn }]}>Garden soil packs down and stays soggy in pots. Repot when you can.</Text>}
 
       <Label>Pot</Label>
       <View style={styles.wrap}>

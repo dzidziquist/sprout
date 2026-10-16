@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore, type FaceStyle } from '@/store/plantStore';
 import { ART } from '@/data/art';
+import { SPOTS, type Spot } from '@/lib/spots';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { requestPermission } from '@/lib/notifications';
@@ -93,6 +94,23 @@ export default function Onboarding() {
             </Choice>
           ))}
         </View>
+        <Label>Where do your plants live? Pick all</Label>
+        <View style={styles.spots}>
+          {SPOTS.map((s) => {
+            const on = (profile.spots ?? []).includes(s.id);
+            const toggle = () => {
+              const cur = profile.spots ?? [];
+              setProfile({ spots: on ? cur.filter((x: Spot) => x !== s.id) : [...cur, s.id] });
+            };
+            return (
+              <Choice key={s.id} on={on} bg={c.butter} onPress={toggle} style={styles.spot}>
+                <Text style={styles.choiceTitle}>{s.label}</Text>
+                <Text style={styles.choiceSub}>{s.sub}</Text>
+              </Choice>
+            );
+          })}
+        </View>
+
         <Choice on={!!profile.grows.hydro} bg={c.ice} onPress={() => setProfile({ grows: { ...profile.grows, hydro: !profile.grows.hydro } })} style={styles.hydroRow}>
           <Text style={styles.choiceTitle}>💧 Hydro or LECA</Text>
           <Text style={styles.choiceSub}>Plants in water, clay balls or a countertop hydro garden</Text>
@@ -182,6 +200,8 @@ const makeStyles = (c: Palette) =>
   row3: { flexDirection: 'row', gap: 8 },
   growTile: { flex: 1, height: 116, alignItems: 'center', justifyContent: 'center' },
   hydroRow: { paddingVertical: 12, paddingHorizontal: 14, gap: 2 },
+  spots: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  spot: { width: '48.5%', flexGrow: 1, paddingVertical: 10, paddingHorizontal: 12, gap: 1 },
   segment: { flexDirection: 'row', gap: 4, padding: 4, borderWidth: 2, borderColor: c.line, borderRadius: 16 },
   segBtn: { flex: 1, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   segText: { fontFamily: fonts.displaySemi, fontSize: 15, color: c.ink },

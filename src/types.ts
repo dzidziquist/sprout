@@ -26,7 +26,8 @@ export type Light = 'low' | 'medium' | 'bright' | 'direct';
 export type PotMaterial = 'plastic' | 'glazed' | 'terracotta' | 'fabric';
 
 /** Where the pot lives, which picks the column of the season table. */
-export type Placement = 'indoor' | 'growlight' | 'outdoor' | 'covered_outdoor';
+/** `ground`: planted in a garden bed (no pot), which holds far more water than any container. */
+export type Placement = 'indoor' | 'growlight' | 'outdoor' | 'covered_outdoor' | 'ground';
 
 /** The two climates PlantFam is calibrated on: cool marine with frost (Seattle) and tropical wet/dry (Accra). */
 export type ClimateModel = 'seattle' | 'accra';

@@ -33,7 +33,7 @@ export function daysInStage(plant: Pick<Plant, 'stageAt'>, now: Date): number | 
   return Math.max(0, Math.floor((now.getTime() - new Date(plant.stageAt).getTime()) / DAY));
 }
 
-const OUTSIDE: Placement[] = ['outdoor', 'covered_outdoor'];
+const OUTSIDE: Placement[] = ['outdoor', 'covered_outdoor', 'ground'];
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 function inFeedWindow(w: FeedWindow, date: Date): boolean {

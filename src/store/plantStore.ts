@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addDays, applyCheck, initialNextCheck, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { speciesOf } from '../data/species';
+import type { Spot } from '../lib/spots';
 import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
@@ -11,6 +12,8 @@ export interface Profile {
   climate: ClimateProfile;
   city: string;
   faces: FaceStyle;
+  /** Where they grow (onboarding / Settings). Picks each new plant's default spot. Empty: species defaults. */
+  spots: Spot[];
   /** hydro: grows in LECA or water too (shows the medium choice up front when adding). */
   grows: { houseplants: boolean; edibles: boolean; cuttings: boolean; hydro?: boolean };
   /** Daily plant round reminder. */
@@ -37,6 +40,7 @@ export const DEFAULT_PROFILE: Profile = {
   climate: 'seattle',
   city: 'Seattle',
   faces: 'full',
+  spots: [],
   grows: { houseplants: true, edibles: true, cuttings: true, hydro: false },
   round: { enabled: true, hour: 8, minute: 30 },
   photos: 'monthly',

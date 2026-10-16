@@ -9,6 +9,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { OTHER, SPECIES, SPECIES_LIST, getSpecies, isOtherId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
+import { defaultSpot, type Spot } from '@/lib/spots';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
@@ -88,7 +89,8 @@ const PLACES: { id: Placement; label: string }[] = [
   { id: 'indoor', label: 'Indoors' },
   { id: 'growlight', label: 'Grow light' },
   { id: 'covered_outdoor', label: 'Balcony, covered' },
-  { id: 'outdoor', label: 'Outside' },
+  { id: 'outdoor', label: 'Outside, in a pot' },
+  { id: 'ground', label: 'Garden bed' },
 ];
 const ORIGINS: { id: Origin; label: string }[] = [
   { id: 'bought', label: 'Bought' },
@@ -132,9 +134,13 @@ function freeName(id: SpeciesId, taken: string[]): string {
   return pool.find((n) => !used.has(n.toLowerCase())) ?? `${pool[0]} ${taken.length + 1}`;
 }
 
-function defaultsFor(id: SpeciesId) {
+/** Species defaults, moved to where this person actually grows (onboarding's "Where do your plants live?"). */
+function defaultsFor(id: SpeciesId, spots?: Spot[]) {
   const sp = getSpecies(id);
-  return { soil: sp.defaultSoil, light: sp.defaultLight, placement: (sp.edible ? 'covered_outdoor' : 'indoor') as Placement, name: (NAMES[id] ?? fallbackNames)[0] };
+  const spot = defaultSpot(spots, sp.edible);
+  const placement: Placement = spot?.placement ?? (sp.edible ? 'covered_outdoor' : 'indoor');
+  const soil = placement === 'ground' && !isReservoir(sp.defaultSoil) ? 'garden_soil' : sp.defaultSoil;
+  return { soil, light: spot?.light ?? sp.defaultLight, placement, name: (NAMES[id] ?? fallbackNames)[0] };
 }
 
 export default function AddPlantScreen() {
@@ -146,8 +152,8 @@ export default function AddPlantScreen() {
   // Arriving from photo ID (/add?species=pothos) skips the picker.
   const otherPreset = params.other ? OTHER.tropical.id : null;
   const preset = isSpeciesId(params.species) ? params.species : otherPreset;
-  const presetDefaults = preset ? defaultsFor(preset) : null;
   const { plants, addPlant, profile } = usePlantStore();
+  const presetDefaults = preset ? defaultsFor(preset, profile.spots) : null;
   const units = useUnits();
   const [speciesId, setSpeciesId] = useState<SpeciesId | null>(preset);
   const [query, setQuery] = useState('');
@@ -186,7 +192,7 @@ export default function AddPlantScreen() {
   const startOther = () => {
     haptics.tap();
     const id = OTHER[guessGroup(query)].id;
-    const d = defaultsFor(id);
+    const d = defaultsFor(id, profile.spots);
     setSpeciesId(id);
     setCustomName(query.trim().replace(/^\w/, (ch) => ch.toUpperCase()));
     setSoil(mediumFor(d.soil));
@@ -198,7 +204,7 @@ export default function AddPlantScreen() {
 
   const setCareType = (group: SpeciesGroup) => {
     haptics.tap();
-    const d = defaultsFor(OTHER[group].id);
+    const d = defaultsFor(OTHER[group].id, profile.spots);
     setSpeciesId(OTHER[group].id);
     setSoil(mediumFor(d.soil));
     setLight(d.light);
@@ -207,7 +213,7 @@ export default function AddPlantScreen() {
 
   const pick = (id: SpeciesId) => {
     haptics.tap();
-    const d = defaultsFor(id);
+    const d = defaultsFor(id, profile.spots);
     setSpeciesId(id);
     setSoil(mediumFor(d.soil));
     setLight(d.light);
@@ -435,7 +441,25 @@ export default function AddPlantScreen() {
         ))}
       </View>
 
-      {profile.grows.hydro && (
+      <Label>Where does it live?</Label>
+      <View style={styles.wrap}>
+        {PLACES.map((p) => (
+          <Pill
+            key={p.id}
+            on={placement === p.id}
+            bg={c.ice}
+            label={p.label}
+            onPress={() => {
+              setPlacement(p.id);
+              // Beds are made of garden soil; moving out of one goes back to a potting mix.
+              if (p.id === 'ground' && !isReservoir(soil)) setSoil('garden_soil');
+              else if (p.id !== 'ground' && soil === 'garden_soil') setSoil(soilBase);
+            }}
+          />
+        ))}
+      </View>
+
+      {profile.grows.hydro && placement !== 'ground' && (
         <>
           <Label>What does it grow in?</Label>
           <View style={styles.wrap}>
@@ -449,7 +473,7 @@ export default function AddPlantScreen() {
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ expanded: showMore }}
-        accessibilityLabel={showMore ? 'Hide pot and soil details' : 'Change pot, soil and spot'}
+        accessibilityLabel={showMore ? 'Hide pot and soil details' : 'Change pot, soil and more'}
         onPress={() => {
           haptics.tap();
           setShowMore(!showMore);
@@ -457,10 +481,11 @@ export default function AddPlantScreen() {
         style={[styles.moreCard, { borderColor: c.line, backgroundColor: c.cloud }]}
       >
         <View style={{ flex: 1, gap: 2 }}>
-          <Text style={[styles.careTitle, { color: c.ink }]}>{showMore ? 'Pot, soil and spot' : 'Pot, soil and spot (optional)'}</Text>
+          <Text style={[styles.careTitle, { color: c.ink }]}>{showMore ? 'Pot, soil and more' : 'Pot, soil and more (optional)'}</Text>
           {!showMore && (
             <Text style={[styles.careSub, { color: c.inkMuted }]} numberOfLines={2}>
-              {SOIL_LABEL[soil].replace(' (not ideal in pots)', '')} · {POT_SIZES.find((x) => x.cm === size)?.label ?? 'Medium'} {MATERIALS.find((m) => m.id === material)?.label.toLowerCase()} pot · {PLACES.find((x) => x.id === placement)?.label} · {ORIGINS.find((o) => o.id === origin)?.label}
+              {SOIL_LABEL[soil].replace(' (not ideal in pots)', '')}
+              {placement === 'ground' ? '' : ` · ${POT_SIZES.find((x) => x.cm === size)?.label ?? 'Medium'} ${MATERIALS.find((m) => m.id === material)?.label.toLowerCase()} pot`} · {ORIGINS.find((o) => o.id === origin)?.label}
             </Text>
           )}
         </View>
@@ -469,7 +494,7 @@ export default function AddPlantScreen() {
       {!showMore && <Text style={[styles.note, { color: c.inkMuted }]}>Good defaults are set. Your checks fine-tune everything over time.</Text>}
       {showMore && (
         <View style={{ gap: 12 }}>
-          <Label>What's it potted in?</Label>
+          <Label>{placement === 'ground' ? "What's the soil like?" : "What's it potted in?"}</Label>
           <View style={styles.wrap}>
             {(profile.grows.hydro ? [...SOILS.filter((s) => isReservoir(s.id)), ...SOILS.filter((s) => !isReservoir(s.id))] : SOILS).map((s) => (
               <Pressable
@@ -489,24 +514,22 @@ export default function AddPlantScreen() {
           </View>
           {soilInfo && <Text style={[styles.note, { color: soil === 'garden_soil' ? c.warn : c.inkMuted }]}>{soilInfo.note}</Text>}
 
-          <Label>Pot</Label>
-          <View style={styles.wrap}>
-            {POT_SIZES.map((p) => (
-              <Pill key={p.label} on={size === p.cm} label={p.label} onPress={() => setSize(p.cm)} />
-            ))}
-          </View>
-          <View style={styles.wrap}>
-            {MATERIALS.map((m) => (
-              <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
-            ))}
-          </View>
+          {placement !== 'ground' && (
+            <>
+              <Label>Pot</Label>
+              <View style={styles.wrap}>
+                {POT_SIZES.map((p) => (
+                  <Pill key={p.label} on={size === p.cm} label={p.label} onPress={() => setSize(p.cm)} />
+                ))}
+              </View>
+              <View style={styles.wrap}>
+                {MATERIALS.map((m) => (
+                  <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
+                ))}
+              </View>
+            </>
+          )}
 
-          <Label>Where does it live?</Label>
-          <View style={styles.wrap}>
-            {PLACES.map((p) => (
-              <Pill key={p.id} on={placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id)} />
-            ))}
-          </View>
           <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" />
 
           <Label>Where's it from?</Label>

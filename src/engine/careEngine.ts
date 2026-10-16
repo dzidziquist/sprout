@@ -110,6 +110,12 @@ export const SEASON_TABLE: Record<ClimateModel, SeasonRow[]> = {
   ],
 };
 
+/**
+ * Garden beds: deep, wide soil and roots that reach down, so they dry far slower than any pot. Pot
+ * size, material and mix age don't apply; the outdoor season (rain included) does.
+ */
+export const GROUND_MULTIPLIER = 1.6;
+
 /** Pots under an eave miss the rain, so they sit closer to indoor behaviour in wet months. */
 const COVERED_OUTDOOR_DAMPING = 0.7;
 
@@ -121,6 +127,7 @@ export function seasonMultiplier(profile: ClimateProfile, placement: Placement, 
     case 'growlight':
       return growlight;
     case 'outdoor':
+    case 'ground':
       return outdoor;
     case 'covered_outdoor':
       return outdoor > 1 ? 1 + (outdoor - 1) * COVERED_OUTDOOR_DAMPING : outdoor;
@@ -155,7 +162,7 @@ function monthsBetween(fromIso: string, to: Date): number {
 }
 
 export function isMixOld(plant: IntervalInput['plant'], at: Date): boolean {
-  if (plant.soil === 'gritty' || isReservoir(plant.soil)) return false;
+  if (plant.soil === 'gritty' || isReservoir(plant.soil) || plant.placement === 'ground') return false;
   return monthsBetween(plant.lastRepottedAt ?? plant.acquiredAt, at) >= OLD_MIX_MONTHS;
 }
 
@@ -166,6 +173,8 @@ export function checkIntervalDays({ group, plant, profile, at }: IntervalInput):
   let days: number;
   if (isReservoir(plant.soil)) {
     days = RESERVOIR_BASE_DAYS * light * season * plant.k;
+  } else if (plant.placement === 'ground') {
+    days = BASE_INTERVAL_DAYS[group] * light * GROUND_MULTIPLIER * season * plant.k;
   } else {
     days =
       BASE_INTERVAL_DAYS[group] *
@@ -208,7 +217,8 @@ export function applyCheck(
   const k = updateK(input.plant.k, result);
   const updated = { ...input.plant, k };
   const flags: CheckOutcome['flags'] = [];
-  if (input.plant.soil === 'garden_soil') flags.push('garden_soil');
+  // Garden soil is only a problem in pots; it's what garden beds are made of.
+  if (input.plant.soil === 'garden_soil' && input.plant.placement !== 'ground') flags.push('garden_soil');
   if (isMixOld(input.plant, input.at)) flags.push('old_mix');
 
   let days: number;

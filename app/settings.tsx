@@ -11,6 +11,7 @@ import { Segmented } from '@/components/Segmented';
 import { DataCard } from '@/components/DataCard';
 import { Label, Title } from '@/components/ui';
 import { useTips } from '@/hooks/useTips';
+import { SPOTS } from '@/lib/spots';
 import { requestPermission } from '@/lib/notifications';
 import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
@@ -194,6 +195,28 @@ export default function SettingsScreen() {
         <Field label="Your city">
           <PlacePicker value={profile.climate} onPick={(climate, city) => setProfile({ climate, city })} />
         </Field>
+        <Field label="Your spots" note="New plants start in your most likely spot: edibles in the garden bed or on the balcony, houseplants indoors or on the windowsill. You can change any plant later.">
+          <View style={styles.chips}>
+            {SPOTS.map((sp) => {
+              const on = (profile.spots ?? []).includes(sp.id);
+              return (
+                <Pressable
+                  key={sp.id}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: on }}
+                  onPress={() => {
+                    haptics.tap();
+                    const cur = profile.spots ?? [];
+                    setProfile({ spots: on ? cur.filter((x) => x !== sp.id) : [...cur, sp.id] });
+                  }}
+                  style={[styles.chip, { borderColor: c.line, backgroundColor: on ? c.ink : c.card }]}
+                >
+                  <Text style={[styles.chipText, { color: on ? c.bg : c.ink }]}>{sp.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </Field>
         <Field label="Grows in" last note={profile.grows.hydro ? 'Adding a plant asks soil, LECA or water up front. Hydro plants get water-line checks and fresh-water reminders.' : 'Growing in LECA or water too? Turn this on to pick it up front when adding plants.'}>
           <Segmented
             label="Grows in"
@@ -246,4 +269,7 @@ const styles = StyleSheet.create({
   field: { padding: 14, gap: 10 },
   note: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   footer: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17, paddingHorizontal: 4 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  chip: { borderWidth: 2, borderRadius: 16, paddingHorizontal: 12, minHeight: 36, justifyContent: 'center' },
+  chipText: { fontFamily: fonts.displaySemi, fontSize: 14 },
 });
