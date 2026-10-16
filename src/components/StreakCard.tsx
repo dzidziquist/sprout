@@ -62,9 +62,12 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         ))}
       </View>
 
-      <Text style={[styles.how, { color: c.ink }]}>
-        Each box is a week: green when every plant got its check on time. Miss one and a week saver turns it blue, so your streak keeps going. You get 2 a month.
-      </Text>
+      <View style={styles.legend} accessible accessibilityLabel="Each box is a week. Green: everyone checked on time. Blue: a week saver covered it.">
+        <View style={[styles.dot, { backgroundColor: c.leaf, borderColor: c.line }]} />
+        <Text style={[styles.how, { color: c.ink }]}>All checked</Text>
+        <View style={[styles.dot, { backgroundColor: c.sky, borderColor: c.line, marginLeft: 8 }]} />
+        <Text style={[styles.how, { color: c.ink }]}>Saved</Text>
+      </View>
 
       <View style={styles.footer}>
         <Text style={[styles.meta, { color: c.ink }]}>Best: {streak.best} {streak.best === 1 ? 'week' : 'weeks'}</Text>
@@ -120,5 +123,7 @@ const styles = StyleSheet.create({
   saverTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 15 },
   saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 10, lineHeight: 12 },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  how: { fontFamily: fonts.body, fontSize: 12, lineHeight: 16, opacity: 0.85 },
+  how: { fontFamily: fonts.bodyHeavy, fontSize: 11, opacity: 0.8 },
+  legend: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: -4 },
+  dot: { width: 10, height: 10, borderRadius: 3, borderWidth: 1.5 },
 });
