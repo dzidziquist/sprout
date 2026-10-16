@@ -83,7 +83,8 @@
             }
           }
         ]
-      ]
+      ],
+      "./plugins/withPodDeploymentTarget"
     ],
     "extra": {
       "router": {},
