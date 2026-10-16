@@ -9,6 +9,7 @@ import { usePlantStore, type FaceStyle, type Profile } from '@/store/plantStore'
 import { GlassButton } from '@/components/GlassButton';
 import { Segmented } from '@/components/Segmented';
 import { DataCard } from '@/components/DataCard';
+import { AppIconPicker } from '@/components/AppIconPicker';
 import { Label, Title } from '@/components/ui';
 import { useTips } from '@/hooks/useTips';
 import { SPOTS } from '@/lib/spots';
@@ -235,6 +236,8 @@ export default function SettingsScreen() {
       <Section title="Support PlantFam" footer="Everything in PlantFam is free. Tips are optional and come with small thank-you gifts.">
         <Row label="Tip jar" value={supporter ? 'Thank you 💚' : undefined} onPress={() => router.push('/tips')} last />
       </Section>
+
+      {supporter && <AppIconPicker />}
 
       <Section title="About">
         <Row label="How PlantFam works" onPress={() => router.push('/help')} />

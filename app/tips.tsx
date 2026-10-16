@@ -16,7 +16,7 @@ import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 
 
-type Why = 'heart' | 'camera' | 'sprout' | 'medal' | 'star' | 'hat';
+type Why = 'heart' | 'camera' | 'sprout' | 'medal' | 'star' | 'hat' | 'moon';
 
 /** Where tips go, in plain words. Nothing here is a feature you pay for. */
 const WHERE: { icon: Why; title: string; body: string; tint: keyof Pick<Palette, 'butter' | 'ice' | 'blush'> }[] = [
@@ -30,6 +30,7 @@ const THANKS: { icon: Why; title: string; body: string; tint: keyof Pick<Palette
   { icon: 'medal', title: 'A supporter badge', body: 'A PlantFam supporter sticker joins your milestones.', tint: 'mint' },
   { icon: 'star', title: 'Gold plant cards', body: 'Pick gold for any plant in Edit plant.', tint: 'butter' },
   { icon: 'hat', title: 'A party hat', body: 'Your buddy on the Me tab dresses up.', tint: 'lavender' },
+  { icon: 'moon', title: 'A night-time app icon', body: 'Switch to it in Settings → App icon.', tint: 'lavender' },
 ];
 
 const TIPS: { id: TipId; name: string; sub: string }[] = [
@@ -52,6 +53,7 @@ function WhyIcon({ kind, color }: { kind: Why; color: string }) {
       {kind === 'medal' && <Path d="M8 3h8l-2 6h-4zM12 21a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM12 12.5l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z" {...p} />}
       {kind === 'star' && <Path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z" {...p} />}
       {kind === 'hat' && <Path d="M12 4 19 20H5zM9 13.5h6M4 20.5c3 1 13 1 16 0M12 4V2.5" {...p} />}
+      {kind === 'moon' && <Path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" {...p} />}
       {kind === 'heart' && <Path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" {...p} />}
     </Svg>
   );

@@ -46,6 +46,19 @@
           "cameraPermission": "PlantFam uses the camera so you can snap your plants for their photo diary or to identify them.",
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-alternate-app-icons",
+        [
+          {
+            "name": "Night",
+            "ios": "./assets/icons/icon-night.png",
+            "android": {
+              "foregroundImage": "./assets/icons/icon-night-foreground.png",
+              "backgroundColor": "#0C1F4E"
+            }
+          }
+        ]
       ]
     ],
     "extra": {
