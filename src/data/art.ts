@@ -29,7 +29,7 @@ export const SEASON_ART: Record<SeasonArt, ImageSourcePropType> = {
 
 /**
  * Milestone art per badge (or per `Badge.art` key), with the locked (faded) variant. Badges without art keep
- * the line icon. 'survived-winter' is the season badge's art in climates that freeze.
+ * the line icon. 'survived-winter' and 'survived-dry-season' are the season badge's art in frosty and tropical climates.
  */
 export const BADGE_ART: Partial<Record<string, { earned: ImageSourcePropType; locked: ImageSourcePropType }>> = {
   'first-roots': { earned: require('../../assets/art/badge-first-root.png'), locked: require('../../assets/art/badge-first-root-locked.png') },
@@ -44,5 +44,7 @@ export const BADGE_ART: Partial<Record<string, { earned: ImageSourcePropType; lo
   propagator: { earned: require('../../assets/art/badge-propagator.png'), locked: require('../../assets/art/badge-propagator-locked.png') },
   generous: { earned: require('../../assets/art/badge-generous.png'), locked: require('../../assets/art/badge-generous-locked.png') },
   'grandma-plant': { earned: require('../../assets/art/badge-grandma-plant.png'), locked: require('../../assets/art/badge-grandma-plant-locked.png') },
+  'ten-skips': { earned: require('../../assets/art/badge-ten-skips.png'), locked: require('../../assets/art/badge-ten-skips-locked.png') },
+  'survived-dry-season': { earned: require('../../assets/art/badge-survived-dry-season.png'), locked: require('../../assets/art/badge-survived-dry-season-locked.png') },
   'survived-winter': { earned: require('../../assets/art/badge-survived-winter.png'), locked: require('../../assets/art/badge-survived-winter-locked.png') },
 };

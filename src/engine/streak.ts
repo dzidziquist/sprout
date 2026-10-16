@@ -244,10 +244,10 @@ function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimatePr
 /**
  * The hard season the season badge celebrates, and its art. Seattle has its grey season; other
  * cities on the Seattle model get "winter" (with the snowflake art) when they freeze, or a milder
- * "cool season". Tropical climates get harmattan / dry season, which has no art of its own yet.
+ * "cool season". Tropical climates get harmattan / dry season, with the dry-season art.
  */
 function hardSeason(climate: ClimateProfile): { name: string; art: string | null } {
-  if (modelOf(climate) === 'accra') return { name: localizeClimateText('harmattan', climate), art: null };
+  if (modelOf(climate) === 'accra') return { name: localizeClimateText('harmattan', climate), art: 'survived-dry-season' };
   if (typeof climate !== 'string' && climate.frost) return { name: 'winter', art: 'survived-winter' };
   return { name: localizeClimateText('grey season', climate), art: 'season' };
 }
