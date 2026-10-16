@@ -19,8 +19,8 @@ export interface Profile {
   photos: 'off' | 'weekly' | 'monthly';
   /** Appearance: follow the phone, or force light/dark. */
   theme: 'system' | 'light' | 'dark';
-  /** Cached PlantFam Plus entitlement (RevenueCat is the source of truth on device). */
-  plus: boolean;
+  /** Has left a tip in the tip jar (nothing is locked; this only powers the thank-you). */
+  supporter: boolean;
   /** Streak repairs left this month (free; refilled monthly). */
   streakFreezes: number;
   /** The "how to check soil" coach on Today was dismissed. */
@@ -41,7 +41,7 @@ export const DEFAULT_PROFILE: Profile = {
   round: { enabled: true, hour: 8, minute: 30 },
   photos: 'monthly',
   theme: 'system',
-  plus: false,
+  supporter: false,
   streakFreezes: 2,
   coachDismissed: false,
   units: 'auto',
@@ -310,18 +310,18 @@ export const usePlantStore = create<PlantState>()(
       },
 
       restoreBackup: (data) => {
-        const { plus: _p, streakFreezes: _f, lastBackupAt: _b, ...profile } = data.profile;
+        const { supporter: _s, streakFreezes: _f, lastBackupAt: _b, ...profile } = data.profile as Partial<Profile> & { plus?: boolean };
         set((s) => ({
           plants: data.plants,
           events: data.events,
           undo: {},
           onboarded: true,
-          profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, plus: s.profile.plus, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
+          profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, supporter: s.profile.supporter, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
         }));
       },
 
       eraseEverything: () => {
-        set({ plants: [], events: [], undo: {}, onboarded: false, profile: { ...DEFAULT_PROFILE, plus: get().profile.plus } });
+        set({ plants: [], events: [], undo: {}, onboarded: false, profile: { ...DEFAULT_PROFILE, supporter: get().profile.supporter } });
       },
 
       seedDemo: (now = new Date()) => {

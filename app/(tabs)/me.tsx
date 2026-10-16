@@ -1,4 +1,4 @@
-import { PlusCard } from '@/components/PlusCard';
+import { TipJarCard } from '@/components/TipJarCard';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -80,7 +80,7 @@ export default function MeScreen() {
         </View>
       </View>
 
-      <PlusCard />
+      <TipJarCard />
 
       <Pressable accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => router.push('/settings')}>
         <Sticker drop={0} bg={c.cloud} style={styles.settingsRow}>

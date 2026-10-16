@@ -12,9 +12,8 @@ export const SUPPORT_URL = 'https://dzidziquist.com';
 /** Public privacy policy, hosted on Notion (page "PlantFam Privacy Policy"). TODO(founder): publish it to the web and paste its notion.site URL here. */
 export const PRIVACY_POLICY_URL = '';
 
-/** Apple's standard licence agreement covers PlantFam's terms of use, including subscriptions. */
+/** Apple's standard licence agreement covers PlantFam's terms of use, including tips. */
 export const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
-export const MANAGE_SUBSCRIPTIONS_URL = 'https://apps.apple.com/account/subscriptions';
 
 export const PRIVACY_UPDATED = 'October 15, 2026';

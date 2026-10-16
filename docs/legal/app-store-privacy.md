@@ -11,7 +11,7 @@ Use these when filling in **App Privacy** in App Store Connect. They describe wh
 
 | Data type | Collected? | Why | Linked to the user? | Used for tracking? |
 |---|---|---|---|---|
-| Purchases → Purchase History | **Yes** (RevenueCat, only for Plus buyers) | App Functionality (unlocking Plus) | No (anonymous RevenueCat app user ID, no account) | No |
+| Purchases → Purchase History | **Yes** (RevenueCat, only for people who leave a tip) | App Functionality (the supporter thank-you) | No (anonymous RevenueCat app user ID, no account) | No |
 | Identifiers → User ID | **Yes** (RevenueCat's anonymous app user ID) | App Functionality | No | No |
 | User Content → Photos or Videos | **Yes**, conservatively: only the single photo someone chooses for photo ID, sent to Pl@ntNet | App Functionality | No | No |
 | Location | **No**: the user types a city name; no device location or GPS is ever read. (Coarse location from a typed city isn't "collected" location data under Apple's definition, but mention it in the policy, which we do.) | | | |

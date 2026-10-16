@@ -8,7 +8,7 @@ A playful plant-care app where plants have moods, care is a soil check rather th
 
 ## Status
 
-**Research, mockup and app: built.** All phases are in: plant round, 217-plant catalogue, Offshoots, grow patch, photo diary, Plus, settings and privacy. Next: TestFlight.
+**Research, mockup and app: built.** All phases are in: plant round, 217-plant catalogue, Offshoots, grow patch, photo diary, tip jar, settings and privacy. Next: TestFlight.
 
 ### Run it
 

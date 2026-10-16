@@ -77,7 +77,7 @@ export default function RootLayout() {
         <Stack.Screen name="add" options={{ presentation: 'modal' }} />
         <Stack.Screen name="plant/[id]" />
         <Stack.Screen name="edit/[id]" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="plus" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="tips" options={{ presentation: 'modal' }} />
         <Stack.Screen name="identify" options={{ presentation: 'modal' }} />
         <Stack.Screen name="grow" />
         <Stack.Screen name="help" />

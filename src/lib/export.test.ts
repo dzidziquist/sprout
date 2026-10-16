@@ -65,12 +65,12 @@ describe('buildCareDiaryCsv', () => {
 
 describe('buildExportJson', () => {
   it('includes plants, events and the profile minus internal flags', () => {
-    const doc = JSON.parse(buildExportJson({ profile: { ...DEFAULT_PROFILE, plus: true }, plants, events }, new Date('2026-10-14T12:00:00Z')));
+    const doc = JSON.parse(buildExportJson({ profile: { ...DEFAULT_PROFILE, supporter: true }, plants, events }, new Date('2026-10-14T12:00:00Z')));
     expect(doc).toMatchObject({ app: 'PlantFam', format: 1, exportedAt: '2026-10-14T12:00:00.000Z' });
     expect(doc.plants).toHaveLength(3);
     expect(doc.events).toHaveLength(5);
     expect(doc.profile.city).toBe('Seattle');
-    expect(doc.profile).not.toHaveProperty('plus');
+    expect(doc.profile).not.toHaveProperty('supporter');
     expect(doc.profile).not.toHaveProperty('streakFreezes');
   });
 });

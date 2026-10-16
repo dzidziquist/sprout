@@ -17,7 +17,7 @@ PlantFam is a plant-care app made by an independent developer. This policy is th
 - Your city: when you search for where you grow, the name you type goes to Open-Meteo’s free geocoder, and the city you pick has its past weather looked up once to learn its seasons. PlantFam never uses your location or GPS.
 - Weather (grow patch): a 7-day forecast is fetched from Open-Meteo for your city’s coordinates. Like any website, Open-Meteo sees the request’s IP address.
 - Photo ID (only when you use it): the one photo you choose is sent to Pl@ntNet to suggest a species. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.
-- Purchases (PlantFam Plus): Apple handles payment. RevenueCat checks whether you have Plus using an anonymous app ID and your purchase receipts. We never see your name, email or card.
+- Tips (optional): Apple handles payment. RevenueCat records the tip with an anonymous app ID and your purchase receipt so the app can say thank you. Tips unlock nothing. We never see your name, email or card.
 - Reminders are scheduled on your phone. No notification server is involved.
 
 ## What we never do

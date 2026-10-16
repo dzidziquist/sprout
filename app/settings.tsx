@@ -10,11 +10,11 @@ import { GlassButton } from '@/components/GlassButton';
 import { Segmented } from '@/components/Segmented';
 import { DataCard } from '@/components/DataCard';
 import { Label, Title } from '@/components/ui';
-import { usePlus } from '@/hooks/usePlus';
+import { useTips } from '@/hooks/useTips';
 import { requestPermission } from '@/lib/notifications';
 import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
-import { APP_VERSION, MANAGE_SUBSCRIPTIONS_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
+import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 
@@ -106,16 +106,9 @@ export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile, setProfile, plants, eraseEverything } = usePlantStore();
-  const { isPlus, available, restore } = usePlus();
-  const [restoreMsg, setRestoreMsg] = useState<string | null>(null);
+  const { supporter } = useTips();
 
   const roundValue = profile.round.enabled ? (TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null) : 'Off';
-
-  const restorePurchases = async () => {
-    setRestoreMsg('Checking with Apple…');
-    const res = await restore();
-    setRestoreMsg(res.ok ? (res.isPlus ? 'PlantFam Plus is active. Thank you!' : 'No PlantFam Plus purchase found for this Apple ID.') : res.message);
-  };
 
   const eraseAll = async () => {
     const n = plants.length;
@@ -216,10 +209,8 @@ export default function SettingsScreen() {
 
       <DataCard />
 
-      <Section title="PlantFam Plus" footer={restoreMsg ?? undefined}>
-        <Row label="PlantFam Plus" value={isPlus ? 'Active ✓' : 'Not active'} onPress={() => router.push('/plus')} />
-        <Row label="Restore purchases" onPress={available ? restorePurchases : () => setRestoreMsg('Purchases work in the PlantFam iPhone app.')} chevron={false} last={!isPlus} />
-        {isPlus && <Row label="Manage subscription" onPress={() => Linking.openURL(MANAGE_SUBSCRIPTIONS_URL)} last />}
+      <Section title="Support PlantFam" footer="Everything in PlantFam is free. Tips are optional and unlock nothing.">
+        <Row label="Tip jar" value={supporter ? 'Thank you 💚' : undefined} onPress={() => router.push('/tips')} last />
       </Section>
 
       <Section title="About">

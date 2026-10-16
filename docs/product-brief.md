@@ -154,9 +154,9 @@ Reuse the founder's proven VinylRecordTracker stack: **Expo (SDK 54) + Expo Rout
 ## Owner decisions (Oct 15, 2026): cheap to use, cheap to run
 
 - **Photo ID is free for everyone.** iPhone's Photos app already names plants (Visual Look Up), so charging for ID would be charging for something people have. Ours adds value by dropping the plant straight into the fam with care settings. Each phone gets 5 IDs a day, which keeps us inside Pl@ntNet's free tier (500/day, commercial use allowed, credit line + logo required). Past that, the app points people to Look Up in Photos.
-- **PlantFam Plus is a low-cost supporter tier:** $7.99/yr or $19.99 lifetime, no trial that converts. It holds spreadsheet export now; gift-a-cutting cards, a plant year in review and art packs land there first as they're built.
+- ~~PlantFam Plus as a low-cost supporter tier~~ (replaced by the tip jar, see below).
 - **Running costs stay near zero:** no backend; data is on device; Open-Meteo is free; RevenueCat is free under $2.5k monthly tracked revenue; Pl@ntNet free tier. The main fixed cost is the $99/yr Apple Developer Program.
-- **If growth outpaces the free ID quota:** add a tiny proxy that holds the key and shares the daily 500 fairly, then consider Pl@ntNet Pro (about €5 per 1,000 IDs) once Plus revenue covers it.
+- **If growth outpaces the free ID quota:** add a tiny proxy that holds the key and shares the daily 500 fairly, then consider Pl@ntNet Pro (about €5 per 1,000 IDs) once tips cover it.
 
 ## Owner decision (Oct 15, 2026): PlantFam works anywhere
 
@@ -172,3 +172,10 @@ Season multipliers, feeding pauses, grow-patch tasks (with month names translate
 Plants in **LECA** or **water** (water culture, Kratky jars, countertop hydro gardens) skip the soil question. Their check is the water line: **Low** (top up with weak nutrients) or **Plenty** (skip, peek again in about half a rhythm). There's no "soggy" answer and no overwatering flag. A **fresh water** reminder counts from the last refresh or repot: a full change every 14 days in water, a flush every 28 in LECA. It shows on the plant page and in the round, and logging "Fresh water" counts as a top-up. Growers who pick **Hydro or LECA** in onboarding or Settings ("Soil + hydro") get a Soil / LECA / Water choice up front when adding a plant, and new plants follow the medium of their last hydro plant. Copy across the app says "check" rather than "soil check" wherever both apply, and milestones count water checks the same as soil checks.
 
 Milestones: one season badge per climate (grey season for Seattle, **winter** with the snowflake art where it freezes, cool season where it doesn't, harmattan / dry season in the tropics), so nobody sees a duplicate or a badge they can't earn. **Grandma plant** counts a year from when the plant joined the fam, not when it was bought.
+
+## Owner decision (Oct 16, 2026): a tip jar, not a subscription
+
+PlantFam has no servers and pays for no APIs, so there's nothing to charge for. The only fixed cost is Apple's $99 a year; photo ID stays inside Pl@ntNet's free tier. So:
+- **Everything is free**, including spreadsheet (CSV) export of the care diary. Nothing is locked, no ads.
+- **Tip jar** (Me → Tip jar, Settings → Support PlantFam): three one-time tips, $2.99 "Seed", $4.99 "Sprout", $9.99 "Big leaf" (App Store consumables). Tips unlock nothing; tippers get a thank-you and a "PlantFam supporter 💚" card. The page is a transparent "where tips go": the Apple fee, headroom for photo ID, and new free features.
+- **What a paid tier could honestly cover later**, only if we build things that cost money to run: unlimited photo ID beyond 5 a day (Pl@ntNet Pro, about €5 per 1,000), an AI plant doctor (model API costs), or cloud sync across devices (if it needs a server). Widgets, share cards and a year in review stay free.

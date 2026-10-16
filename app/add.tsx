@@ -15,7 +15,6 @@ import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
-import { usePlus } from '@/hooks/usePlus';
 import type { Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
 
 const isSpeciesId = (v: unknown): v is SpeciesId => typeof v === 'string' && v in SPECIES;
@@ -142,7 +141,6 @@ export default function AddPlantScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { isPlus } = usePlus();
   // /add?species=pothos (from photo ID) skips the picker; /add?other=1&name=…&latin=… starts an "other" plant.
   const params = useLocalSearchParams<{ species?: string; other?: string; name?: string; latin?: string }>();
   // Arriving from photo ID (/add?species=pothos) skips the picker.
