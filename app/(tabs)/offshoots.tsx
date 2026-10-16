@@ -1,7 +1,6 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import { usePlantStore } from '@/store/plantStore';
 import { isReadyToPotUp, layoutForest, POT_UP_AFTER_DAYS, rootingDays } from '@/engine/treeLayout';
@@ -21,7 +20,6 @@ const COLLAPSE = { maxChildren: 4, keep: 2 };
 type View_ = 'tree' | 'list';
 
 export default function OffshootsScreen() {
-  const insets = useSafeAreaInsets();
   const pad = useTabPadding(16);
   const router = useRouter();
   const c = useColors();
@@ -33,8 +31,8 @@ export default function OffshootsScreen() {
   const available = screenW - PAGE_PAD * 2;
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
   const [chosen, setChosen] = useState<Record<string, View_>>({});
-  const page = useRef<ScrollView>(null);
-  const familyY = useRef<Record<string, number>>({});
+  // One family at a time (the one with the newest baby, unless picked), so the page doesn't grow with every family.
+  const [pick, setPick] = useState<string | null>(null);
 
   // Oldest first, so the first cutting sits on the left of its siblings.
   const sorted = useMemo(() => [...plants].sort((a, b) => a.acquiredAt.localeCompare(b.acquiredAt)), [plants]);
@@ -51,6 +49,16 @@ export default function OffshootsScreen() {
       else next.add(id);
       return next;
     });
+  const newest = useMemo(() => {
+    let best: { id: string; at: string } | undefined;
+    for (const f of full.families) {
+      const at = f.nodes.reduce((m, n) => (n.plant.acquiredAt > m ? n.plant.acquiredAt : m), '');
+      if (!best || at > best.at) best = { id: f.root.id, at };
+    }
+    return best?.id;
+  }, [full]);
+  const shownId = pick === 'all' ? 'all' : pick && forest.families.some((f) => f.root.id === pick) ? pick : newest;
+  const shown = shownId === 'all' ? forest.families : forest.families.filter((f) => f.root.id === shownId);
   const babies = plants.filter((p) => p.parentId);
   const stats = [
     { n: babies.length, label: 'cuttings taken', bg: c.lavender },
@@ -62,7 +70,7 @@ export default function OffshootsScreen() {
     .sort((a, b) => a.rooting!.startedAt.localeCompare(b.rooting!.startedAt));
 
   return (
-    <ScrollView ref={page} style={{ backgroundColor: c.bg }} contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
+    <ScrollView style={{ backgroundColor: c.bg }} contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
       <View>
         <Title>Offshoots</Title>
         <Label muted>Every cutting keeps its family tree</Label>
@@ -122,32 +130,48 @@ export default function OffshootsScreen() {
             </View>
           )}
 
-          {forest.families.length >= 4 && (
+          {forest.families.length >= 2 && (
             <View style={styles.section}>
               <Label>{forest.families.length} families</Label>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -PAGE_PAD }} contentContainerStyle={styles.jumpRow}>
-                {forest.families.map((f) => (
-                  <Pressable
-                    key={f.root.id}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Jump to ${f.root.name}'s family`}
-                    onPress={() => {
-                      haptics.tap();
-                      page.current?.scrollTo({ y: Math.max(0, (familyY.current[f.root.id] ?? 0) - insets.top - 8), animated: true });
-                    }}
-                    style={({ pressed }) => [styles.jump, pressed && { transform: [{ translateY: 1 }] }]}
-                  >
-                    <PlantBuddy speciesId={f.root.speciesId} pot={f.root.potColor} mood="happy" size={26} bg={c.potTint[f.root.potColor]} faces="off" />
-                    <Text style={styles.jumpText} numberOfLines={1}>
-                      {f.root.name} · {f.members}
-                    </Text>
-                  </Pressable>
-                ))}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -PAGE_PAD }} contentContainerStyle={styles.jumpRow} accessibilityRole="radiogroup">
+                {forest.families.map((f) => {
+                  const on = shownId === f.root.id;
+                  return (
+                    <Pressable
+                      key={f.root.id}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: on }}
+                      accessibilityLabel={`${f.root.name}'s family, ${f.members} plants`}
+                      onPress={() => {
+                        haptics.tap();
+                        setPick(f.root.id);
+                      }}
+                      style={({ pressed }) => [styles.jump, on && { backgroundColor: c.lavender }, pressed && { transform: [{ translateY: 1 }] }]}
+                    >
+                      <PlantBuddy speciesId={f.root.speciesId} pot={f.root.potColor} mood="happy" size={26} bg={on ? c.lavender : c.potTint[f.root.potColor]} faces="off" />
+                      <Text style={[styles.jumpText, on && { color: textOn(c.lavender, c) }]} numberOfLines={1}>
+                        {f.root.name} · {f.members}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+                <Pressable
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: shownId === 'all' }}
+                  accessibilityLabel="All families"
+                  onPress={() => {
+                    haptics.tap();
+                    setPick('all');
+                  }}
+                  style={({ pressed }) => [styles.jump, shownId === 'all' && { backgroundColor: c.lavender }, pressed && { transform: [{ translateY: 1 }] }]}
+                >
+                  <Text style={[styles.jumpText, shownId === 'all' && { color: textOn(c.lavender, c) }]}>All</Text>
+                </Pressable>
               </ScrollView>
             </View>
           )}
 
-          {forest.families.map((f) => {
+          {shown.map((f) => {
             const all = fullById.get(f.root.id) ?? f;
             const archived = all.nodes.filter((n) => n.plant.archivedAt).length;
             // Wide even after folding big sibling groups (lots of grandchildren): read it as a list instead.
@@ -156,7 +180,7 @@ export default function OffshootsScreen() {
             const canToggle = all.width > available;
             const openGroups = f.collapsible.filter((id) => expanded.has(id));
             return (
-              <View key={f.root.id} style={styles.section} onLayout={(e) => (familyY.current[f.root.id] = e.nativeEvent.layout.y)}>
+              <View key={f.root.id} style={styles.section}>
                 <View style={styles.familyHead}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.familyTitle}>{f.root.name}'s family</Text>

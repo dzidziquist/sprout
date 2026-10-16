@@ -1,11 +1,10 @@
 import { APP_STORE_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL, TIPS_ENABLED } from '@/config';
 import { useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import * as StoreReview from 'expo-store-review';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { PartyHat } from '@/components/PartyHat';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Sticker, Title } from '@/components/ui';
@@ -71,18 +70,18 @@ function WhyIcon({ kind, color }: { kind: Why; color: string }) {
   );
 }
 
-function Buddies({ c, ids, hat }: { c: Palette; ids: [SpeciesId, SpeciesId, SpeciesId]; hat?: boolean }) {
+/** Three buddy tiles. Once the party buddy is earned, it takes the middle spot. */
+function Buddies({ c, ids, party }: { c: Palette; ids: [SpeciesId, SpeciesId, SpeciesId]; party?: boolean }) {
   return (
     <View style={styles.buddies}>
       <View style={[styles.buddyTile, { backgroundColor: c.butter, borderColor: c.line, transform: [{ rotate: '-7deg' }, { translateY: 8 }] }]}>
         <PlantBuddy speciesId={ids[0]} size={76} />
       </View>
       <View style={[styles.buddyTile, styles.buddyBig, { backgroundColor: c.lavender, borderColor: c.line }]}>
-        <PlantBuddy speciesId={ids[1]} size={96} />
-        {hat && (
-          <View style={styles.hat}>
-            <PartyHat size={40} />
-          </View>
+        {party ? (
+          <Image source={require('../assets/art/buddy-party.png')} style={{ width: 100, height: 100 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+        ) : (
+          <PlantBuddy speciesId={ids[1]} size={96} />
         )}
       </View>
       <View style={[styles.buddyTile, { backgroundColor: c.ice, borderColor: c.line, transform: [{ rotate: '6deg' }, { translateY: 8 }] }]}>
@@ -149,7 +148,7 @@ export default function SupportScreen() {
       </View>
 
       <Sticker bg={c.leaf} style={styles.hero}>
-        <Buddies c={c} hat={party} ids={party ? ['tomato', 'monstera', 'hoya'] : ['pothos', 'monstera', 'pepper']} />
+        <Buddies c={c} party={party} ids={party ? ['tomato', 'monstera', 'hoya'] : ['pothos', 'monstera', 'pepper']} />
         {thanks && <Text style={[styles.kicker, { color: textOn(c.leaf, c) }]}>PlantFam supporter 💚</Text>}
         <Text style={[styles.heroTitle, { color: textOn(c.leaf, c) }]}>{thanks ? 'Thank you for growing with us!' : 'Free for everyone, made for fun'}</Text>
         <Text style={[styles.heroBody, { color: textOn(c.leaf, c) }]}>
@@ -287,7 +286,6 @@ const styles = StyleSheet.create({
   kicker: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   heroTitle: { fontFamily: fonts.display, fontSize: 22, lineHeight: 27, textAlign: 'center' },
   heroBody: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20, textAlign: 'center' },
-  hat: { position: 'absolute', top: -22, right: -10, transform: [{ rotate: '22deg' }] },
   pill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1.5 },
   pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   benefit: { flexDirection: 'row', alignItems: 'center', gap: 12 },

@@ -3,13 +3,15 @@ import Svg, { Path } from 'react-native-svg';
 import { Sticker } from '@/components/ui';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { StreakResult } from '@/engine/streak';
+import { FREEZES_PER_MONTH, type StreakResult } from '@/engine/streak';
 
 const SPROUT = 'M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z';
+/** Week boxes in the row, including "now". */
+const SLOTS = 7;
 const FREEZE = 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5';
 
 function copyFor(s: StreakResult): string {
-  if (s.thisWeek === 'covered') return 'A free pass has this week covered. No stress.';
+  if (s.thisWeek === 'covered') return 'A week saver has this week covered. No stress.';
   if (s.thisWeek === 'open') return 'New week, fresh sprout. Check in whenever you can.';
   return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next check adds this week.';
 }
@@ -17,7 +19,13 @@ function copyFor(s: StreakResult): string {
 /** Weekly streak, drawn as a growing sprout. No flames, no guilt. */
 export function StreakCard({ streak }: { streak: StreakResult }) {
   const c = useColors();
-  const recent = streak.weeks.slice(-7);
+  // The row fills left to right: weeks since care began, then "now", then empty boxes for the weeks ahead.
+  // Quiet weeks from before the first real week are left out, so a new streak starts at the left.
+  const begun = streak.weeks.findIndex((w) => w.status !== 'quiet');
+  const recent = (begun === -1 ? [] : streak.weeks.slice(begun)).slice(-(SLOTS - 1));
+  const ahead = SLOTS - 1 - recent.length;
+  const next = new Date();
+  const refill = new Date(next.getFullYear(), next.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const weeks = streak.current === 1 ? 'week' : 'weeks';
   return (
     <Sticker bg={c.mint} drop={5} style={styles.card}>
@@ -35,7 +43,7 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         </View>
       </View>
 
-      <View style={styles.weeks} accessibilityLabel={`Last ${recent.length + 1} weeks`}>
+      <View style={styles.weeks} accessibilityLabel={recent.length ? `Last ${recent.length + 1} weeks` : 'This week'}>
         {recent.map((w) => {
           const bg = w.status === 'kept' ? c.leaf : w.status === 'repaired' ? c.sky : w.status === 'quiet' ? c.cloud : c.card;
           return (
@@ -49,15 +57,48 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         <View style={[styles.week, styles.now, { borderColor: c.line, backgroundColor: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.card : streak.thisWeek === 'covered' ? c.sky : c.leafLight }]}>
           <Text style={[styles.nowText, { color: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.ink : c.onBright }]}>now</Text>
         </View>
+        {Array.from({ length: ahead }, (_, i) => (
+          <View key={`ahead-${i}`} style={[styles.week, styles.ahead, { borderColor: c.inkMuted }]} />
+        ))}
+      </View>
+
+      <View style={styles.legend} accessible accessibilityLabel="Each box is a week. Green: everyone checked on time. Blue: a week saver covered it.">
+        <View style={[styles.dot, { backgroundColor: c.leaf, borderColor: c.line }]} />
+        <Text style={[styles.how, { color: c.ink }]}>All checked</Text>
+        <View style={[styles.dot, { backgroundColor: c.sky, borderColor: c.line, marginLeft: 8 }]} />
+        <Text style={[styles.how, { color: c.ink }]}>Saved</Text>
       </View>
 
       <View style={styles.footer}>
         <Text style={[styles.meta, { color: c.ink }]}>Best: {streak.best} {streak.best === 1 ? 'week' : 'weeks'}</Text>
-        <View style={styles.freezes} accessibilityLabel={`${streak.freezesLeft} free passes left this month`}>
-          <Svg width={16} height={16} viewBox="0 0 24 24"><Path d={FREEZE} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" fill="none" /></Svg>
-          <Text style={[styles.meta, { color: c.ink }]}>
-            {streak.freezesLeft} free {streak.freezesLeft === 1 ? 'pass' : 'passes'} left this month
-          </Text>
+        <View
+          style={[styles.savers, { backgroundColor: c.ice, borderColor: c.line, boxShadow: `0px 2px 0px ${c.drop}` }]}
+          accessible
+          accessibilityLabel={`Week savers: ${streak.freezesLeft} of ${FREEZES_PER_MONTH} left this month. Each one covers a missed week. They refill on ${refill}.`}
+        >
+          <View style={styles.tokens}>
+            {Array.from({ length: FREEZES_PER_MONTH }, (_, i) => {
+              const left = i < streak.freezesLeft;
+              return (
+                <View
+                  key={i}
+                  style={[
+                    styles.saver,
+                    { transform: [{ rotate: i % 2 ? '8deg' : '-8deg' }], marginLeft: i ? -6 : 0 },
+                    left ? { backgroundColor: c.sky, borderColor: c.line } : { borderColor: c.inkMuted, borderStyle: 'dashed', backgroundColor: c.card, opacity: 0.7 },
+                  ]}
+                >
+                  <Svg width={14} height={14} viewBox="0 0 24 24"><Path d={FREEZE} stroke={left ? c.onBright : c.inkMuted} strokeWidth={2.6} strokeLinecap="round" fill="none" /></Svg>
+                </View>
+              );
+            })}
+          </View>
+          <View>
+            <Text style={[styles.saverTitle, { color: c.ink }]}>
+              {streak.freezesLeft} week {streak.freezesLeft === 1 ? 'saver' : 'savers'}
+            </Text>
+            <Text style={[styles.saverSub, { color: c.inkMuted }]}>refill {refill}</Text>
+          </View>
         </View>
       </View>
     </Sticker>
@@ -73,8 +114,16 @@ const styles = StyleSheet.create({
   weeks: { flexDirection: 'row', gap: 6 },
   week: { flex: 1, height: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center', maxWidth: 44 },
   now: { maxWidth: 56, flexGrow: 1.3 },
+  ahead: { borderStyle: 'dashed', opacity: 0.45 },
   nowText: { fontFamily: fonts.bodyHeavy, fontSize: 10 },
-  footer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 },
-  freezes: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
+  savers: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 5, paddingLeft: 6, paddingRight: 10, borderRadius: 16, borderWidth: 2 },
+  tokens: { flexDirection: 'row', alignItems: 'center' },
+  saver: { width: 28, height: 28, borderRadius: 9, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  saverTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 15 },
+  saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 10, lineHeight: 12 },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  how: { fontFamily: fonts.bodyHeavy, fontSize: 11, opacity: 0.8 },
+  legend: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: -4 },
+  dot: { width: 10, height: 10, borderRadius: 3, borderWidth: 1.5 },
 });
