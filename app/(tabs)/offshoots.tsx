@@ -134,7 +134,7 @@ export default function OffshootsScreen() {
             <View style={styles.section}>
               <Label>{forest.families.length} families</Label>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -PAGE_PAD }} contentContainerStyle={styles.jumpRow} accessibilityRole="radiogroup">
-                {shown.map((f) => {
+                {forest.families.map((f) => {
                   const on = shownId === f.root.id;
                   return (
                     <Pressable
@@ -171,7 +171,7 @@ export default function OffshootsScreen() {
             </View>
           )}
 
-          {forest.families.map((f) => {
+          {shown.map((f) => {
             const all = fullById.get(f.root.id) ?? f;
             const archived = all.nodes.filter((n) => n.plant.archivedAt).length;
             // Wide even after folding big sibling groups (lots of grandchildren): read it as a list instead.
