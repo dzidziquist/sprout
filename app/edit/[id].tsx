@@ -223,6 +223,7 @@ export default function EditPlantScreen() {
           <Pill key={p.id} on={placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id)} />
         ))}
       </View>
+      <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
       <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" />
       <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next check.</Text>
 

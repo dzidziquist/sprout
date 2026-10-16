@@ -458,6 +458,7 @@ export default function AddPlantScreen() {
           />
         ))}
       </View>
+      <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
 
       {profile.grows.hydro && placement !== 'ground' && (
         <>
