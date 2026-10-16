@@ -18,7 +18,7 @@ export const CACHE_MS = 3 * 60 * 60 * 1000;
 const TIMEOUT_MS = 8000;
 
 export function forecastUrl(lat: number, lon: number): string {
-  return `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
+  return `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&timezone=auto`;
 }
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -30,10 +30,11 @@ export function parseForecast(json: unknown): DailyForecast[] | null {
   const max = Array.isArray(daily.temperature_2m_max) ? daily.temperature_2m_max : [];
   const min = Array.isArray(daily.temperature_2m_min) ? daily.temperature_2m_min : [];
   const rain = Array.isArray(daily.precipitation_sum) ? daily.precipitation_sum : [];
+  const code = Array.isArray(daily.weather_code) ? daily.weather_code : [];
   const out: DailyForecast[] = [];
   daily.time.forEach((date, i) => {
     if (typeof date !== 'string' || !isNum(max[i]) || !isNum(min[i])) return;
-    out.push({ date, minC: min[i], maxC: max[i], precipMm: isNum(rain[i]) ? rain[i] : 0 });
+    out.push({ date, minC: min[i], maxC: max[i], precipMm: isNum(rain[i]) ? rain[i] : 0, ...(isNum(code[i]) ? { code: code[i] } : {}) });
   });
   return out.length ? out.slice(0, 7) : null;
 }

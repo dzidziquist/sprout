@@ -7,7 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask } from '@/engine/growPatch';
+import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, skyOf, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
 import { edibleGuide } from '@/data/edibles';
 import { speciesOf } from '@/data/species';
 import { useForecast } from '@/lib/weather';
@@ -27,6 +27,18 @@ function weekday(iso: string, i: number) {
   return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short' });
 }
 
+const CLOUD_TOP = 'M7 14h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 8.5 3 3 0 0 0 7 14z';
+/** Line icons for the forecast tiles, in the app's sticker style. */
+const SKY: Record<Sky, { d: string; word: string; tone: (c: Palette) => string }> = {
+  sun: { d: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4', word: 'sunny', tone: (c) => c.orange },
+  partly: { d: 'M8 2.5v1.5M2.5 8H4M4.1 4.1l1 1M11.9 4.1l-1 1M5.3 10.6A3 3 0 0 1 10.6 6M9 20h8a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 8 13.5 3.25 3.25 0 0 0 9 20z', word: 'partly cloudy', tone: (c) => c.orange },
+  cloud: { d: 'M7 18h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 12.5 3 3 0 0 0 7 18z', word: 'cloudy', tone: (c) => c.inkMuted },
+  fog: { d: 'M7 11h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 5.5 3 3 0 0 0 7 11zM4 15h16M6 19h12', word: 'foggy', tone: (c) => c.inkMuted },
+  rain: { d: `${CLOUD_TOP}M8.5 17l-1 3M12.5 17l-1 3M16.5 17l-1 3`, word: 'rain', tone: (c) => c.sky },
+  storm: { d: `${CLOUD_TOP}M12.5 15.5l-2 3.5h3l-2 3.5`, word: 'thunderstorms', tone: (c) => c.grape },
+  snow: { d: `${CLOUD_TOP}M8 18h.01M12 18h.01M16 18h.01M10 21h.01M14 21h.01`, word: 'snow', tone: (c) => c.sky },
+};
+
 function WeatherStrip({ forecast, alerts, c }: { forecast: DailyForecast[] | null; alerts: GrowAlert[]; c: Palette }) {
   const units = useUnits();
   if (!forecast) {
@@ -45,18 +57,19 @@ function WeatherStrip({ forecast, alerts, c }: { forecast: DailyForecast[] | nul
     <View style={styles.strip} accessibilityLabel="7-day forecast">
       {forecast.map((d, i) => {
         const tint = tintFor(d.date);
+        const sky = skyOf(d);
         return (
           <View
             key={d.date}
-            accessibilityLabel={`${weekday(d.date, i)}: high ${degrees(d.maxC, units)}, low ${degrees(d.minC, units)} degrees${tint ? ', alert' : ''}`}
+            accessibilityLabel={`${weekday(d.date, i)}: ${sky ? `${SKY[sky].word}, ` : ''}high ${degrees(d.maxC, units)}, low ${degrees(d.minC, units)} degrees${tint ? ', alert' : ''}`}
             style={[styles.day, { borderColor: c.line, backgroundColor: tint ?? c.card }, tint && { boxShadow: `0px 3px 0px ${c.drop}` }]}
           >
             <Text style={[styles.dayName, { color: c.ink }]} numberOfLines={1}>{weekday(d.date, i)}</Text>
+            <View style={{ height: 24, justifyContent: 'center' }}>
+              {sky ? <Icon d={SKY[sky].d} color={tint ? c.ink : SKY[sky].tone(c)} size={22} width={2.2} /> : null}
+            </View>
             <Text style={[styles.dayMax, { color: c.ink }]}>{degrees(d.maxC, units)}°</Text>
             <Text style={[styles.dayMin, { color: c.inkMuted }]}>{degrees(d.minC, units)}°</Text>
-            <View style={{ height: 14, justifyContent: 'center' }}>
-              {d.precipMm >= 5 ? <Icon d={GROW_ICON.rain} color={c.ink} size={14} width={2.4} /> : null}
-            </View>
           </View>
         );
       })}

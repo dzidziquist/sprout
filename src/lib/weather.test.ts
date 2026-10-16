@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CACHE_MS, CITY_COORDS, clearForecastCache, fetchForecast, forecastUrl, parseForecast } from './weather';
+import { skyOf } from '../engine/growPatch';
 
 // Trimmed real Open-Meteo response shape (Seattle, mid-October).
 const FIXTURE = {
@@ -66,5 +67,20 @@ describe('fetchForecast', () => {
     expect(await fetchForecast('seattle', { fetchImpl: offline as unknown as typeof fetch })).toBeNull();
     const err = vi.fn(async () => ({ ok: false, json: async () => ({}) }) as unknown as Response);
     expect(await fetchForecast('seattle', { fetchImpl: err as unknown as typeof fetch })).toBeNull();
+  });
+});
+
+describe('weather codes', () => {
+  it('reads the daily weather code when Open-Meteo sends one', () => {
+    const days = parseForecast({ daily: { ...FIXTURE.daily, weather_code: [0, 61, 95] } })!;
+    expect(days[0].code).toBe(0);
+    expect(days[2].code).toBe(95);
+    expect(days[3].code).toBeUndefined();
+  });
+
+  it('turns codes into a sky for the forecast icon, falling back to rainfall', () => {
+    expect([0, 1, 2, 3, 45, 53, 81, 73, 96].map((code) => skyOf({ code, precipMm: 0 }))).toEqual(['sun', 'sun', 'partly', 'cloud', 'fog', 'rain', 'rain', 'snow', 'storm']);
+    expect(skyOf({ precipMm: 6 })).toBe('rain');
+    expect(skyOf({ precipMm: 0 })).toBeUndefined();
   });
 });

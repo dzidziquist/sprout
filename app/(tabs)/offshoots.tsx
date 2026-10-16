@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTabPadding } from '@/hooks/useTabPadding';
 import { usePlantStore } from '@/store/plantStore';
 import { isReadyToPotUp, layoutForest, POT_UP_AFTER_DAYS, rootingDays } from '@/engine/treeLayout';
 import { FamilyTree, TREE_LAYOUT } from '@/components/FamilyTree';
@@ -21,6 +22,7 @@ type View_ = 'tree' | 'list';
 
 export default function OffshootsScreen() {
   const insets = useSafeAreaInsets();
+  const pad = useTabPadding(16);
   const router = useRouter();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
@@ -60,7 +62,7 @@ export default function OffshootsScreen() {
     .sort((a, b) => a.rooting!.startedAt.localeCompare(b.rooting!.startedAt));
 
   return (
-    <ScrollView ref={page} style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 16, paddingBottom: 130 }]}>
+    <ScrollView ref={page} style={{ backgroundColor: c.bg }} contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
       <View>
         <Title>Offshoots</Title>
         <Label muted>Every cutting keeps its family tree</Label>

@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTabPadding } from '@/hooks/useTabPadding';
 import { usePlantStore } from '@/store/plantStore';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
@@ -18,7 +18,7 @@ const GEAR =
 
 export default function MeScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const pad = useTabPadding(16);
   const c = useColors();
   const { profile, setProfile, events, plants } = usePlantStore();
   const living = plants.filter((p) => !p.archivedAt);
@@ -40,7 +40,7 @@ export default function MeScreen() {
 
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={[styles.page, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 120 }]}>
+    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
       <View style={styles.headerRow}>
         <Title style={{ flex: 1 }}>Your green thumb</Title>
         <GlassButton accessibilityLabel="Settings" onPress={() => router.push('/settings')}>

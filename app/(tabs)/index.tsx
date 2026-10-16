@@ -3,7 +3,7 @@ import { GrowTodayCard } from '@/components/GrowTodayCard';
 import { useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTabPadding } from '@/hooks/useTabPadding';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
@@ -75,7 +75,7 @@ function SwipeAction({ label, bg, slash, onPress }: { label: string; bg: string;
 }
 
 export default function TodayScreen() {
-  const insets = useSafeAreaInsets();
+  const pad = useTabPadding(8);
   const router = useRouter();
   const c = useColors();
   const { plants, profile, events, logCheck, undoLastCheck, undo } = usePlantStore();
@@ -131,8 +131,8 @@ export default function TodayScreen() {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: c.bg }}
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[styles.page, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 110 }]}
+      contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior}
+      contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}
     >
       <View style={styles.toolbar}>
         <Label muted>

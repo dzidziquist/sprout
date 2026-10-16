@@ -168,6 +168,24 @@ export interface DailyForecast {
   minC: number;
   maxC: number;
   precipMm: number;
+  /** WMO weather code from Open-Meteo (0 clear … 95+ thunderstorm), when the forecast has one. */
+  code?: number;
+}
+
+export type Sky = 'sun' | 'partly' | 'cloud' | 'fog' | 'rain' | 'storm' | 'snow';
+
+/** The day's sky in one word, for the forecast icon. Falls back to rainfall when there's no code. */
+export function skyOf(d: Pick<DailyForecast, 'code' | 'precipMm'>): Sky | undefined {
+  const c = d.code;
+  if (c === undefined) return d.precipMm >= 1 ? 'rain' : undefined;
+  if (c <= 1) return 'sun';
+  if (c === 2) return 'partly';
+  if (c === 3) return 'cloud';
+  if (c === 45 || c === 48) return 'fog';
+  if ((c >= 71 && c <= 77) || c === 85 || c === 86) return 'snow';
+  if (c >= 95) return 'storm';
+  if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return 'rain';
+  return 'cloud';
 }
 
 export type AlertKind = 'frost' | 'cold-set' | 'heat-set' | 'warm-nights' | 'heavy-rain';

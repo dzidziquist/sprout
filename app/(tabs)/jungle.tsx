@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTabPadding } from '@/hooks/useTabPadding';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { isDue, moodFor } from '@/engine/careEngine';
@@ -51,7 +51,7 @@ function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
   const tint = c.potTint[plant.potColor];
   const badge = statusOf(plant, faded, c, now, false);
   return (
-    <PlantMenu plant={plant} style={styles.card}>
+    <PlantMenu plant={plant} style={{ flex: 1 }}>
       <Sticker drop={faded ? 0 : 4} style={[{ flex: 1 }, faded && { opacity: 0.55 }]}>
         <View style={[styles.art, { backgroundColor: tint, borderColor: c.line }]}>
           <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} mood={faded ? 'happy' : mood} pot={plant.potColor} size={96} bg={tint} faces={faded ? 'off' : faces} />
@@ -131,14 +131,18 @@ function PlantCollection({ plants, view, faded }: { plants: Plant[]; view: Jungl
   ) : (
     <View style={styles.grid}>
       {plants.map((p) => (
-        <PlantCard key={p.id} plant={p} faded={faded} />
+        // The cell owns the width: on iOS the context-menu wrapper is a native view that would
+        // otherwise stretch to the full row and stack the cards in one column.
+        <View key={p.id} style={styles.card}>
+          <PlantCard plant={p} faded={faded} />
+        </View>
       ))}
     </View>
   );
 }
 
 export default function JungleScreen() {
-  const insets = useSafeAreaInsets();
+  const pad = useTabPadding(8);
   const router = useRouter();
   const c = useColors();
   const plants = usePlantStore((s) => s.plants);
@@ -190,7 +194,7 @@ export default function JungleScreen() {
   const activeLabel = chips.find((ch) => ch.key === active)?.label;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentInsetAdjustmentBehavior="automatic" contentContainerStyle={[styles.page, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 120 }]}>
+    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
       <View style={styles.toolbar}>
         <View style={{ flex: 1 }}>
           <Title>My jungle</Title>
