@@ -194,7 +194,8 @@ export type BadgeId =
   | 'generous'
   | 'grandma-plant'
   | 'streak-4'
-  | 'season';
+  | 'season'
+  | 'supporter';
 
 export interface Badge {
   id: BadgeId;
@@ -298,4 +299,13 @@ export function badgesFor({ plants, events, climate, now }: StreakInput, streak?
     { id: 'streak-4', title: '4-week streak', hint: 'Keep everyone checked for 4 weeks', earnedAt: s.reachedAt[3] },
     { id: 'season', title: `Survived ${season.name}`, hint: `Keep a plant going through ${season.name}`, earnedAt: seasonSurvivor(plants, events, climate), art: season.art },
   ];
+}
+
+/**
+ * The tip jar's thank-you badge. It's only shown to people who tipped (never as a locked badge
+ * someone could feel pushed to buy), so it sits outside `badgesFor` and its "13 for everyone".
+ */
+export function supporterBadge(since: string | undefined): Badge | undefined {
+  if (!since) return undefined;
+  return { id: 'supporter', title: 'PlantFam supporter', hint: 'Left a tip in the tip jar', earnedAt: since };
 }

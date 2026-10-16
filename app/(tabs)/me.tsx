@@ -9,7 +9,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
 import { BadgeSticker } from '@/components/BadgeSticker';
-import { badgesFor, computeStreak } from '@/engine/streak';
+import { badgesFor, computeStreak, supporterBadge } from '@/engine/streak';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 
@@ -29,14 +29,20 @@ export default function MeScreen() {
   const { streak, badges } = useMemo(() => {
     const input = { plants, events, climate: profile.climate, now: new Date() };
     const s = computeStreak(input);
-    return { streak: s, badges: badgesFor(input, s) };
-  }, [plants, events, profile.climate]);
+    const thanks = profile.supporter ? supporterBadge(profile.supporterSince) : undefined;
+    return { streak: s, badges: thanks ? [thanks, ...badgesFor(input, s)] : badgesFor(input, s) };
+  }, [plants, events, profile.climate, profile.supporter, profile.supporterSince]);
   const earned = badges.filter((b) => b.earnedAt).length;
 
   // profile.streakFreezes mirrors what's left this month (the engine refills it to 2 every month).
   useEffect(() => {
     if (profile.streakFreezes !== streak.freezesLeft) setProfile({ streakFreezes: streak.freezesLeft });
   }, [streak.freezesLeft, profile.streakFreezes, setProfile]);
+
+  // Tips left before the supporter badge existed have no date yet: setProfile stamps one.
+  useEffect(() => {
+    if (profile.supporter && !profile.supporterSince) setProfile({ supporter: true });
+  }, [profile.supporter, profile.supporterSince, setProfile]);
 
 
   return (

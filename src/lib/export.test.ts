@@ -70,7 +70,8 @@ describe('buildExportJson', () => {
     expect(doc.plants).toHaveLength(3);
     expect(doc.events).toHaveLength(5);
     expect(doc.profile.city).toBe('Seattle');
-    expect(doc.profile).not.toHaveProperty('supporter');
+    // The tip travels with the backup so the thank-you follows someone to a new phone.
+    expect(doc.profile.supporter).toBe(true);
     expect(doc.profile).not.toHaveProperty('streakFreezes');
   });
 });

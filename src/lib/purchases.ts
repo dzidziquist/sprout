@@ -4,8 +4,8 @@ import { usePlantStore } from '../store/plantStore';
 
 /*
  * The tip jar, via RevenueCat. Everything in PlantFam is free; tips are optional one-time
- * (consumable) purchases that unlock nothing. `profile.supporter` remembers that someone tipped,
- * so the app can say thank you.
+ * (consumable) purchases that unlock no features. `profile.supporter` remembers that someone tipped,
+ * so the app can say thank you with small cosmetic gifts (supporter badge, gold cards, party hat).
  *
  * Purchases only run on iOS/Android with an API key. On web (and in builds without a key)
  * `purchasesAvailable()` is false and the tip jar shows fallback prices with a note.
@@ -76,9 +76,21 @@ export function hasTipped(info: CustomerInfo | null | undefined): boolean {
   return Boolean(info?.nonSubscriptionTransactions?.some((t) => TIP_IDS.has(t.productIdentifier)));
 }
 
+/** When the first tip was made, from the store's history. */
+export function firstTipAt(info: CustomerInfo | null | undefined): string | undefined {
+  return info?.nonSubscriptionTransactions
+    ?.filter((t) => TIP_IDS.has(t.productIdentifier))
+    .map((t) => new Date(t.purchaseDate).toISOString())
+    .sort()[0];
+}
+
 /** Only ever switches the thank-you on: a tip remembered on this phone stays remembered. */
 function remember(info: CustomerInfo) {
-  if (hasTipped(info) && !usePlantStore.getState().profile.supporter) usePlantStore.getState().setProfile({ supporter: true });
+  const { profile, setProfile } = usePlantStore.getState();
+  if (!hasTipped(info)) return;
+  const first = firstTipAt(info);
+  const since = [profile.supporterSince, first].filter((d): d is string => !!d).sort()[0];
+  if (!profile.supporter || since !== profile.supporterSince) setProfile({ supporter: true, supporterSince: since });
 }
 
 let configured = false;

@@ -232,7 +232,7 @@ export default function SettingsScreen() {
 
       <DataCard />
 
-      <Section title="Support PlantFam" footer="Everything in PlantFam is free. Tips are optional and unlock nothing.">
+      <Section title="Support PlantFam" footer="Everything in PlantFam is free. Tips are optional and come with small thank-you gifts.">
         <Row label="Tip jar" value={supporter ? 'Thank you 💚' : undefined} onPress={() => router.push('/tips')} last />
       </Section>
 

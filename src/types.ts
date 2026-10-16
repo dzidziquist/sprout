@@ -58,7 +58,8 @@ export type Origin = 'bought' | 'cutting' | 'swap' | 'gift';
 /** Growth stage for edibles (tomato, pepper, spring onion, herbs). */
 export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruiting' | 'harvesting' | 'resting';
 
-export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum';
+/** 'gold' is a supporter thank-you; species art never uses it. */
+export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum' | 'gold';
 
 /** Plants with their own illustrated buddy (assets/buddies). Other species borrow the closest one. */
 export type ArtId =
@@ -99,7 +100,7 @@ export interface Species {
   petToxic: boolean;
   edible: boolean;
   /** Pot colour in the species illustration; new plants default to it. */
-  artPot: PotColor;
+  artPot: Exclude<PotColor, 'gold'>;
   /** Which illustrated buddy to show (its own, or the closest look-alike until it gets one). */
   art: ArtId;
   category: PlantCategory;

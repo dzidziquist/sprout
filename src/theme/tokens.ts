@@ -32,6 +32,7 @@ export const potHex: Record<PotColor, string> = {
   coral: colors.coral,
   grape: colors.grape,
   bubblegum: colors.bubblegum,
+  gold: '#E0A526',
 };
 
 /** A soft background tint that pairs with each pot colour. */
@@ -41,6 +42,7 @@ export const potTint: Record<PotColor, string> = {
   coral: colors.peach,
   grape: colors.lavender,
   bubblegum: colors.blush,
+  gold: '#F0C24B',
 };
 
 export const fonts = {

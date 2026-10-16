@@ -5,6 +5,7 @@ import { useTips } from '../hooks/useTips';
 import * as haptics from '../lib/haptics';
 import { fonts } from '../theme/tokens';
 import { textOn, useColors } from '../theme/theme';
+import { PartyHat } from './PartyHat';
 import { PlantBuddy } from './PlantBuddy';
 
 /** Tip jar on the Me tab: a friendly invite, or a thank-you once someone has tipped. Nothing is locked either way. */
@@ -26,6 +27,11 @@ export function TipJarCard() {
     >
       <View style={[styles.buddyTile, { backgroundColor: c.card, borderColor: c.line }]}>
         <PlantBuddy speciesId={supporter ? 'pothos' : 'monstera'} size={64} />
+        {supporter && (
+          <View style={styles.hat}>
+            <PartyHat size={30} />
+          </View>
+        )}
       </View>
       <View style={{ flex: 1, gap: 2 }}>
         <Text style={[styles.title, { color: ink }]}>{supporter ? 'PlantFam supporter 💚' : 'Tip jar'}</Text>
@@ -43,6 +49,7 @@ export function TipJarCard() {
 const styles = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 22, borderWidth: 2 },
   buddyTile: { width: 68, height: 68, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-5deg' }] },
+  hat: { position: 'absolute', top: -16, right: -8, transform: [{ rotate: '22deg' }] },
   arrow: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   title: { fontFamily: fonts.display, fontSize: 19 },
   body: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 18 },

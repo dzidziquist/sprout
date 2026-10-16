@@ -106,6 +106,22 @@ describe('plant store', () => {
   });
 });
 
+describe('supporter thank-you', () => {
+  it('dates the first tip and keeps that date', () => {
+    usePlantStore.getState().setProfile({ supporter: true }, now);
+    usePlantStore.getState().setProfile({ supporter: true }, new Date('2026-12-01T09:00:00'));
+    expect(usePlantStore.getState().profile.supporterSince).toBe(now.toISOString());
+  });
+
+  it('carries a tip in from a backup, and never drops one already on this phone', () => {
+    const data = { plants: [], events: [] };
+    usePlantStore.getState().restoreBackup({ ...data, profile: { supporter: true, supporterSince: '2026-01-02T00:00:00.000Z' } });
+    expect(usePlantStore.getState().profile).toMatchObject({ supporter: true, supporterSince: '2026-01-02T00:00:00.000Z' });
+    usePlantStore.getState().restoreBackup({ ...data, profile: { supporter: false } });
+    expect(usePlantStore.getState().profile.supporter).toBe(true);
+  });
+});
+
 describe('review fixes', () => {
   it('undoing a check keeps the other care logged alongside it', () => {
     const s = usePlantStore.getState();
