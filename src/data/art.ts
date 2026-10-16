@@ -5,7 +5,7 @@ import type { ImageSourcePropType } from 'react-native';
  * Keyed by where they're used, so screens never reference files directly.
  */
 export const ART = {
-  logo: require('../../assets/art/logo-sticker.png'),
+  logo: require('../../assets/art/logo-wordmark.png'),
   welcome: require('../../assets/art/onboarding-welcome.png'),
   emptyJungle: require('../../assets/art/empty-jungle.png'),
   caughtUp: require('../../assets/art/empty-caught-up.png'),

@@ -51,6 +51,10 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         </View>
       </View>
 
+      <Text style={[styles.how, { color: c.ink }]}>
+        Each box is a week. It turns green when every plant gets its check on time. Missed one? A free pass saves the week.
+      </Text>
+
       <View style={styles.footer}>
         <Text style={[styles.meta, { color: c.ink }]}>Best: {streak.best} {streak.best === 1 ? 'week' : 'weeks'}</Text>
         <View style={styles.freezes} accessibilityLabel={`${streak.freezesLeft} free passes left this month`}>
@@ -77,4 +81,5 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 },
   freezes: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  how: { fontFamily: fonts.body, fontSize: 12, lineHeight: 16, opacity: 0.85 },
 });
