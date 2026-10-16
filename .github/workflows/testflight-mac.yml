@@ -1,0 +1,59 @@
+name: TestFlight (GitHub Mac)
+
+# Builds the iOS app on a GitHub macOS runner with Xcode 26 and sends it to TestFlight.
+# Use it when EAS cloud builds aren't available (free plan used up). Start it from the Actions tab,
+# which works from any browser, iPad included.
+#
+# Why Xcode 26: apps built with the iOS 27 SDK (Xcode 27) must adopt the UIScene lifecycle or they
+# crash on launch, and Expo SDK 54 doesn't yet. Xcode 26 builds run fine on iOS 27.
+#
+# Needs the EXPO_TOKEN repository secret. Signing credentials and the App Store Connect API key
+# come from EAS, where they were set up by the first interactive build.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Xcode 26
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | grep -v -i beta | sort -V | tail -1)
+          if [ -z "$XCODE" ]; then
+            echo "No Xcode 26 on this runner. Installed:"; ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
+          xcodebuild -version
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run ts:check
+      - run: npm test
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build on this Mac
+        run: eas build --platform ios --profile production --local --non-interactive --output "$RUNNER_TEMP/PlantFam.ipa"
+
+      - name: Send to TestFlight
+        run: eas submit --platform ios --profile production --path "$RUNNER_TEMP/PlantFam.ipa" --non-interactive
+
+      - name: Keep the .ipa for 7 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlantFam-ipa
+          path: ${{ runner.temp }}/PlantFam.ipa
+          retention-days: 7
+          if-no-files-found: ignore
