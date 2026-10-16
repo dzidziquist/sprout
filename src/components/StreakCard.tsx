@@ -6,6 +6,8 @@ import { fonts } from '@/theme/tokens';
 import { FREEZES_PER_MONTH, type StreakResult } from '@/engine/streak';
 
 const SPROUT = 'M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z';
+/** Week boxes in the row, including "now". */
+const SLOTS = 7;
 const FREEZE = 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5';
 
 function copyFor(s: StreakResult): string {
@@ -17,7 +19,11 @@ function copyFor(s: StreakResult): string {
 /** Weekly streak, drawn as a growing sprout. No flames, no guilt. */
 export function StreakCard({ streak }: { streak: StreakResult }) {
   const c = useColors();
-  const recent = streak.weeks.slice(-7);
+  // The row fills left to right: weeks since care began, then "now", then empty boxes for the weeks ahead.
+  // Quiet weeks from before the first real week are left out, so a new streak starts at the left.
+  const begun = streak.weeks.findIndex((w) => w.status !== 'quiet');
+  const recent = (begun === -1 ? [] : streak.weeks.slice(begun)).slice(-(SLOTS - 1));
+  const ahead = SLOTS - 1 - recent.length;
   const weeks = streak.current === 1 ? 'week' : 'weeks';
   return (
     <Sticker bg={c.mint} drop={5} style={styles.card}>
@@ -35,7 +41,7 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         </View>
       </View>
 
-      <View style={styles.weeks} accessibilityLabel={`Last ${recent.length + 1} weeks`}>
+      <View style={styles.weeks} accessibilityLabel={recent.length ? `Last ${recent.length + 1} weeks` : 'This week'}>
         {recent.map((w) => {
           const bg = w.status === 'kept' ? c.leaf : w.status === 'repaired' ? c.sky : w.status === 'quiet' ? c.cloud : c.card;
           return (
@@ -49,6 +55,9 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         <View style={[styles.week, styles.now, { borderColor: c.line, backgroundColor: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.card : streak.thisWeek === 'covered' ? c.sky : c.leafLight }]}>
           <Text style={[styles.nowText, { color: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.ink : c.onBright }]}>now</Text>
         </View>
+        {Array.from({ length: ahead }, (_, i) => (
+          <View key={`ahead-${i}`} style={[styles.week, styles.ahead, { borderColor: c.inkMuted }]} />
+        ))}
       </View>
 
       <Text style={[styles.how, { color: c.ink }]}>
@@ -86,6 +95,7 @@ const styles = StyleSheet.create({
   weeks: { flexDirection: 'row', gap: 6 },
   week: { flex: 1, height: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center', maxWidth: 44 },
   now: { maxWidth: 56, flexGrow: 1.3 },
+  ahead: { borderStyle: 'dashed', opacity: 0.45 },
   nowText: { fontFamily: fonts.bodyHeavy, fontSize: 10 },
   footer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 },
   freezes: { flexDirection: 'row', alignItems: 'center', gap: 6 },
