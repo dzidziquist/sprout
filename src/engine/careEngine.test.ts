@@ -189,3 +189,23 @@ describe('hydro and semi-hydro', () => {
     expect(isRefreshDue({ soil: 'water', createdAt: joined }, new Date('2026-07-10T00:00:00Z'))).toBe(false);
   });
 });
+
+describe('garden beds', () => {
+  it('dry slower than any pot outside, and ignore pot size and material', () => {
+    const bed = interval({ placement: 'ground', soil: 'garden_soil' });
+    expect(bed).toBeGreaterThan(interval({ placement: 'outdoor', potDiameterCm: 32 }));
+    expect(interval({ placement: 'ground', soil: 'garden_soil', potDiameterCm: 8, potMaterial: 'terracotta' })).toBe(bed);
+  });
+
+  it('follow the outdoor season, rain included', () => {
+    expect(seasonMultiplier('seattle', 'ground', december)).toBe(seasonMultiplier('seattle', 'outdoor', december));
+  });
+
+  it('never warn about garden soil in a bed, only in a pot', () => {
+    const at = july;
+    const inBed = applyCheck({ group: 'edible', plant: { ...basePlant, placement: 'ground', soil: 'garden_soil' }, profile: 'seattle', at }, 'dry');
+    const inPot = applyCheck({ group: 'edible', plant: { ...basePlant, placement: 'outdoor', soil: 'garden_soil' }, profile: 'seattle', at }, 'dry');
+    expect(inBed.flags).not.toContain('garden_soil');
+    expect(inPot.flags).toContain('garden_soil');
+  });
+});

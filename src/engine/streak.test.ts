@@ -173,8 +173,8 @@ describe('badges', () => {
     expect([season('seattle').title, season('seattle').art]).toEqual(['Survived grey season', 'season']);
     expect([season(city('Toronto, Canada', 'seattle', true)).title, season(city('Toronto, Canada', 'seattle', true)).art]).toEqual(['Survived winter', 'survived-winter']);
     expect(season(city('London, UK', 'seattle', false)).title).toBe('Survived cool season');
-    // Harmattan has no badge art yet: the line icon, not the raincloud.
-    expect([season('accra').title, season('accra').art]).toEqual(['Survived harmattan', null]);
+    // Harmattan and dry season share the dry-season art.
+    expect([season('accra').title, season('accra').art]).toEqual(['Survived harmattan', 'survived-dry-season']);
     expect(season(city('Lagos, Nigeria', 'accra', false)).title).toBe('Survived dry season');
     // Every climate gets the same 13 milestones: one season badge, nothing locked forever.
     for (const climate of ['seattle', 'accra', city('Toronto, Canada', 'seattle', true)] as ClimateProfile[]) {

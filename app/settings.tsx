@@ -9,14 +9,17 @@ import { usePlantStore, type FaceStyle, type Profile } from '@/store/plantStore'
 import { GlassButton } from '@/components/GlassButton';
 import { Segmented } from '@/components/Segmented';
 import { DataCard } from '@/components/DataCard';
+import { AppIconPicker } from '@/components/AppIconPicker';
 import { Label, Title } from '@/components/ui';
-import { usePlus } from '@/hooks/usePlus';
+import { useRewards } from '@/hooks/useRewards';
+import { SPOTS } from '@/lib/spots';
 import { requestPermission } from '@/lib/notifications';
 import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
-import { APP_VERSION, MANAGE_SUBSCRIPTIONS_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
+import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts } from '@/theme/tokens';
-import { useColors } from '@/theme/theme';
+import { ACCENTS, useColors } from '@/theme/theme';
+import type { Accent } from '@/types';
 
 const TIMES = [
   { label: '8:30 am', hour: 8, minute: 30 },
@@ -47,6 +50,12 @@ function confirm(title: string, body: string, action: string): Promise<boolean> 
 }
 
 /** A group of settings with a heading, iOS-style. */
+const PHOTO_NOTE = {
+  weekly: 'Sundays: a nudge to snap anyone without a photo this week. It rides along with the plant round.',
+  monthly: 'First Sunday of the month: a nudge to snap anyone without a recent photo, so the diary shows them growing.',
+  off: 'No photo nudges. You can still add photos from any plant’s page.',
+} as const;
+
 function Section({ title, children, footer }: { title: string; children: React.ReactNode; footer?: string }) {
   const c = useColors();
   return (
@@ -100,16 +109,9 @@ export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile, setProfile, plants, eraseEverything } = usePlantStore();
-  const { isPlus, available, restore } = usePlus();
-  const [restoreMsg, setRestoreMsg] = useState<string | null>(null);
+  const rewards = useRewards();
 
   const roundValue = profile.round.enabled ? (TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null) : 'Off';
-
-  const restorePurchases = async () => {
-    setRestoreMsg('Checking with Apple…');
-    const res = await restore();
-    setRestoreMsg(res.ok ? (res.isPlus ? 'PlantFam Plus is active. Thank you!' : 'No PlantFam Plus purchase found for this Apple ID.') : res.message);
-  };
 
   const eraseAll = async () => {
     const n = plants.length;
@@ -128,7 +130,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }]}>
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/me'))}>
           <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
@@ -136,8 +138,8 @@ export default function SettingsScreen() {
       </View>
       <Title>Settings</Title>
 
-      <Section title="Reminders" footer="One reminder a day, and only when a plant is ready for a check. Nothing due means no notification.">
-        <Field label="Daily plant round" last>
+      <Section title="Reminders" footer="At most one reminder a day: when a plant is ready for a check, or on photo day. Nothing due means no notification.">
+        <Field label="Daily plant round">
           <Segmented
             label="Daily plant round"
             value={roundValue}
@@ -151,11 +153,45 @@ export default function SettingsScreen() {
             }}
           />
         </Field>
+        <Field label="Progress photos" last note={PHOTO_NOTE[profile.photos ?? 'monthly']}>
+          <Segmented
+            label="Progress photos"
+            value={profile.photos ?? 'monthly'}
+            options={[
+              { id: 'weekly' as const, label: 'Weekly' },
+              { id: 'monthly' as const, label: 'Monthly' },
+              { id: 'off' as const, label: 'Off' },
+            ]}
+            onChange={(v) => setProfile({ photos: v })}
+          />
+        </Field>
       </Section>
 
       <Section title="Look and feel">
         <Field label="Appearance">
           <Segmented label="Appearance" value={profile.theme} options={THEMES} onChange={(t) => setProfile({ theme: t })} />
+        </Field>
+        <Field label="Main colour">
+          <View style={styles.accents} accessibilityRole="radiogroup">
+            {(Object.keys(ACCENTS) as Accent[]).map((a) => {
+              const on = (profile.accent ?? 'leaf') === a;
+              return (
+                <Pressable
+                  key={a}
+                  accessibilityRole="radio"
+                  accessibilityLabel={`${ACCENTS[a].label} main colour`}
+                  accessibilityState={{ selected: on }}
+                  onPress={() => {
+                    haptics.tap();
+                    setProfile({ accent: a });
+                  }}
+                  style={[styles.accent, { backgroundColor: ACCENTS[a].leaf, borderColor: c.line, borderWidth: on ? 4 : 2 }]}
+                >
+                  {on && <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="m5 12 5 5 9-10" stroke={c.onBright} strokeWidth={3.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>}
+                </Pressable>
+              );
+            })}
+          </View>
         </Field>
         <Field label="Plant faces" note={FACE_NOTE[profile.faces]}>
           <Segmented
@@ -183,6 +219,28 @@ export default function SettingsScreen() {
         <Field label="Your city">
           <PlacePicker value={profile.climate} onPick={(climate, city) => setProfile({ climate, city })} />
         </Field>
+        <Field label="Your spots" note="New plants start in your most likely spot: edibles in the garden bed or on the balcony, houseplants indoors or on the windowsill. You can change any plant later.">
+          <View style={styles.chips}>
+            {SPOTS.map((sp) => {
+              const on = (profile.spots ?? []).includes(sp.id);
+              return (
+                <Pressable
+                  key={sp.id}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: on }}
+                  onPress={() => {
+                    haptics.tap();
+                    const cur = profile.spots ?? [];
+                    setProfile({ spots: on ? cur.filter((x) => x !== sp.id) : [...cur, sp.id] });
+                  }}
+                  style={[styles.chip, { borderColor: c.line, backgroundColor: on ? c.ink : c.card }]}
+                >
+                  <Text style={[styles.chipText, { color: on ? c.bg : c.ink }]}>{sp.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </Field>
         <Field label="Grows in" last note={profile.grows.hydro ? 'Adding a plant asks soil, LECA or water up front. Hydro plants get water-line checks and fresh-water reminders.' : 'Growing in LECA or water too? Turn this on to pick it up front when adding plants.'}>
           <Segmented
             label="Grows in"
@@ -198,11 +256,11 @@ export default function SettingsScreen() {
 
       <DataCard />
 
-      <Section title="PlantFam Plus" footer={restoreMsg ?? undefined}>
-        <Row label="PlantFam Plus" value={isPlus ? 'Active ✓' : 'Not active'} onPress={() => router.push('/plus')} />
-        <Row label="Restore purchases" onPress={available ? restorePurchases : () => setRestoreMsg('Purchases work in the PlantFam iPhone app.')} chevron={false} last={!isPlus} />
-        {isPlus && <Row label="Manage subscription" onPress={() => Linking.openURL(MANAGE_SUBSCRIPTIONS_URL)} last />}
+      <Section title="Support PlantFam" footer="PlantFam is free for everyone. Rate it, share it, or send an idea, and see the gifts your fam grows into.">
+        <Row label="Support PlantFam" value={`${rewards.earned} milestones`} onPress={() => router.push('/support')} last />
       </Section>
+
+      {rewards.icons.unlocked && <AppIconPicker />}
 
       <Section title="About">
         <Row label="How PlantFam works" onPress={() => router.push('/help')} />
@@ -229,6 +287,8 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 20 },
   header: { flexDirection: 'row' },
+  accents: { flexDirection: 'row', gap: 12, paddingTop: 4 },
+  accent: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, letterSpacing: 0.6, paddingHorizontal: 4 },
   group: { borderWidth: 2, borderRadius: 20, overflow: 'hidden' },
   row: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14 },
@@ -237,4 +297,7 @@ const styles = StyleSheet.create({
   field: { padding: 14, gap: 10 },
   note: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   footer: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17, paddingHorizontal: 4 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  chip: { borderWidth: 2, borderRadius: 16, paddingHorizontal: 12, minHeight: 36, justifyContent: 'center' },
+  chipText: { fontFamily: fonts.displaySemi, fontSize: 14 },
 });

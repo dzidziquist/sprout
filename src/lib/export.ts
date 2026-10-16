@@ -4,7 +4,7 @@ import type { CareEvent, Plant } from '../types';
 
 /*
  * Backups (free for everyone): a full JSON file you can restore on any phone.
- * Spreadsheet export (PlantFam Plus): the care diary as CSV.
+ * Spreadsheet export (free): the care diary as CSV.
  * The builders are pure so they can be tested; file writing and sharing load lazily so this
  * module stays importable from tests and from the web build.
  */
@@ -18,11 +18,12 @@ export interface ExportSource {
   events: CareEvent[];
 }
 
-/** Profile fields that are app plumbing rather than the user's data. */
+/** Profile fields that are app plumbing rather than the user's data. `supporter` stays so a tip's thank-you moves phones. */
 const INTERNAL_PROFILE_KEYS = ['plus', 'streakFreezes', 'lastBackupAt'] as const;
 
 export function buildExportJson(src: ExportSource, now = new Date()): string {
-  const profile: Partial<Profile> = { ...src.profile };
+  // `plus` is the old (pre tip jar) name of `supporter`, still dropped from older profiles.
+  const profile: Partial<Profile> & { plus?: boolean } = { ...src.profile };
   for (const k of INTERNAL_PROFILE_KEYS) delete profile[k];
   const doc = {
     app: 'PlantFam',
@@ -113,10 +114,9 @@ export function backupMyData(src: ExportSource): Promise<ExportOutcome> {
   return shareFiles([{ name: JSON_FILE, mime: 'application/json', uti: 'public.json', body: buildExportJson(src) }]);
 }
 
-/** Plus: backup plus the spreadsheet-friendly care diary. */
-export function exportMyData(src: ExportSource): Promise<ExportOutcome> {
+/** Free for everyone: the care diary as a spreadsheet for Numbers, Excel or Sheets. */
+export function exportSpreadsheet(src: ExportSource): Promise<ExportOutcome> {
   return shareFiles([
-    { name: JSON_FILE, mime: 'application/json', uti: 'public.json', body: buildExportJson(src) },
     // A BOM helps Excel read names with accents and emoji as UTF-8.
     { name: CSV_FILE, mime: 'text/csv', uti: 'public.comma-separated-values-text', body: '\uFEFF' + buildCareDiaryCsv(src.plants, src.events) },
   ]);

@@ -38,19 +38,21 @@ design boards and docs out of the upload.
 | `EXPO_PUBLIC_RC_IOS_KEY` | In-app purchases | RevenueCat → Project → API keys (Apple) |
 | `EXPO_PUBLIC_RC_ANDROID_KEY` | Android purchases (later) | RevenueCat → API keys (Google) |
 
-Without a key the app still works: Photo ID explains it isn't set up yet, and the paywall shows prices but says purchases open in the iPhone app.
+Without a key the app still works: Photo ID explains it isn't set up yet, and the tip jar shows prices but says tips open in the iPhone app.
 
 ## 3. App Store Connect
+- **Tips are switched off** (`TIPS_ENABLED = false`): PlantFam is free with no in-app purchases, so skip the Paid Apps agreement, the products below and RevenueCat. Kept for reference if tips are ever switched on:
 - Agreements, tax and banking: accept the Paid Apps agreement.
-- In-app purchases:
-  - `plantfam_plus_yearly`: auto-renewable subscription, **$7.99/yr, no free trial or intro offer**
-  - `plantfam_plus_lifetime`: non-consumable, **$19.99**
+- In-app purchases: three **consumables** (tips; everything in the app is free and tips unlock nothing):
+  - `plantfam_tip_small`: **$2.99** ("Seed")
+  - `plantfam_tip_medium`: **$4.99** ("Sprout")
+  - `plantfam_tip_large`: **$9.99** ("Big leaf")
+  Review note: "Optional tips. The app is fully free; tips unlock no features. As a thank-you, tippers get a few cosmetic extras (a supporter badge, a gold card colour, a party buddy, alternate app icons)." 
 - Privacy: photos stay on device (diary); photo ID sends the chosen photo to Pl@ntNet. No tracking.
 
 ## 4. RevenueCat
 - Connect the App Store app (in-app purchase key / shared secret).
-- Entitlement id **`plus`**, unlocked by both products.
-- Current offering with packages `$rc_annual` (yearly) and `$rc_lifetime` (lifetime).
+- Add the three tip products. No entitlement or offering is needed: the app loads them by product id and checks past tips in the customer's purchase history.
 
 ## 5. Before public launch
 - Contact currently points to `SUPPORT_URL` (dzidziquist.com). Optionally set `SUPPORT_EMAIL`, and set `PRIVACY_POLICY_URL`, in `src/config.ts`. Host `docs/legal/privacy-policy.md` (fill in its contact line) and use that URL in App Store Connect. App Privacy answers are in `docs/legal/app-store-privacy.md`. Terms use Apple's standard EULA.

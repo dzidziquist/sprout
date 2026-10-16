@@ -95,14 +95,30 @@ describe('plant store', () => {
     expect(p.nextCheckAt).toBe(now.toISOString());
   });
 
-  it('erases everything but keeps the Plus purchase', () => {
-    usePlantStore.setState({ profile: { ...DEFAULT_PROFILE, plus: true, theme: 'dark' } });
+  it('erases everything but remembers the tip', () => {
+    usePlantStore.setState({ profile: { ...DEFAULT_PROFILE, supporter: true, theme: 'dark' } });
     usePlantStore.getState().addPlant({ ...base, name: 'Gone' }, now);
     usePlantStore.getState().eraseEverything();
     const st = usePlantStore.getState();
     expect(st.plants).toEqual([]);
     expect(st.onboarded).toBe(false);
-    expect(st.profile).toMatchObject({ plus: true, theme: 'system' });
+    expect(st.profile).toMatchObject({ supporter: true, theme: 'system' });
+  });
+});
+
+describe('supporter thank-you', () => {
+  it('dates the first tip and keeps that date', () => {
+    usePlantStore.getState().setProfile({ supporter: true }, now);
+    usePlantStore.getState().setProfile({ supporter: true }, new Date('2026-12-01T09:00:00'));
+    expect(usePlantStore.getState().profile.supporterSince).toBe(now.toISOString());
+  });
+
+  it('carries a tip in from a backup, and never drops one already on this phone', () => {
+    const data = { plants: [], events: [] };
+    usePlantStore.getState().restoreBackup({ ...data, profile: { supporter: true, supporterSince: '2026-01-02T00:00:00.000Z' } });
+    expect(usePlantStore.getState().profile).toMatchObject({ supporter: true, supporterSince: '2026-01-02T00:00:00.000Z' });
+    usePlantStore.getState().restoreBackup({ ...data, profile: { supporter: false } });
+    expect(usePlantStore.getState().profile.supporter).toBe(true);
   });
 });
 

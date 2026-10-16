@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePlantStore } from '../store/plantStore';
-import { backupMyData, parseBackup, pickBackupText, type BackupData } from '../lib/export';
+import { backupMyData, exportSpreadsheet, parseBackup, pickBackupText, type BackupData } from '../lib/export';
 import * as haptics from '../lib/haptics';
 import { Button, Sticker } from './ui';
 import { fonts } from '../theme/tokens';
@@ -28,7 +28,7 @@ export function DataCard() {
   const c = useColors();
   const router = useRouter();
   const { profile, plants, events, setProfile, restoreBackup } = usePlantStore();
-  const [busy, setBusy] = useState<'backup' | 'restore' | null>(null);
+  const [busy, setBusy] = useState<'backup' | 'restore' | 'csv' | null>(null);
   const [msg, setMsg] = useState<{ text: string; bad?: boolean } | null>(null);
   const last = fmt(profile.lastBackupAt);
   const stale = !profile.lastBackupAt || Date.now() - new Date(profile.lastBackupAt).getTime() > 30 * 86400000;
@@ -43,6 +43,15 @@ export function DataCard() {
       setProfile({ lastBackupAt: new Date().toISOString() });
       setMsg({ text: 'Backup saved. Keep it in Files, iCloud Drive or email it to yourself.' });
     } else setMsg({ text: res.message, bad: true });
+  };
+
+  const spreadsheet = async () => {
+    setBusy('csv');
+    setMsg(null);
+    const res = await exportSpreadsheet({ profile, plants, events });
+    setBusy(null);
+    if (res.ok) haptics.success();
+    setMsg(res.ok ? { text: 'Care diary exported. Open it in Numbers, Excel or Sheets.' } : { text: res.message, bad: true });
   };
 
   const restore = async () => {
@@ -85,6 +94,7 @@ export function DataCard() {
           <Button title={busy === 'backup' ? 'Saving…' : 'Back up now'} raised disabled={!!busy} onPress={backup} style={{ flex: 1 }} />
           <Button title={busy === 'restore' ? 'Opening…' : 'Restore'} bg={c.cloud} disabled={!!busy} onPress={restore} style={{ flex: 1 }} />
         </View>
+        <Button title={busy === 'csv' ? 'Exporting…' : 'Export care diary (spreadsheet)'} bg={c.card} disabled={!!busy || plants.length === 0} onPress={spreadsheet} />
         {msg && <Text style={[styles.small, { color: msg.bad ? c.warn : c.good }]}>{msg.text}</Text>}
       </Sticker>
     </View>

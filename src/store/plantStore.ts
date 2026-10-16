@@ -3,7 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addDays, applyCheck, initialNextCheck, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { speciesOf } from '../data/species';
-import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant } from '../types';
+import type { Spot } from '../lib/spots';
+import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
 
@@ -11,14 +12,22 @@ export interface Profile {
   climate: ClimateProfile;
   city: string;
   faces: FaceStyle;
+  /** Where they grow (onboarding / Settings). Picks each new plant's default spot. Empty: species defaults. */
+  spots: Spot[];
   /** hydro: grows in LECA or water too (shows the medium choice up front when adding). */
   grows: { houseplants: boolean; edibles: boolean; cuttings: boolean; hydro?: boolean };
   /** Daily plant round reminder. */
   round: { enabled: boolean; hour: number; minute: number };
+  /** "Photo day" nudge for progress photos, riding along with the round. */
+  photos: 'off' | 'weekly' | 'monthly';
   /** Appearance: follow the phone, or force light/dark. */
   theme: 'system' | 'light' | 'dark';
-  /** Cached PlantFam Plus entitlement (RevenueCat is the source of truth on device). */
-  plus: boolean;
+  /** Main colour; leaf green unless changed. */
+  accent?: Accent;
+  /** Has left a tip in the tip jar. Nothing is locked; it powers the thank-you gifts (badge, gold cards, party hat). */
+  supporter: boolean;
+  /** When the first tip was noticed on this phone: the supporter badge's date. */
+  supporterSince?: string;
   /** Streak repairs left this month (free; refilled monthly). */
   streakFreezes: number;
   /** The "how to check soil" coach on Today was dismissed. */
@@ -35,10 +44,12 @@ export const DEFAULT_PROFILE: Profile = {
   climate: 'seattle',
   city: 'Seattle',
   faces: 'full',
+  spots: [],
   grows: { houseplants: true, edibles: true, cuttings: true, hydro: false },
   round: { enabled: true, hour: 8, minute: 30 },
+  photos: 'monthly',
   theme: 'system',
-  plus: false,
+  supporter: false,
   streakFreezes: 2,
   coachDismissed: false,
   units: 'auto',
@@ -129,6 +140,7 @@ export const usePlantStore = create<PlantState>()(
       setProfile: (p, now = new Date()) =>
         set((s) => {
           const profile = { ...s.profile, ...p };
+          if (profile.supporter && !profile.supporterSince) profile.supporterSince = now.toISOString();
           const moved = p.climate !== undefined && JSON.stringify(p.climate) !== JSON.stringify(s.profile.climate);
           return moved ? { profile, plants: repace(s.plants, s.profile.climate, profile.climate, now) } : { profile };
         }),
@@ -307,18 +319,22 @@ export const usePlantStore = create<PlantState>()(
       },
 
       restoreBackup: (data) => {
-        const { plus: _p, streakFreezes: _f, lastBackupAt: _b, ...profile } = data.profile;
+        // A tip travels with the backup (consumable tips can't be restored from the App Store), so the
+        // thank-you gifts follow someone to a new phone. A tip on this phone is never undone by a restore.
+        const { supporter: tipped, supporterSince: since, streakFreezes: _f, lastBackupAt: _b, plus: _p, ...profile } = data.profile as Partial<Profile> & { plus?: boolean };
+        const supporter = get().profile.supporter || tipped === true;
+        const supporterSince = [get().profile.supporterSince, tipped === true ? since : undefined].filter((d): d is string => !!d).sort()[0];
         set((s) => ({
           plants: data.plants,
           events: data.events,
           undo: {},
           onboarded: true,
-          profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, plus: s.profile.plus, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
+          profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, supporter, supporterSince: supporter ? supporterSince ?? new Date().toISOString() : undefined, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
         }));
       },
 
       eraseEverything: () => {
-        set({ plants: [], events: [], undo: {}, onboarded: false, profile: { ...DEFAULT_PROFILE, plus: get().profile.plus } });
+        set({ plants: [], events: [], undo: {}, onboarded: false, profile: { ...DEFAULT_PROFILE, supporter: get().profile.supporter, supporterSince: get().profile.supporterSince } });
       },
 
       seedDemo: (now = new Date()) => {

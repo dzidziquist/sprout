@@ -194,7 +194,8 @@ export type BadgeId =
   | 'generous'
   | 'grandma-plant'
   | 'streak-4'
-  | 'season';
+  | 'season'
+  | 'medal';
 
 export interface Badge {
   id: BadgeId;
@@ -244,10 +245,10 @@ function seasonSurvivor(plants: Plant[], events: CareEvent[], climate: ClimatePr
 /**
  * The hard season the season badge celebrates, and its art. Seattle has its grey season; other
  * cities on the Seattle model get "winter" (with the snowflake art) when they freeze, or a milder
- * "cool season". Tropical climates get harmattan / dry season, which has no art of its own yet.
+ * "cool season". Tropical climates get harmattan / dry season, with the dry-season art.
  */
 function hardSeason(climate: ClimateProfile): { name: string; art: string | null } {
-  if (modelOf(climate) === 'accra') return { name: localizeClimateText('harmattan', climate), art: null };
+  if (modelOf(climate) === 'accra') return { name: localizeClimateText('harmattan', climate), art: 'survived-dry-season' };
   if (typeof climate !== 'string' && climate.frost) return { name: 'winter', art: 'survived-winter' };
   return { name: localizeClimateText('grey season', climate), art: 'season' };
 }
@@ -298,4 +299,13 @@ export function badgesFor({ plants, events, climate, now }: StreakInput, streak?
     { id: 'streak-4', title: '4-week streak', hint: 'Keep everyone checked for 4 weeks', earnedAt: s.reachedAt[3] },
     { id: 'season', title: `Survived ${season.name}`, hint: `Keep a plant going through ${season.name}`, earnedAt: seasonSurvivor(plants, events, climate), art: season.art },
   ];
+}
+
+/**
+ * The PlantFam gold medal, a reward for 10 milestones (see rewards.ts). It's only shown once
+ * earned, so it sits outside `badgesFor` and its "13 for everyone".
+ */
+export function medalBadge(at: string | undefined): Badge | undefined {
+  if (!at) return undefined;
+  return { id: 'medal', title: 'PlantFam gold medal', hint: 'Earn 10 milestones', earnedAt: at };
 }

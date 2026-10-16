@@ -1,40 +1,46 @@
 import { Platform } from 'react-native';
-import type { CustomerInfo, PurchasesPackage } from 'react-native-purchases';
+import type { CustomerInfo, PurchasesStoreProduct } from 'react-native-purchases';
 import { usePlantStore } from '../store/plantStore';
 
 /*
- * PlantFam Plus via RevenueCat. RevenueCat is the source of truth on device; `profile.plus`
- * caches the entitlement so the UI is right offline and on first paint.
+ * The tip jar, via RevenueCat. Everything in PlantFam is free; tips are optional one-time
+ * (consumable) purchases that unlock no features. `profile.supporter` remembers that someone tipped,
+ * so the app can say thank you with small cosmetic gifts (supporter badge, gold cards, party hat).
  *
  * Purchases only run on iOS/Android with an API key. On web (and in builds without a key)
- * `purchasesAvailable()` is false and the paywall shows fallback prices with a note.
+ * `purchasesAvailable()` is false and the tip jar shows fallback prices with a note.
  * The native module is required lazily so the web bundle never evaluates it.
  */
 
-export const PLUS_ENTITLEMENT = 'plus';
+export type TipId = 'small' | 'medium' | 'large';
 
-export type PlanId = 'annual' | 'lifetime';
+/** App Store Connect product ids (consumables). */
+export const TIP_PRODUCTS: Record<TipId, string> = {
+  small: 'plantfam_tip_small',
+  medium: 'plantfam_tip_medium',
+  large: 'plantfam_tip_large',
+};
 
-export interface Plan {
-  id: PlanId;
+export interface Tip {
+  id: TipId;
   /** Localised store price, or our USD fallback when the store isn't reachable. */
   priceString: string;
-  /** Annual only: price per month, e.g. "$1.67". */
-  perMonthString?: string;
   /** Null when we're showing fallback prices (web, no key, offline, products not set up). */
-  pkg: PurchasesPackage | null;
+  product: PurchasesStoreProduct | null;
 }
 
-export interface PlusOfferings {
-  annual: Plan;
-  lifetime: Plan;
+export interface Tips {
+  tips: Record<TipId, Tip>;
   /** True when prices came from the store rather than the fallback. */
   live: boolean;
 }
 
-export const FALLBACK_OFFERINGS: PlusOfferings = {
-  annual: { id: 'annual', priceString: '$7.99', perMonthString: '$0.67', pkg: null },
-  lifetime: { id: 'lifetime', priceString: '$19.99', pkg: null },
+export const FALLBACK_TIPS: Tips = {
+  tips: {
+    small: { id: 'small', priceString: '$2.99', product: null },
+    medium: { id: 'medium', priceString: '$4.99', product: null },
+    large: { id: 'large', priceString: '$9.99', product: null },
+  },
   live: false,
 };
 
@@ -58,22 +64,37 @@ function rc(): RC | null {
   return load()?.default ?? null;
 }
 
-/** Can this build actually sell Plus? False on web, without a key, or if the native module is missing (Expo Go). */
+/** Can this build take tips? False on web, without a key, or if the native module is missing (Expo Go). */
 export function purchasesAvailable(): boolean {
   return Boolean(native && apiKey && rc());
 }
 
-export function hasPlus(info: CustomerInfo | null | undefined): boolean {
-  return Boolean(info?.entitlements?.active?.[PLUS_ENTITLEMENT]);
+const TIP_IDS = new Set(Object.values(TIP_PRODUCTS));
+
+/** Has this customer ever left a tip? */
+export function hasTipped(info: CustomerInfo | null | undefined): boolean {
+  return Boolean(info?.nonSubscriptionTransactions?.some((t) => TIP_IDS.has(t.productIdentifier)));
 }
 
-function cache(info: CustomerInfo) {
-  const plus = hasPlus(info);
-  if (usePlantStore.getState().profile.plus !== plus) usePlantStore.getState().setProfile({ plus });
+/** When the first tip was made, from the store's history. */
+export function firstTipAt(info: CustomerInfo | null | undefined): string | undefined {
+  return info?.nonSubscriptionTransactions
+    ?.filter((t) => TIP_IDS.has(t.productIdentifier))
+    .map((t) => new Date(t.purchaseDate).toISOString())
+    .sort()[0];
+}
+
+/** Only ever switches the thank-you on: a tip remembered on this phone stays remembered. */
+function remember(info: CustomerInfo) {
+  const { profile, setProfile } = usePlantStore.getState();
+  if (!hasTipped(info)) return;
+  const first = firstTipAt(info);
+  const since = [profile.supporterSince, first].filter((d): d is string => !!d).sort()[0];
+  if (!profile.supporter || since !== profile.supporterSince) setProfile({ supporter: true, supporterSince: since });
 }
 
 let configured = false;
-/** Safe to call many times. Configures RevenueCat, then keeps `profile.plus` in sync with the store. */
+/** Safe to call many times. Configures RevenueCat and picks up past tips. */
 export function configurePurchases(): boolean {
   if (configured) return true;
   const Purchases = rc();
@@ -81,67 +102,56 @@ export function configurePurchases(): boolean {
   try {
     Purchases.configure({ apiKey });
     configured = true;
-    Purchases.addCustomerInfoUpdateListener(cache);
-    Purchases.getCustomerInfo().then(cache).catch(() => {});
+    Purchases.addCustomerInfoUpdateListener(remember);
+    Purchases.getCustomerInfo().then(remember).catch(() => {});
   } catch {
     configured = false;
   }
   return configured;
 }
 
-export async function getOfferings(): Promise<PlusOfferings> {
+export async function getTips(): Promise<Tips> {
   const Purchases = rc();
-  if (!Purchases || !configurePurchases()) return FALLBACK_OFFERINGS;
+  const mods = load();
+  if (!Purchases || !mods || !configurePurchases()) return FALLBACK_TIPS;
   try {
-    const offerings = await Purchases.getOfferings();
-    const current = offerings.current;
-    if (!current) return FALLBACK_OFFERINGS;
-    const annual = current.annual ?? current.availablePackages.find((p) => p.packageType === 'ANNUAL') ?? null;
-    const lifetime = current.lifetime ?? current.availablePackages.find((p) => p.packageType === 'LIFETIME') ?? null;
-    return {
-      annual: annual
-        ? { id: 'annual', priceString: annual.product.priceString, perMonthString: annual.product.pricePerMonthString ?? undefined, pkg: annual }
-        : FALLBACK_OFFERINGS.annual,
-      lifetime: lifetime ? { id: 'lifetime', priceString: lifetime.product.priceString, pkg: lifetime } : FALLBACK_OFFERINGS.lifetime,
-      live: Boolean(annual || lifetime),
-    };
+    const products = await Purchases.getProducts(Object.values(TIP_PRODUCTS), mods.PRODUCT_CATEGORY.NON_SUBSCRIPTION);
+    const byId = new Map(products.map((p) => [p.identifier, p]));
+    const tips = { ...FALLBACK_TIPS.tips };
+    let live = false;
+    for (const id of Object.keys(TIP_PRODUCTS) as TipId[]) {
+      const product = byId.get(TIP_PRODUCTS[id]);
+      if (product) {
+        tips[id] = { id, priceString: product.priceString, product };
+        live = true;
+      }
+    }
+    return { tips, live };
   } catch {
-    return FALLBACK_OFFERINGS;
+    return FALLBACK_TIPS;
   }
 }
 
-export type PurchaseOutcome =
-  | { ok: true; isPlus: boolean }
-  | { ok: false; cancelled?: boolean; message: string };
+export type TipOutcome = { ok: true } | { ok: false; cancelled?: boolean; message: string };
 
-const UNAVAILABLE = 'Plus is sold in the PlantFam iPhone app. Already bought it? Tap Restore there.';
+const UNAVAILABLE = 'Tips work in the PlantFam iPhone app. Thank you for thinking of it!';
 
-export async function purchase(plan: Plan): Promise<PurchaseOutcome> {
+export async function leaveTip(tip: Tip): Promise<TipOutcome> {
   const Purchases = rc();
   if (!Purchases || !configurePurchases()) return { ok: false, message: UNAVAILABLE };
-  if (!plan.pkg) return { ok: false, message: "We couldn't reach the App Store just now. Check your connection and try again." };
+  if (!tip.product) return { ok: false, message: "We couldn't reach the App Store just now. Check your connection and try again." };
   try {
-    const { customerInfo } = await Purchases.purchasePackage(plan.pkg);
-    cache(customerInfo);
-    return { ok: true, isPlus: hasPlus(customerInfo) };
+    const { customerInfo } = await Purchases.purchaseStoreProduct(tip.product);
+    remember(customerInfo);
+    // The store confirmed the payment even if RevenueCat's history hasn't caught up yet.
+    usePlantStore.getState().setProfile({ supporter: true });
+    return { ok: true };
   } catch (e) {
     const err = e as { userCancelled?: boolean | null; code?: string; message?: string };
     const codes = load()?.PURCHASES_ERROR_CODE;
     if (err.userCancelled || (codes && err.code === codes.PURCHASE_CANCELLED_ERROR)) return { ok: false, cancelled: true, message: '' };
-    if (codes && err.code === codes.PAYMENT_PENDING_ERROR) return { ok: false, message: "Your payment is pending approval. Plus switches on as soon as it goes through." };
+    if (codes && err.code === codes.PAYMENT_PENDING_ERROR) return { ok: false, message: 'Your tip is waiting for approval. Thank you!' };
     if (codes && err.code === codes.NETWORK_ERROR) return { ok: false, message: "Looks like you're offline. Nothing was charged, try again in a moment." };
-    return { ok: false, message: err.message || 'The purchase didn’t go through. Nothing was charged.' };
-  }
-}
-
-export async function restore(): Promise<PurchaseOutcome> {
-  const Purchases = rc();
-  if (!Purchases || !configurePurchases()) return { ok: false, message: UNAVAILABLE };
-  try {
-    const info = await Purchases.restorePurchases();
-    cache(info);
-    return { ok: true, isPlus: hasPlus(info) };
-  } catch (e) {
-    return { ok: false, message: (e as Error)?.message || "We couldn't restore right now. Try again in a moment." };
+    return { ok: false, message: err.message || 'The tip didn’t go through. Nothing was charged.' };
   }
 }

@@ -26,7 +26,8 @@ export type Light = 'low' | 'medium' | 'bright' | 'direct';
 export type PotMaterial = 'plastic' | 'glazed' | 'terracotta' | 'fabric';
 
 /** Where the pot lives, which picks the column of the season table. */
-export type Placement = 'indoor' | 'growlight' | 'outdoor' | 'covered_outdoor';
+/** `ground`: planted in a garden bed (no pot), which holds far more water than any container. */
+export type Placement = 'indoor' | 'growlight' | 'outdoor' | 'covered_outdoor' | 'ground';
 
 /** The two climates PlantFam is calibrated on: cool marine with frost (Seattle) and tropical wet/dry (Accra). */
 export type ClimateModel = 'seattle' | 'accra';
@@ -57,7 +58,11 @@ export type Origin = 'bought' | 'cutting' | 'swap' | 'gift';
 /** Growth stage for edibles (tomato, pepper, spring onion, herbs). */
 export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruiting' | 'harvesting' | 'resting';
 
-export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum';
+/** The app's main colour (buttons, highlights, the Today hero), picked in Settings → Look and feel. */
+export type Accent = 'leaf' | 'sky' | 'grape' | 'coral' | 'bubblegum';
+
+/** 'gold' is a milestone reward; species art never uses it. */
+export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum' | 'gold';
 
 /** Plants with their own illustrated buddy (assets/buddies). Other species borrow the closest one. */
 export type ArtId =
@@ -98,7 +103,7 @@ export interface Species {
   petToxic: boolean;
   edible: boolean;
   /** Pot colour in the species illustration; new plants default to it. */
-  artPot: PotColor;
+  artPot: Exclude<PotColor, 'gold'>;
   /** Which illustrated buddy to show (its own, or the closest look-alike until it gets one). */
   art: ArtId;
   category: PlantCategory;

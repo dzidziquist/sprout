@@ -4,16 +4,27 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
+import { useRewards } from '@/hooks/useRewards';
 import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
+import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ARCHIVE_COPY, confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { Light, Placement, PotMaterial, Soil, SpeciesGroup } from '@/types';
+import type { Light, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
+
+const CARD_COLORS: { id: PotColor; label: string }[] = [
+  { id: 'yellow', label: 'Butter' },
+  { id: 'blue', label: 'Sky' },
+  { id: 'coral', label: 'Peach' },
+  { id: 'grape', label: 'Lavender' },
+  { id: 'bubblegum', label: 'Blush' },
+  { id: 'gold', label: 'Gold' },
+];
 
 const LIGHTS: { id: Light; label: string; suns: number }[] = [
   { id: 'low', label: 'Shady', suns: 1 },
@@ -53,7 +64,8 @@ const PLACES: { id: Placement; label: string }[] = [
   { id: 'indoor', label: 'Indoors' },
   { id: 'growlight', label: 'Grow light' },
   { id: 'covered_outdoor', label: 'Balcony, covered' },
-  { id: 'outdoor', label: 'Outside' },
+  { id: 'outdoor', label: 'Outside, in a pot' },
+  { id: 'ground', label: 'Garden bed' },
 ];
 
 const nearestSize = (cm: number) => POT_SIZES.reduce((a, b) => (Math.abs(b.cm - cm) < Math.abs(a.cm - cm) ? b : a)).cm;
@@ -88,6 +100,7 @@ export default function EditPlantScreen() {
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
   const updatePlant = usePlantStore((s) => s.updatePlant);
   const faces = usePlantStore((s) => s.profile.faces);
+  const rewards = useRewards();
   const leave = () => {
     if (router.canDismiss()) router.dismissAll();
     else router.replace('/');
@@ -101,6 +114,7 @@ export default function EditPlantScreen() {
   const [material, setMaterial] = useState<PotMaterial>(plant?.potMaterial ?? 'plastic');
   const [placement, setPlacement] = useState<Placement>(plant?.placement ?? 'indoor');
   const [room, setRoom] = useState(plant?.room ?? '');
+  const [potColor, setPotColor] = useState<PotColor>(plant?.potColor ?? 'yellow');
   const [confirming, setConfirming] = useState(false);
   // "Other" plants (not in the catalogue) can change their species name, care type and pet info.
   const [kind, setKind] = useState(plant?.custom?.commonName ?? '');
@@ -111,7 +125,9 @@ export default function EditPlantScreen() {
   if (!plant || !actions) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
   const sp = speciesOf(plant);
   const isOther = isOtherId(plant.speciesId);
-  const tint = c.potTint[plant.potColor];
+  const tint = c.potTint[potColor];
+  // Gold is a reward for 3 milestones; a gold card stays gold either way.
+  const colors = CARD_COLORS.filter((o) => o.id !== 'gold' || rewards.gold.unlocked || plant.potColor === 'gold');
   const archived = !!plant.archivedAt;
   const back = () => (router.canGoBack() ? router.back() : router.replace(`/plant/${plant.id}`));
 
@@ -125,6 +141,7 @@ export default function EditPlantScreen() {
       potMaterial: material,
       placement,
       room: room.trim() || undefined,
+      potColor,
       ...(isOther
         ? {
             speciesId: otherId,
@@ -144,7 +161,7 @@ export default function EditPlantScreen() {
   const input = [styles.input, { borderColor: c.line, color: c.ink, backgroundColor: c.card }];
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Cancel" onPress={back}>
           <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
@@ -155,8 +172,9 @@ export default function EditPlantScreen() {
         </Pressable>
       </View>
 
-      <View style={[styles.hero, { backgroundColor: tint, borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
-        <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} size={88} bg={tint} faces={faces} />
+      <View style={[styles.hero, { backgroundColor: tint, borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }, goldFrame(potColor)]}>
+        <GoldSparkles pot={potColor} />
+        <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={potColor} size={88} bg={tint} faces={faces} />
         <View style={{ flex: 1 }}>
           <Text style={[styles.heroKicker, { color: c.inkMuted }]}>Species</Text>
           <Text style={[styles.heroName, { color: c.ink }]}>{sp.commonName}</Text>
@@ -187,6 +205,27 @@ export default function EditPlantScreen() {
       <Label>Name</Label>
       <TextInput value={name} onChangeText={setName} style={[input, { fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" placeholder={plant.name} placeholderTextColor={c.inkMuted} />
 
+      <Label>Card colour</Label>
+      <View style={styles.wrap} accessibilityRole="radiogroup">
+        {colors.map((o) => (
+          <Pressable
+            key={o.id}
+            accessibilityRole="radio"
+            accessibilityLabel={o.id === 'gold' ? 'Gold, a milestone reward' : o.label}
+            accessibilityState={{ selected: potColor === o.id }}
+            onPress={() => {
+              haptics.tap();
+              setPotColor(o.id);
+            }}
+            style={[styles.color, { backgroundColor: c.potTint[o.id], borderColor: c.line, borderWidth: potColor === o.id ? 4 : 2 }]}
+          >
+            {o.id === 'gold' && (
+              <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z" fill={c.pot.gold} stroke={c.line} strokeWidth={1.5} strokeLinejoin="round" /></Svg>
+            )}
+          </Pressable>
+        ))}
+      </View>
+
       <Label>How sunny is its spot?</Label>
       <View style={styles.wrap}>
         {LIGHTS.map((l) => (
@@ -202,7 +241,7 @@ export default function EditPlantScreen() {
           </Pill>
         ))}
       </View>
-      {soil === 'garden_soil' && <Text style={[styles.note, { color: c.warn }]}>Garden soil packs down and stays soggy in pots. Repot when you can.</Text>}
+      {soil === 'garden_soil' && placement !== 'ground' && <Text style={[styles.note, { color: c.warn }]}>Garden soil packs down and stays soggy in pots. Repot when you can.</Text>}
 
       <Label>Pot</Label>
       <View style={styles.wrap}>
@@ -222,6 +261,7 @@ export default function EditPlantScreen() {
           <Pill key={p.id} on={placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id)} />
         ))}
       </View>
+      <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
       <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" />
       <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next check.</Text>
 
@@ -275,6 +315,7 @@ const styles = StyleSheet.create({
   pill: { minHeight: 42, paddingHorizontal: 14, borderRadius: 21, borderWidth: 2, justifyContent: 'center' },
   pillWithSwatch: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 6 },
   swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2 },
+  color: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   pillText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   danger: { marginTop: 16, borderWidth: 2, borderRadius: 22, padding: 14, gap: 10 },

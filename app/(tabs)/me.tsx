@@ -1,15 +1,16 @@
-import { PlusCard } from '@/components/PlusCard';
+import { SupportCard } from '@/components/SupportCard';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTabPadding } from '@/hooks/useTabPadding';
 import { usePlantStore } from '@/store/plantStore';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
 import { BadgeSticker } from '@/components/BadgeSticker';
-import { badgesFor, computeStreak } from '@/engine/streak';
+import { badgesFor, computeStreak, medalBadge } from '@/engine/streak';
+import { rewardsFor } from '@/engine/rewards';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 
@@ -18,7 +19,7 @@ const GEAR =
 
 export default function MeScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const pad = useTabPadding(16);
   const c = useColors();
   const { profile, setProfile, events, plants } = usePlantStore();
   const living = plants.filter((p) => !p.archivedAt);
@@ -29,8 +30,10 @@ export default function MeScreen() {
   const { streak, badges } = useMemo(() => {
     const input = { plants, events, climate: profile.climate, now: new Date() };
     const s = computeStreak(input);
-    return { streak: s, badges: badgesFor(input, s) };
-  }, [plants, events, profile.climate]);
+    const core = badgesFor(input, s);
+    const medal = medalBadge(rewardsFor(core, { supporter: profile.supporter, supporterSince: profile.supporterSince }).medal.at);
+    return { streak: s, badges: medal ? [medal, ...core] : core };
+  }, [plants, events, profile.climate, profile.supporter, profile.supporterSince]);
   const earned = badges.filter((b) => b.earnedAt).length;
 
   // profile.streakFreezes mirrors what's left this month (the engine refills it to 2 every month).
@@ -38,9 +41,14 @@ export default function MeScreen() {
     if (profile.streakFreezes !== streak.freezesLeft) setProfile({ streakFreezes: streak.freezesLeft });
   }, [streak.freezesLeft, profile.streakFreezes, setProfile]);
 
+  // Tips left before the supporter badge existed have no date yet: setProfile stamps one.
+  useEffect(() => {
+    if (profile.supporter && !profile.supporterSince) setProfile({ supporter: true });
+  }, [profile.supporter, profile.supporterSince, setProfile]);
+
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={[styles.page, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 120 }]}>
+    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
       <View style={styles.headerRow}>
         <Title style={{ flex: 1 }}>Your green thumb</Title>
         <GlassButton accessibilityLabel="Settings" onPress={() => router.push('/settings')}>
@@ -80,7 +88,7 @@ export default function MeScreen() {
         </View>
       </View>
 
-      <PlusCard />
+      <SupportCard />
 
       <Pressable accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => router.push('/settings')}>
         <Sticker drop={0} bg={c.cloud} style={styles.settingsRow}>
