@@ -74,7 +74,7 @@ export default function Onboarding() {
 
   if (step === 1) {
     return (
-      <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
         <Progress step={1} />
         <Title>Where does your jungle live?</Title>
         <PlacePicker value={profile.climate} onPick={(climate, city) => setProfile({ climate, city })} />
@@ -130,7 +130,7 @@ export default function Onboarding() {
   }
 
   return (
-    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 24 }]}>
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
       <Progress step={2} />
       <Title>One plant round a day</Title>
       <Sticker bg={c.butter} drop={0} style={{ padding: 14, gap: 4 }}>

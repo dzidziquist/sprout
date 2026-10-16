@@ -112,7 +112,7 @@ export default function TakeCuttingsScreen() {
   }
 
   return (
-    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: 16, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: 16, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.toolbar}>{close}</View>
       <Title style={{ fontSize: 26, lineHeight: 30 }}>Take cuttings from {plant.name}</Title>
 
