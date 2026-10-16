@@ -3,13 +3,13 @@ import Svg, { Path } from 'react-native-svg';
 import { Sticker } from '@/components/ui';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { StreakResult } from '@/engine/streak';
+import { FREEZES_PER_MONTH, type StreakResult } from '@/engine/streak';
 
 const SPROUT = 'M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z';
 const FREEZE = 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5';
 
 function copyFor(s: StreakResult): string {
-  if (s.thisWeek === 'covered') return 'A free pass has this week covered. No stress.';
+  if (s.thisWeek === 'covered') return 'A week saver has this week covered. No stress.';
   if (s.thisWeek === 'open') return 'New week, fresh sprout. Check in whenever you can.';
   return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next check adds this week.';
 }
@@ -52,16 +52,25 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
       </View>
 
       <Text style={[styles.how, { color: c.ink }]}>
-        Each box is a week. It turns green when every plant gets its check on time. Missed one? A free pass saves the week.
+        Each box is a week: green when every plant got its check on time. Miss one and a week saver turns it blue, so your streak keeps going. You get 2 a month.
       </Text>
 
       <View style={styles.footer}>
         <Text style={[styles.meta, { color: c.ink }]}>Best: {streak.best} {streak.best === 1 ? 'week' : 'weeks'}</Text>
-        <View style={styles.freezes} accessibilityLabel={`${streak.freezesLeft} free passes left this month`}>
-          <Svg width={16} height={16} viewBox="0 0 24 24"><Path d={FREEZE} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" fill="none" /></Svg>
-          <Text style={[styles.meta, { color: c.ink }]}>
-            {streak.freezesLeft} free {streak.freezesLeft === 1 ? 'pass' : 'passes'} left this month
-          </Text>
+        <View
+          style={styles.freezes}
+          accessible
+          accessibilityLabel={`Week savers: ${streak.freezesLeft} of ${FREEZES_PER_MONTH} left this month. Each one covers a missed week. They refill on the 1st.`}
+        >
+          <Text style={[styles.meta, { color: c.ink }]}>Week savers</Text>
+          {Array.from({ length: FREEZES_PER_MONTH }, (_, i) => {
+            const left = i < streak.freezesLeft;
+            return (
+              <View key={i} style={[styles.saver, { borderColor: left ? c.line : c.inkMuted, backgroundColor: left ? c.sky : 'transparent' }, !left && { borderStyle: 'dashed', opacity: 0.6 }]}>
+                <Svg width={14} height={14} viewBox="0 0 24 24"><Path d={FREEZE} stroke={left ? c.onBright : c.inkMuted} strokeWidth={2.4} strokeLinecap="round" fill="none" /></Svg>
+              </View>
+            );
+          })}
         </View>
       </View>
     </Sticker>
@@ -79,7 +88,8 @@ const styles = StyleSheet.create({
   now: { maxWidth: 56, flexGrow: 1.3 },
   nowText: { fontFamily: fonts.bodyHeavy, fontSize: 10 },
   footer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 },
-  freezes: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  freezes: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  saver: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   how: { fontFamily: fonts.body, fontSize: 12, lineHeight: 16, opacity: 0.85 },
 });

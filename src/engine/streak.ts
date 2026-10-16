@@ -35,7 +35,7 @@ export const FREEZES_PER_MONTH = 2;
 
 const DAY_MS = 86400000;
 
-/** kept: checks done, nothing overdue · repaired: a free pass covered a slip · missed · quiet: nothing was due and nothing checked (neutral). */
+/** kept: checks done, nothing overdue · repaired: a week saver covered a slip · missed · quiet: nothing was due and nothing checked (neutral). */
 export type WeekStatus = 'kept' | 'repaired' | 'missed' | 'quiet';
 
 export interface WeekRecord {
