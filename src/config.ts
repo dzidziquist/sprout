@@ -12,8 +12,8 @@ export const SUPPORT_URL = 'https://dzidziquist.com';
 /** Public privacy policy, hosted on Notion (page "PlantFam Privacy Policy"). TODO(founder): publish it to the web and paste its notion.site URL here. */
 export const PRIVACY_POLICY_URL = '';
 
-/** PlantFam's App Store page. TODO(founder): paste https://apps.apple.com/app/id<Apple ID> once the app has its Apple ID. */
-export const APP_STORE_URL = '';
+/** PlantFam's App Store page (Apple ID 6823421043). It goes live once the app is approved. */
+export const APP_STORE_URL = 'https://apps.apple.com/app/id6823421043';
 
 /**
  * Tips are switched off: PlantFam is a free hobby app. The tip jar code stays so it can be turned
