@@ -1,7 +1,7 @@
 import { useColorScheme } from 'react-native';
 import { usePlantStore } from '../store/plantStore';
 import { colors } from './tokens';
-import type { PotColor } from '../types';
+import type { Accent, PotColor } from '../types';
 
 /**
  * Theme-aware colours. Every screen reads these through `useColors()` so Dark Mode works everywhere.
@@ -102,7 +102,22 @@ export const dark: Palette = {
   potTint: { yellow: '#3D3418', blue: '#1D3245', coral: '#46271F', grape: '#2D2648', bubblegum: '#45222E', gold: '#4A3A10' },
 };
 
-const BRIGHT = new Set<string>([colors.leaf, colors.leafDeep, colors.leafLight, colors.sun, colors.coral, colors.sky, colors.grape, colors.bubblegum, colors.orange]);
+/**
+ * Accent colours: each swaps the leaf family (leaf, leafDeep, leafLight and the mint tint) so buttons,
+ * highlights and heroes follow the person's pick. Status text (`good`) and plant art stay green.
+ */
+export const ACCENTS: Record<Accent, { label: string; leaf: string; leafDeep: string; leafLight: string; mint: string; mintDark: string }> = {
+  leaf: { label: 'Leaf', leaf: colors.leaf, leafDeep: colors.leafDeep, leafLight: colors.leafLight, mint: colors.mint, mintDark: '#17372A' },
+  sky: { label: 'Sky', leaf: colors.sky, leafDeep: '#2E8FE0', leafLight: '#9ED4FF', mint: colors.ice, mintDark: '#1D3245' },
+  grape: { label: 'Grape', leaf: colors.grape, leafDeep: '#7C5CE6', leafLight: '#C9B8FF', mint: colors.lavender, mintDark: '#2D2648' },
+  coral: { label: 'Coral', leaf: colors.coral, leafDeep: '#E04A3A', leafLight: '#FFA197', mint: colors.peach, mintDark: '#46271F' },
+  bubblegum: { label: 'Bubblegum', leaf: colors.bubblegum, leafDeep: '#E8789A', leafLight: '#FFD1DD', mint: colors.blush, mintDark: '#45222E' },
+};
+
+const BRIGHT = new Set<string>([
+  colors.sun, colors.coral, colors.sky, colors.grape, colors.bubblegum, colors.orange,
+  ...Object.values(ACCENTS).flatMap((a) => [a.leaf, a.leafDeep, a.leafLight]),
+]);
 
 /** Text colour that reads on a given fill: dark ink on saturated colours, theme ink elsewhere. */
 export function textOn(bg: string, c: Palette): string {
@@ -113,5 +128,21 @@ export function useColors(): Palette {
   const system = useColorScheme();
   const pref = usePlantStore((s) => s.profile.theme);
   const scheme = pref === 'system' ? (system === 'dark' ? 'dark' : 'light') : pref;
-  return scheme === 'dark' ? dark : light;
+  const accent = usePlantStore((s) => s.profile.accent) ?? 'leaf';
+  return paletteFor(scheme, accent);
+}
+
+const cache = new Map<string, Palette>();
+/** The light or dark palette with an accent swapped in. Cached so screens get a stable object. */
+export function paletteFor(scheme: 'light' | 'dark', accent: Accent): Palette {
+  const base = scheme === 'dark' ? dark : light;
+  if (accent === 'leaf') return base;
+  const key = `${scheme}-${accent}`;
+  let p = cache.get(key);
+  if (!p) {
+    const a = ACCENTS[accent];
+    p = { ...base, leaf: a.leaf, leafDeep: a.leafDeep, leafLight: a.leafLight, mint: scheme === 'dark' ? a.mintDark : a.mint };
+    cache.set(key, p);
+  }
+  return p;
 }

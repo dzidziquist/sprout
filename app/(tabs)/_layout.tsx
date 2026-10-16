@@ -2,7 +2,6 @@ import { Platform } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { TabBar } from '@/components/TabBar';
-import { colors } from '@/theme/tokens';
 import { usePlantStore } from '@/store/plantStore';
 import { useColors } from '@/theme/theme';
 
@@ -17,7 +16,7 @@ export default function TabLayout() {
 
   if (Platform.OS === 'ios') {
     return (
-      <NativeTabs tintColor={colors.leafDeep} minimizeBehavior="onScrollDown">
+      <NativeTabs tintColor={c.leafDeep} minimizeBehavior="onScrollDown">
         <NativeTabs.Trigger name="index">
           <Icon sf={{ default: 'sun.max', selected: 'sun.max.fill' }} />
           <Label>Today</Label>

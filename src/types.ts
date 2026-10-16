@@ -58,6 +58,9 @@ export type Origin = 'bought' | 'cutting' | 'swap' | 'gift';
 /** Growth stage for edibles (tomato, pepper, spring onion, herbs). */
 export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruiting' | 'harvesting' | 'resting';
 
+/** The app's main colour (buttons, highlights, the Today hero), picked in Settings → Look and feel. */
+export type Accent = 'leaf' | 'sky' | 'grape' | 'coral' | 'bubblegum';
+
 /** 'gold' is a milestone reward; species art never uses it. */
 export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum' | 'gold';
 

@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addDays, applyCheck, initialNextCheck, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
-import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant } from '../types';
+import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
 
@@ -22,6 +22,8 @@ export interface Profile {
   photos: 'off' | 'weekly' | 'monthly';
   /** Appearance: follow the phone, or force light/dark. */
   theme: 'system' | 'light' | 'dark';
+  /** Main colour; leaf green unless changed. */
+  accent?: Accent;
   /** Has left a tip in the tip jar. Nothing is locked; it powers the thank-you gifts (badge, gold cards, party hat). */
   supporter: boolean;
   /** When the first tip was noticed on this phone: the supporter badge's date. */

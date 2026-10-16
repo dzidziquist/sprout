@@ -18,7 +18,8 @@ import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts } from '@/theme/tokens';
-import { useColors } from '@/theme/theme';
+import { ACCENTS, useColors } from '@/theme/theme';
+import type { Accent } from '@/types';
 
 const TIMES = [
   { label: '8:30 am', hour: 8, minute: 30 },
@@ -170,6 +171,28 @@ export default function SettingsScreen() {
         <Field label="Appearance">
           <Segmented label="Appearance" value={profile.theme} options={THEMES} onChange={(t) => setProfile({ theme: t })} />
         </Field>
+        <Field label="Main colour">
+          <View style={styles.accents} accessibilityRole="radiogroup">
+            {(Object.keys(ACCENTS) as Accent[]).map((a) => {
+              const on = (profile.accent ?? 'leaf') === a;
+              return (
+                <Pressable
+                  key={a}
+                  accessibilityRole="radio"
+                  accessibilityLabel={`${ACCENTS[a].label} main colour`}
+                  accessibilityState={{ selected: on }}
+                  onPress={() => {
+                    haptics.tap();
+                    setProfile({ accent: a });
+                  }}
+                  style={[styles.accent, { backgroundColor: ACCENTS[a].leaf, borderColor: c.line, borderWidth: on ? 4 : 2 }]}
+                >
+                  {on && <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="m5 12 5 5 9-10" stroke={c.onBright} strokeWidth={3.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>}
+                </Pressable>
+              );
+            })}
+          </View>
+        </Field>
         <Field label="Plant faces" note={FACE_NOTE[profile.faces]}>
           <Segmented
             label="Plant faces"
@@ -264,6 +287,8 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 20 },
   header: { flexDirection: 'row' },
+  accents: { flexDirection: 'row', gap: 12, paddingTop: 4 },
+  accent: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, letterSpacing: 0.6, paddingHorizontal: 4 },
   group: { borderWidth: 2, borderRadius: 20, overflow: 'hidden' },
   row: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14 },
