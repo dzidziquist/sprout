@@ -6,9 +6,6 @@ import type { ImageSourcePropType } from 'react-native';
  */
 export const ART = {
   logo: require('../../assets/art/logo-sticker.png'),
-  /** The "PlantFam" word from the logo on its own, so the welcome screen can space it from the pot icon. */
-  logoWord: require('../../assets/art/logo-word.png'),
-  appIcon: require('../../assets/icon.png'),
   welcome: require('../../assets/art/onboarding-welcome.png'),
   emptyJungle: require('../../assets/art/empty-jungle.png'),
   caughtUp: require('../../assets/art/empty-caught-up.png'),
