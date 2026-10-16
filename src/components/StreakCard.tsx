@@ -24,6 +24,8 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
   const begun = streak.weeks.findIndex((w) => w.status !== 'quiet');
   const recent = (begun === -1 ? [] : streak.weeks.slice(begun)).slice(-(SLOTS - 1));
   const ahead = SLOTS - 1 - recent.length;
+  const next = new Date();
+  const refill = new Date(next.getFullYear(), next.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const weeks = streak.current === 1 ? 'week' : 'weeks';
   return (
     <Sticker bg={c.mint} drop={5} style={styles.card}>
@@ -67,19 +69,33 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
       <View style={styles.footer}>
         <Text style={[styles.meta, { color: c.ink }]}>Best: {streak.best} {streak.best === 1 ? 'week' : 'weeks'}</Text>
         <View
-          style={styles.freezes}
+          style={[styles.savers, { backgroundColor: c.ice, borderColor: c.line, boxShadow: `0px 2px 0px ${c.drop}` }]}
           accessible
-          accessibilityLabel={`Week savers: ${streak.freezesLeft} of ${FREEZES_PER_MONTH} left this month. Each one covers a missed week. They refill on the 1st.`}
+          accessibilityLabel={`Week savers: ${streak.freezesLeft} of ${FREEZES_PER_MONTH} left this month. Each one covers a missed week. They refill on ${refill}.`}
         >
-          <Text style={[styles.meta, { color: c.ink }]}>Week savers</Text>
-          {Array.from({ length: FREEZES_PER_MONTH }, (_, i) => {
-            const left = i < streak.freezesLeft;
-            return (
-              <View key={i} style={[styles.saver, { borderColor: left ? c.line : c.inkMuted, backgroundColor: left ? c.sky : 'transparent' }, !left && { borderStyle: 'dashed', opacity: 0.6 }]}>
-                <Svg width={14} height={14} viewBox="0 0 24 24"><Path d={FREEZE} stroke={left ? c.onBright : c.inkMuted} strokeWidth={2.4} strokeLinecap="round" fill="none" /></Svg>
-              </View>
-            );
-          })}
+          <View style={styles.tokens}>
+            {Array.from({ length: FREEZES_PER_MONTH }, (_, i) => {
+              const left = i < streak.freezesLeft;
+              return (
+                <View
+                  key={i}
+                  style={[
+                    styles.saver,
+                    { transform: [{ rotate: i % 2 ? '8deg' : '-8deg' }], marginLeft: i ? -6 : 0 },
+                    left ? { backgroundColor: c.sky, borderColor: c.line } : { borderColor: c.inkMuted, borderStyle: 'dashed', backgroundColor: c.card, opacity: 0.7 },
+                  ]}
+                >
+                  <Svg width={14} height={14} viewBox="0 0 24 24"><Path d={FREEZE} stroke={left ? c.onBright : c.inkMuted} strokeWidth={2.6} strokeLinecap="round" fill="none" /></Svg>
+                </View>
+              );
+            })}
+          </View>
+          <View>
+            <Text style={[styles.saverTitle, { color: c.ink }]}>
+              {streak.freezesLeft} week {streak.freezesLeft === 1 ? 'saver' : 'savers'}
+            </Text>
+            <Text style={[styles.saverSub, { color: c.inkMuted }]}>refill {refill}</Text>
+          </View>
         </View>
       </View>
     </Sticker>
@@ -97,9 +113,12 @@ const styles = StyleSheet.create({
   now: { maxWidth: 56, flexGrow: 1.3 },
   ahead: { borderStyle: 'dashed', opacity: 0.45 },
   nowText: { fontFamily: fonts.bodyHeavy, fontSize: 10 },
-  footer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 6 },
-  freezes: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  saver: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
+  savers: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 5, paddingLeft: 6, paddingRight: 10, borderRadius: 16, borderWidth: 2 },
+  tokens: { flexDirection: 'row', alignItems: 'center' },
+  saver: { width: 28, height: 28, borderRadius: 9, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  saverTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 15 },
+  saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 10, lineHeight: 12 },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   how: { fontFamily: fonts.body, fontSize: 12, lineHeight: 16, opacity: 0.85 },
 });
