@@ -12,6 +12,7 @@ import { colors } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
 import { configurePurchases } from '@/lib/purchases';
+import { TIPS_ENABLED } from '@/config';
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(() => usePlantStore.persist.hasHydrated());
@@ -49,7 +50,7 @@ export default function RootLayout() {
       }, 400);
     };
     sync();
-    configurePurchases();
+    if (TIPS_ENABLED) configurePurchases();
     const unsub = usePlantStore.subscribe((s, prev) => {
       if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos) sync();
     });
@@ -77,7 +78,7 @@ export default function RootLayout() {
         <Stack.Screen name="add" options={{ presentation: 'modal' }} />
         <Stack.Screen name="plant/[id]" />
         <Stack.Screen name="edit/[id]" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="tips" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="support" options={{ presentation: 'modal' }} />
         <Stack.Screen name="identify" options={{ presentation: 'modal' }} />
         <Stack.Screen name="grow" />
         <Stack.Screen name="help" />

@@ -195,7 +195,7 @@ export type BadgeId =
   | 'grandma-plant'
   | 'streak-4'
   | 'season'
-  | 'supporter';
+  | 'medal';
 
 export interface Badge {
   id: BadgeId;
@@ -302,10 +302,10 @@ export function badgesFor({ plants, events, climate, now }: StreakInput, streak?
 }
 
 /**
- * The tip jar's thank-you badge. It's only shown to people who tipped (never as a locked badge
- * someone could feel pushed to buy), so it sits outside `badgesFor` and its "13 for everyone".
+ * The PlantFam gold medal, a reward for 10 milestones (see rewards.ts). It's only shown once
+ * earned, so it sits outside `badgesFor` and its "13 for everyone".
  */
-export function supporterBadge(since: string | undefined): Badge | undefined {
-  if (!since) return undefined;
-  return { id: 'supporter', title: 'PlantFam supporter', hint: 'Left a tip in the tip jar', earnedAt: since };
+export function medalBadge(at: string | undefined): Badge | undefined {
+  if (!at) return undefined;
+  return { id: 'medal', title: 'PlantFam gold medal', hint: 'Earn 10 milestones', earnedAt: at };
 }

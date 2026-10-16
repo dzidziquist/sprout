@@ -46,7 +46,7 @@ export const BADGE_ART: Partial<Record<string, { earned: ImageSourcePropType; lo
   'grandma-plant': { earned: require('../../assets/art/badge-grandma-plant.png'), locked: require('../../assets/art/badge-grandma-plant-locked.png') },
   'ten-skips': { earned: require('../../assets/art/badge-ten-skips.png'), locked: require('../../assets/art/badge-ten-skips-locked.png') },
   'survived-dry-season': { earned: require('../../assets/art/badge-survived-dry-season.png'), locked: require('../../assets/art/badge-survived-dry-season-locked.png') },
-  // Only ever shown earned (see supporterBadge), so it has no locked variant.
-  supporter: { earned: require('../../assets/art/badge-supporter.png'), locked: require('../../assets/art/badge-supporter.png') },
+  // Only ever shown earned (see medalBadge), so it has no locked variant.
+  medal: { earned: require('../../assets/art/badge-medal.png'), locked: require('../../assets/art/badge-medal.png') },
   'survived-winter': { earned: require('../../assets/art/badge-survived-winter.png'), locked: require('../../assets/art/badge-survived-winter-locked.png') },
 };

@@ -41,6 +41,7 @@ design boards and docs out of the upload.
 Without a key the app still works: Photo ID explains it isn't set up yet, and the tip jar shows prices but says tips open in the iPhone app.
 
 ## 3. App Store Connect
+- **Tips are switched off** (`TIPS_ENABLED = false`): PlantFam is free with no in-app purchases, so skip the Paid Apps agreement, the products below and RevenueCat. Kept for reference if tips are ever switched on:
 - Agreements, tax and banking: accept the Paid Apps agreement.
 - In-app purchases: three **consumables** (tips; everything in the app is free and tips unlock nothing):
   - `plantfam_tip_small`: **$2.99** ("Seed")

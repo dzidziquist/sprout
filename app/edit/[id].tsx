@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
+import { useRewards } from '@/hooks/useRewards';
 import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -98,7 +99,7 @@ export default function EditPlantScreen() {
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
   const updatePlant = usePlantStore((s) => s.updatePlant);
   const faces = usePlantStore((s) => s.profile.faces);
-  const supporter = usePlantStore((s) => s.profile.supporter);
+  const rewards = useRewards();
   const leave = () => {
     if (router.canDismiss()) router.dismissAll();
     else router.replace('/');
@@ -124,8 +125,8 @@ export default function EditPlantScreen() {
   const sp = speciesOf(plant);
   const isOther = isOtherId(plant.speciesId);
   const tint = c.potTint[potColor];
-  // Gold is the tip jar's thank-you; a gold card stays gold even if the tip is forgotten.
-  const colors = CARD_COLORS.filter((o) => o.id !== 'gold' || supporter || plant.potColor === 'gold');
+  // Gold is a reward for 3 milestones; a gold card stays gold either way.
+  const colors = CARD_COLORS.filter((o) => o.id !== 'gold' || rewards.gold.unlocked || plant.potColor === 'gold');
   const archived = !!plant.archivedAt;
   const back = () => (router.canGoBack() ? router.back() : router.replace(`/plant/${plant.id}`));
 
@@ -208,7 +209,7 @@ export default function EditPlantScreen() {
           <Pressable
             key={o.id}
             accessibilityRole="radio"
-            accessibilityLabel={o.id === 'gold' ? 'Gold, a thank-you for your tip' : o.label}
+            accessibilityLabel={o.id === 'gold' ? 'Gold, a milestone reward' : o.label}
             accessibilityState={{ selected: potColor === o.id }}
             onPress={() => {
               haptics.tap();

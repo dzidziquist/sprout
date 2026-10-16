@@ -18,7 +18,7 @@ const ICON: Record<BadgeId, string> = {
   generous: 'M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7C10 3 6 4 7.5 7M12 7c2-4 6-3 4.5 0',
   'grandma-plant': 'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4M9 15l2 2 4-4',
   'streak-4': 'M12 21v-9M12 12C12 8 9 5 4 5c0 4 3 7 8 7zM12 15c0-3 3-6 8-6 0 4-3 6-8 6z',
-  supporter: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
+  medal: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
   season: 'M7 19h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 12.5 3.5 3.5 0 0 0 7 19zM17 3v2M21 7h-2M20 4l-1.5 1.5',
 };
 
@@ -36,7 +36,7 @@ const fill = (c: Palette): Record<BadgeId, string> => ({
   'grandma-plant': c.peach,
   'streak-4': c.leaf,
   season: c.grape,
-  supporter: c.leaf,
+  medal: c.sun,
 });
 
 /** Milestone sticker. Earned: colourful with the date. Locked: faded, with a hint on how to earn it. */

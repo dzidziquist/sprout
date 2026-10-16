@@ -11,7 +11,7 @@ import { Segmented } from '@/components/Segmented';
 import { DataCard } from '@/components/DataCard';
 import { AppIconPicker } from '@/components/AppIconPicker';
 import { Label, Title } from '@/components/ui';
-import { useTips } from '@/hooks/useTips';
+import { useRewards } from '@/hooks/useRewards';
 import { SPOTS } from '@/lib/spots';
 import { requestPermission } from '@/lib/notifications';
 import { deleteAllPhotos } from '@/lib/photos';
@@ -108,7 +108,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { profile, setProfile, plants, eraseEverything } = usePlantStore();
-  const { supporter } = useTips();
+  const rewards = useRewards();
 
   const roundValue = profile.round.enabled ? (TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null) : 'Off';
 
@@ -233,11 +233,11 @@ export default function SettingsScreen() {
 
       <DataCard />
 
-      <Section title="Support PlantFam" footer="Everything in PlantFam is free. Tips are optional and come with small thank-you gifts.">
-        <Row label="Tip jar" value={supporter ? 'Thank you 💚' : undefined} onPress={() => router.push('/tips')} last />
+      <Section title="Support PlantFam" footer="PlantFam is free for everyone. Rate it, share it, or send an idea, and see the gifts your fam grows into.">
+        <Row label="Support PlantFam" value={`${rewards.earned} milestones`} onPress={() => router.push('/support')} last />
       </Section>
 
-      {supporter && <AppIconPicker />}
+      {rewards.icons.unlocked && <AppIconPicker />}
 
       <Section title="About">
         <Row label="How PlantFam works" onPress={() => router.push('/help')} />

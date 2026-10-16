@@ -1,4 +1,4 @@
-import { TipJarCard } from '@/components/TipJarCard';
+import { SupportCard } from '@/components/SupportCard';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -9,7 +9,8 @@ import { usePlantStore } from '@/store/plantStore';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
 import { BadgeSticker } from '@/components/BadgeSticker';
-import { badgesFor, computeStreak, supporterBadge } from '@/engine/streak';
+import { badgesFor, computeStreak, medalBadge } from '@/engine/streak';
+import { rewardsFor } from '@/engine/rewards';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 
@@ -29,8 +30,9 @@ export default function MeScreen() {
   const { streak, badges } = useMemo(() => {
     const input = { plants, events, climate: profile.climate, now: new Date() };
     const s = computeStreak(input);
-    const thanks = profile.supporter ? supporterBadge(profile.supporterSince) : undefined;
-    return { streak: s, badges: thanks ? [thanks, ...badgesFor(input, s)] : badgesFor(input, s) };
+    const core = badgesFor(input, s);
+    const medal = medalBadge(rewardsFor(core, { supporter: profile.supporter, supporterSince: profile.supporterSince }).medal.at);
+    return { streak: s, badges: medal ? [medal, ...core] : core };
   }, [plants, events, profile.climate, profile.supporter, profile.supporterSince]);
   const earned = badges.filter((b) => b.earnedAt).length;
 
@@ -86,7 +88,7 @@ export default function MeScreen() {
         </View>
       </View>
 
-      <TipJarCard />
+      <SupportCard />
 
       <Pressable accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => router.push('/settings')}>
         <Sticker drop={0} bg={c.cloud} style={styles.settingsRow}>

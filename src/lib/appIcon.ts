@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 /*
- * Alternate app icons, a supporter thank-you. The icons themselves are set up by the
+ * Alternate app icons, a reward for 7 milestones (engine/rewards.ts). The icons themselves are set up by the
  * expo-alternate-app-icons plugin in app.json (names there must match these ids).
  * The native module is required lazily: it's missing on web and in Expo Go.
  */

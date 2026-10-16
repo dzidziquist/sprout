@@ -58,7 +58,7 @@ export type Origin = 'bought' | 'cutting' | 'swap' | 'gift';
 /** Growth stage for edibles (tomato, pepper, spring onion, herbs). */
 export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruiting' | 'harvesting' | 'resting';
 
-/** 'gold' is a supporter thank-you; species art never uses it. */
+/** 'gold' is a milestone reward; species art never uses it. */
 export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum' | 'gold';
 
 /** Plants with their own illustrated buddy (assets/buddies). Other species borrow the closest one. */

@@ -173,12 +173,20 @@ Plants in **LECA** or **water** (water culture, Kratky jars, countertop hydro ga
 
 Milestones: one season badge per climate (grey season for Seattle, **winter** with the snowflake art where it freezes, cool season where it doesn't, harmattan / dry season in the tropics), so nobody sees a duplicate or a badge they can't earn. **Grandma plant** counts a year from when the plant joined the fam, not when it was bought.
 
-## Owner decision (Oct 16, 2026): a tip jar, not a subscription
+## Owner decision (Oct 16, 2026): a tip jar, not a subscription (since switched off, see below)
 
 PlantFam has no servers and pays for no APIs, so there's nothing to charge for. The only fixed cost is Apple's $99 a year; photo ID stays inside Pl@ntNet's free tier. So:
 - **Everything is free**, including spreadsheet (CSV) export of the care diary. Nothing is locked, no ads.
 - **Tip jar** (Me → Tip jar, Settings → Support PlantFam): three one-time tips, $2.99 "Seed", $4.99 "Sprout", $9.99 "Big leaf" (App Store consumables). Tips unlock no features. Tippers get cosmetic thank-you gifts: a supporter badge in their milestones (never shown locked to anyone else), a gold card colour in Edit plant, and a party hat on the Me tab buddy. Alternate app icons: Night, Cactus, Sunny and Party (Settings → App icon, supporters only). Planned: a first look (about two weeks early) at new buddy art packs. The tip travels in backups because the App Store can't restore consumables. The page is a transparent "where tips go": the Apple fee, headroom for photo ID, and new free features.
 - **What a paid tier could honestly cover later**, only if we build things that cost money to run: unlimited photo ID beyond 5 a day (Pl@ntNet Pro, about €5 per 1,000), an AI plant doctor (model API costs), or cloud sync across devices (if it needs a server). Widgets, share cards and a year in review stay free.
+
+## Owner decision (Oct 16, 2026): free hobby app, tips off
+
+PlantFam ships **completely free, with no in-app purchases**: it's published from a personal hobby developer account, so it shouldn't earn money. `TIPS_ENABLED = false` in `src/config.ts` hides the tip jar and never starts RevenueCat; the tip code stays for later (turning it back on needs the consumables in App Store Connect, the RevenueCat key, the privacy line back, and a new build).
+
+The tip jar page became **Support PlantFam** (Me tab card, Settings → Support PlantFam):
+- **Ways to help (free):** rate PlantFam (Apple's in-app rating prompt), tell a plant friend (share sheet), suggest a plant or idea (support email or site). Nothing is rewarded for these: Apple doesn't allow rewards for ratings.
+- **Gifts your fam grows into**, earned with milestones (`src/engine/rewards.ts`): gold plant cards at 3, the party buddy at 5, four extra app icons (Night, Cactus, Sunny, Party) at 7, and the PlantFam gold medal badge at 10. They're cosmetic; every feature stays free.
 
 ## Owner decision (Oct 16, 2026): ask where people grow
 

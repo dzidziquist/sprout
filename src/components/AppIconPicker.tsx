@@ -5,7 +5,7 @@ import * as haptics from '../lib/haptics';
 import { fonts } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 
-/** Settings → App icon: a supporter thank-you. Hidden where the phone can't switch icons. */
+/** Settings → App icon: a reward for 7 milestones. Hidden where the phone can't switch icons. */
 export function AppIconPicker() {
   const c = useColors();
   const [icon, setIcon] = useState<AppIconId | null>(() => currentAppIcon());
@@ -35,7 +35,7 @@ export function AppIconPicker() {
           );
         })}
       </View>
-      <Text style={[styles.footer, { color: c.inkMuted }]}>A thank-you for your tip. iPhone shows a short note when the icon changes.</Text>
+      <Text style={[styles.footer, { color: c.inkMuted }]}>A reward for 7 milestones. iPhone shows a short note when the icon changes.</Text>
     </View>
   );
 }
