@@ -45,10 +45,13 @@ export function MeBuddy() {
       </Pressable>
       <View style={[styles.bubble, { backgroundColor: party ? c.mint : c.card, borderColor: c.line }]}>
         {/* The tail is drawn, not a rotated square: its fill covers the bubble's edge so the outline flows round it. */}
-        <Svg width={14} height={22} viewBox="0 0 14 22" style={styles.tail}>
-          <Path d="M14 1 L2 11 L14 21 Z" fill={party ? c.mint : c.card} />
-          <Path d="M13 2 L2 11 L13 20" stroke={c.line} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" fill="none" />
-        </Svg>
+        {/* Positioned by a plain View: on iOS an Svg ignores percentage offsets, which dropped the tail to the corner. */}
+        <View style={styles.tail} pointerEvents="none">
+          <Svg width={14} height={22} viewBox="0 0 14 22">
+            <Path d="M14 1 L2 11 L14 21 Z" fill={party ? c.mint : c.card} />
+            <Path d="M13 2 L2 11 L13 20" stroke={c.line} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" fill="none" />
+          </Svg>
+        </View>
         <Text style={[styles.text, { color: c.ink }]}>
           {party
             ? 'Party hat on! Thanks for looking after the fam.'
@@ -63,6 +66,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   buddy: { width: 96, height: 96 },
   bubble: { flex: 1, borderWidth: 2, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 10 },
-  tail: { position: 'absolute', left: -12, top: '50%', marginTop: -11 },
+  tail: { position: 'absolute', left: -12, top: 0, bottom: 0, width: 14, justifyContent: 'center' },
   text: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
 });
