@@ -1,12 +1,9 @@
 import { useState } from 'react';
-import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { usePlantStore } from '../store/plantStore';
-import { backupMyData, exportSpreadsheet, parseBackup, pickBackupText, type BackupData } from '../lib/export';
-import * as haptics from '../lib/haptics';
-import { Button, Sticker } from './ui';
-import { fonts } from '../theme/tokens';
-import { useColors } from '../theme/theme';
+import { usePlantStore } from '@/store/plantStore';
+import { backupMyData, exportSpreadsheet, parseBackup, pickBackupText, type BackupData } from '@/lib/export';
+import * as haptics from '@/lib/haptics';
 
 const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : undefined);
 
@@ -21,11 +18,11 @@ function confirm(title: string, body: string): Promise<boolean> {
 }
 
 /**
- * Free for everyone: everything lives on the phone, so a backup file is the safety net.
- * Restore validates the file and asks before replacing anything.
+ * Backup, restore and spreadsheet export for Settings → Your data. Free for everyone: everything
+ * lives on the phone, so a backup file is the safety net. Restore validates the file and asks
+ * before replacing anything.
  */
-export function DataCard() {
-  const c = useColors();
+export function useDataActions() {
   const router = useRouter();
   const { profile, plants, events, setProfile, restoreBackup } = usePlantStore();
   const [busy, setBusy] = useState<'backup' | 'restore' | 'csv' | null>(null);
@@ -80,30 +77,5 @@ export function DataCard() {
     }
   };
 
-  return (
-    <View style={{ gap: 8 }}>
-      <Text style={[styles.section, { color: c.inkMuted }]} accessibilityRole="header">
-        YOUR DATA
-      </Text>
-      <Sticker drop={0} style={styles.card}>
-        <Text style={[styles.body, { color: c.ink }]}>
-          Your plants live only on this phone: no account, no tracking. {last ? `Last backup: ${last}.` : 'No backup yet.'}
-        </Text>
-        {stale && plants.length > 0 && <Text style={[styles.small, { color: c.warn }]}>A quick backup keeps your fam safe if you lose or switch phones.</Text>}
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <Button title={busy === 'backup' ? 'Saving…' : 'Back up now'} raised disabled={!!busy} onPress={backup} style={{ flex: 1 }} />
-          <Button title={busy === 'restore' ? 'Opening…' : 'Restore'} bg={c.cloud} disabled={!!busy} onPress={restore} style={{ flex: 1 }} />
-        </View>
-        <Button title={busy === 'csv' ? 'Exporting…' : 'Export care diary (spreadsheet)'} bg={c.card} disabled={!!busy || plants.length === 0} onPress={spreadsheet} />
-        {msg && <Text style={[styles.small, { color: msg.bad ? c.warn : c.good }]}>{msg.text}</Text>}
-      </Sticker>
-    </View>
-  );
+  return { backup, restore, spreadsheet, busy, msg, last, stale: stale && plants.length > 0, hasPlants: plants.length > 0 };
 }
-
-const styles = StyleSheet.create({
-  card: { padding: 12, gap: 10 },
-  section: { fontFamily: fonts.bodyHeavy, fontSize: 12, letterSpacing: 0.6, paddingHorizontal: 4 },
-  body: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
-  small: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-});
