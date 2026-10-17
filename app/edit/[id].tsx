@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { useRewards } from '@/hooks/useRewards';
-import { closestJoined, daysAgo, JOINED, WATERED, type JoinedId, type WateredId } from '@/lib/when';
+import { closestJoined, closestOption, CUT, daysAgo, JOINED, WATERED, type CutId, type JoinedId, type WateredId } from '@/lib/when';
 import { isReservoir } from '@/engine/careEngine';
 import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
@@ -122,6 +122,8 @@ export default function EditPlantScreen() {
   const [potColor, setPotColor] = useState<PotColor>(plant?.potColor ?? 'yellow');
   const initialJoined = plant ? closestJoined(plant.acquiredAt) : 'today';
   const [joined, setJoined] = useState<JoinedId>(initialJoined);
+  const initialCut = plant?.rooting ? closestOption(CUT, plant.rooting.startedAt) : 'today';
+  const [cut, setCut] = useState<CutId>(initialCut);
   const [watered, setWatered] = useState<WateredId | null>(null);
   const [confirming, setConfirming] = useState(false);
   // "Other" plants (not in the catalogue) can change their species name, care type and pet info.
@@ -151,7 +153,14 @@ export default function EditPlantScreen() {
       room: room.trim() || undefined,
       potColor,
       // Only move the date when the chip changed, so an exact date isn't rounded away.
-      ...(joined !== initialJoined ? { acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString() } : {}),
+      ...(joined !== initialJoined && !plant.rooting ? { acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString() } : {}),
+      // A rooting cutting joined the day it was taken, so both dates move together.
+      ...(plant.rooting && cut !== initialCut
+        ? (() => {
+            const at = daysAgo(CUT.find((t) => t.id === cut)?.days ?? 0).toISOString();
+            return { acquiredAt: at, rooting: { ...plant.rooting, startedAt: at } };
+          })()
+        : {}),
       ...(isOther
         ? {
             speciesId: otherId,
@@ -240,7 +249,11 @@ export default function EditPlantScreen() {
 
       <Label>A little history</Label>
       <DropdownGroup>
-        <Dropdown label="Joined the fam" value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} last={!!plant.rooting} />
+        {plant.rooting ? (
+          <Dropdown label="Cutting taken" value={cut} tint={c.ice} options={CUT} onChange={setCut} last />
+        ) : (
+          <Dropdown label="Joined the fam" value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} />
+        )}
         {!plant.rooting && (
           <Dropdown
             label={isReservoir(soil) ? 'Last topped up' : 'Last watered'}

@@ -98,6 +98,16 @@ describe('plant store', () => {
     expect(usePlantStore.getState().events.some((e) => e.type === 'photo')).toBe(false);
   });
 
+  it('backdates a cutting that was already rooting', () => {
+    const s = usePlantStore.getState();
+    const mum = s.addPlant({ ...base, name: 'Mum' }, now);
+    const taken = new Date(now.getTime() - 14 * 86400000);
+    const kid = s.takeCutting(mum.id, 'Kid', 'water', taken)!;
+    expect(kid.rooting?.startedAt).toBe(taken.toISOString());
+    expect(kid.acquiredAt).toBe(taken.toISOString());
+    expect(usePlantStore.getState().events.find((e) => e.type === 'cutting')?.at).toBe(taken.toISOString());
+  });
+
   it('schedules "other" plants by their care type', () => {
     const s = usePlantStore.getState();
     const cactus = s.addPlant({ ...base, speciesId: 'other-succulent', custom: { commonName: 'Bunny ear' }, soil: 'gritty', name: 'Bun' }, now, { firstCheck: 'scheduled' });

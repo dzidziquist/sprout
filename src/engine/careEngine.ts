@@ -276,7 +276,9 @@ export function isDue(plant: Pick<Plant, 'nextCheckAt'>, now: Date): boolean {
 }
 
 /** Mood is an honest read of state, never a guilt trip. */
-export function moodFor(plant: Pick<Plant, 'nextCheckAt' | 'lastResult' | 'lastCheckAt'>, now: Date): 'happy' | 'thirsty' | 'snoozing' {
+export function moodFor(plant: Pick<Plant, 'nextCheckAt' | 'lastResult' | 'lastCheckAt'> & Partial<Pick<Plant, 'rooting'>>, now: Date): 'happy' | 'thirsty' | 'snoozing' {
+  // Rooting cuttings have no soil checks, so they're never "due".
+  if (plant.rooting) return 'happy';
   if (isDue(plant, now)) return 'thirsty';
   if (plant.lastResult && plant.lastResult !== 'dry' && plant.lastCheckAt) {
     const since = (now.getTime() - new Date(plant.lastCheckAt).getTime()) / DAY_MS;

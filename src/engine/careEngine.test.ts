@@ -146,6 +146,7 @@ describe('due and mood', () => {
   it('is thirsty when due, snoozing right after a damp skip, happy otherwise', () => {
     expect(moodFor({ nextCheckAt: '2026-10-12T00:00:00' }, now)).toBe('thirsty');
     expect(moodFor({ nextCheckAt: '2026-10-15T00:00:00', lastResult: 'damp', lastCheckAt: '2026-10-12T09:00:00' }, now)).toBe('snoozing');
+    expect(moodFor({ nextCheckAt: '2026-10-12T00:00:00', rooting: { method: 'water', startedAt: '2026-10-01T00:00:00' } }, now)).toBe('happy');
     expect(moodFor({ nextCheckAt: '2026-10-20T00:00:00', lastResult: 'dry', lastCheckAt: '2026-10-12T09:00:00' }, now)).toBe('happy');
   });
 });

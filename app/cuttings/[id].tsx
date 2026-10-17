@@ -7,6 +7,8 @@ import { usePlantStore } from '@/store/plantStore';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
+import { CUT, daysAgo, type CutId } from '@/lib/when';
 import { METHOD_WORD, ROOTING_METHODS, firstBabyNumber, type RootingMethod } from '@/components/CuttingMethods';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
@@ -30,6 +32,7 @@ export default function TakeCuttingsScreen() {
   const [method, setMethod] = useState<RootingMethod>('water');
   const [prefix, setPrefix] = useState(plant ? `${plant.name} baby` : '');
   const [note, setNote] = useState('');
+  const [taken, setTaken] = useState<CutId>('today');
   const [made, setMade] = useState<{ n: number; method: RootingMethod } | null>(null);
 
   const close = (
@@ -67,7 +70,8 @@ export default function TakeCuttingsScreen() {
   };
 
   const save = () => {
-    const now = new Date();
+    // Cuttings already rooting before they joined the app start from the day they were taken.
+    const now = daysAgo(CUT.find((t) => t.id === taken)?.days ?? 0);
     const at = now.toISOString();
     const born = names.map((n) => takeCutting(plant.id, n, method, now)).filter(Boolean);
     const text = note.trim();
@@ -171,6 +175,14 @@ export default function TakeCuttingsScreen() {
             );
           })}
         </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.heading}>When</Text>
+        <DropdownGroup>
+          <Dropdown label="Taken" value={taken} tint={c.ice} options={CUT} onChange={setTaken} last />
+        </DropdownGroup>
+        {taken !== 'today' && <Text style={styles.hint}>Already rooting? Its day count and pot-up nudge start from then.</Text>}
       </View>
 
       <View style={styles.section}>
