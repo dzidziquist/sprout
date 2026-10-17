@@ -78,6 +78,7 @@ export default function BadgeScreen() {
   const earned = !!badge.earnedAt;
   const art = BADGE_ART[badge.art === undefined ? badge.id : (badge.art ?? '')];
   const fill = earned ? badgeFill(c)[badge.id] ?? c.sun : c.cloud;
+  const lv = badge.levels;
   const date = earned ? new Date(badge.earnedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
   const front = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-36000deg', '36000deg'] });
   const back = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-35820deg', '36180deg'] });
@@ -105,7 +106,7 @@ export default function BadgeScreen() {
         </Animated.View>
         <Animated.View style={[styles.face, styles.backFace, { transform: [{ perspective: 900 }, { rotateY: back }] }]}>
           <View style={[styles.disc, { backgroundColor: earned ? fill : c.cloud, borderColor: c.line }]}>
-            <Text style={[styles.backKicker, { color: earned ? textOn(fill, c) : c.inkMuted }]}>{earned ? 'Earned' : 'Still to earn'}</Text>
+            <Text style={[styles.backKicker, { color: earned ? textOn(fill, c) : c.inkMuted }]}>{earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}</Text>
             <Text style={[styles.backText, { color: earned ? textOn(fill, c) : c.ink }]}>{earned ? date : badge.hint}</Text>
           </View>
         </Animated.View>
@@ -114,6 +115,23 @@ export default function BadgeScreen() {
       <View style={{ gap: 6, alignItems: 'center' }}>
         <Text style={[styles.title, { color: c.ink }]}>{badge.title}</Text>
         <Text style={[styles.sub, { color: c.inkMuted }]}>{earned ? `Earned ${date}` : badge.hint}</Text>
+        {lv && lv.tiers.length > 1 && earned && (
+          <View style={{ alignSelf: 'stretch', gap: 6, marginTop: 10 }}>
+            <View style={styles.levelRow}>
+              {lv.tiers.map((t, i) => (
+                <View key={t} style={[styles.pip, { borderColor: c.line, backgroundColor: i < lv.level ? c.sun : c.card }]}>
+                  <Text style={[styles.pipText, { color: i < lv.level ? c.onBright : c.inkMuted }]}>{t}</Text>
+                </View>
+              ))}
+            </View>
+            <Text style={[styles.sub, { color: c.ink }]}>
+              {lv.next ? `Level ${lv.level} of ${lv.tiers.length} · ${lv.next - lv.count} more ${lv.unit} to level ${lv.level + 1}` : `Every level done · ${lv.count} ${lv.unit}`}
+            </Text>
+            {lv.level > 1 && lv.levelAt && (
+              <Text style={[styles.hint, { color: c.inkMuted, marginTop: 0 }]}>Level {lv.level} reached {new Date(lv.levelAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Text>
+            )}
+          </View>
+        )}
         <Text style={[styles.hint, { color: c.inkMuted }]}>Swipe to spin it · tap for a twirl</Text>
       </View>
     </View>
@@ -129,6 +147,9 @@ const styles = StyleSheet.create({
   disc: { width: SIZE - 30, height: SIZE - 30, borderRadius: (SIZE - 30) / 2, borderWidth: 3, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 6 },
   backKicker: { fontFamily: fonts.bodyHeavy, fontSize: 13, letterSpacing: 0.6, textTransform: 'uppercase' },
   backText: { fontFamily: fonts.display, fontSize: 20, textAlign: 'center' },
+  levelRow: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  pip: { minWidth: 44, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+  pipText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   title: { fontFamily: fonts.display, fontSize: 26, textAlign: 'center' },
   sub: { fontFamily: fonts.bodyHeavy, fontSize: 15, textAlign: 'center' },
   hint: { fontFamily: fonts.bodyHeavy, fontSize: 12, textAlign: 'center', marginTop: 6 },
