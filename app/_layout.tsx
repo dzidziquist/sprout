@@ -82,6 +82,7 @@ export default function RootLayout() {
         <Stack.Screen name="identify" options={{ presentation: 'modal' }} />
         <Stack.Screen name="photos/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="away" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="doctor/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="grow" />
         <Stack.Screen name="help" />
         <Stack.Screen name="settings" />

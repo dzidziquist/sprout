@@ -24,11 +24,15 @@ import { StagePanel } from '@/components/StagePanel';
 import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
 import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
 import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
+
 import { choosePhoto, photoSrc } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { CareEvent, Plant } from '@/types';
+
+/** Stethoscope, for the plant doctor. */
+const DOCTOR_ICON = 'M6 3v6a4 4 0 0 0 8 0V3M10 13v3a4 4 0 0 0 8 0v-2M18 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z';
 
 const CAMERA = 'M3 9a3 3 0 0 1 3-3h1.5L9 4h6l1.5 2H18a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z';
 
@@ -60,6 +64,8 @@ function describe(e: CareEvent, plants: Plant[], reservoir: boolean): string {
       return 'Bug patrol';
     case 'staked':
       return 'Staked';
+    case 'diagnosis':
+      return `Plant doctor: ${e.note}`;
     case 'cutting':
       {
         const baby = plants.find((p) => p.id === e.note);
@@ -240,6 +246,15 @@ export default function PlantDetail() {
         {!archived && !plant.rooting && (
           <>
             <Button title="Log care" raised onPress={actions.log} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`What's wrong with ${plant.name}?`}
+              onPress={() => router.push(`/doctor/${plant.id}`)}
+              style={({ pressed }) => [styles.cutBtn, { backgroundColor: c.peach, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 3}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 2 }] }]}
+            >
+              <Svg width={20} height={20} viewBox="0 0 24 24"><Path d={DOCTOR_ICON} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+              <Text style={[styles.cutText, { color: c.ink }]}>Something wrong?</Text>
+            </Pressable>
             {!guide?.regrows && (
             <Pressable
               accessibilityRole="button"
