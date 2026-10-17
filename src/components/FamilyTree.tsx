@@ -36,11 +36,8 @@ export function nodeInfo(p: Plant, depth: number, now: Date, c: Palette) {
   const ready = isReadyToPotUp(p, now);
   const tint = rooting ? c.ice : gone ? c.card : c.potTint[p.potColor];
   const mood = gone ? ('snoozing' as const) : rooting ? ('happy' as const) : moodFor(p, now);
-  const sub = gone
-    ? monthYear(p.archivedAt!)
-    : depth === 0
-      ? `The OG · ${new Date(p.acquiredAt).getFullYear()}`
-      : `${p.origin === 'cutting' ? 'Cutting' : 'Baby'} · ${monthYear(p.acquiredAt)}`;
+  // Gone plants keep their own line; the corner tag says gifted or in memory.
+  const sub = depth === 0 ? `The OG · ${new Date(p.acquiredAt).getFullYear()}` : `${p.origin === 'cutting' ? 'Cutting' : 'Baby'} · ${monthYear(p.acquiredAt)}`;
   const corner = rooting ? { text: rooting.method, fill: methodFill(rooting.method, c) } : gone ? { text: ARCHIVED_LABEL[p.archivedReason ?? 'gifted'], fill: c.cloud } : null;
   const days = rooting ? rootingDays(rooting.startedAt, now) : 0;
   const a11y = `${p.name}, ${gone ? `${ARCHIVED_LABEL[p.archivedReason ?? 'gifted']}, ` : ''}${rooting ? `rooting in ${rooting.method}, day ${days}${ready ? ', ready to pot up' : ''}` : sub}`;

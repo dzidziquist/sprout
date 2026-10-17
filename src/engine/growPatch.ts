@@ -1,6 +1,6 @@
 import { fmtRain, fmtTemp, type Units } from '../lib/units';
 import { climateDate, localizeClimateText, modelOf } from '../lib/climate';
-import { CALENDAR, edibleGuide, type CalendarTask, type FeedWindow, type TaskKind, type TaskWindow } from '../data/edibles';
+import { CALENDAR, edibleGuide, supportFor, type CalendarTask, type FeedWindow, type TaskKind, type TaskWindow } from '../data/edibles';
 import { isFeedingPaused } from './careEngine';
 import type { CareEvent, ClimateProfile, EdibleStage, Placement, Plant } from '../types';
 
@@ -110,11 +110,31 @@ function overlaps(task: CalendarTask, from: number, to: number, year: number): b
 const KIND_ORDER: TaskKind[] = ['protect', 'harvest', 'plant', 'sow', 'feed', 'care'];
 
 /**
+ * Whether a calendar task fits where this plant is in its life. A task can list its stages; harvest jobs
+ * otherwise wait for something to pick: fruit for fruiting crops, a grown plant for leaves and roots.
+ * A plant with no stage logged gets every task, since we can't tell.
+ */
+export function taskFitsStage(task: Pick<CalendarTask, 'kind' | 'stages'>, plant: Pick<Plant, 'speciesId' | 'stage'>): boolean {
+  if (!plant.stage) return true;
+  if (task.stages) return task.stages.includes(plant.stage);
+  if (task.kind !== 'harvest') return true;
+  const stages = edibleGuide(plant.speciesId)?.stages;
+  if (!stages) return true;
+  const first = stages.includes('fruiting') ? 'fruiting' : stages.includes('growing') ? 'growing' : 'harvesting';
+  const at = stages.indexOf(plant.stage);
+  const end = stages.includes('harvesting') ? stages.indexOf('harvesting') : stages.length - 1;
+  return at >= stages.indexOf(first) && at <= end;
+}
+
+/** Stages a staked or trellised crop needs its support by: once it's growing, until the season's done. */
+const NEEDS_SUPPORT: EdibleStage[] = ['growing', 'flowering', 'fruiting', 'harvesting'];
+
+/**
  * This month's grow jobs for the user's edibles: calendar tasks for the species they own, plus stage
  * tasks (high-potash at fruit swell, pollination while flowering). Each task appears once, listing every
  * plant it applies to. Tasks due this week come first.
  */
-export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Date): GrowTask[] {
+export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Date, events: CareEvent[] = []): GrowTask[] {
   const mine = ediblePlants(plants);
   if (!mine.length) return [];
   // Calendar windows are written in the model city's months; read them on the matching day there.
@@ -128,11 +148,24 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Dat
 
   for (const task of CALENDAR[modelOf(climate)]) {
     if (!overlaps(task, monthStart, monthEnd, y)) continue;
-    const plantIds = mine.filter((p) => (task.species as string[]).includes(p.speciesId)).map((p) => p.id);
+    const plantIds = mine.filter((p) => (task.species as string[]).includes(p.speciesId) && taskFitsStage(task, p)).map((p) => p.id);
     if (!plantIds.length) continue;
     // A window that has already closed this month isn't worth showing.
     if (!overlaps(task, dayStart, monthEnd, y)) continue;
     out.push({ id: task.id, kind: task.kind, title: localizeClimateText(task.title, climate), body: localizeClimateText(task.body, climate), plantIds, thisWeek: overlaps(task, dayStart, weekEnd, y) });
+  }
+
+  // Support: tall croppers and climbers need it once they're growing, until it's been logged.
+  const staked = new Set(events.filter((e) => e.type === 'staked').map((e) => e.plantId));
+  const unsupported = (kind: 'stake' | 'trellis') =>
+    mine.filter((p) => supportFor(p.speciesId) === kind && p.stage && NEEDS_SUPPORT.includes(p.stage) && !staked.has(p.id));
+  const stake = unsupported('stake');
+  if (stake.length) {
+    out.push({ id: 'stage-stake', kind: 'care', title: 'Give it a stake', body: 'Push a sturdy stake in beside the stem and tie it loosely as it grows. Fruit gets heavy.', plantIds: stake.map((p) => p.id), thisWeek: true });
+  }
+  const trellis = unsupported('trellis');
+  if (trellis.length) {
+    out.push({ id: 'stage-trellis', kind: 'care', title: 'Something to climb', body: 'Set up a trellis, netting or poles now, and guide the first tendrils onto it.', plantIds: trellis.map((p) => p.id), thisWeek: true });
   }
 
   // Stage triggers, driven by guide flags.

@@ -685,6 +685,26 @@ const GUIDES: EdibleGuide[] = [
 
 export const EDIBLES: Record<EdibleId, EdibleGuide> = Object.fromEntries(GUIDES.map((g) => [g.id, g]));
 
+/** Crops that need a hand to stay upright: a stake (or cage) for the heavy croppers, a trellis or poles for climbers. */
+export type Support = 'stake' | 'trellis';
+const SUPPORT: Partial<Record<EdibleId, Support>> = {
+  tomato: 'stake',
+  pepper: 'stake',
+  'bell-pepper': 'stake',
+  eggplant: 'stake',
+  'garden-egg': 'stake',
+  'cape-gooseberry': 'stake',
+  okra: 'stake',
+  cucumber: 'trellis',
+  pea: 'trellis',
+  'runner-bean': 'trellis',
+  'passion-fruit': 'trellis',
+};
+
+export function supportFor(speciesId: SpeciesId): Support | undefined {
+  return SUPPORT[speciesId];
+}
+
 export function edibleGuide(speciesId: SpeciesId): EdibleGuide | undefined {
   return EDIBLES[speciesId];
 }
@@ -707,6 +727,8 @@ export interface CalendarTask {
   body: string;
   species: EdibleId[];
   when: TaskWindow[];
+  /** Only for plants at one of these stages (plants with no stage logged always count). */
+  stages?: EdibleStage[];
 }
 
 const all = (from: number, to: number): TaskWindow[] => Array.from({ length: to - from + 1 }, (_, i) => ({ month: (from + i) % 12 }));
@@ -755,7 +777,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-basil-in', kind: 'protect', title: 'Basil comes inside', body: 'Bring it in before nights drop under 10°C, or take cuttings for the windowsill.', species: ['basil'], when: [{ month: 8, from: 10 }, { month: 9, to: 10 }] },
     { id: 'sea-green-toms', kind: 'harvest', title: 'Pick green tomatoes', body: 'Take every full-size green or blushing one. Ripen at 13–21°C, out of the fridge. ~2 weeks.', species: ['tomato'], when: [{ month: 9 }, { month: 10, to: 10 }] },
     { id: 'sea-overwinter', kind: 'protect', title: 'Bring peppers in', body: 'Pick the last pods, prune to a few Y-branches, check for bugs, then a bright ~13°C spot.', species: ['pepper'], when: [{ month: 9 }, { month: 10, to: 15 }] },
-    { id: 'sea-blight-bin', kind: 'care', title: 'Tidy the vines', body: 'Bin blighted vines (don’t compost) and don’t reuse their mix for tomatoes or peppers.', species: ['tomato'], when: [{ month: 9, from: 15 }, { month: 10 }] },
+    { id: 'sea-blight-bin', kind: 'care', title: 'Tidy the vines', body: 'Bin blighted vines (don’t compost) and don’t reuse their mix for tomatoes or peppers.', species: ['tomato'], when: [{ month: 9, from: 15 }, { month: 10 }], stages: ['fruiting', 'harvesting', 'resting'] },
     { id: 'sea-onion-eave', kind: 'protect', title: 'Onions under the eave', body: 'They’re hardy, just not fans of sitting soggy. Or bring a pot to the windowsill.', species: ['spring-onion'], when: months(9, 10) },
     { id: 'sea-onion-winter', kind: 'harvest', title: 'Snip lightly', body: 'Short days mean slow regrowth. Take a little, leave the rest.', species: ['spring-onion'], when: months(11, 0) },
     { id: 'sea-mint-rest', kind: 'care', title: 'Let mint rest', body: 'It dies back for winter. Cut the stems and keep it barely damp.', species: ['mint'], when: months(10, 11) },

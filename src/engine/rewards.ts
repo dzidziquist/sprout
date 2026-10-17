@@ -20,7 +20,7 @@ export interface Reward {
 
 export const REWARDS: Reward[] = [
   { id: 'gold', title: 'Gold plant cards', body: 'Give any plant a sparkly gold card in Edit plant.', short: 'gold cards', needs: 3 },
-  { id: 'party', title: 'A party buddy', body: 'Your buddy on the Me tab dresses up.', short: 'your party buddy', needs: 5 },
+  { id: 'party', title: 'A party buddy', body: 'The plant on your Support card (Me tab) swaps for a pothos in a party hat, confetti and all.', short: 'your party buddy', needs: 5 },
   { id: 'icons', title: 'Four extra app icons', body: 'Night, Cactus, Sunny or Party, in Settings → App icon.', short: 'extra app icons', needs: 7 },
   { id: 'medal', title: 'The PlantFam gold medal', body: 'A gold medal joins your milestones.', short: 'the gold medal', needs: 10 },
 ];

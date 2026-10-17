@@ -58,16 +58,16 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/pepper-thirsty.png'),
     snoozing: require('../../assets/buddies/pepper-snoozing.png'),
   },
-  // The newer edibles (bell pepper through kale) have one drawing so far: the happy buddy stands in for every mood.
+  // Newer edibles without a drawing for a mood yet show their happy buddy for it.
   'bell-pepper': {
     happy: require('../../assets/buddies/bell-pepper-happy.png'),
-    thirsty: require('../../assets/buddies/bell-pepper-happy.png'),
-    snoozing: require('../../assets/buddies/bell-pepper-happy.png'),
+    thirsty: require('../../assets/buddies/bell-pepper-thirsty.png'),
+    snoozing: require('../../assets/buddies/bell-pepper-snoozing.png'),
   },
   'potato': {
     happy: require('../../assets/buddies/potato-happy.png'),
-    thirsty: require('../../assets/buddies/potato-happy.png'),
-    snoozing: require('../../assets/buddies/potato-happy.png'),
+    thirsty: require('../../assets/buddies/potato-thirsty.png'),
+    snoozing: require('../../assets/buddies/potato-snoozing.png'),
   },
   'sweet-potato': {
     happy: require('../../assets/buddies/sweet-potato-happy.png'),
@@ -76,28 +76,28 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
   },
   'okra': {
     happy: require('../../assets/buddies/okra-happy.png'),
-    thirsty: require('../../assets/buddies/okra-happy.png'),
-    snoozing: require('../../assets/buddies/okra-happy.png'),
+    thirsty: require('../../assets/buddies/okra-thirsty.png'),
+    snoozing: require('../../assets/buddies/okra-snoozing.png'),
   },
   'cucumber': {
     happy: require('../../assets/buddies/cucumber-happy.png'),
-    thirsty: require('../../assets/buddies/cucumber-happy.png'),
-    snoozing: require('../../assets/buddies/cucumber-happy.png'),
+    thirsty: require('../../assets/buddies/cucumber-thirsty.png'),
+    snoozing: require('../../assets/buddies/cucumber-snoozing.png'),
   },
   'zucchini': {
     happy: require('../../assets/buddies/zucchini-happy.png'),
-    thirsty: require('../../assets/buddies/zucchini-happy.png'),
-    snoozing: require('../../assets/buddies/zucchini-happy.png'),
+    thirsty: require('../../assets/buddies/zucchini-thirsty.png'),
+    snoozing: require('../../assets/buddies/zucchini-snoozing.png'),
   },
   'lettuce': {
     happy: require('../../assets/buddies/lettuce-happy.png'),
     thirsty: require('../../assets/buddies/lettuce-happy.png'),
-    snoozing: require('../../assets/buddies/lettuce-happy.png'),
+    snoozing: require('../../assets/buddies/lettuce-snoozing.png'),
   },
   'kale': {
     happy: require('../../assets/buddies/kale-happy.png'),
     thirsty: require('../../assets/buddies/kale-happy.png'),
-    snoozing: require('../../assets/buddies/kale-happy.png'),
+    snoozing: require('../../assets/buddies/kale-snoozing.png'),
   },
   'garlic': {
     happy: require('../../assets/buddies/garlic-happy.png'),
@@ -131,8 +131,8 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
   },
   'chard': {
     happy: require('../../assets/buddies/chard-happy.png'),
-    thirsty: require('../../assets/buddies/chard-happy.png'),
-    snoozing: require('../../assets/buddies/chard-happy.png'),
+    thirsty: require('../../assets/buddies/chard-thirsty.png'),
+    snoozing: require('../../assets/buddies/chard-snoozing.png'),
   },
   'spinach': {
     happy: require('../../assets/buddies/spinach-happy.png'),
@@ -226,8 +226,8 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
   },
   'pineapple': {
     happy: require('../../assets/buddies/pineapple-happy.png'),
-    thirsty: require('../../assets/buddies/pineapple-happy.png'),
-    snoozing: require('../../assets/buddies/pineapple-happy.png'),
+    thirsty: require('../../assets/buddies/pineapple-thirsty.png'),
+    snoozing: require('../../assets/buddies/pineapple-snoozing.png'),
   },
   'raspberry': {
     happy: require('../../assets/buddies/raspberry-happy.png'),

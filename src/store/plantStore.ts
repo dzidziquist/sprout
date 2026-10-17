@@ -56,7 +56,7 @@ export const DEFAULT_PROFILE: Profile = {
   idUsage: { day: '', count: 0 },
 };
 
-export type CareAction = 'water' | 'wet' | 'refresh' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
+export type CareAction = 'water' | 'wet' | 'refresh' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo' | 'stake';
 
 export type NewPlant =Omit<Plant, 'id' | 'k' | 'nextCheckAt' | 'createdAt' | 'lastCheckAt' | 'lastResult'>;
 
@@ -103,6 +103,8 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** Mark plants as staked (or trellised), or take the mark back off. */
+  setStaked: (plantIds: string[], on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
   removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
@@ -227,6 +229,7 @@ export const usePlantStore = create<PlantState>()(
           if (a === 'pest') extra.push({ id: uid(), plantId, type: 'pest', at });
           if (a === 'photo') extra.push({ id: uid(), plantId, type: 'photo', at });
           if (a === 'refresh') extra.push({ id: uid(), plantId, type: 'refresh', at });
+          if (a === 'stake') extra.push({ id: uid(), plantId, type: 'staked', at });
         }
         if (actions.includes('refresh')) {
           set((s) => ({ plants: s.plants.map((p) => (p.id === plantId ? { ...p, lastRefreshedAt: at } : p)) }));
@@ -357,6 +360,15 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
           // Edibles remember their stage so the diary can show the grow, stage by stage.
           events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, stage: s.plants.find((p) => p.id === plantId)?.stage, note: note?.trim() || undefined, at: now.toISOString() }],
+        }));
+      },
+
+      setStaked: (plantIds, on, now = new Date()) => {
+        const ids = new Set(plantIds);
+        set((s) => ({
+          events: on
+            ? [...s.events, ...plantIds.map((plantId) => ({ id: uid(), plantId, type: 'staked' as const, at: now.toISOString() }))]
+            : s.events.filter((e) => !(e.type === 'staked' && ids.has(e.plantId))),
         }));
       },
 

@@ -57,6 +57,8 @@ function describe(e: CareEvent, plants: Plant[], reservoir: boolean): string {
       return 'Trimmed';
     case 'pest':
       return 'Bug patrol';
+    case 'staked':
+      return 'Staked';
     case 'cutting':
       {
         const baby = plants.find((p) => p.id === e.note);

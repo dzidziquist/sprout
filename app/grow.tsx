@@ -270,6 +270,9 @@ export default function GrowPatch() {
   const climate = usePlantStore((s) => s.profile.climate);
   const faces = usePlantStore((s) => s.profile.faces);
   const [done, setDone] = useState<Set<string>>(new Set());
+  // Read once: ticking "Give it a stake" logs it, but the row stays (ticked) until the next visit.
+  const [eventsAtOpen] = useState(events);
+  const setStaked = usePlantStore((s) => s.setStaked);
   const now = new Date();
 
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
@@ -277,17 +280,19 @@ export default function GrowPatch() {
   const units = useUnits();
   const alerts = useMemo(() => weatherAlerts(edibles, forecast, units), [edibles, forecast, units]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const tasks = useMemo(() => tasksFor(edibles, climate, new Date()), [edibles, climate]);
+  const tasks = useMemo(() => tasksFor(edibles, climate, new Date(), eventsAtOpen), [edibles, climate, eventsAtOpen]);
   const stats = useMemo(() => harvestStats(events, edibles), [events, edibles]);
   const basket = formatTotals(stats.totals);
 
   const back = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const toggle = (id: string) => {
     haptics.tap();
+    const on = !done.has(id);
+    if (id === 'stage-stake' || id === 'stage-trellis') setStaked(tasks.find((t) => t.id === id)?.plantIds ?? [], on);
     setDone((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (on) next.add(id);
+      else next.delete(id);
       return next;
     });
   };

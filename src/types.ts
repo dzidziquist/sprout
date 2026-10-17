@@ -224,6 +224,8 @@ export type CareEventType =
   | 'stage'
   | 'regrow'
   | 'refresh'
+  /** Given a stake, cage or trellis. */
+  | 'staked'
   | 'archived';
 
 export interface CareEvent {
