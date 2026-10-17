@@ -91,3 +91,14 @@ export function deleteAllPhotos(): void {
     // Nothing to clean up, or the folder is already gone.
   }
 }
+
+/** Remove one diary photo's file from the phone. Photos from before the diary folder are left alone. */
+export function deletePhoto(stored: string): void {
+  if (Platform.OS === 'web' || !stored.startsWith(`${DIARY}/`)) return;
+  try {
+    const file = new File(Paths.document, stored);
+    if (file.exists) file.delete();
+  } catch {
+    // Already gone.
+  }
+}

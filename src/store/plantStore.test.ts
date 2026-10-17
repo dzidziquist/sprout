@@ -83,6 +83,21 @@ describe('plant store', () => {
     expect(st.events.find((e) => e.type === 'harvest')).toMatchObject({ amount: 2, unit: 'bunch', note: 'first!' });
   });
 
+  it('tags edible photos with their stage and falls back to the newest photo on removal', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, speciesId: 'spring-onion', name: 'Scallie' }, now);
+    s.setStage(p.id, 'growing', now);
+    s.addPhoto(p.id, 'diary/a.jpg', undefined, new Date('2026-05-01T09:00:00Z'));
+    s.addPhoto(p.id, 'diary/b.jpg', undefined, new Date('2026-05-08T09:00:00Z'));
+    const photos = usePlantStore.getState().events.filter((e) => e.type === 'photo');
+    expect(photos[0].stage).toBe('growing');
+    usePlantStore.getState().removePhoto(photos[1].id);
+    expect(usePlantStore.getState().plants[0].photoUri).toBe('diary/a.jpg');
+    usePlantStore.getState().removePhoto(photos[0].id);
+    expect(usePlantStore.getState().plants[0].photoUri).toBeUndefined();
+    expect(usePlantStore.getState().events.some((e) => e.type === 'photo')).toBe(false);
+  });
+
   it('schedules "other" plants by their care type', () => {
     const s = usePlantStore.getState();
     const cactus = s.addPlant({ ...base, speciesId: 'other-succulent', custom: { commonName: 'Bunny ear' }, soil: 'gritty', name: 'Bun' }, now, { firstCheck: 'scheduled' });
@@ -103,6 +118,28 @@ describe('plant store', () => {
     expect(st.plants).toEqual([]);
     expect(st.onboarded).toBe(false);
     expect(st.profile).toMatchObject({ supporter: true, theme: 'system' });
+  });
+});
+
+describe('past waterings', () => {
+  it('plans the first check from when it was last watered, and logs that watering', () => {
+    const s = usePlantStore.getState();
+    const watered = new Date('2026-10-12T09:00:00');
+    const p = s.addPlant({ ...base, name: 'Wet' }, now, { lastWateredAt: watered });
+    const scheduled = s.addPlant({ ...base, name: 'Ref' }, watered, { firstCheck: 'scheduled' });
+    expect(p.nextCheckAt).toBe(scheduled.nextCheckAt);
+    expect(usePlantStore.getState().events.filter((e) => e.plantId === p.id && e.type === 'water').map((e) => e.at)).toEqual([watered.toISOString()]);
+  });
+
+  it('lets an existing plant say when it was last watered', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Late' }, now);
+    expect(p.nextCheckAt).toBe(now.toISOString());
+    const yesterday = new Date('2026-10-13T09:00:00');
+    usePlantStore.getState().setLastWatered(p.id, yesterday, now);
+    const after = usePlantStore.getState().plants.find((x) => x.id === p.id)!;
+    expect(after.nextCheckAt > now.toISOString()).toBe(true);
+    expect(usePlantStore.getState().events.some((e) => e.plantId === p.id && e.type === 'water' && e.at === yesterday.toISOString())).toBe(true);
   });
 });
 

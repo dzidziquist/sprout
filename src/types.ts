@@ -53,7 +53,8 @@ export interface Climate {
 /** A preset model (exactly Seattle or Accra) or a shifted climate for anywhere else. */
 export type ClimateProfile = ClimateModel | Climate;
 
-export type Origin = 'bought' | 'cutting' | 'swap' | 'gift';
+/** How a plant started. 'seed' and 'scraps' (regrown from kitchen scraps) are mostly for edibles. */
+export type Origin = 'bought' | 'cutting' | 'swap' | 'gift' | 'seed' | 'scraps';
 
 /** Growth stage for edibles (tomato, pepper, spring onion, herbs). */
 export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruiting' | 'harvesting' | 'resting';

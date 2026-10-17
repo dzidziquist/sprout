@@ -9,14 +9,17 @@ import { usePlantStore } from '@/store/plantStore';
 import { OTHER, SPECIES, SPECIES_LIST, getSpecies, isOtherId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { defaultSpot, type Spot } from '@/lib/spots';
+import { daysAgo, JOINED, WATERED, type JoinedId, type WateredId } from '@/lib/when';
+import { edibleGuide, type EdibleGuide } from '@/data/edibles';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
-import type { Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
+import type { EdibleStage, Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
 
 const isSpeciesId = (v: unknown): v is SpeciesId => typeof v === 'string' && v in SPECIES;
 
@@ -99,6 +102,23 @@ const ORIGINS: { id: Origin; label: string }[] = [
   { id: 'gift', label: 'Gift' },
 ];
 
+/** Edibles: how it started, which also sets the stage it starts at. */
+const EDIBLE_ORIGINS: { id: Origin; label: string; regrowOnly?: boolean }[] = [
+  { id: 'seed', label: 'From seed' },
+  { id: 'bought', label: 'Bought as a plant' },
+  { id: 'scraps', label: 'Regrown from scraps', regrowOnly: true },
+  { id: 'cutting', label: 'My cutting' },
+  { id: 'gift', label: 'Gift or swap' },
+];
+
+/** The stage a new edible most likely starts at, given how it started. */
+function startStage(guide: EdibleGuide, origin: Origin): EdibleStage {
+  const has = (s: EdibleStage) => guide.stages.includes(s);
+  if (origin === 'seed') return has('seed') ? 'seed' : guide.stages[0];
+  if (origin === 'scraps' || origin === 'cutting') return has('growing') ? 'growing' : guide.stages[0];
+  return has('seedling') ? 'seedling' : (guide.stages.find((s) => s !== 'seed') ?? guide.stages[0]);
+}
+
 function Pill({ on, label, onPress, bg }: { on: boolean; label: string; onPress: () => void; bg?: string }) {
   const c = useColors();
   const fill = bg ?? c.mint;
@@ -164,8 +184,12 @@ export default function AddPlantScreen() {
   const [size, setSize] = useState(15);
   const [material, setMaterial] = useState<PotMaterial>('plastic');
   const [placement, setPlacement] = useState<Placement>(presetDefaults?.placement ?? 'indoor');
+  const [joined, setJoined] = useState<JoinedId>('today');
+  const [watered, setWatered] = useState<WateredId>('unsure');
   const [room, setRoom] = useState('');
   const [origin, setOrigin] = useState<Origin>('bought');
+  // Edibles: null means "the usual stage for how it started".
+  const [stage, setStage] = useState<EdibleStage | null>(null);
   const [parentId, setParentId] = useState<string | undefined>();
   const [category, setCategory] = useState<PlantCategory | 'all'>('all');
   // Quick add: name and light up front, the rest tucked behind sensible defaults.
@@ -336,6 +360,10 @@ export default function AddPlantScreen() {
   const parents = plants.filter((p) => !p.archivedAt && (isOther ? !!p.custom && p.custom.commonName.toLowerCase() === customName.trim().toLowerCase() : p.speciesId === speciesId));
   const soilInfo = SOILS.find((s) => s.id === soil);
 
+  const lastWateredDays = WATERED.find((w) => w.id === watered)?.days ?? null;
+  const guide = sp.edible && !isOther ? edibleGuide(speciesId) : undefined;
+  const nowStage = guide ? (stage && guide.stages.includes(stage) ? stage : startStage(guide, origin)) : undefined;
+  const joinedLabel = origin === 'seed' ? 'Sown' : origin === 'scraps' ? 'Started' : 'Joined the fam';
   const save = () => {
     const plant = addPlant({
       name: name.trim() || suggestions[0],
@@ -350,8 +378,9 @@ export default function AddPlantScreen() {
       room: room.trim() || undefined,
       origin,
       parentId: origin === 'cutting' ? parentId : undefined,
-      acquiredAt: new Date().toISOString(),
-    });
+      acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString(),
+      ...(nowStage ? { stage: nowStage, stageAt: new Date().toISOString() } : {}),
+    }, new Date(), { lastWateredAt: lastWateredDays === null ? undefined : daysAgo(lastWateredDays) });
     haptics.success();
     router.replace(`/plant/${plant.id}`);
   };
@@ -460,7 +489,42 @@ export default function AddPlantScreen() {
       </View>
       <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
 
-      {profile.grows.hydro && placement !== 'ground' && (
+      <Label>A little history</Label>
+      <DropdownGroup>
+        {guide && (
+          <>
+            <Dropdown
+              label="How it started"
+              value={origin}
+              tint={c.mint}
+              options={EDIBLE_ORIGINS.filter((o) => !o.regrowOnly || guide.regrows)}
+              onChange={(o) => {
+                setOrigin(o);
+                setStage(null);
+              }}
+            />
+            {origin === 'cutting' && parents.length > 0 && (
+              <Dropdown
+                label="Cut from"
+                value={parentId ?? null}
+                tint={c.lavender}
+                placeholder="Choose"
+                options={parents.map((p) => ({ id: p.id, label: p.name }))}
+                onChange={(id) => setParentId(id ?? undefined)}
+              />
+            )}
+            <Dropdown label="Stage now" value={nowStage ?? null} tint={c.butter} options={guide.stages.map((s) => ({ id: s, label: guide.info[s]?.label ?? s }))} onChange={(s) => s && setStage(s)} />
+          </>
+        )}
+        <Dropdown label={joinedLabel} value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} />
+        <Dropdown label={isReservoir(soil) ? 'Last topped up' : 'Last watered'} value={watered} tint={c.ice} options={WATERED} onChange={setWatered} last />
+      </DropdownGroup>
+      <Text style={[styles.note, { color: c.inkMuted }]}>
+        {lastWateredDays === null ? 'Not sure? No problem: we’ll ask you to check its soil today.' : 'Its first check is planned from that watering.'}
+      </Text>
+
+      {/* Edibles often grow in jars or countertop hydro gardens, so they always get the choice. */}
+      {(profile.grows.hydro || (sp.edible && !isOther)) && placement !== 'ground' && (
         <>
           <Label>What does it grow in?</Label>
           <View style={styles.wrap}>
@@ -468,6 +532,7 @@ export default function AddPlantScreen() {
             <Pill on={soil === 'leca'} bg={c.peach} label="LECA" onPress={() => setSoil('leca')} />
             <Pill on={soil === 'water'} bg={c.ice} label="Water · hydro" onPress={() => setSoil('water')} />
           </View>
+          {soil === 'water' && <Text style={[styles.note, { color: c.inkMuted }]}>Roots in water: a jar, Kratky or a countertop garden. You’ll top up and feed weak nutrients instead of checking soil.</Text>}
         </>
       )}
 
@@ -486,7 +551,7 @@ export default function AddPlantScreen() {
           {!showMore && (
             <Text style={[styles.careSub, { color: c.inkMuted }]} numberOfLines={2}>
               {SOIL_LABEL[soil].replace(' (not ideal in pots)', '')}
-              {placement === 'ground' ? '' : ` · ${POT_SIZES.find((x) => x.cm === size)?.label ?? 'Medium'} ${MATERIALS.find((m) => m.id === material)?.label.toLowerCase()} pot`} · {ORIGINS.find((o) => o.id === origin)?.label}
+              {placement === 'ground' ? '' : ` · ${POT_SIZES.find((x) => x.cm === size)?.label ?? 'Medium'} ${MATERIALS.find((m) => m.id === material)?.label.toLowerCase()} pot`} · {(guide ? EDIBLE_ORIGINS : ORIGINS).find((o) => o.id === origin)?.label}
             </Text>
           )}
         </View>
@@ -533,13 +598,13 @@ export default function AddPlantScreen() {
 
           <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" />
 
-          <Label>Where's it from?</Label>
-          <View style={styles.wrap}>
+          {!guide && <Label>Where's it from?</Label>}
+          {!guide && <View style={styles.wrap}>
             {ORIGINS.map((o) => (
               <Pill key={o.id} on={origin === o.id} bg={c.grape} label={o.label} onPress={() => setOrigin(o.id)} />
             ))}
-          </View>
-          {origin === 'cutting' && parents.length > 0 && (
+          </View>}
+          {!guide && origin === 'cutting' && parents.length > 0 && (
             <View style={{ gap: 6 }}>
               <Label muted>Cutting from which plant? It joins that plant's Offshoots.</Label>
               <View style={styles.wrap}>

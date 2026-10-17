@@ -11,6 +11,7 @@ import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { edibleGuide } from '@/data/edibles';
 import { feedingAdvice } from '@/engine/growPatch';
+import { growDay, stageAtPhoto } from '@/engine/photoDiary';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles } from '@/components/GoldSparkles';
 import { usePlantActions } from '@/components/PlantMenu';
@@ -257,16 +258,34 @@ export default function PlantDetail() {
                   <Text style={[styles.addPhotoText, { color: c.ink }]}>Add photo</Text>
                 </Pressable>
               )}
-              {photos.map((e) => (
-                <View key={e.id} style={styles.photoItem}>
-                  <View style={[styles.photo, { borderColor: c.line }]}>
-                    <Image source={{ uri: photoSrc(e.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} accessibilityLabel={`${plant.name} on ${shortDate(e.at)}`} />
-                  </View>
-                  <Text style={[styles.photoDate, { color: c.inkMuted }]}>{shortDate(e.at)}</Text>
-                </View>
-              ))}
+              {photos.map((e) => {
+                const stage = guide ? stageAtPhoto(plant, events, e) : undefined;
+                return (
+                  <Pressable
+                    key={e.id}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${plant.name} on ${shortDate(e.at)}. Open the photo diary`}
+                    onPress={() => router.push(`/photos/${plant.id}?photo=${e.id}`)}
+                    style={styles.photoItem}
+                  >
+                    <View style={[styles.photo, { borderColor: c.line }]}>
+                      <Image source={{ uri: photoSrc(e.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
+                    </View>
+                    {guide ? (
+                      <>
+                        <Text style={[styles.photoDate, { color: c.ink }]}>Day {growDay(plant, e)}</Text>
+                        <Text style={[styles.photoStage, { color: c.inkMuted }]}>{(stage && guide.info[stage]?.label) ?? shortDate(e.at)}</Text>
+                      </>
+                    ) : (
+                      <Text style={[styles.photoDate, { color: c.inkMuted }]}>{shortDate(e.at)}</Text>
+                    )}
+                  </Pressable>
+                );
+              })}
               {photos.length === 0 && !archived && (
-                <Text style={[styles.stripHint, { color: c.inkMuted }]}>Snap {plant.name} now and then to watch them grow.</Text>
+                <Text style={[styles.stripHint, { color: c.inkMuted }]}>
+                  {guide ? `Snap ${plant.name} every week or so. Each photo is marked with the grow day and stage, so you can watch it go from ${guide.stages[0] === 'seed' ? 'seed' : 'sprout'} to harvest.` : `Snap ${plant.name} now and then to watch them grow.`}
+                </Text>
               )}
             </ScrollView>
           </View>
@@ -345,6 +364,7 @@ const styles = StyleSheet.create({
   photoItem: { alignItems: 'center', gap: 4 },
   photo: { width: 96, height: 96, borderRadius: 18, borderWidth: 2, overflow: 'hidden' },
   photoDate: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  photoStage: { fontFamily: fonts.bodyHeavy, fontSize: 11, marginTop: -3 },
   row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingHorizontal: 14, paddingVertical: 11 },
   rowKey: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   rowVal: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1, textAlign: 'right' },

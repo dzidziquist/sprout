@@ -8,7 +8,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore, type FaceStyle, type Profile } from '@/store/plantStore';
 import { GlassButton } from '@/components/GlassButton';
 import { Segmented } from '@/components/Segmented';
-import { DataCard } from '@/components/DataCard';
+import { useDataActions } from '@/hooks/useDataActions';
 import { AppIconPicker } from '@/components/AppIconPicker';
 import { Label, Title } from '@/components/ui';
 import { useRewards } from '@/hooks/useRewards';
@@ -110,6 +110,10 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { profile, setProfile, plants, eraseEverything } = usePlantStore();
   const rewards = useRewards();
+  const data = useDataActions();
+  const idle = (fn: () => void) => () => {
+    if (!data.busy) fn();
+  };
 
   const roundValue = profile.round.enabled ? (TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null) : 'Off';
 
@@ -254,7 +258,15 @@ export default function SettingsScreen() {
         </Field>
       </Section>
 
-      <DataCard />
+      <Section
+        title="Your data"
+        footer={data.stale ? 'No recent backup. A quick one keeps your fam safe if you lose or switch phones.' : 'Your plants live only on this phone: no account, no tracking.'}
+      >
+        <Row label="Back up now" value={data.busy === 'backup' ? 'Saving…' : data.last ? `Last: ${data.last}` : 'Never'} onPress={idle(data.backup)} />
+        <Row label="Restore from a backup" value={data.busy === 'restore' ? 'Opening…' : undefined} onPress={idle(data.restore)} />
+        <Row label="Export care diary" value={data.busy === 'csv' ? 'Exporting…' : 'Spreadsheet'} onPress={data.hasPlants ? idle(data.spreadsheet) : undefined} last />
+      </Section>
+      {data.msg && <Text style={[styles.footer, { color: data.msg.bad ? c.warn : c.good, marginTop: -12 }]}>{data.msg.text}</Text>}
 
       <Section title="Support PlantFam" footer="PlantFam is free for everyone. Rate it, share it, or send an idea, and see the gifts your fam grows into.">
         <Row label="Support PlantFam" value={`${rewards.earned} milestones`} onPress={() => router.push('/support')} last />
@@ -275,7 +287,7 @@ export default function SettingsScreen() {
         <Row label="Version" value={APP_VERSION} last />
       </Section>
 
-      <Section title="Danger zone" footer="Erases everything on this phone and starts fresh. Make a backup first if you might want your fam back. Purchases stay with your Apple ID.">
+      <Section title="Danger zone" footer="Erases everything on this phone and starts fresh. Make a backup first if you might want your fam back.">
         <Row label="Delete all my data" danger onPress={eraseAll} chevron={false} last />
       </Section>
 

@@ -78,7 +78,9 @@ interface PlantState {
    * New plants get their first soil check today by default: we don't know when it was last watered,
    * and one real answer calibrates far better than a guess. Demo plants use the modelled schedule.
    */
-  addPlant: (p: NewPlant, now?: Date, opts?: { firstCheck?: 'today' | 'scheduled' }) => Plant;
+  addPlant: (p: NewPlant, now?: Date, opts?: { firstCheck?: 'today' | 'scheduled'; lastWateredAt?: Date }) => Plant;
+  /** "It was last watered on…": logs that watering and plans the next check from it. */
+  setLastWatered: (plantId: string, at: Date, now?: Date) => void;
   /** Records a soil check and reschedules. Returns the kind message to show. */
   logCheck: (plantId: string, result: CheckResult, now?: Date) => string;
   undoLastCheck: (plantId: string) => void;
@@ -99,6 +101,8 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
+  removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
   restoreBackup: (data: { profile: Partial<Profile>; plants: Plant[]; events: CareEvent[] }) => void;
   /** Erase every plant, diary entry and setting on this phone and start onboarding again. Purchases stay with the Apple ID. */
@@ -148,10 +152,27 @@ export const usePlantStore = create<PlantState>()(
 
       addPlant: (input, now = new Date(), opts) => {
         const base = { ...input, id: uid(), k: 1, createdAt: now.toISOString() };
-        const today = (opts?.firstCheck ?? 'today') === 'today' && !input.rooting;
-        const plant: Plant = { ...base, nextCheckAt: today ? now.toISOString() : schedule(base, get().profile.climate, now) };
-        set((s) => ({ plants: [...s.plants, plant] }));
+        const climate = get().profile.climate;
+        // Knowing when it was last watered beats a same-day check: plan from that watering instead.
+        const watered = opts?.lastWateredAt && !input.rooting ? opts.lastWateredAt : undefined;
+        const today = !watered && (opts?.firstCheck ?? 'today') === 'today' && !input.rooting;
+        const nextCheckAt = watered ? schedule(base, climate, watered) : today ? now.toISOString() : schedule(base, climate, now);
+        const plant: Plant = { ...base, nextCheckAt };
+        set((s) => ({
+          plants: [...s.plants, plant],
+          events: watered ? [...s.events, { id: uid(), plantId: plant.id, type: 'water', at: watered.toISOString() }] : s.events,
+        }));
         return plant;
+      },
+
+      setLastWatered: (plantId, at, now = new Date()) => {
+        const plant = get().plants.find((p) => p.id === plantId);
+        if (!plant || plant.rooting) return;
+        const when = at.getTime() > now.getTime() ? now : at;
+        set((s) => ({
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, nextCheckAt: schedule(p, s.profile.climate, when) } : p)),
+          events: [...s.events, { id: uid(), plantId, type: 'water', at: when.toISOString() }],
+        }));
       },
 
       logCheck: (plantId, result, now = new Date()) => {
@@ -314,8 +335,22 @@ export const usePlantStore = create<PlantState>()(
       addPhoto: (plantId, uri, note, now = new Date()) => {
         set((s) => ({
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
-          events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, note: note?.trim() || undefined, at: now.toISOString() }],
+          // Edibles remember their stage so the diary can show the grow, stage by stage.
+          events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, stage: s.plants.find((p) => p.id === plantId)?.stage, note: note?.trim() || undefined, at: now.toISOString() }],
         }));
+      },
+
+      removePhoto: (eventId) => {
+        set((s) => {
+          const gone = s.events.find((e) => e.id === eventId && e.type === 'photo');
+          if (!gone) return s;
+          const events = s.events.filter((e) => e.id !== eventId);
+          const latest = events.filter((e) => e.plantId === gone.plantId && e.type === 'photo' && e.photoUri).sort((a, b) => a.at.localeCompare(b.at)).pop();
+          return {
+            events,
+            plants: s.plants.map((p) => (p.id === gone.plantId && p.photoUri === gone.photoUri ? { ...p, photoUri: latest?.photoUri } : p)),
+          };
+        });
       },
 
       restoreBackup: (data) => {

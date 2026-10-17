@@ -5,12 +5,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { useRewards } from '@/hooks/useRewards';
+import { closestJoined, daysAgo, JOINED, WATERED, type JoinedId, type WateredId } from '@/lib/when';
+import { isReservoir } from '@/engine/careEngine';
 import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ARCHIVE_COPY, confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
 import { GlassButton } from '@/components/GlassButton';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
@@ -99,6 +102,8 @@ export default function EditPlantScreen() {
   const c = useColors();
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
   const updatePlant = usePlantStore((s) => s.updatePlant);
+  const setLastWatered = usePlantStore((s) => s.setLastWatered);
+  const lastWater = usePlantStore((s) => s.events.filter((e) => e.plantId === id && e.type === 'water').reduce((m, e) => (e.at > m ? e.at : m), ''));
   const faces = usePlantStore((s) => s.profile.faces);
   const rewards = useRewards();
   const leave = () => {
@@ -115,6 +120,9 @@ export default function EditPlantScreen() {
   const [placement, setPlacement] = useState<Placement>(plant?.placement ?? 'indoor');
   const [room, setRoom] = useState(plant?.room ?? '');
   const [potColor, setPotColor] = useState<PotColor>(plant?.potColor ?? 'yellow');
+  const initialJoined = plant ? closestJoined(plant.acquiredAt) : 'today';
+  const [joined, setJoined] = useState<JoinedId>(initialJoined);
+  const [watered, setWatered] = useState<WateredId | null>(null);
   const [confirming, setConfirming] = useState(false);
   // "Other" plants (not in the catalogue) can change their species name, care type and pet info.
   const [kind, setKind] = useState(plant?.custom?.commonName ?? '');
@@ -142,6 +150,8 @@ export default function EditPlantScreen() {
       placement,
       room: room.trim() || undefined,
       potColor,
+      // Only move the date when the chip changed, so an exact date isn't rounded away.
+      ...(joined !== initialJoined ? { acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString() } : {}),
       ...(isOther
         ? {
             speciesId: otherId,
@@ -149,6 +159,8 @@ export default function EditPlantScreen() {
           }
         : {}),
     });
+    const days = watered ? WATERED.find((w) => w.id === watered)?.days : null;
+    if (days !== null && days !== undefined) setLastWatered(plant.id, daysAgo(days));
     haptics.success();
     back();
   };
@@ -225,6 +237,31 @@ export default function EditPlantScreen() {
           </Pressable>
         ))}
       </View>
+
+      <Label>A little history</Label>
+      <DropdownGroup>
+        <Dropdown label="Joined the fam" value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} last={!!plant.rooting} />
+        {!plant.rooting && (
+          <Dropdown
+            label={isReservoir(soil) ? 'Last topped up' : 'Last watered'}
+            value={watered}
+            tint={c.ice}
+            placeholder="No change"
+            options={[{ id: null, label: 'No change' }, ...WATERED.filter((w) => w.days !== null)]}
+            onChange={setWatered}
+            last
+          />
+        )}
+      </DropdownGroup>
+      {!plant.rooting && (
+        <Text style={[styles.note, { color: c.inkMuted }]}>
+          {watered
+            ? 'Saving logs that watering and plans the next check from it.'
+            : lastWater
+              ? `Last logged ${new Date(lastWater).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. Pick one if you've watered since.`
+              : "Nothing logged yet. Pick one if you know."}
+        </Text>
+      )}
 
       <Label>How sunny is its spot?</Label>
       <View style={styles.wrap}>
