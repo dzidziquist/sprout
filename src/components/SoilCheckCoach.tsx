@@ -7,7 +7,7 @@ import { Button, Sticker } from './ui';
 import { fonts } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 import * as haptics from '../lib/haptics';
-import { isReservoir } from '../engine/careEngine';
+import { checksWaterLine } from '../engine/careEngine';
 
 const STEPS: { word: string; feel: string; doThis: string; key: 'butter' | 'ice' | 'lavender' }[] = [
   { word: 'Dry', feel: 'Crumbly, finger comes out clean', doThis: 'Water slowly until it drips out the bottom.', key: 'butter' },
@@ -33,7 +33,7 @@ export function SoilCheckCoach() {
   const checks = events.filter((e) => e.type === 'check').length;
   const living = plants.filter((p) => !p.archivedAt);
   if (profile.coachDismissed || checks >= 3 || living.length === 0) return null;
-  const water = living.filter((p) => isReservoir(p.soil)).length;
+  const water = living.filter((p) => checksWaterLine(p)).length;
   const soil = living.length - water;
   const question = soil === 0 ? 'How do I check the water?' : water === 0 ? 'How do I check soil?' : 'How do I check?';
 

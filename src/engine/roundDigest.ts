@@ -1,6 +1,6 @@
 import type { Trip } from './away';
 import type { Plant } from '../types';
-import { isReservoir } from './careEngine';
+import { checksWaterLine } from './careEngine';
 
 export interface RoundDigest {
   title: string;
@@ -70,7 +70,7 @@ export function roundDigestFor(plants: Plant[], day: Date): RoundDigest | null {
   const due = plants.filter((p) => !p.rooting && !p.archivedAt && new Date(p.nextCheckAt).getTime() <= endOfDay.getTime());
   if (due.length === 0) return null;
   const n = due.map((p) => p.name);
-  const water = due.filter((p) => isReservoir(p.soil)).length;
+  const water = due.filter((p) => checksWaterLine(p)).length;
   const check = water === 0 ? 'a soil check' : water === due.length ? 'a water check' : 'a check';
   const body =
     due.length === 1

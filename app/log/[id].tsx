@@ -9,7 +9,7 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { choosePhoto, photoSrc } from '@/lib/photos';
-import { isReservoir } from '@/engine/careEngine';
+import { checksWaterLine, isReservoir } from '@/engine/careEngine';
 import { supportFor } from '@/data/edibles';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
@@ -147,7 +147,8 @@ export default function LogCareSheet() {
 
       <View style={styles.grid}>
         {tiles.map((t) => {
-          const label = hydro && t.id === 'water' ? 'Topped up' : hydro && t.id === 'wet' ? 'Plenty left' : t.label;
+          const line = checksWaterLine(plant);
+          const label = line && t.id === 'water' ? 'Topped up' : line && t.id === 'wet' ? 'Plenty left' : t.label;
           const on = sel.has(t.id);
           const showThumb = t.id === 'photo' && on && photoUri;
           return (

@@ -49,6 +49,9 @@ export default function AwayScreen() {
   const faces = usePlantStore((s) => s.profile.faces);
   const planTrip = usePlantStore((s) => s.planTrip);
   const endTrip = usePlantStore((s) => s.endTrip);
+  const setPrepDone = usePlantStore((s) => s.setPrepDone);
+  // Ticks made before the trip is saved; they go along with it when it's planned.
+  const [draftDone, setDraftDone] = useState<string[]>([]);
   const now = new Date();
   const current = activeTrip(trips, now) ?? upcomingTrip(trips, now);
   const away = !!activeTrip(trips, now);
@@ -61,6 +64,14 @@ export default function AwayScreen() {
   })();
   const trip = current ?? draft;
   const list = prepList(plants, trip);
+  const done = new Set(current ? current.done ?? [] : draftDone);
+  const ticked = list.filter((x) => done.has(x.id)).length;
+  const toggle = (id: string) => {
+    const on = !done.has(id);
+    haptics.tap();
+    if (current) setPrepDone(current.from, id, on);
+    else setDraftDone((d) => (on ? [...d, id] : d.filter((x) => x !== id)));
+  };
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
   const share = () => {
@@ -100,14 +111,30 @@ export default function AwayScreen() {
 
       {list.length > 0 && (
         <View style={{ gap: 8 }}>
-          <Label>{away ? 'Hope you did these' : 'Before you go'}</Label>
-          <Sticker drop={0} style={{ padding: 14, gap: 10 }}>
-            {list.map((line, i) => (
-              <View key={i} style={styles.item}>
-                <View style={[styles.dot, { backgroundColor: c.leaf, borderColor: c.line }]} />
-                <Text style={[styles.itemText, { color: c.ink }]}>{line}</Text>
-              </View>
-            ))}
+          <View style={styles.listHead}>
+            <Label>{away ? 'Hope you did these' : 'Before you go'}</Label>
+            <Text style={[styles.count, { color: ticked === list.length ? c.leafDeep : c.inkMuted }]}>
+              {ticked === list.length ? 'All set ✓' : `${ticked} of ${list.length} done`}
+            </Text>
+          </View>
+          <Sticker drop={0} style={{ padding: 6 }}>
+            {list.map((item) => {
+              const on = done.has(item.id);
+              return (
+                <Pressable
+                  key={item.id}
+                  onPress={() => toggle(item.id)}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: on }}
+                  style={({ pressed }) => [styles.item, pressed && { opacity: 0.6 }]}
+                >
+                  <View style={[styles.box, { borderColor: c.line, backgroundColor: on ? c.leaf : c.card }]}>
+                    {on && <Icon d="M5 12.5l4.5 4.5L19 7.5" color={c.onBright} size={14} width={3} />}
+                  </View>
+                  <Text style={[styles.itemText, { color: on ? c.inkMuted : c.ink }, on && styles.struck]}>{item.text}</Text>
+                </Pressable>
+              );
+            })}
           </Sticker>
         </View>
       )}
@@ -136,7 +163,7 @@ export default function AwayScreen() {
           raised
           onPress={() => {
             haptics.success();
-            planTrip(draft);
+            planTrip({ ...draft, done: draftDone.filter((id) => list.some((x) => x.id === id)) });
             close();
           }}
           style={{ minHeight: 56 }}
@@ -153,8 +180,11 @@ const styles = StyleSheet.create({
   hero: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   sub: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
   note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  item: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
-  dot: { width: 12, height: 12, borderRadius: 6, borderWidth: 2, marginTop: 4 },
+  listHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
+  count: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  item: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', padding: 8, minHeight: 44 },
+  box: { width: 24, height: 24, borderRadius: 7, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginTop: 0 },
+  struck: { textDecorationLine: 'line-through' },
   itemText: { flex: 1, fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20 },
   share: { borderWidth: 2, borderRadius: 18, padding: 14, gap: 2 },
   shareTitle: { fontFamily: fonts.display, fontSize: 17 },

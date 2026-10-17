@@ -109,6 +109,12 @@ function originOptions(speciesId: string): { id: Origin; label: string }[] {
   ];
 }
 
+const SELF_WATER: { id: 'no' | 'always' | 'away'; label: string }[] = [
+  { id: 'no', label: 'No' },
+  { id: 'always', label: 'Yes, I keep it filled' },
+  { id: 'away', label: 'Only fill it when I’m away' },
+];
+
 export default function EditPlantScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -130,6 +136,7 @@ export default function EditPlantScreen() {
   const [light, setLight] = useState<Light>(plant?.light ?? 'bright');
   const [soil, setSoil] = useState<Soil>(plant?.soil ?? 'potting_mix');
   const [size, setSize] = useState(plant ? nearestSize(plant.potDiameterCm) : 15);
+  const [selfWatering, setSelfWatering] = useState<'always' | 'away' | undefined>(plant?.selfWatering);
   const [material, setMaterial] = useState<PotMaterial>(plant?.potMaterial ?? 'plastic');
   const [placement, setPlacement] = useState<Placement>(plant?.placement ?? 'indoor');
   const [room, setRoom] = useState(plant?.room ?? '');
@@ -165,6 +172,7 @@ export default function EditPlantScreen() {
       // Only touch the exact diameter if the size bucket actually changed.
       ...(size !== nearestSize(plant.potDiameterCm) ? { potDiameterCm: size } : {}),
       potMaterial: material,
+      selfWatering: placement !== 'ground' && !isReservoir(soil) ? selfWatering : undefined,
       placement,
       room: room.trim() || undefined,
       potColor,
@@ -323,6 +331,17 @@ export default function EditPlantScreen() {
           <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
         ))}
       </View>
+      {!isReservoir(soil) && placement !== 'ground' && (
+        <>
+          <Label>Self-watering pot?</Label>
+          <View style={styles.wrap}>
+            {SELF_WATER.map((o) => (
+              <Pill key={o.id} on={(selfWatering ?? 'no') === o.id} bg={c.ice} label={o.label} onPress={() => setSelfWatering(o.id === 'no' ? undefined : o.id)} />
+            ))}
+          </View>
+          {selfWatering && <Text style={[styles.note, { color: c.inkMuted }]}>{selfWatering === 'always' ? 'Checks become a quick peek at the water line, about half as often.' : 'Care stays the same. Away mode reminds you to fill it before a trip.'}</Text>}
+        </>
+      )}
 
       <Label>Where does it live?</Label>
       <View style={styles.wrap}>

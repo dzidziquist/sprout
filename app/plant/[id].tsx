@@ -221,7 +221,7 @@ export default function PlantDetail() {
             ) : (
               <Sticker drop={0} bg={c.butter} style={styles.stat}>
                 <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
-                <Text style={[styles.statLabel, { color: c.ink }]}>last watered</Text>
+                <Text style={[styles.statLabel, { color: c.ink }]}>{plant.selfWatering === 'always' ? 'last topped up' : 'last watered'}</Text>
               </Sticker>
             )}
             <Sticker drop={0} bg={c.mint} style={styles.stat}>
@@ -316,8 +316,13 @@ export default function PlantDetail() {
                 ['Water', plant.soil === 'water' ? 'Top up as the level drops; keep the crown dry' : 'Keep the water line at the bottom third of the pot'],
                 ['Fresh water', plant.soil === 'water' ? 'Swap it all out every 2 weeks' : 'Flush with plain water monthly'],
               ]
-            : [['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
-          ]).concat([
+            : plant.selfWatering === 'always'
+              ? [['Water', 'Self-watering pot: keep the reservoir topped up. No need to water from the top.']]
+              : [
+                  ['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
+                  ...(plant.selfWatering === 'away' ? [['Reservoir', 'Fill it before a trip; Away mode reminds you']] : []),
+                ]
+          ).concat([
             ['Light', LIGHT_LABEL[plant.light]],
             [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
             ['Feed', feed],

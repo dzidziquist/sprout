@@ -179,6 +179,8 @@ export interface Plant {
   soil: Soil;
   potMaterial: PotMaterial;
   potDiameterCm: number;
+  /** A soil pot with a water reservoir: kept filled all the time, or filled only before a trip. */
+  selfWatering?: 'always' | 'away';
   light: Light;
   placement: Placement;
   room?: string;

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   applyCheck,
   checkIntervalDays,
+  checksWaterLine,
   isDue,
   isFeedingPaused,
   isMixOld,
@@ -208,5 +209,18 @@ describe('garden beds', () => {
     const inPot = applyCheck({ group: 'edible', plant: { ...basePlant, placement: 'outdoor', soil: 'garden_soil' }, profile: 'seattle', at }, 'dry');
     expect(inBed.flags).not.toContain('garden_soil');
     expect(inPot.flags).toContain('garden_soil');
+  });
+});
+
+describe('self-watering pots', () => {
+  it('kept filled: checked about half as often, as a water-line peek', () => {
+    expect(interval({ selfWatering: 'always' })).toBeCloseTo(Math.min(interval() * 2, 30), 0);
+    expect(checksWaterLine({ soil: 'potting_mix', selfWatering: 'always' })).toBe(true);
+  });
+
+  it('filled only for trips: care stays the same day to day', () => {
+    expect(interval({ selfWatering: 'away' })).toBe(interval());
+    expect(checksWaterLine({ soil: 'potting_mix', selfWatering: 'away' })).toBe(false);
+    expect(checksWaterLine({ soil: 'leca' })).toBe(true);
   });
 });

@@ -64,7 +64,7 @@ describe('away mode', () => {
 
   it('writes a prep list and a sitter note for these plants', () => {
     const plants = [plant('a', { name: 'Monty', room: 'Lounge' }), plant('b', { name: 'Bubbles', soil: 'leca' }), plant('c', { name: 'Spike', speciesId: 'aloe' })];
-    const list = prepList(plants, trip).join(' ');
+    const list = prepList(plants, trip).map((x) => x.text).join(' ');
     expect(list).toMatch(/water everyone deeply/);
     expect(list).toMatch(/Bubbles/);
     expect(list).toMatch(/Spike will be fine/);
@@ -72,5 +72,15 @@ describe('away mode', () => {
     const note = sitterNote(plants, 'seattle', trip, new Date('2026-06-09T12:00:00'));
     expect(note).toMatch(/Monty \(Pothos, Lounge\): water when the top/);
     expect(note).toMatch(/Bubbles .*top up when the water line/);
+  });
+
+  it('fills self-watering pots instead of watering them, and tells the sitter', () => {
+    const plants = [plant('a', { name: 'Monty' }), plant('b', { name: 'Fern', selfWatering: 'away' }), plant('c', { name: 'Ivy', selfWatering: 'always' })];
+    const list = prepList(plants, trip);
+    expect(list.find((x) => x.id === 'self-water')?.text).toMatch(/Fern, Ivy/);
+    expect(list.find((x) => x.id === 'water')?.text).toMatch(/water the other pots/);
+    expect(new Set(list.map((x) => x.id)).size).toBe(list.length);
+    const note = sitterNote(plants, 'seattle', trip, new Date('2026-06-09T12:00:00'));
+    expect(note).toMatch(/Fern .*self-watering pot/);
   });
 });

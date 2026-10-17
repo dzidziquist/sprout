@@ -109,6 +109,8 @@ interface PlantState {
   /** Plan a trip (replacing any that hasn't started), or end the current one now. */
   planTrip: (trip: Trip) => void;
   endTrip: (now?: Date) => void;
+  /** Tick (or untick) a before-you-go item on the trip that starts at `from`. */
+  setPrepDone: (from: string, itemId: string, done: boolean) => void;
   /** Mark plants as staked (or trellised), or take the mark back off. */
   setStaked: (plantIds: string[], on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
@@ -285,7 +287,7 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => {
             if (p.id !== plantId) return p;
             const next = { ...p, ...patch };
-            const careChanged = (['soil', 'potMaterial', 'potDiameterCm', 'light', 'placement', 'speciesId'] as const).some((k) => k in patch && patch[k] !== p[k]);
+            const careChanged = (['soil', 'potMaterial', 'potDiameterCm', 'light', 'placement', 'speciesId', 'selfWatering'] as const).some((k) => k in patch && patch[k] !== p[k]);
             return careChanged && !next.rooting ? { ...next, nextCheckAt: schedule(next, climate, now) } : next;
           }),
         }));
@@ -385,6 +387,19 @@ export const usePlantStore = create<PlantState>()(
             .map((x) => (new Date(x.to).getTime() > t ? { ...x, to: now.toISOString() } : x));
           return { profile: { ...s.profile, trips } };
         });
+      },
+
+      setPrepDone: (from, itemId, done) => {
+        set((s) => ({
+          profile: {
+            ...s.profile,
+            trips: (s.profile.trips ?? []).map((t) => {
+              if (t.from !== from) return t;
+              const rest = (t.done ?? []).filter((x) => x !== itemId);
+              return { ...t, done: done ? [...rest, itemId] : rest };
+            }),
+          },
+        }));
       },
 
       setStaked: (plantIds, on, now = new Date()) => {
