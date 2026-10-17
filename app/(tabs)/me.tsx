@@ -1,4 +1,5 @@
 import { SupportCard } from '@/components/SupportCard';
+import { MeBuddy } from '@/components/MeBuddy';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -52,6 +53,8 @@ export default function MeScreen() {
           </Svg>
         </GlassButton>
       </View>
+
+      <MeBuddy />
 
       <StreakCard streak={streak} />
 
