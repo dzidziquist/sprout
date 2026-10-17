@@ -1,6 +1,7 @@
 import { Image } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { BUDDY_IMAGES } from '../data/buddyImages';
+import { EXPANDED_BUDDY_IMAGES } from '../data/expandedBuddyImages';
 import { colors, potHex } from '../theme/tokens';
 import { artFor } from '../data/species';
 import type { ArtId, Mood, PotColor, SpeciesId } from '../types';
@@ -282,7 +283,8 @@ export function PlantBuddy({ speciesId, mood = 'happy', pot = 'yellow', size = 9
     const shown: Mood = faces === 'gentle' && mood === 'thirsty' ? 'happy' : mood;
     return (
       <Image
-        source={BUDDY_IMAGES[artId][shown]}
+        source={(Object.prototype.hasOwnProperty.call(EXPANDED_BUDDY_IMAGES, speciesId)
+          ? EXPANDED_BUDDY_IMAGES[speciesId] : undefined)?.[shown] ?? BUDDY_IMAGES[artId][shown]}
         style={{ width: size, height: size }}
         resizeMode="contain"
         accessibilityElementsHidden

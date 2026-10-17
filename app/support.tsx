@@ -79,7 +79,7 @@ function Buddies({ c, ids, party }: { c: Palette; ids: [SpeciesId, SpeciesId, Sp
       </View>
       <View style={[styles.buddyTile, styles.buddyBig, { backgroundColor: c.lavender, borderColor: c.line }]}>
         {party ? (
-          <Image source={require('../assets/art/buddy-party.png')} style={{ width: 100, height: 100 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+          <Image source={require('../assets/art/reward-party-buddy.png')} style={{ width: 100, height: 100 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         ) : (
           <PlantBuddy speciesId={ids[1]} size={96} />
         )}

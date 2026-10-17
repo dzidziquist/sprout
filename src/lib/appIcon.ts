@@ -9,7 +9,7 @@ import { Platform } from 'react-native';
 export type AppIconId = 'Night' | 'Cactus' | 'Sunny' | 'Party';
 
 export const APP_ICONS: { id: AppIconId | null; label: string; preview: number }[] = [
-  { id: null, label: 'Classic', preview: require('../../assets/icon.png') },
+  { id: null, label: 'Classic', preview: require('../../assets/icons/icon-default.png') },
   { id: 'Night', label: 'Night', preview: require('../../assets/icons/icon-night.png') },
   { id: 'Cactus', label: 'Cactus', preview: require('../../assets/icons/icon-cactus.png') },
   { id: 'Sunny', label: 'Sunny', preview: require('../../assets/icons/icon-sunny.png') },

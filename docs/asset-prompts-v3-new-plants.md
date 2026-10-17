@@ -1,5 +1,7 @@
 # PlantFam: plant buddy prompts v3 (36 new plants)
 
+Production batch: all 108 images are generated and registered in `src/data/expandedBuddyImages.ts`. Actual exports are 1254×1254 transparent PNGs; see [the gallery](asset-gallery.html) and [asset inventory](asset-inventory.json). The 1024×1024 values below remain the original generation target.
+
 This batch adds **36 new plant buddies** (20 houseplants, 16 edibles), each in 3 moods: **108 images**. They join the 20 existing buddies in `assets/buddies/`, so they must look like they came from the same sheet. The difference is that these are **single high-res exports**. The old sprites were sliced out of one 1536×1024 sheet. They come out at only about 150px, look soft when scaled up, and several have a neighbour's leaves clipped into the edge (look at the right edge of `pothos-happy.png` or `tomato-happy.png`).
 
 Use this file together with `asset-prompts-v2.md`. That file still covers every non-buddy asset.
@@ -672,42 +674,42 @@ Pot balance: sun yellow 8, sky blue 7, coral 8, grape 7, bubblegum 6.
 
 | # | id | Common name | Pot colour | Happy | Thirsty | Snoozing |
 |---|---|---|---|---|---|---|
-| 1 | `philodendron-heartleaf` | Heartleaf philodendron | sky blue #5AB8FF | [ ] | [ ] | [ ] |
-| 2 | `philodendron-brasil` | Philodendron Brasil | grape #A78BFA | [ ] | [ ] | [ ] |
-| 3 | `alocasia-polly` | Alocasia 'Polly' | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 4 | `anthurium` | Anthurium | sky blue #5AB8FF | [ ] | [ ] | [ ] |
-| 5 | `phalaenopsis` | Moth orchid | grape #A78BFA | [ ] | [ ] | [ ] |
-| 6 | `boston-fern` | Boston fern | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 7 | `pilea` | Chinese money plant | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 8 | `begonia-maculata` | Polka-dot begonia | sky blue #5AB8FF | [ ] | [ ] | [ ] |
-| 9 | `jade` | Jade plant | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 10 | `echeveria` | Echeveria | bubblegum #FFB3C7 | [ ] | [ ] | [ ] |
-| 11 | `christmas-cactus` | Christmas cactus | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 12 | `dracaena-marginata` | Dragon tree | sky blue #5AB8FF | [ ] | [ ] | [ ] |
-| 13 | `croton` | Croton | grape #A78BFA | [ ] | [ ] | [ ] |
-| 14 | `african-violet` | African violet | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 15 | `aglaonema` | Chinese evergreen | bubblegum #FFB3C7 | [ ] | [ ] | [ ] |
-| 16 | `parlor-palm` | Parlor palm | bubblegum #FFB3C7 | [ ] | [ ] | [ ] |
-| 17 | `english-ivy` | English ivy | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 18 | `tradescantia` | Wandering dude | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 19 | `maranta` | Prayer plant | bubblegum #FFB3C7 | [ ] | [ ] | [ ] |
-| 20 | `syngonium` | Arrowhead plant | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 21 | `lettuce` | Leaf lettuce | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 22 | `kale` | Curly kale | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 23 | `bush-bean` | Bush bean | grape #A78BFA | [ ] | [ ] | [ ] |
-| 24 | `pea` | Garden pea | bubblegum #FFB3C7 | [ ] | [ ] | [ ] |
-| 25 | `cucumber` | Cucumber | grape #A78BFA | [ ] | [ ] | [ ] |
-| 26 | `zucchini` | Zucchini | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 27 | `strawberry` | Strawberry | sky blue #5AB8FF | [ ] | [ ] | [ ] |
-| 28 | `blueberry` | Blueberry | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 29 | `rosemary` | Rosemary | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 30 | `parsley` | Curly parsley | grape #A78BFA | [ ] | [ ] | [ ] |
-| 31 | `cilantro` | Cilantro | bubblegum #FFB3C7 | [ ] | [ ] | [ ] |
-| 32 | `chives` | Chives | sun yellow #FFD23F | [ ] | [ ] | [ ] |
-| 33 | `garlic` | Garlic | coral #FF6B5B | [ ] | [ ] | [ ] |
-| 34 | `radish` | Radish | sky blue #5AB8FF | [ ] | [ ] | [ ] |
-| 35 | `carrot` | Carrot | grape #A78BFA | [ ] | [ ] | [ ] |
-| 36 | `meyer-lemon` | Meyer lemon | sky blue #5AB8FF | [ ] | [ ] | [ ] |
+| 1 | `philodendron-heartleaf` | Heartleaf philodendron | sky blue #5AB8FF | [x] | [x] | [x] |
+| 2 | `philodendron-brasil` | Philodendron Brasil | grape #A78BFA | [x] | [x] | [x] |
+| 3 | `alocasia-polly` | Alocasia 'Polly' | sun yellow #FFD23F | [x] | [x] | [x] |
+| 4 | `anthurium` | Anthurium | sky blue #5AB8FF | [x] | [x] | [x] |
+| 5 | `phalaenopsis` | Moth orchid | grape #A78BFA | [x] | [x] | [x] |
+| 6 | `boston-fern` | Boston fern | coral #FF6B5B | [x] | [x] | [x] |
+| 7 | `pilea` | Chinese money plant | sun yellow #FFD23F | [x] | [x] | [x] |
+| 8 | `begonia-maculata` | Polka-dot begonia | sky blue #5AB8FF | [x] | [x] | [x] |
+| 9 | `jade` | Jade plant | coral #FF6B5B | [x] | [x] | [x] |
+| 10 | `echeveria` | Echeveria | bubblegum #FFB3C7 | [x] | [x] | [x] |
+| 11 | `christmas-cactus` | Christmas cactus | sun yellow #FFD23F | [x] | [x] | [x] |
+| 12 | `dracaena-marginata` | Dragon tree | sky blue #5AB8FF | [x] | [x] | [x] |
+| 13 | `croton` | Croton | grape #A78BFA | [x] | [x] | [x] |
+| 14 | `african-violet` | African violet | sun yellow #FFD23F | [x] | [x] | [x] |
+| 15 | `aglaonema` | Chinese evergreen | bubblegum #FFB3C7 | [x] | [x] | [x] |
+| 16 | `parlor-palm` | Parlor palm | bubblegum #FFB3C7 | [x] | [x] | [x] |
+| 17 | `english-ivy` | English ivy | coral #FF6B5B | [x] | [x] | [x] |
+| 18 | `tradescantia` | Wandering dude | sun yellow #FFD23F | [x] | [x] | [x] |
+| 19 | `maranta` | Prayer plant | bubblegum #FFB3C7 | [x] | [x] | [x] |
+| 20 | `syngonium` | Arrowhead plant | coral #FF6B5B | [x] | [x] | [x] |
+| 21 | `lettuce` | Leaf lettuce | coral #FF6B5B | [x] | [x] | [x] |
+| 22 | `kale` | Curly kale | sun yellow #FFD23F | [x] | [x] | [x] |
+| 23 | `bush-bean` | Bush bean | grape #A78BFA | [x] | [x] | [x] |
+| 24 | `pea` | Garden pea | bubblegum #FFB3C7 | [x] | [x] | [x] |
+| 25 | `cucumber` | Cucumber | grape #A78BFA | [x] | [x] | [x] |
+| 26 | `zucchini` | Zucchini | coral #FF6B5B | [x] | [x] | [x] |
+| 27 | `strawberry` | Strawberry | sky blue #5AB8FF | [x] | [x] | [x] |
+| 28 | `blueberry` | Blueberry | sun yellow #FFD23F | [x] | [x] | [x] |
+| 29 | `rosemary` | Rosemary | coral #FF6B5B | [x] | [x] | [x] |
+| 30 | `parsley` | Curly parsley | grape #A78BFA | [x] | [x] | [x] |
+| 31 | `cilantro` | Cilantro | bubblegum #FFB3C7 | [x] | [x] | [x] |
+| 32 | `chives` | Chives | sun yellow #FFD23F | [x] | [x] | [x] |
+| 33 | `garlic` | Garlic | coral #FF6B5B | [x] | [x] | [x] |
+| 34 | `radish` | Radish | sky blue #5AB8FF | [x] | [x] | [x] |
+| 35 | `carrot` | Carrot | grape #A78BFA | [x] | [x] | [x] |
+| 36 | `meyer-lemon` | Meyer lemon | sky blue #5AB8FF | [x] | [x] | [x] |
 
 ---
 
