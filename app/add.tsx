@@ -538,7 +538,8 @@ export default function AddPlantScreen() {
         {lastWateredDays === null ? 'Not sure? No problem: we’ll ask you to check its soil today.' : 'Its first check is planned from that watering.'}
       </Text>
 
-      {profile.grows.hydro && placement !== 'ground' && (
+      {/* Edibles often grow in jars or countertop hydro gardens, so they always get the choice. */}
+      {(profile.grows.hydro || (sp.edible && !isOther)) && placement !== 'ground' && (
         <>
           <Label>What does it grow in?</Label>
           <View style={styles.wrap}>
@@ -546,6 +547,7 @@ export default function AddPlantScreen() {
             <Pill on={soil === 'leca'} bg={c.peach} label="LECA" onPress={() => setSoil('leca')} />
             <Pill on={soil === 'water'} bg={c.ice} label="Water · hydro" onPress={() => setSoil('water')} />
           </View>
+          {soil === 'water' && <Text style={[styles.note, { color: c.inkMuted }]}>Roots in water: a jar, Kratky or a countertop garden. You’ll top up and feed weak nutrients instead of checking soil.</Text>}
         </>
       )}
 

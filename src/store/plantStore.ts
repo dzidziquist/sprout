@@ -101,6 +101,8 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
+  removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
   restoreBackup: (data: { profile: Partial<Profile>; plants: Plant[]; events: CareEvent[] }) => void;
   /** Erase every plant, diary entry and setting on this phone and start onboarding again. Purchases stay with the Apple ID. */
@@ -333,8 +335,22 @@ export const usePlantStore = create<PlantState>()(
       addPhoto: (plantId, uri, note, now = new Date()) => {
         set((s) => ({
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
-          events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, note: note?.trim() || undefined, at: now.toISOString() }],
+          // Edibles remember their stage so the diary can show the grow, stage by stage.
+          events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, stage: s.plants.find((p) => p.id === plantId)?.stage, note: note?.trim() || undefined, at: now.toISOString() }],
         }));
+      },
+
+      removePhoto: (eventId) => {
+        set((s) => {
+          const gone = s.events.find((e) => e.id === eventId && e.type === 'photo');
+          if (!gone) return s;
+          const events = s.events.filter((e) => e.id !== eventId);
+          const latest = events.filter((e) => e.plantId === gone.plantId && e.type === 'photo' && e.photoUri).sort((a, b) => a.at.localeCompare(b.at)).pop();
+          return {
+            events,
+            plants: s.plants.map((p) => (p.id === gone.plantId && p.photoUri === gone.photoUri ? { ...p, photoUri: latest?.photoUri } : p)),
+          };
+        });
       },
 
       restoreBackup: (data) => {
