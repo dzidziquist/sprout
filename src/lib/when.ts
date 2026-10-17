@@ -42,9 +42,11 @@ export const CUT: WhenOption<CutId>[] = [
 ];
 
 /** When a plant was gifted away or lost, for ones that left before they were archived in the app. */
-export type GoneId = 'today' | 'week' | 'month' | 'months' | 'half' | 'year';
+export type GoneId = 'today' | 'yesterday' | 'few' | 'week' | 'month' | 'months' | 'half' | 'year';
 export const GONE: WhenOption<GoneId>[] = [
   { id: 'today', label: 'Today', days: 0 },
+  { id: 'yesterday', label: 'Yesterday', days: 1 },
+  { id: 'few', label: 'A few days ago', days: 3 },
   { id: 'week', label: 'Last week', days: 7 },
   { id: 'month', label: 'Last month', days: 30 },
   { id: 'months', label: 'A few months ago', days: 90 },
@@ -73,4 +75,13 @@ export function closestJoined(iso: string, now = new Date()): JoinedId {
   if (days < 45) return 'month';
   if (days < 365) return 'months';
   return 'year';
+}
+
+/**
+ * The choices that don't land before `sinceIso` (a plant can't leave before it joined). "Today" always
+ * stays, so there's never an empty list.
+ */
+export function optionsSince<Id extends string>(options: WhenOption<Id>[], sinceIso: string, now = new Date()): WhenOption<Id>[] {
+  const max = (now.getTime() - new Date(sinceIso).getTime()) / 86_400_000;
+  return options.filter((o) => o.days === 0 || (o.days !== null && o.days <= max));
 }
