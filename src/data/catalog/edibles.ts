@@ -12,6 +12,8 @@ import type { Species } from '../../types';
  * (chard, so no separate beet), one Cucurbita pepo (zucchini, which also covers yellow and pattypan summer
  * squash) and no shallot (Allium cepa already points at spring onion). Potato is left out for now because
  * src/lib/plantId.test.ts uses Solanum tuberosum as its "unrelated plant" example.
+ * Capsicum annuum points at bell pepper; every other Capsicum (scotch bonnet, habanero, bird's eye) falls to hot
+ * pepper by genus. Annuum hot types like jalapeño land on bell pepper and can be switched in Edit.
  * No entry claims the Solanum or Ficus genus, so a nightshade or houseplant fig never maps to a crop.
  */
 export const EDIBLE_PLANTS: Species[] = [
@@ -19,7 +21,9 @@ export const EDIBLE_PLANTS: Species[] = [
   { id: 'basil', commonName: 'Basil', latinName: 'Ocimum basilicum', group: 'edible', defaultSoil: 'veg_mix', defaultLight: 'direct', petToxic: false, edible: true, artPot: 'yellow', art: 'basil', category: 'herb', popular: true, match: { genus: ['ocimum'] } },
   { id: 'mint', commonName: 'Mint', latinName: 'Mentha spicata', group: 'moisture', defaultSoil: 'veg_mix', defaultLight: 'bright', petToxic: true, edible: true, artPot: 'blue', art: 'mint', category: 'herb', popular: true, match: { genus: ['mentha'] } },
   { id: 'tomato', commonName: 'Cherry tomato', latinName: 'Solanum lycopersicum', group: 'edible', defaultSoil: 'veg_mix', defaultLight: 'direct', petToxic: true, edible: true, artPot: 'yellow', art: 'tomato', category: 'vegetable', popular: true, match: { species: ['lycopersicon esculentum'] } },
-  { id: 'pepper', commonName: 'Chili pepper', latinName: 'Capsicum chinense', group: 'edible', defaultSoil: 'veg_mix', defaultLight: 'direct', petToxic: false, edible: true, artPot: 'blue', art: 'pepper', category: 'vegetable', popular: true, aliases: ['scotch bonnet', 'shito pepper', 'habanero', 'bell pepper', 'kpakpo shito'], match: { genus: ['capsicum'] } },
+  // The id stays 'pepper' so plants added as "Chili pepper" keep their guide.
+  { id: 'pepper', commonName: 'Hot pepper', latinName: 'Capsicum chinense', group: 'edible', defaultSoil: 'veg_mix', defaultLight: 'direct', petToxic: false, edible: true, artPot: 'blue', art: 'pepper', category: 'vegetable', popular: true, aliases: ['chili pepper', 'chilli', 'scotch bonnet', 'shito pepper', 'habanero', 'kpakpo shito', 'jalapeño', 'cayenne', 'bird’s eye chili', 'ghost pepper'], match: { genus: ['capsicum'] }, tip: 'Small pots, big flavour. Pods go hotter as they colour up, and a healthy plant can overwinter indoors.' },
+  { id: 'bell-pepper', commonName: 'Bell pepper', latinName: 'Capsicum annuum', group: 'edible', defaultSoil: 'veg_mix', defaultLight: 'direct', petToxic: false, edible: true, artPot: 'coral', art: 'pepper', category: 'vegetable', popular: true, aliases: ['sweet pepper', 'capsicum', 'green pepper', 'red pepper', 'yellow pepper', 'paprika'], tip: 'Bigger fruit and a longer season than hot peppers. Give it a 5-gal pot and a stake; green is ripe, colour comes 2–3 weeks later.' },
   { id: 'spring-onion', commonName: 'Spring onion', latinName: 'Allium fistulosum', group: 'edible', defaultSoil: 'veg_mix', defaultLight: 'bright', petToxic: true, edible: true, artPot: 'grape', art: 'spring-onion', category: 'vegetable', popular: true, aliases: ['scallion', 'green onion', 'bunching onion'], match: { species: ['allium cepa'] } },
 
   // Leafy greens.
