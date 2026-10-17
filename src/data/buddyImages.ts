@@ -91,32 +91,32 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
   },
   'lettuce': {
     happy: require('../../assets/buddies/lettuce-happy.png'),
-    thirsty: require('../../assets/buddies/lettuce-happy.png'),
+    thirsty: require('../../assets/buddies/lettuce-thirsty.png'),
     snoozing: require('../../assets/buddies/lettuce-snoozing.png'),
   },
   'kale': {
     happy: require('../../assets/buddies/kale-happy.png'),
-    thirsty: require('../../assets/buddies/kale-happy.png'),
+    thirsty: require('../../assets/buddies/kale-thirsty.png'),
     snoozing: require('../../assets/buddies/kale-snoozing.png'),
   },
   'garlic': {
     happy: require('../../assets/buddies/garlic-happy.png'),
-    thirsty: require('../../assets/buddies/garlic-happy.png'),
-    snoozing: require('../../assets/buddies/garlic-happy.png'),
+    thirsty: require('../../assets/buddies/garlic-thirsty.png'),
+    snoozing: require('../../assets/buddies/garlic-snoozing.png'),
   },
   'carrot': {
     happy: require('../../assets/buddies/carrot-happy.png'),
-    thirsty: require('../../assets/buddies/carrot-happy.png'),
-    snoozing: require('../../assets/buddies/carrot-happy.png'),
+    thirsty: require('../../assets/buddies/carrot-thirsty.png'),
+    snoozing: require('../../assets/buddies/carrot-snoozing.png'),
   },
   'garden-egg': {
     happy: require('../../assets/buddies/garden-egg-happy.png'),
-    thirsty: require('../../assets/buddies/garden-egg-happy.png'),
+    thirsty: require('../../assets/buddies/garden-egg-thirsty.png'),
     snoozing: require('../../assets/buddies/garden-egg-happy.png'),
   },
   'eggplant': {
     happy: require('../../assets/buddies/eggplant-happy.png'),
-    thirsty: require('../../assets/buddies/eggplant-happy.png'),
+    thirsty: require('../../assets/buddies/eggplant-thirsty.png'),
     snoozing: require('../../assets/buddies/eggplant-happy.png'),
   },
   'ginger': {
