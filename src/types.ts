@@ -92,6 +92,8 @@ export type ArtId =
   | 'cucumber'
   | 'zucchini'
   | 'lettuce'
+  | 'carrot'
+  | 'garlic'
   | 'kale'
   | 'spring-onion';
 
