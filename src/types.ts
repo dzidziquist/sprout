@@ -92,6 +92,7 @@ export type ArtId =
   | 'cucumber'
   | 'zucchini'
   | 'lettuce'
+  | 'ayoyo'
   | 'raspberry'
   | 'pineapple'
   | 'passion-fruit'
