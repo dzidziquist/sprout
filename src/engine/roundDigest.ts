@@ -1,3 +1,4 @@
+import type { Trip } from './away';
 import type { Plant } from '../types';
 import { isReservoir } from './careEngine';
 
@@ -90,6 +91,7 @@ export function planRounds(
   minute: number,
   days = 7,
   photos: { cadence: PhotoCadence; lastPhotoAt: Record<string, string> } = { cadence: 'off', lastPhotoAt: {} },
+  trips: Trip[] = [],
 ): Array<{ fireAt: Date; digest: RoundDigest }> {
   const out: Array<{ fireAt: Date; digest: RoundDigest }> = [];
   const announced = new Set<string>();
@@ -97,9 +99,24 @@ export function planRounds(
     const day = new Date(now);
     day.setDate(now.getDate() + i);
     const fireAt = at(day, hour, minute);
-    if (fireAt.getTime() <= now.getTime()) {
-      // Today's round time has passed: mark today's plants as already seen.
-      roundDigestFor(plants, day)?.plantIds.forEach((id) => announced.add(id));
+    const t = fireAt.getTime();
+    // Away mode: a heads-up the round before you go, silence while you're away, one catch-up round when you're back.
+    const leaving = trips.find((x) => sameDayAs(new Date(x.from), addDay(day, 1)));
+    const away = trips.find((x) => new Date(x.from).getTime() <= t && t < new Date(x.to).getTime());
+    const back = trips.find((x) => sameDayAs(new Date(x.to), day));
+    if (away) continue;
+    if (t <= now.getTime()) {
+      if (!back) roundDigestFor(plants, day)?.plantIds.forEach((id) => announced.add(id));
+      continue;
+    }
+    if (back) {
+      const due = roundDigestFor(plants, day);
+      due?.plantIds.forEach((id) => announced.add(id));
+      out.push({ fireAt, digest: { title: 'Welcome back 🧳', body: due ? `${due.body.replace(/ \d mins?, tops\./, '')} Time for a catch-up round.` : 'Everyone held on nicely. Have a peek when you can.', plantIds: due?.plantIds ?? [] } });
+      continue;
+    }
+    if (leaving) {
+      out.push({ fireAt, digest: { title: 'Off tomorrow? 🧳', body: 'Give everyone a deep drink today and fill the reservoirs. Your away list has the rest.', plantIds: [], route: '/away' } });
       continue;
     }
     const fresh = plants.filter((p) => !announced.has(p.id));
@@ -111,3 +128,10 @@ export function planRounds(
   }
   return out;
 }
+
+const sameDayAs = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+const addDay = (d: Date, n: number) => {
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+};

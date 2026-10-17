@@ -8,6 +8,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { isDue, isRefreshDue, isReservoir, moodFor } from '@/engine/careEngine';
+import { activeTrip, upcomingTrip } from '@/engine/away';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ART, SEASON_ART } from '@/data/art';
@@ -86,11 +87,14 @@ export default function TodayScreen() {
   const OUTCOME = outcomeChip(c);
 
   const living = useMemo(() => plants.filter((p) => !p.archivedAt), [plants]);
+  const trip = activeTrip(profile.trips, now);
+  const nextTrip = upcomingTrip(profile.trips, now);
+  const shortDay = (iso: string) => new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   // The round = plants due today, plus the ones already answered today so you can see what you did.
   const round = useMemo(
-    () => living.filter((p) => !p.rooting && (isDue(p, now) || (p.lastCheckAt && sameDay(new Date(p.lastCheckAt), now) && undo[p.id]))),
+    () => (trip ? [] : living.filter((p) => !p.rooting && (isDue(p, now) || (p.lastCheckAt && sameDay(new Date(p.lastCheckAt), now) && undo[p.id])))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [living, undo],
+    [living, undo, trip?.to],
   );
   const upNext = useMemo(
     () => living.filter((p) => !p.rooting && !isDue(p, now)).sort((a, b) => a.nextCheckAt.localeCompare(b.nextCheckAt)).slice(0, 3),
@@ -102,7 +106,7 @@ export default function TodayScreen() {
   const season = seasonBanner(profile.climate, now);
   const allDone = round.length > 0 && left === 0;
   const calm = allDone || round.length === 0;
-  const heroBg = calm ? c.mint : c.peach;
+  const heroBg = trip ? c.ice : calm ? c.mint : c.peach;
 
   const answer = (id: string, r: CheckResult) => {
     swipeRefs.current[id]?.close();
@@ -117,9 +121,10 @@ export default function TodayScreen() {
   const dueNow = round.filter((p) => isDue(p, now));
   const word = checkWord(dueNow);
   const how = word === 'water ' ? 'Peek at the water line' : word === '' ? 'Feel the soil or peek at the water' : 'Feel the soil';
-  const heroTitle = living.length === 0 ? 'Your jungle is waiting' : round.length === 0 ? 'All caught up!' : allDone ? 'Round done!' : `${left} ${word}${left === 1 ? 'check' : 'checks'} left`;
-  const heroSub =
-    living.length === 0
+  const heroTitle = trip ? `Away until ${shortDay(trip.to)}` : living.length === 0 ? 'Your jungle is waiting' : round.length === 0 ? 'All caught up!' : allDone ? 'Round done!' : `${left} ${word}${left === 1 ? 'check' : 'checks'} left`;
+  const heroSub = trip
+    ? 'Reminders are paused and your streak is safe. Enjoy the trip!'
+    : living.length === 0
       ? 'Add your first plant and we’ll learn its rhythm together.'
       : round.length === 0
         ? 'Nobody needs a check today. Enjoy the green.'
@@ -154,8 +159,11 @@ export default function TodayScreen() {
           <Text style={[styles.heroSub, { color: c.ink }]}>{heroSub}</Text>
           {round.length > 0 && <TodayProgress done={done} total={round.length} />}
           {living.length === 0 && <Button title="Add a plant" raised bg={c.leaf} onPress={() => router.push('/add')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
+          {trip && <Button title="Trip details" raised bg={c.card} onPress={() => router.push('/away')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
         </View>
-        {living.length === 0 ? (
+        {trip ? (
+          <PlantBuddy speciesId="monstera" mood="snoozing" size={84} bg={heroBg} faces={profile.faces} />
+        ) : living.length === 0 ? (
           <Image source={ART.emptyJungle} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         ) : round.length === 0 || allDone ? (
           <Image source={ART.caughtUp} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
@@ -232,6 +240,15 @@ export default function TodayScreen() {
         </View>
       )}
 
+      {!trip && nextTrip && (
+        <Pressable accessibilityRole="button" onPress={() => router.push('/away')} style={[styles.banner, { backgroundColor: c.ice, borderColor: c.line }]}>
+          <Text style={[styles.bannerText, { color: c.ink }]}>
+            <Text style={{ fontFamily: fonts.bodyHeavy }}>Away from {shortDay(nextTrip.from)}. </Text>
+            Tap for your before-you-go list and a plant-sitter note.
+          </Text>
+        </Pressable>
+      )}
+
       <View style={[styles.banner, { backgroundColor: c.butter, borderColor: c.line, flexDirection: 'row', alignItems: 'center', gap: 10 }]}>
         <Image source={SEASON_ART[season.art]} style={{ width: 52, height: 52 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         <Text style={[styles.bannerText, { color: c.ink, flex: 1 }]}>
@@ -262,6 +279,12 @@ export default function TodayScreen() {
           </View>
         </View>
       )}
+
+      {!trip && !nextTrip && living.length > 0 && (
+        <Pressable accessibilityRole="button" onPress={() => router.push('/away')} style={styles.awayLink}>
+          <Text style={[styles.awayLinkText, { color: c.inkMuted }]}>Going away? Set up away mode 🧳</Text>
+        </Pressable>
+      )}
     </ScrollView>
   );
 }
@@ -273,6 +296,8 @@ const styles = StyleSheet.create({
   heroTitle: { fontFamily: fonts.display, fontSize: 22, lineHeight: 26 },
   heroSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   banner: { borderWidth: 2, borderRadius: 16, padding: 10 },
+  awayLink: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 12 },
+  awayLinkText: { fontFamily: fonts.bodyHeavy, fontSize: 13, textDecorationLine: 'underline' },
   bannerText: { fontFamily: fonts.body, fontSize: 13 },
   card: { flexDirection: 'row', gap: 12, padding: 10, alignItems: 'center' },
   thumb: { width: 80, height: 80, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },

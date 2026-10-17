@@ -10,8 +10,9 @@ export function useRewards(): Rewards {
   const climate = usePlantStore((s) => s.profile.climate);
   const supporter = usePlantStore((s) => s.profile.supporter);
   const supporterSince = usePlantStore((s) => s.profile.supporterSince);
+  const trips = usePlantStore((s) => s.profile.trips);
   return useMemo(
-    () => rewardsFor(badgesFor({ plants, events, climate, now: new Date() }), { supporter, supporterSince }),
-    [plants, events, climate, supporter, supporterSince],
+    () => rewardsFor(badgesFor({ plants, events, climate, now: new Date(), trips }), { supporter, supporterSince }),
+    [plants, events, climate, supporter, supporterSince, trips],
   );
 }

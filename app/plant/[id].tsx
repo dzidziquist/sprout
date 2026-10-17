@@ -12,6 +12,7 @@ import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { edibleGuide } from '@/data/edibles';
 import { feedingAdvice } from '@/engine/growPatch';
 import { growDay, stageAtPhoto } from '@/engine/photoDiary';
+import { activeTrip } from '@/engine/away';
 import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { closestOption, daysAgo as daysBefore, GONE } from '@/lib/when';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -159,7 +160,7 @@ export default function PlantDetail() {
           </View>
         ) : (
           <View style={[styles.heroArt, archived && { opacity: 0.6 }]}>
-            <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} mood={archived ? 'happy' : moodFor(plant, now)} size={220} bg={tint} faces={archived ? 'off' : profile.faces} />
+            <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} mood={archived ? 'happy' : moodFor(plant, now, !!activeTrip(profile.trips, now))} size={220} bg={tint} faces={archived ? 'off' : profile.faces} />
             {!archived && <GoldSparkles pot={plant.potColor} size={1.6} />}
             {plant.rooting && (
               <View style={[styles.heroChip, { backgroundColor: c.card, borderColor: c.line }]}>

@@ -10,11 +10,12 @@ export function useBadges() {
   const climate = usePlantStore((s) => s.profile.climate);
   const supporter = usePlantStore((s) => s.profile.supporter);
   const supporterSince = usePlantStore((s) => s.profile.supporterSince);
+  const trips = usePlantStore((s) => s.profile.trips);
   return useMemo(() => {
-    const input = { plants, events, climate, now: new Date() };
+    const input = { plants, events, climate, now: new Date(), trips };
     const streak = computeStreak(input);
     const core = badgesFor(input, streak);
     const medal = medalBadge(rewardsFor(core, { supporter, supporterSince }).medal.at);
     return { streak, badges: medal ? [medal, ...core] : core };
-  }, [plants, events, climate, supporter, supporterSince]);
+  }, [plants, events, climate, supporter, supporterSince, trips]);
 }

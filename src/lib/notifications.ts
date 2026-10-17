@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
+import type { Trip } from '../engine/away';
 import { planRounds, type PhotoCadence } from '../engine/roundDigest';
 import type { CareEvent, Plant } from '../types';
 
@@ -35,6 +36,7 @@ export async function rescheduleRounds(
   events: CareEvent[],
   round: { enabled: boolean; hour: number; minute: number },
   photos: PhotoCadence,
+  trips: Trip[] = [],
 ) {
   const { enabled, hour, minute } = round;
   if (!supported) return;
@@ -44,7 +46,7 @@ export async function rescheduleRounds(
   if (!granted) return;
   const lastPhotoAt: Record<string, string> = {};
   for (const e of events) if (e.type === 'photo' && (!lastPhotoAt[e.plantId] || e.at > lastPhotoAt[e.plantId])) lastPhotoAt[e.plantId] = e.at;
-  for (const { fireAt, digest } of planRounds(plants, new Date(), hour, minute, HORIZON_DAYS, { cadence: photos, lastPhotoAt })) {
+  for (const { fireAt, digest } of planRounds(plants, new Date(), hour, minute, HORIZON_DAYS, { cadence: photos, lastPhotoAt }, trips)) {
     await Notifications.scheduleNotificationAsync({
       content: { title: digest.title, body: digest.body, data: { route: digest.route ?? '/' } },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: fireAt },

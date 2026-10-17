@@ -1,3 +1,4 @@
+import { awayRanges, subtractRanges, type Trip } from './away';
 import { checkIntervalDays } from './careEngine';
 import { speciesOf } from '../data/species';
 import { localizeClimateText, modelOf, shiftOf } from '../lib/climate';
@@ -67,6 +68,8 @@ export interface StreakInput {
   events: CareEvent[];
   climate: ClimateProfile;
   now: Date;
+  /** Away-mode trips: lapses during a trip (and the catch-up days after) don't count. */
+  trips?: Trip[];
 }
 
 export function startOfWeek(d: Date): Date {
@@ -118,11 +121,11 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
   return out;
 }
 
-export function computeStreak({ plants, events, climate, now }: StreakInput): StreakResult {
+export function computeStreak({ plants, events, climate, now, trips }: StreakInput): StreakResult {
   const empty: StreakResult = { started: false, checkedThisWeek: false, current: 0, best: 0, thisWeek: 'clean', freezesLeft: FREEZES_PER_MONTH, weeks: [], reachedAt: [] };
   if (plants.length === 0) return empty;
   const first = Math.min(...plants.map((p) => new Date(p.createdAt).getTime()));
-  const lapses = plants.flatMap((p) => lapsesFor(p, events, climate, now));
+  const lapses = subtractRanges(plants.flatMap((p) => lapsesFor(p, events, climate, now)), awayRanges(trips));
   const touches = (from: number, to: number) => lapses.some(([a, b]) => a < to && b > from);
   // Streaks are earned: a week only counts once you've actually done a soil check in it.
   const checkTimes = events.filter((e) => e.type === 'check').map((e) => new Date(e.at).getTime());
@@ -296,8 +299,8 @@ function birthdays(plants: Plant[], now: Date, max: number): string[] {
   return out;
 }
 
-export function badgesFor({ plants, events, climate, now }: StreakInput, streak?: StreakResult): Badge[] {
-  const s = streak ?? computeStreak({ plants, events, climate, now });
+export function badgesFor({ plants, events, climate, now, trips }: StreakInput, streak?: StreakResult): Badge[] {
+  const s = streak ?? computeStreak({ plants, events, climate, now, trips });
   const ats = (pred: (e: CareEvent) => boolean) => events.filter(pred).map((e) => e.at).sort();
   const checks = ats((e) => e.type === 'check');
   const skips = ats((e) => e.type === 'check' && e.result === 'damp');

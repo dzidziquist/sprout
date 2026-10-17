@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { Trip } from '../engine/away';
 import { addDays, applyCheck, initialNextCheck, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
@@ -38,6 +39,8 @@ export interface Profile {
   units: 'auto' | 'imperial' | 'metric';
   /** Photo IDs used today on this phone (free, with a small daily allowance). */
   idUsage: { day: string; count: number };
+  /** Away-mode trips, past and planned. Past ones stay so the streak keeps forgiving them. */
+  trips?: Trip[];
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -103,6 +106,9 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** Plan a trip (replacing any that hasn't started), or end the current one now. */
+  planTrip: (trip: Trip) => void;
+  endTrip: (now?: Date) => void;
   /** Mark plants as staked (or trellised), or take the mark back off. */
   setStaked: (plantIds: string[], on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
@@ -361,6 +367,24 @@ export const usePlantStore = create<PlantState>()(
           // Edibles remember their stage so the diary can show the grow, stage by stage.
           events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, stage: s.plants.find((p) => p.id === plantId)?.stage, note: note?.trim() || undefined, at: now.toISOString() }],
         }));
+      },
+
+      planTrip: (trip) => {
+        set((s) => {
+          const now = Date.now();
+          const kept = (s.profile.trips ?? []).filter((t) => new Date(t.from).getTime() <= now && new Date(t.to).getTime() <= new Date(trip.from).getTime());
+          return { profile: { ...s.profile, trips: [...kept, trip].slice(-20) } };
+        });
+      },
+
+      endTrip: (now = new Date()) => {
+        set((s) => {
+          const t = now.getTime();
+          const trips = (s.profile.trips ?? [])
+            .filter((x) => new Date(x.from).getTime() <= t)
+            .map((x) => (new Date(x.to).getTime() > t ? { ...x, to: now.toISOString() } : x));
+          return { profile: { ...s.profile, trips } };
+        });
       },
 
       setStaked: (plantIds, on, now = new Date()) => {
