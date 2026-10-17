@@ -58,11 +58,21 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/pepper-thirsty.png'),
     snoozing: require('../../assets/buddies/pepper-snoozing.png'),
   },
-  // One drawing so far: the same happy buddy stands in for every mood.
+  // Bell pepper, potato and sweet potato have one drawing so far: the happy buddy stands in for every mood.
   'bell-pepper': {
     happy: require('../../assets/buddies/bell-pepper-happy.png'),
     thirsty: require('../../assets/buddies/bell-pepper-happy.png'),
     snoozing: require('../../assets/buddies/bell-pepper-happy.png'),
+  },
+  'potato': {
+    happy: require('../../assets/buddies/potato-happy.png'),
+    thirsty: require('../../assets/buddies/potato-happy.png'),
+    snoozing: require('../../assets/buddies/potato-happy.png'),
+  },
+  'sweet-potato': {
+    happy: require('../../assets/buddies/sweet-potato-happy.png'),
+    thirsty: require('../../assets/buddies/sweet-potato-happy.png'),
+    snoozing: require('../../assets/buddies/sweet-potato-happy.png'),
   },
   'pink-princess': {
     happy: require('../../assets/buddies/pink-princess-happy.png'),
