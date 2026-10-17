@@ -1,0 +1,244 @@
+{
+  "assets": [
+    {
+      "filename": "symptom-yellow-lower.png",
+      "title": "Lower leaves turning yellow",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1154688,
+      "sha256": "27dd0b0edb69324cc9e516000615d856e904ab6914c5e9c1354bebeb543ea0e3"
+    },
+    {
+      "filename": "symptom-yellow-pale.png",
+      "title": "Pale or yellow all over",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1244379,
+      "sha256": "5492a135dc7772ba2bbd8c0627759fcefe6fc939c28a916340b9835eb544f0b5"
+    },
+    {
+      "filename": "symptom-brown-tips.png",
+      "title": "Brown, crispy tips or edges",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1194993,
+      "sha256": "cab1d9bc08de4ea92be0ffb42592c0be1e84388fb71baa0b5bcfb16fdf356639"
+    },
+    {
+      "filename": "symptom-brown-spots.png",
+      "title": "Brown or black spots",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1335681,
+      "sha256": "e15161b6f77f1d2962e9064dedae3952638518a0cda935ac6eff634f44b94dd4"
+    },
+    {
+      "filename": "symptom-bleached.png",
+      "title": "Pale, bleached or scorched patches",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1291952,
+      "sha256": "305902f33223468d3738ecfce6510e1e252d955d55fcaa321856ee8654ba5da9"
+    },
+    {
+      "filename": "symptom-drooping.png",
+      "title": "Drooping or wilting",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1202556,
+      "sha256": "466908adeb703a92745e161576a67ddb19253f677572f71cde882a07eb1c586c"
+    },
+    {
+      "filename": "symptom-curling.png",
+      "title": "Leaves curling",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 937623,
+      "sha256": "2fd239bb833c6e43269de6d10271324e722dfa98c31eb5b5b869298ee99e093f"
+    },
+    {
+      "filename": "symptom-dropping.png",
+      "title": "Leaves falling off",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 992046,
+      "sha256": "12a89b443e7b8e136967f385a3115b8e649b82528f2f490e46d9df85daaee148"
+    },
+    {
+      "filename": "symptom-speckled.png",
+      "title": "Tiny speckles or silvery streaks",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1742122,
+      "sha256": "2daa3ee733485967f44ab62dc1290c347897208e1fcd12de6add908032f5405b"
+    },
+    {
+      "filename": "symptom-holes.png",
+      "title": "Holes or chewed edges",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1189594,
+      "sha256": "5a61075f63ce5bc1547ebd84c4e10f343bcb6e16545aa6ac6def5f7a0238e528"
+    },
+    {
+      "filename": "symptom-white-powder.png",
+      "title": "White powder on leaves",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2119413,
+      "sha256": "07dc17a96bae5f7ffbbbe83e1ebd6f6eae2bc42f0fc6158550568f1f438c4b7a"
+    },
+    {
+      "filename": "symptom-leggy.png",
+      "title": "Tall, leggy and stretched",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 608470,
+      "sha256": "48151e46b7d5e40673c25ad24ef6dc8eeb03387fbc3036cbaa5aff3d187e58dd"
+    },
+    {
+      "filename": "symptom-mushy-stem.png",
+      "title": "Soft, mushy or black stem base",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1251249,
+      "sha256": "2bb9ce149b7aeb5b5f0943dff1fd2524b981d73534ddc094f698ae48da444511"
+    },
+    {
+      "filename": "symptom-no-growth.png",
+      "title": "Not growing at all",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1084537,
+      "sha256": "b6b745f7cbf7e8da7631ec47945459b777663e960e382d289352e3e1effeb7f1"
+    },
+    {
+      "filename": "symptom-bolting.png",
+      "title": "Shooting up a flower stalk",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1035545,
+      "sha256": "398e0788da88b09fb0a05c1532b36ca8ef0e2526ca7c65484bd480939cfe013f"
+    },
+    {
+      "filename": "symptom-soil-fuzz.png",
+      "title": "White fuzz on the soil",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1574945,
+      "sha256": "03fac391c46b590a04356a8b6febc0f88c14836f868e781c7e5bd441b421da36"
+    },
+    {
+      "filename": "symptom-soil-crust.png",
+      "title": "White crust on the soil or pot",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1572230,
+      "sha256": "3fb2cc6658689633615c173f9c101f06691e9ba24795052d516268a696dcd9d9"
+    },
+    {
+      "filename": "symptom-soil-smell.png",
+      "title": "Soil smells bad or stays wet",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 937091,
+      "sha256": "952735ba3a87b2776e9d3653b99a6ad8dee7cde0be4654555195e00c494d7faa"
+    },
+    {
+      "filename": "symptom-soil-dry.png",
+      "title": "Water runs straight through",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1264890,
+      "sha256": "cd42bdf586c83f516105fe0f15d70e636b4148dfafcb1b774fc59385ed616e2a"
+    },
+    {
+      "filename": "symptom-tiny-flies.png",
+      "title": "Tiny flies around the soil",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 942842,
+      "sha256": "2f14d6bac617fb9e73d2e91ae6ddf2339889f91e21f5981c8f6360fda9676dd1"
+    },
+    {
+      "filename": "symptom-webbing.png",
+      "title": "Fine webbing",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1067281,
+      "sha256": "ec3a5fe2522f939226f4e750f1e319b712567f3506c7fba3ed82f9d1dc11b909"
+    },
+    {
+      "filename": "symptom-sticky.png",
+      "title": "Sticky leaves",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1107105,
+      "sha256": "e3f646b804f9cbb8ad0ed004d883e4e27af1373f25d51620673ec6e156e9869f"
+    },
+    {
+      "filename": "symptom-cotton.png",
+      "title": "White cottony bits",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1040821,
+      "sha256": "4f85d175d5ea4a6f9e246341c16a1584fb6f5ea13701e36a87f97dbb7dbfdaa0"
+    },
+    {
+      "filename": "symptom-clusters.png",
+      "title": "Clusters of small bugs",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1029239,
+      "sha256": "17da6d619f594079c0ef5551034aab62e39a3b4f83af567f412d863e66090b9a"
+    },
+    {
+      "filename": "symptom-bumps.png",
+      "title": "Brown bumps on stems",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 859041,
+      "sha256": "332600cb9e7bcdb5e9645d7bcfab8b3eb839d292e2bf11ea74b794ca746aba17"
+    },
+    {
+      "filename": "symptom-white-flies.png",
+      "title": "White specks fly up",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1211782,
+      "sha256": "b9582248ea1459159f700719a05cb5b0dbbc430dea81d499cf7088a0ae03d0d4"
+    },
+    {
+      "filename": "symptom-fruit-rot-end.png",
+      "title": "Dark patch on the bottom of fruit",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1304536,
+      "sha256": "05e5964291a07e264ab0861a2c3d8765a3bee5fa731df658df78272577b0b21c"
+    },
+    {
+      "filename": "symptom-flower-drop.png",
+      "title": "Flowers drop, no fruit",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1169192,
+      "sha256": "8462e0dd613cf1925f6dc22ce23c672e2a37540c733b56bf0bb68f04ae778562"
+    },
+    {
+      "filename": "symptom-fruit-split.png",
+      "title": "Fruit splitting or cracking",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1225384,
+      "sha256": "4549e5f402e82da309f5bacc1f248f710f75617cf79b4d8dde1185a057d298c9"
+    },
+    {
+      "filename": "symptom-fruit-holes.png",
+      "title": "Holes in fruit",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1138972,
+      "sha256": "72b95211461f60df75a3df6fd1eecf0845c7188bc18714a1416bd6a57a15ae07"
+    }
+  ]
+}
