@@ -50,12 +50,15 @@ function outdoorFeedWindow(plant: Pick<Plant, 'placement' | 'speciesId'>, climat
 /**
  * Feeding for edibles. Seattle balcony edibles with a feeding window (fruiting crops May to mid-August,
  * garlic in spring, blueberries spring only...) are fed only inside it (WSU / soil_and_seattle notes).
- * Everything else, and anything indoors, follows the houseplant pause. Resting plants never eat.
+ * Everything else, and anything indoors, follows the houseplant pause, except an indoor fruiting crop
+ * (tomato, pepper...) that's flowering or fruiting: it's busy making fruit, so it keeps eating. Resting plants never eat.
  */
 export function edibleFeedingPaused(plant: Pick<Plant, 'placement' | 'stage' | 'speciesId'>, climate: ClimateProfile, date: Date): boolean {
   if (plant.stage === 'resting' || plant.stage === 'seed') return true;
   const w = outdoorFeedWindow(plant, climate);
   if (w) return !inFeedWindow(w, climateDate(climate, date));
+  const cropping = plant.stage === 'flowering' || plant.stage === 'fruiting' || plant.stage === 'harvesting';
+  if (!OUTSIDE.includes(plant.placement) && cropping && edibleGuide(plant.speciesId)?.fruitingFeed) return false;
   return isFeedingPaused(climate, plant.placement, date);
 }
 
@@ -148,7 +151,9 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Dat
 
   for (const task of CALENDAR[modelOf(climate)]) {
     if (!overlaps(task, monthStart, monthEnd, y)) continue;
-    const plantIds = mine.filter((p) => (task.species as string[]).includes(p.speciesId) && taskFitsStage(task, p)).map((p) => p.id);
+    const plantIds = mine
+      .filter((p) => (task.species as string[]).includes(p.speciesId) && taskFitsStage(task, p) && (!task.outdoorOnly || OUTSIDE.includes(p.placement)))
+      .map((p) => p.id);
     if (!plantIds.length) continue;
     // A window that has already closed this month isn't worth showing.
     if (!overlaps(task, dayStart, monthEnd, y)) continue;
