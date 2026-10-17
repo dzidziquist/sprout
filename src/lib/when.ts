@@ -82,6 +82,8 @@ export function closestJoined(iso: string, now = new Date()): JoinedId {
  * stays, so there's never an empty list.
  */
 export function optionsSince<Id extends string>(options: WhenOption<Id>[], sinceIso: string, now = new Date()): WhenOption<Id>[] {
-  const max = (now.getTime() - new Date(sinceIso).getTime()) / 86_400_000;
-  return options.filter((o) => o.days === 0 || (o.days !== null && o.days <= max));
+  // Calendar arithmetic, the same way the chosen date is made (daysAgo), so a daylight-saving change
+  // in between doesn't hide a choice that would land on or after the join date.
+  const since = new Date(sinceIso).getTime();
+  return options.filter((o) => o.days === 0 || (o.days !== null && daysAgo(o.days, now).getTime() >= since));
 }
