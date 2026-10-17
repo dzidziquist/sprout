@@ -198,9 +198,15 @@ export default function SettingsScreen() {
                     haptics.tap();
                     setProfile({ accent: a });
                   }}
-                  style={[styles.accent, { backgroundColor: ACCENTS[a].leaf, borderColor: c.line, borderWidth: on ? 4 : 2 }]}
+                  style={styles.accentItem}
                 >
-                  {on && <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="m5 12 5 5 9-10" stroke={c.onBright} strokeWidth={3.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>}
+                  {/* The ring sits outside the swatch, so picking a colour doesn't nudge the row. */}
+                  <View style={[styles.accentRing, { borderColor: on ? c.ink : 'transparent' }]}>
+                    <View style={[styles.accent, { backgroundColor: ACCENTS[a].leaf, borderColor: c.line }]}>
+                      {on && <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="m5 12 5 5 9-10" stroke={c.onBright} strokeWidth={3.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>}
+                    </View>
+                  </View>
+                  <Text style={[styles.accentLabel, { color: on ? c.ink : c.inkMuted }]}>{ACCENTS[a].label}</Text>
                 </Pressable>
               );
             })}
@@ -308,8 +314,11 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 20 },
   header: { flexDirection: 'row' },
-  accents: { flexDirection: 'row', gap: 12, paddingTop: 4 },
-  accent: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  accents: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 4 },
+  accentItem: { alignItems: 'center', gap: 4, minWidth: 52 },
+  accentRing: { width: 52, height: 52, borderRadius: 26, borderWidth: 3, alignItems: 'center', justifyContent: 'center' },
+  accent: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  accentLabel: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   sectionTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, letterSpacing: 0.6, paddingHorizontal: 4 },
   group: { borderWidth: 2, borderRadius: 20, overflow: 'hidden' },
   row: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14 },
