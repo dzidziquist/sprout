@@ -54,6 +54,10 @@ export interface Cause {
   tweak?: CareTweak;
   /** Serious: suggest saving a healthy piece as a cutting. */
   rescue?: boolean;
+  /** Advice is about soil (feel it, drainage, repot into mix): never shown for LECA or water plants. */
+  soilOnly?: boolean;
+  /** Only for LECA or water plants. */
+  waterOnly?: boolean;
 }
 
 export interface Symptom {
@@ -66,6 +70,11 @@ export interface Symptom {
   causes: { cause: string; prior: number }[];
   /** Only show for edibles. */
   edibleOnly?: boolean;
+  /** Not shown for LECA or water plants (there's no soil to look at). */
+  soilOnly?: boolean;
+  /** Wording for LECA or water plants, when it differs. */
+  waterLabel?: string;
+  waterHint?: string;
 }
 
 export const AREAS: { id: SymptomArea; label: string }[] = [
@@ -85,6 +94,7 @@ const LATE = { signal: 'overdue', weight: 1.8, why: 'Its last few checks came la
 export const CAUSES: Record<string, Cause> = {
   overwatering: {
     id: 'overwatering',
+    soilOnly: true,
     title: 'Too much water',
     summary: 'The roots are sitting wet for too long and can’t breathe. The most common houseplant problem by far.',
     check: ['Push a finger 5 cm (2 in) into the soil. Still damp days after watering?', 'Lift the pot: heavy and cold means it’s still wet.', 'Is there water sitting in the saucer or cover pot?'],
@@ -94,6 +104,7 @@ export const CAUSES: Record<string, Cause> = {
   },
   'root-rot': {
     id: 'root-rot',
+    soilOnly: true,
     title: 'Root rot',
     summary: 'Roots that stayed wet too long have started to rot, so the plant can’t drink even though the soil is wet.',
     check: ['Slide the plant out of its pot. Healthy roots are firm and pale; rotten ones are brown, mushy and smell bad.', 'Is the base of the stem soft or dark?'],
@@ -104,11 +115,32 @@ export const CAUSES: Record<string, Cause> = {
   },
   underwatering: {
     id: 'underwatering',
+    soilOnly: true,
     title: 'Thirsty',
     summary: 'The soil has been drying out completely, so the plant is losing water faster than it gets it.',
     check: ['Is the soil dry and pulling away from the sides of the pot?', 'Does the pot feel light?', 'Do the leaves perk up a few hours after a good drink?'],
     fix: ['Water slowly until it runs out of the bottom.', 'If the soil is rock hard, soak the pot in a bowl of water for 20 minutes.', 'Check a little sooner from now on.'],
     signals: [DRY, LATE, { signal: 'terracotta', weight: 1.2, why: 'Clay pots dry out fast.' }, { signal: 'smallPot', weight: 1.2, why: 'Small pots dry out fast.' }, { signal: 'hotSeason', weight: 1.3, why: 'It’s the hot season, so it drinks more.' }, { signal: 'moistureLover', weight: 1.3, why: 'It likes to stay lightly damp.' }, { signal: 'wetChecks', weight: 0.3, why: '' }, { signal: 'reservoir', weight: 0.5, why: '' }],
+    tweak: 'more-water',
+  },
+  'stale-water': {
+    id: 'stale-water',
+    waterOnly: true,
+    title: 'Stale water or rotting roots',
+    summary: 'Water that sits too long goes stale and loses its oxygen, and roots start to rot. Healthy roots in water are firm and white or tan.',
+    check: ['Is the water cloudy, slimy or smelly?', 'Lift the plant out: are any roots brown, mushy or falling apart?', 'For LECA: is the water line above the bottom third of the roots?'],
+    fix: ['Rinse the roots and the container, and refill with fresh room-temperature water.', 'Snip off mushy roots with clean scissors.', 'Swap the water every week or two, and keep the water line low in LECA so upper roots get air.', 'If most roots are gone, save a healthy stem as a cutting.'],
+    signals: [{ signal: 'reservoir', weight: 1.5, why: 'It grows in water or LECA, where stale water is the usual culprit.' }, { signal: 'hotSeason', weight: 1.3, why: 'Warm water goes stale faster.' }],
+    rescue: true,
+  },
+  'low-water': {
+    id: 'low-water',
+    waterOnly: true,
+    title: 'Water line too low',
+    summary: 'The reservoir ran low, so the roots couldn’t reach the water.',
+    check: ['Where is the water line compared with the roots?', 'Has it been a while since the last top-up?'],
+    fix: ['Top up to the line: about a third of the way up the roots for LECA, or just covering the roots in water.', 'Check the water line a little more often in warm weather.'],
+    signals: [LATE, { signal: 'hotSeason', weight: 1.4, why: 'Reservoirs empty fast in the heat.' }],
     tweak: 'more-water',
   },
   'low-light': {
@@ -177,6 +209,7 @@ export const CAUSES: Record<string, Cause> = {
   },
   'pot-bound': {
     id: 'pot-bound',
+    soilOnly: true,
     title: 'Outgrown its pot',
     summary: 'The roots have filled the pot, so it dries out fast and runs out of food.',
     check: ['Are roots poking out of the drainage hole or circling the top?', 'Does water run straight through without soaking in?'],
@@ -249,6 +282,7 @@ export const CAUSES: Record<string, Cause> = {
   },
   'fungus-gnats': {
     id: 'fungus-gnats',
+    soilOnly: true,
     title: 'Fungus gnats',
     summary: 'Tiny black flies that breed in wet soil. Annoying, mostly harmless to the plant, and a sign the soil stays wet.',
     check: ['Do little flies hop up from the soil when you water?', 'Is the top of the soil always damp?'],
@@ -258,6 +292,7 @@ export const CAUSES: Record<string, Cause> = {
   },
   'surface-mold': {
     id: 'surface-mold',
+    soilOnly: true,
     title: 'Mould on the soil',
     summary: 'White fuzz on top of the soil is a harmless mould that grows when the surface stays damp and still.',
     check: ['Is it only on the surface, not on the stems?', 'Is the soil staying damp for days?'],
@@ -311,29 +346,29 @@ export const CAUSES: Record<string, Cause> = {
 
 export const SYMPTOMS: Symptom[] = [
   // Leaves
-  { id: 'yellow-lower', area: 'leaves', label: 'Lower leaves turning yellow', hint: 'Older leaves near the bottom go yellow', causes: [{ cause: 'overwatering', prior: 4 }, { cause: 'old-leaves', prior: 2.5 }, { cause: 'hungry', prior: 2 }, { cause: 'low-light', prior: 1.5 }, { cause: 'underwatering', prior: 1.5 }, { cause: 'root-rot', prior: 1 }] },
+  { id: 'yellow-lower', area: 'leaves', label: 'Lower leaves turning yellow', hint: 'Older leaves near the bottom go yellow', causes: [{ cause: 'stale-water', prior: 3 }, { cause: 'overwatering', prior: 4 }, { cause: 'old-leaves', prior: 2.5 }, { cause: 'hungry', prior: 2 }, { cause: 'low-light', prior: 1.5 }, { cause: 'underwatering', prior: 1.5 }, { cause: 'root-rot', prior: 1 }] },
   { id: 'yellow-pale', area: 'leaves', label: 'Pale or yellow all over', hint: 'New and old leaves look washed out', causes: [{ cause: 'hungry', prior: 3 }, { cause: 'low-light', prior: 2.5 }, { cause: 'overwatering', prior: 2 }, { cause: 'sunburn', prior: 1 }, { cause: 'spider-mites', prior: 1 }] },
-  { id: 'brown-tips', area: 'leaves', label: 'Brown, crispy tips or edges', hint: 'Just the ends or edges dry out', causes: [{ cause: 'dry-air', prior: 3 }, { cause: 'underwatering', prior: 2.5 }, { cause: 'tap-water', prior: 2.5 }, { cause: 'overwatering', prior: 1 }, { cause: 'pot-bound', prior: 1 }] },
+  { id: 'brown-tips', area: 'leaves', label: 'Brown, crispy tips or edges', hint: 'Just the ends or edges dry out', causes: [{ cause: 'low-water', prior: 1.5 }, { cause: 'dry-air', prior: 3 }, { cause: 'underwatering', prior: 2.5 }, { cause: 'tap-water', prior: 2.5 }, { cause: 'overwatering', prior: 1 }, { cause: 'pot-bound', prior: 1 }] },
   { id: 'brown-spots', area: 'leaves', label: 'Brown or black spots', hint: 'Spots in the middle of the leaf', causes: [{ cause: 'leaf-spot', prior: 3 }, { cause: 'overwatering', prior: 2 }, { cause: 'sunburn', prior: 1.5 }, { cause: 'cold', prior: 1.2 }, { cause: 'root-rot', prior: 1 }] },
   { id: 'bleached', area: 'leaves', label: 'Pale, bleached or scorched patches', hint: 'Faded or crispy patches on the sunny side', causes: [{ cause: 'sunburn', prior: 4 }, { cause: 'underwatering', prior: 1.2 }, { cause: 'thrips', prior: 1 }] },
-  { id: 'drooping', area: 'leaves', label: 'Drooping or wilting', hint: 'Leaves hang limp', causes: [{ cause: 'underwatering', prior: 3.5 }, { cause: 'overwatering', prior: 2 }, { cause: 'root-rot', prior: 1.5 }, { cause: 'shock', prior: 1.5 }, { cause: 'cold', prior: 1 }] },
+  { id: 'drooping', area: 'leaves', label: 'Drooping or wilting', hint: 'Leaves hang limp', causes: [{ cause: 'low-water', prior: 3 }, { cause: 'stale-water', prior: 2 }, { cause: 'underwatering', prior: 3.5 }, { cause: 'overwatering', prior: 2 }, { cause: 'root-rot', prior: 1.5 }, { cause: 'shock', prior: 1.5 }, { cause: 'cold', prior: 1 }] },
   { id: 'curling', area: 'leaves', label: 'Leaves curling', hint: 'Edges roll up or cup', causes: [{ cause: 'underwatering', prior: 2.5 }, { cause: 'sunburn', prior: 1.5 }, { cause: 'aphids', prior: 1.5 }, { cause: 'dry-air', prior: 1.5 }, { cause: 'spider-mites', prior: 1 }] },
-  { id: 'dropping', area: 'leaves', label: 'Leaves falling off', hint: 'Healthy-looking leaves drop', causes: [{ cause: 'shock', prior: 3 }, { cause: 'overwatering', prior: 2 }, { cause: 'underwatering', prior: 2 }, { cause: 'low-light', prior: 1.5 }, { cause: 'cold', prior: 1.5 }] },
+  { id: 'dropping', area: 'leaves', label: 'Leaves falling off', hint: 'Healthy-looking leaves drop', causes: [{ cause: 'stale-water', prior: 1.5 }, { cause: 'shock', prior: 3 }, { cause: 'overwatering', prior: 2 }, { cause: 'underwatering', prior: 2 }, { cause: 'low-light', prior: 1.5 }, { cause: 'cold', prior: 1.5 }] },
   { id: 'speckled', area: 'leaves', label: 'Tiny speckles or silvery streaks', hint: 'Dusty-looking dots or scratches', causes: [{ cause: 'spider-mites', prior: 3 }, { cause: 'thrips', prior: 2.5 }, { cause: 'sunburn', prior: 0.6 }] },
   { id: 'holes', area: 'leaves', label: 'Holes or chewed edges', hint: 'Bits missing from the leaves', causes: [{ cause: 'pests-chewing', prior: 4 }, { cause: 'leaf-spot', prior: 0.8 }] },
   { id: 'white-powder', area: 'leaves', label: 'White powder on leaves', hint: 'Looks like a dusting of flour', causes: [{ cause: 'powdery-mildew', prior: 4 }, { cause: 'mealybugs', prior: 1 }, { cause: 'tap-water', prior: 0.6 }] },
   // Stems & shape
   { id: 'leggy', area: 'stems', label: 'Tall, leggy and stretched', hint: 'Long gaps between small leaves', causes: [{ cause: 'low-light', prior: 5 }, { cause: 'hungry', prior: 0.8 }, { cause: 'bolting', prior: 1.2 }] },
-  { id: 'mushy-stem', area: 'stems', label: 'Soft, mushy or black stem base', hint: 'Squishy where it meets the soil', causes: [{ cause: 'root-rot', prior: 5 }, { cause: 'overwatering', prior: 2 }, { cause: 'cold', prior: 1 }] },
+  { id: 'mushy-stem', area: 'stems', label: 'Soft, mushy or black stem base', hint: 'Squishy where it meets the soil', waterHint: 'Squishy at the base', causes: [{ cause: 'stale-water', prior: 5 }, { cause: 'root-rot', prior: 5 }, { cause: 'overwatering', prior: 2 }, { cause: 'cold', prior: 1 }] },
   { id: 'no-growth', area: 'stems', label: 'Not growing at all', hint: 'No new leaves in months', causes: [{ cause: 'low-light', prior: 3 }, { cause: 'pot-bound', prior: 2 }, { cause: 'hungry', prior: 2 }, { cause: 'cold', prior: 1.5 }, { cause: 'root-rot', prior: 1 }] },
   { id: 'bolting', area: 'stems', label: 'Shooting up a flower stalk', hint: 'Greens or herbs going to seed', edibleOnly: true, causes: [{ cause: 'bolting', prior: 5 }] },
   // Soil
-  { id: 'soil-fuzz', area: 'soil', label: 'White fuzz on the soil', hint: 'Cottony mould on top', causes: [{ cause: 'surface-mold', prior: 4 }, { cause: 'mealybugs', prior: 0.8 }, { cause: 'tap-water', prior: 0.8 }] },
-  { id: 'soil-crust', area: 'soil', label: 'White crust on the soil or pot', hint: 'Hard, chalky layer', causes: [{ cause: 'tap-water', prior: 4 }, { cause: 'hungry', prior: 0.5 }] },
-  { id: 'soil-smell', area: 'soil', label: 'Soil smells bad or stays wet', hint: 'Sour or rotten smell', causes: [{ cause: 'root-rot', prior: 3.5 }, { cause: 'overwatering', prior: 3 }] },
-  { id: 'soil-dry', area: 'soil', label: 'Water runs straight through', hint: 'Soil shrinks from the pot sides', causes: [{ cause: 'underwatering', prior: 3 }, { cause: 'pot-bound', prior: 2.5 }] },
+  { id: 'soil-fuzz', soilOnly: true, area: 'soil', label: 'White fuzz on the soil', hint: 'Cottony mould on top', causes: [{ cause: 'surface-mold', prior: 4 }, { cause: 'mealybugs', prior: 0.8 }, { cause: 'tap-water', prior: 0.8 }] },
+  { id: 'soil-crust', area: 'soil', label: 'White crust on the soil or pot', hint: 'Hard, chalky layer', waterLabel: 'White crust on the LECA or container', causes: [{ cause: 'tap-water', prior: 4 }, { cause: 'hungry', prior: 0.5 }] },
+  { id: 'soil-smell', area: 'soil', label: 'Soil smells bad or stays wet', hint: 'Sour or rotten smell', waterLabel: 'Water smells bad or looks cloudy', waterHint: 'Sour smell, slime or murky water', causes: [{ cause: 'stale-water', prior: 5 }, { cause: 'root-rot', prior: 3.5 }, { cause: 'overwatering', prior: 3 }] },
+  { id: 'soil-dry', soilOnly: true, area: 'soil', label: 'Water runs straight through', hint: 'Soil shrinks from the pot sides', causes: [{ cause: 'underwatering', prior: 3 }, { cause: 'pot-bound', prior: 2.5 }] },
   // Bugs
-  { id: 'tiny-flies', area: 'bugs', label: 'Tiny flies around the soil', hint: 'Little black flies when you water', causes: [{ cause: 'fungus-gnats', prior: 5 }, { cause: 'whitefly', prior: 1 }] },
+  { id: 'tiny-flies', soilOnly: true, area: 'bugs', label: 'Tiny flies around the soil', hint: 'Little black flies when you water', causes: [{ cause: 'fungus-gnats', prior: 5 }, { cause: 'whitefly', prior: 1 }] },
   { id: 'webbing', area: 'bugs', label: 'Fine webbing', hint: 'Thin webs under leaves or at joints', causes: [{ cause: 'spider-mites', prior: 5 }] },
   { id: 'sticky', area: 'bugs', label: 'Sticky leaves', hint: 'Shiny, tacky spots on leaves or the floor', causes: [{ cause: 'aphids', prior: 3 }, { cause: 'scale', prior: 2.5 }, { cause: 'mealybugs', prior: 2 }, { cause: 'whitefly', prior: 1.5 }] },
   { id: 'cotton', area: 'bugs', label: 'White cottony bits', hint: 'Fluff in leaf joints', causes: [{ cause: 'mealybugs', prior: 5 }, { cause: 'surface-mold', prior: 0.5 }] },

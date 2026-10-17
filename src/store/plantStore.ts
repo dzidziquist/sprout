@@ -411,7 +411,19 @@ export const usePlantStore = create<PlantState>()(
         const factor = tweak === 'slow-water' ? 1.2 : tweak === 'more-water' ? 0.85 : 1;
         set((s) => ({
           events: [...s.events, { id: uid(), plantId, type: 'diagnosis', note, at: now.toISOString() }],
-          plants: factor === 1 ? s.plants : s.plants.map((p) => (p.id === plantId ? { ...p, k: Math.round(Math.min(K_MAX, Math.max(K_MIN, p.k * factor)) * 100) / 100 } : p)),
+          plants:
+            factor === 1
+              ? s.plants
+              : s.plants.map((p) => {
+                  if (p.id !== plantId) return p;
+                  // Stretch or shrink the wait for the check that's already booked, not just future ones.
+                  const left = Math.max(0, new Date(p.nextCheckAt).getTime() - now.getTime());
+                  return {
+                    ...p,
+                    k: Math.round(Math.min(K_MAX, Math.max(K_MIN, p.k * factor)) * 100) / 100,
+                    nextCheckAt: new Date(now.getTime() + left * factor).toISOString(),
+                  };
+                }),
         }));
       },
 

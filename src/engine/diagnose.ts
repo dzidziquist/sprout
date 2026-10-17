@@ -76,10 +76,16 @@ export function signalsFor({ plant, events, climate, now }: DiagnoseInput): Set<
   return s;
 }
 
-/** Symptoms that make sense for this plant (fruit and bolting only for edibles). */
-export function symptomsFor(plant: Pick<Plant, 'speciesId' | 'custom'>): Symptom[] {
+/**
+ * Symptoms that make sense for this plant: fruit and bolting only for edibles, and for LECA or water
+ * plants no soil-only symptoms, with water wording where it differs.
+ */
+export function symptomsFor(plant: Pick<Plant, 'speciesId' | 'custom' | 'soil'>): Symptom[] {
   const edible = speciesOf(plant).edible;
-  return SYMPTOMS.filter((x) => edible || !x.edibleOnly);
+  const water = isReservoir(plant.soil);
+  return SYMPTOMS.filter((x) => (edible || !x.edibleOnly) && !(water && x.soilOnly)).map((x) =>
+    water && (x.waterLabel || x.waterHint) ? { ...x, label: x.waterLabel ?? x.label, hint: x.waterHint ?? x.hint } : x,
+  );
 }
 
 export function symptomById(id: string): Symptom | undefined {
@@ -96,7 +102,9 @@ export function diagnose(symptomId: string, input: DiagnoseInput, limit = 3): Di
   const symptom = symptomById(symptomId);
   if (!symptom) return [];
   const signals = signalsFor(input);
+  const water = signals.has('reservoir');
   const scored = symptom.causes
+    .filter(({ cause: id }) => (water ? !CAUSES[id].soilOnly : !CAUSES[id].waterOnly))
     .map(({ cause: id, prior }) => {
       const cause = CAUSES[id];
       let score = prior;

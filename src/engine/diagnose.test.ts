@@ -83,8 +83,18 @@ describe('plant doctor', () => {
   });
 
   it('shows fruit problems for edibles only', () => {
-    expect(symptomsFor({ speciesId: 'pothos' }).some((s) => s.area === 'fruit')).toBe(false);
-    expect(symptomsFor({ speciesId: 'tomato' }).some((s) => s.id === 'fruit-rot-end')).toBe(true);
+    expect(symptomsFor({ speciesId: 'pothos', soil: 'potting_mix' }).some((s) => s.area === 'fruit')).toBe(false);
+    expect(symptomsFor({ speciesId: 'tomato', soil: 'veg_mix' }).some((s) => s.id === 'fruit-rot-end')).toBe(true);
+  });
+
+  it('gives water and LECA plants water advice, never soil advice', () => {
+    const syms = symptomsFor({ speciesId: 'lucky-bamboo', soil: 'water' });
+    expect(syms.some((x) => x.soilOnly)).toBe(false);
+    expect(syms.find((x) => x.id === 'soil-smell')?.label).toBe('Water smells bad or looks cloudy');
+    const bamboo = plant({ speciesId: 'lucky-bamboo', soil: 'water' });
+    for (const s of syms) for (const r of run(s.id, bamboo, checks('damp', 'damp', 'damp'))) expect(r.cause.soilOnly, `${s.id} → ${r.cause.id}`).toBeFalsy();
+    expect(run('yellow-lower', bamboo)[0].cause.id).toBe('stale-water');
+    for (const r of run('yellow-lower', plant())) expect(r.cause.waterOnly).toBeFalsy();
   });
 
   it('returns at most three causes that add up to everything shown', () => {
@@ -97,6 +107,8 @@ describe('plant doctor', () => {
 describe('photo check (Pl@ntNet diseases)', () => {
   it('reads results, names them and links them to plant doctor causes', () => {
     const out = parseHealth({ results: [{ name: 'ERYSSP', score: 0.2 }, { name: 'TETRUR', score: 0.71 }, { name: 42 }] }, { TETRUR: 'Two-spotted spider mite', ERYSSP: 'Powdery mildews' });
+    // The answer's own description wins, so names still show when the name list didn't load.
+    expect(parseHealth({ results: [{ name: 'APHISP', description: 'Aphids', score: 0.5 }] })[0]).toMatchObject({ name: 'Aphids', causeId: 'aphids' });
     expect(out.map((r) => r.code)).toEqual(['TETRUR', 'ERYSSP']);
     expect(out[0]).toMatchObject({ name: 'Two-spotted spider mite', causeId: 'spider-mites', confidence: 'Pretty sure' });
     expect(out[1].causeId).toBe('powdery-mildew');

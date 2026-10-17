@@ -72,9 +72,10 @@ export function parseHealth(body: unknown, names: Record<string, string> = {}): 
   const results = (body as { results?: unknown })?.results;
   if (!Array.isArray(results)) return [];
   const out: HealthResult[] = [];
-  for (const r of results as { name?: unknown; label?: unknown; score?: unknown }[]) {
+  for (const r of results as { name?: unknown; description?: unknown; label?: unknown; score?: unknown }[]) {
     if (typeof r?.name !== 'string' || typeof r?.score !== 'number') continue;
-    const name = typeof r.label === 'string' ? r.label : names[r.name];
+    // The answer carries its own readable `description`; the separate name list is only a fallback.
+    const name = typeof r.description === 'string' && r.description ? r.description : typeof r.label === 'string' ? r.label : names[r.name];
     const score = Math.max(0, Math.min(1, r.score));
     out.push({ code: r.name, name, score, confidence: confidenceLabel(score), causeId: causeForLabel(name) });
   }

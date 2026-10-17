@@ -216,3 +216,18 @@ describe('review fixes', () => {
     expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(stamp);
   });
 });
+
+describe('plant doctor', () => {
+  it('saves a diagnosis and moves the booked check along with the new rhythm', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Queenie' }, now, { firstCheck: 'scheduled' });
+    const wait = new Date(p.nextCheckAt).getTime() - now.getTime();
+    s.logDiagnosis(p.id, 'Drooping: thirsty', 'more-water', now);
+    const after = usePlantStore.getState().plants[0];
+    expect(after.k).toBeLessThan(p.k);
+    expect(new Date(after.nextCheckAt).getTime() - now.getTime()).toBeCloseTo(wait * 0.85, -3);
+    expect(usePlantStore.getState().events.at(-1)).toMatchObject({ type: 'diagnosis', note: 'Drooping: thirsty' });
+    s.logDiagnosis(p.id, 'Brown tips: dry air', undefined, now);
+    expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(after.nextCheckAt);
+  });
+});
