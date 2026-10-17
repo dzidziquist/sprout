@@ -314,8 +314,9 @@ export default function AddPlantScreen() {
           accessibilityLabel="Search plants"
           autoCorrect={false}
         />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }} style={{ marginHorizontal: -20, flexGrow: 0 }} contentInset={{ left: 20, right: 20 }}>
-          <View style={{ width: 12 }} />
+        {/* Edge-to-edge strip: the padding lines the first chip up with the page, and the bottom padding
+            leaves room for the selected chip's drop shadow, which a horizontal ScrollView would clip. */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 20, paddingBottom: 5 }} style={{ marginHorizontal: -20, flexGrow: 0 }}>
           {CATEGORIES.map((cat) => (
             <Pill
               key={cat.id}
@@ -327,7 +328,6 @@ export default function AddPlantScreen() {
               }}
             />
           ))}
-          <View style={{ width: 12 }} />
         </ScrollView>
         {results.length === 0 && (
           <Text style={[styles.note, { color: c.inkMuted }]}>No match for “{query.trim()}” in our list yet. You can still add it below.</Text>
