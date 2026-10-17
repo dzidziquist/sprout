@@ -194,6 +194,46 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/arugula-happy.png'),
     snoozing: require('../../assets/buddies/arugula-happy.png'),
   },
+  'blueberry': {
+    happy: require('../../assets/buddies/blueberry-happy.png'),
+    thirsty: require('../../assets/buddies/blueberry-happy.png'),
+    snoozing: require('../../assets/buddies/blueberry-happy.png'),
+  },
+  'meyer-lemon': {
+    happy: require('../../assets/buddies/meyer-lemon-happy.png'),
+    thirsty: require('../../assets/buddies/meyer-lemon-happy.png'),
+    snoozing: require('../../assets/buddies/meyer-lemon-happy.png'),
+  },
+  'strawberry': {
+    happy: require('../../assets/buddies/strawberry-happy.png'),
+    thirsty: require('../../assets/buddies/strawberry-happy.png'),
+    snoozing: require('../../assets/buddies/strawberry-happy.png'),
+  },
+  'cape-gooseberry': {
+    happy: require('../../assets/buddies/cape-gooseberry-happy.png'),
+    thirsty: require('../../assets/buddies/cape-gooseberry-happy.png'),
+    snoozing: require('../../assets/buddies/cape-gooseberry-happy.png'),
+  },
+  'common-fig': {
+    happy: require('../../assets/buddies/common-fig-happy.png'),
+    thirsty: require('../../assets/buddies/common-fig-happy.png'),
+    snoozing: require('../../assets/buddies/common-fig-happy.png'),
+  },
+  'passion-fruit': {
+    happy: require('../../assets/buddies/passion-fruit-happy.png'),
+    thirsty: require('../../assets/buddies/passion-fruit-happy.png'),
+    snoozing: require('../../assets/buddies/passion-fruit-happy.png'),
+  },
+  'pineapple': {
+    happy: require('../../assets/buddies/pineapple-happy.png'),
+    thirsty: require('../../assets/buddies/pineapple-happy.png'),
+    snoozing: require('../../assets/buddies/pineapple-happy.png'),
+  },
+  'raspberry': {
+    happy: require('../../assets/buddies/raspberry-happy.png'),
+    thirsty: require('../../assets/buddies/raspberry-happy.png'),
+    snoozing: require('../../assets/buddies/raspberry-happy.png'),
+  },
   'pink-princess': {
     happy: require('../../assets/buddies/pink-princess-happy.png'),
     thirsty: require('../../assets/buddies/pink-princess-thirsty.png'),
