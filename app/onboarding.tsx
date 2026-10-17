@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore, type FaceStyle } from '@/store/plantStore';
 import { ART } from '@/data/art';
 import { SPOTS, type Spot } from '@/lib/spots';
-import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { requestPermission } from '@/lib/notifications';
 import * as haptics from '@/lib/haptics';
@@ -83,13 +82,13 @@ export default function Onboarding() {
         <View style={styles.row3}>
           {(
             [
-              ['houseplants', 'Houseplants', 'monstera', c.mint],
-              ['edibles', 'Edibles', 'tomato', c.peach],
-              ['cuttings', 'Cuttings', 'cutting', c.ice],
+              ['houseplants', 'Houseplants', ART.growHouseplants, c.mint],
+              ['edibles', 'Edibles', ART.growEdibles, c.peach],
+              ['cuttings', 'Cuttings', ART.growCuttings, c.ice],
             ] as const
-          ).map(([key, label, sp, bg]) => (
+          ).map(([key, label, art, bg]) => (
             <Choice key={key} on={profile.grows[key]} bg={bg} onPress={() => setProfile({ grows: { ...profile.grows, [key]: !profile.grows[key] } })} style={styles.growTile}>
-              <PlantBuddy speciesId={sp} size={70} />
+              <Image source={art} style={{ width: 76, height: 76 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
               <Text style={styles.choiceTitle}>{label}</Text>
             </Choice>
           ))}

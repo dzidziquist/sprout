@@ -10,6 +10,11 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.dzidziquist.plantfam",
+      "icon": {
+        "light": "./assets/icons/icon-default.png",
+        "dark": "./assets/icons/icon-default-dark.png",
+        "tinted": "./assets/icons/icon-default-tinted.png"
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
