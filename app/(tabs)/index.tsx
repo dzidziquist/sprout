@@ -241,8 +241,9 @@ export default function TodayScreen() {
       )}
 
       {!trip && nextTrip && (
-        <Pressable accessibilityRole="button" onPress={() => router.push('/away')} style={[styles.banner, { backgroundColor: c.ice, borderColor: c.line }]}>
-          <Text style={[styles.bannerText, { color: c.ink }]}>
+        <Pressable accessibilityRole="button" onPress={() => router.push('/away')} style={[styles.banner, { backgroundColor: c.ice, borderColor: c.line, flexDirection: 'row', alignItems: 'center', gap: 10 }]}>
+          <Image source={ART.awayTrip} style={{ width: 72, height: 46 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+          <Text style={[styles.bannerText, { color: c.ink, flex: 1 }]}>
             <Text style={{ fontFamily: fonts.bodyHeavy }}>Away from {shortDay(nextTrip.from)}. </Text>
             Tap for your before-you-go list and a plant-sitter note.
           </Text>

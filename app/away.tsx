@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
@@ -7,7 +7,7 @@ import { activeTrip, dayStart, prepList, sitterNote, tripDays, upcomingTrip, typ
 import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { GlassButton } from '@/components/GlassButton';
 import { Icon } from '@/components/GrowTodayCard';
-import { PlantBuddy } from '@/components/PlantBuddy';
+import { ART } from '@/data/art';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
@@ -46,7 +46,6 @@ export default function AwayScreen() {
   const plants = usePlantStore((s) => s.plants);
   const climate = usePlantStore((s) => s.profile.climate);
   const trips = usePlantStore((s) => s.profile.trips);
-  const faces = usePlantStore((s) => s.profile.faces);
   const planTrip = usePlantStore((s) => s.planTrip);
   const endTrip = usePlantStore((s) => s.endTrip);
   const setPrepDone = usePlantStore((s) => s.setPrepDone);
@@ -87,8 +86,8 @@ export default function AwayScreen() {
         </GlassButton>
       </View>
 
+      <Image source={ART.awayTrip} style={styles.art} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
       <View style={styles.hero}>
-        <PlantBuddy speciesId="monstera" mood={away ? 'snoozing' : 'happy'} size={96} faces={faces} />
         <View style={{ flex: 1, gap: 4 }}>
           <Title style={{ fontSize: 28, lineHeight: 32 }}>{away ? 'You’re away' : current ? 'Trip planned' : 'Going away?'}</Title>
           <Text style={[styles.sub, { color: c.inkMuted }]}>
@@ -177,6 +176,7 @@ export default function AwayScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 16 },
   toolbar: { flexDirection: 'row' },
+  art: { width: '100%', height: undefined, aspectRatio: 960 / 603, maxHeight: 230, marginTop: -8 },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   sub: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
   note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
