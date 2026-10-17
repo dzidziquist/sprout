@@ -20,6 +20,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { EdibleStage, Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
+import { useSheetTop } from '@/lib/sheetTop';
 
 const isSpeciesId = (v: unknown): v is SpeciesId => typeof v === 'string' && v in SPECIES;
 
@@ -174,6 +175,7 @@ const SELF_WATER: { id: 'no' | 'always' | 'away'; label: string }[] = [
 export default function AddPlantScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const c = useColors();
   // /add?species=pothos (from photo ID) skips the picker; /add?other=1&name=…&latin=… starts an "other" plant.
   const params = useLocalSearchParams<{ species?: string; other?: string; name?: string; latin?: string }>();
@@ -294,7 +296,7 @@ export default function AddPlantScreen() {
 
   if (!speciesId) {
     return (
-      <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
+      <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Title style={{ flex: 1 }}>Who's joining the jungle?</Title>
           {close}
@@ -312,8 +314,9 @@ export default function AddPlantScreen() {
           accessibilityLabel="Search plants"
           autoCorrect={false}
         />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }} style={{ marginHorizontal: -20, flexGrow: 0 }} contentInset={{ left: 20, right: 20 }}>
-          <View style={{ width: 12 }} />
+        {/* Edge-to-edge strip: the padding lines the first chip up with the page, and the bottom padding
+            leaves room for the selected chip's drop shadow, which a horizontal ScrollView would clip. */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 20, paddingBottom: 5 }} style={{ marginHorizontal: -20, flexGrow: 0 }}>
           {CATEGORIES.map((cat) => (
             <Pill
               key={cat.id}
@@ -325,7 +328,6 @@ export default function AddPlantScreen() {
               }}
             />
           ))}
-          <View style={{ width: 12 }} />
         </ScrollView>
         {results.length === 0 && (
           <Text style={[styles.note, { color: c.inkMuted }]}>No match for “{query.trim()}” in our list yet. You can still add it below.</Text>
@@ -396,7 +398,7 @@ export default function AddPlantScreen() {
   };
 
   return (
-    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Back to plant list" onPress={() => setSpeciesId(null)}>
           <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>

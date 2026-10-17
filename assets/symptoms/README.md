@@ -4,7 +4,7 @@
 
 ## Handoff to Claude
 
-This is an art-only drop. Resize/optimize the images and wire the paths into the plant doctor's symptom map. Keep the line-icon fallback for any image that cannot load. No app source, symptom definitions or fallback behavior were changed in this branch. See `manifest.json` for dimensions, file sizes and hashes of the delivered files; those are native generated exports, not resized delivery thumbnails.
+This is an art-only drop. Resize/optimize the images and wire the paths into the plant doctor's symptom map. Keep the line-icon fallback for any image that cannot load. No app source, symptom definitions or fallback behavior were changed in this branch. The 1254 px exports were trimmed, centred and resized to 384 px 256-colour PNGs for the app (35.8 MB → 0.8 MB); `manifest.json` lists the current files.
 
 | # | File | Shows |
 | --- | --- | --- |

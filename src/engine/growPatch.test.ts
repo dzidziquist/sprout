@@ -112,6 +112,12 @@ describe('feeding', () => {
     expect(edibleFeedingPaused(scallion, 'seattle', new Date(2026, 5, 1))).toBe(false);
     expect(edibleFeedingPaused(scallion, 'seattle', new Date(2026, 11, 1))).toBe(true);
   });
+
+  it('keeps feeding an indoor tomato that is flowering or fruiting, even in winter', () => {
+    const indoorTom = plant({ placement: 'indoor', stage: 'flowering' });
+    expect(edibleFeedingPaused(indoorTom, 'seattle', new Date(2026, 11, 1))).toBe(false);
+    expect(edibleFeedingPaused({ ...indoorTom, stage: 'growing' }, 'seattle', new Date(2026, 11, 1))).toBe(true);
+  });
 });
 
 describe('tasksFor', () => {
@@ -125,8 +131,15 @@ describe('tasksFor', () => {
     const ids = tasks.map((t) => t.id);
     expect(ids).toContain('sea-green-toms');
     expect(ids).toContain('sea-overwinter');
-    expect(ids).toContain('sea-onion-eave');
     expect(tasks.find((t) => t.id === 'sea-green-toms')!.plantIds).toEqual([tommy.id]);
+  });
+
+  it('only gives weather jobs to plants that live outside', () => {
+    const indoorChili = { ...chili, id: 'in-chili', placement: 'indoor' as const };
+    const outdoorScallie = { ...scallie, id: 'out-scallie', placement: 'outdoor' as const };
+    const tasks = tasksFor([indoorChili, scallie, outdoorScallie], 'seattle', midOct);
+    expect(tasks.find((t) => t.id === 'sea-overwinter')).toBeUndefined();
+    expect(tasks.find((t) => t.id === 'sea-onion-eave')!.plantIds).toEqual(['out-scallie']);
   });
 
   it('lists each task once with every plant it applies to', () => {

@@ -14,6 +14,7 @@ import { identifyPlant, plantIdConfigured, PlantIdError, type CatalogueMatch, ty
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
+import { useSheetTop } from '@/lib/sheetTop';
 
 type Problem = PlantIdErrorKind | 'camera-denied' | 'camera-failed' | 'daily-limit';
 
@@ -48,6 +49,7 @@ function confidenceFill(conf: Confidence, c: Palette) {
 export default function IdentifyScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const c = useColors();
   const { profile, setProfile } = usePlantStore();
   const [phase, setPhase] = useState<Phase>(() => (plantIdConfigured() ? { kind: 'empty' } : { kind: 'error', problem: 'no-key' }));
@@ -125,7 +127,7 @@ export default function IdentifyScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
-      <ScrollView contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 28 }]}>
+      <ScrollView contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 28 }]}>
         <View style={styles.header}>
           <Title style={{ flex: 1 }}>Who's this plant?</Title>
           <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>

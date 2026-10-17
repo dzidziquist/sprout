@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { useRewards } from '@/hooks/useRewards';
 import { REWARDS } from '@/engine/rewards';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -43,7 +44,11 @@ export function MeBuddy() {
         </Animated.View>
       </Pressable>
       <View style={[styles.bubble, { backgroundColor: party ? c.mint : c.card, borderColor: c.line }]}>
-        <View style={[styles.tail, { backgroundColor: party ? c.mint : c.card, borderColor: c.line }]} />
+        {/* The tail is drawn, not a rotated square: its fill covers the bubble's edge so the outline flows round it. */}
+        <Svg width={14} height={22} viewBox="0 0 14 22" style={styles.tail}>
+          <Path d="M14 1 L2 11 L14 21 Z" fill={party ? c.mint : c.card} />
+          <Path d="M13 2 L2 11 L13 20" stroke={c.line} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" fill="none" />
+        </Svg>
         <Text style={[styles.text, { color: c.ink }]}>
           {party
             ? 'Party hat on! Thanks for looking after the fam.'
@@ -58,6 +63,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   buddy: { width: 96, height: 96 },
   bubble: { flex: 1, borderWidth: 2, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 10 },
-  tail: { position: 'absolute', left: -8, top: '50%', marginTop: -7, width: 14, height: 14, borderLeftWidth: 2, borderBottomWidth: 2, transform: [{ rotate: '45deg' }] },
+  tail: { position: 'absolute', left: -12, top: '50%', marginTop: -11 },
   text: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
 });

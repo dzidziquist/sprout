@@ -3,6 +3,8 @@ import { diagnose, signalsFor, speciesNote, symptomsFor } from './diagnose';
 import { CAUSES, SHADE_LOVERS, SPECIES_NOTES, SYMPTOMS, TAP_SENSITIVE } from '../data/diagnosis';
 import { causeForLabel, parseHealth } from '../lib/plantHealth';
 import { SPECIES } from '../data/species';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { CareEvent, CheckResult, Plant } from '../types';
 
 function plant(extra: Partial<Plant> = {}): Plant {
@@ -43,6 +45,12 @@ describe('plant doctor knowledge', () => {
     for (const id of [...TAP_SENSITIVE, ...SHADE_LOVERS, ...Object.keys(SPECIES_NOTES)]) expect(SPECIES[id], id).toBeDefined();
     for (const [id, notes] of Object.entries(SPECIES_NOTES)) for (const sym of Object.keys(notes)) expect(SYMPTOMS.some((s) => s.id === sym), `${id}: ${sym}`).toBe(true);
     expect(new Set(SYMPTOMS.map((s) => s.id)).size).toBe(SYMPTOMS.length);
+    // Every symptom tile has its picture, registered under its id (read as text: tests can't load PNGs).
+    const art = readFileSync(join(__dirname, '../data/symptomArt.ts'), 'utf8');
+    for (const s of SYMPTOMS) {
+      expect(art, s.id).toContain(`'${s.id}': require('../../assets/symptoms/symptom-${s.id}.png')`);
+      expect(existsSync(join(__dirname, `../../assets/symptoms/symptom-${s.id}.png`)), s.id).toBe(true);
+    }
   });
 
   it('never gives pesticide doses', () => {

@@ -729,6 +729,8 @@ export interface CalendarTask {
   when: TaskWindow[];
   /** Only for plants at one of these stages (plants with no stage logged always count). */
   stages?: EdibleStage[];
+  /** Weather jobs (bring in, shelter, shade, slugs, rain): only for plants that live outside. */
+  outdoorOnly?: boolean;
 }
 
 const all = (from: number, to: number): TaskWindow[] => Array.from({ length: to - from + 1 }, (_, i) => ({ month: (from + i) % 12 }));
@@ -771,19 +773,19 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-basil-pinch', kind: 'harvest', title: 'Pinch basil flowers', body: 'Pick from the top and nip flower spikes so it stays leafy.', species: ['basil'], when: months(6, 7, 8) },
     { id: 'sea-sow-onion-fall', kind: 'sow', title: 'Sow onions for autumn', body: 'A July–August sowing gives snips through autumn and spring.', species: ['spring-onion'], when: months(6, 7) },
     { id: 'sea-feed-stop', kind: 'feed', title: 'Stop feeding', body: 'Mid-August is the cut-off for balcony edibles. Ripening time now.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: [{ month: 7, from: 10, to: 25 }] },
-    { id: 'sea-top-flowers', kind: 'care', title: 'Nip new flowers', body: 'New flowers won’t ripen in time. Pinch them so the plant ripens what’s there.', species: ['tomato'], when: [{ month: 7, from: 15 }, { month: 8, to: 10 }] },
+    { id: 'sea-top-flowers', outdoorOnly: true, kind: 'care', title: 'Nip new flowers', body: 'New flowers won’t ripen in time. Pinch them so the plant ripens what’s there.', species: ['tomato'], when: [{ month: 7, from: 15 }, { month: 8, to: 10 }] },
     { id: 'sea-blight', kind: 'protect', title: 'Late blight watch', body: 'Brown blotches on leaves? Bin them. Water the soil, never the leaves.', species: ['tomato'], when: [{ month: 7, from: 15 }, { month: 8 }] },
     { id: 'sea-water-less', kind: 'care', title: 'Ease off watering', body: 'A bit less water from late August pushes ripening. Keep it even though.', species: ['tomato'], when: [{ month: 7, from: 20 }, { month: 8, to: 15 }] },
-    { id: 'sea-basil-in', kind: 'protect', title: 'Basil comes inside', body: 'Bring it in before nights drop under 10°C, or take cuttings for the windowsill.', species: ['basil'], when: [{ month: 8, from: 10 }, { month: 9, to: 10 }] },
-    { id: 'sea-green-toms', kind: 'harvest', title: 'Pick green tomatoes', body: 'Take every full-size green or blushing one. Ripen at 13–21°C, out of the fridge. ~2 weeks.', species: ['tomato'], when: [{ month: 9 }, { month: 10, to: 10 }] },
-    { id: 'sea-overwinter', kind: 'protect', title: 'Bring peppers in', body: 'Pick the last pods, prune to a few Y-branches, check for bugs, then a bright ~13°C spot.', species: ['pepper'], when: [{ month: 9 }, { month: 10, to: 15 }] },
+    { id: 'sea-basil-in', outdoorOnly: true, kind: 'protect', title: 'Basil comes inside', body: 'Bring it in before nights drop under 10°C, or take cuttings for the windowsill.', species: ['basil'], when: [{ month: 8, from: 10 }, { month: 9, to: 10 }] },
+    { id: 'sea-green-toms', outdoorOnly: true, kind: 'harvest', title: 'Pick green tomatoes', body: 'Take every full-size green or blushing one. Ripen at 13–21°C, out of the fridge. ~2 weeks.', species: ['tomato'], when: [{ month: 9 }, { month: 10, to: 10 }] },
+    { id: 'sea-overwinter', outdoorOnly: true, kind: 'protect', title: 'Bring peppers in', body: 'Pick any ripe pods, prune to a few Y-branches, check for bugs, then a bright ~13°C spot.', species: ['pepper'], when: [{ month: 9 }, { month: 10, to: 15 }] },
     { id: 'sea-blight-bin', kind: 'care', title: 'Tidy the vines', body: 'Bin blighted vines (don’t compost) and don’t reuse their mix for tomatoes or peppers.', species: ['tomato'], when: [{ month: 9, from: 15 }, { month: 10 }], stages: ['fruiting', 'harvesting', 'resting'] },
-    { id: 'sea-onion-eave', kind: 'protect', title: 'Onions under the eave', body: 'They’re hardy, just not fans of sitting soggy. Or bring a pot to the windowsill.', species: ['spring-onion'], when: months(9, 10) },
+    { id: 'sea-onion-eave', outdoorOnly: true, kind: 'protect', title: 'Onions under the eave', body: 'They’re hardy, just not fans of sitting soggy. Or bring a pot to the windowsill.', species: ['spring-onion'], when: months(9, 10) },
     { id: 'sea-onion-winter', kind: 'harvest', title: 'Snip lightly', body: 'Short days mean slow regrowth. Take a little, leave the rest.', species: ['spring-onion'], when: months(11, 0) },
     { id: 'sea-mint-rest', kind: 'care', title: 'Let mint rest', body: 'It dies back for winter. Cut the stems and keep it barely damp.', species: ['mint'], when: months(10, 11) },
 
     // Slugs: Seattle's damp springs and autumns.
-    { id: 'sea-slugs', kind: 'protect', title: 'Slug patrol', body: 'Damp nights bring slugs. Check pot rims and leaf undersides after dark; copper tape helps.', species: [...SALAD, 'kale', 'chard', ...BEANS, 'pea', ...VINES, 'strawberry', 'basil', 'microgreens'], when: months(2, 3, 4, 8, 9, 10) },
+    { id: 'sea-slugs', outdoorOnly: true, kind: 'protect', title: 'Slug patrol', body: 'Damp nights bring slugs. Check pot rims and leaf undersides after dark; copper tape helps.', species: [...SALAD, 'kale', 'chard', ...BEANS, 'pea', ...VINES, 'strawberry', 'basil', 'microgreens'], when: months(2, 3, 4, 8, 9, 10) },
 
     // Salad and leafy greens.
     { id: 'sea-lettuce-succession', kind: 'sow', title: 'Sow more lettuce', body: 'A short row every 2–3 weeks keeps salad coming. In July–Aug, sow in shade.', species: ['lettuce'], when: all(2, 8) },
@@ -840,7 +842,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-sweet-dig', kind: 'harvest', title: 'Dig sweet potatoes', body: 'Tip out the pot before the soil drops below 13°C or the rains arrive.', species: ['sweet-potato'], when: [{ month: 8, from: 15 }, { month: 9, to: 10 }] },
     { id: 'sea-sow-heat', kind: 'sow', title: 'Sow heat-lovers', body: 'Okra, amaranth, ayoyo and roselle want 24°C: sow indoors on a warm sill.', species: ['okra', 'amaranth', 'ayoyo', 'roselle'], when: [{ month: 3, from: 15 }, { month: 4 }] },
     { id: 'sea-tropical-out', kind: 'plant', title: 'Tropicals outside', body: 'Once nights stay above 12°C, warm-climate pots can summer on the balcony.', species: [...TROPICAL, 'amaranth', 'ayoyo'], when: [{ month: 5, from: 10 }, { month: 6, to: 10 }] },
-    { id: 'sea-tropical-in', kind: 'protect', title: 'Tropicals inside', body: 'Bring warm-climate pots in before nights drop under 10°C. Bright window, less water.', species: TROPICAL, when: [{ month: 8, from: 10 }, { month: 9, to: 10 }] },
+    { id: 'sea-tropical-in', outdoorOnly: true, kind: 'protect', title: 'Tropicals inside', body: 'Bring warm-climate pots in before nights drop under 10°C. Bright window, less water.', species: TROPICAL, when: [{ month: 8, from: 10 }, { month: 9, to: 10 }] },
     { id: 'sea-start-ginger', kind: 'plant', title: 'Start ginger', body: 'Plant a plump, budded piece shallow in a wide pot, indoors in the warmth.', species: ['ginger'], when: months(2, 3) },
 
     // Herbs.
@@ -850,12 +852,12 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-herbs-wake', kind: 'care', title: 'Wake the perennials', body: 'Cut dead stems back to new shoots and give a light feed.', species: ['chives', 'oregano', 'lemon-balm', 'thyme', 'tarragon', 'sage'], when: months(2, 3) },
     { id: 'sea-herbs-trim', kind: 'care', title: 'Trim after flowers', body: 'Shear woody herbs lightly once flowers fade. Never cut into bare old wood.', species: ['rosemary', 'thyme', 'sage', 'oregano', 'lavender', 'lemon-balm'], when: months(6, 7) },
     { id: 'sea-lavender-pick', kind: 'harvest', title: 'Pick lavender', body: 'Cut stems as the first buds open for the best scent, then dry them upside down.', species: ['lavender'], when: [{ month: 5, from: 15 }, { month: 6 }] },
-    { id: 'sea-herbs-wet', kind: 'protect', title: 'Keep herbs dry', body: 'Mediterranean herbs die of wet roots, not cold. Under the eave, no saucer.', species: [...MED_HERBS, 'bay-laurel'], when: months(10, 11, 0, 1) },
+    { id: 'sea-herbs-wet', outdoorOnly: true, kind: 'protect', title: 'Keep herbs dry', body: 'Mediterranean herbs die of wet roots, not cold. Under the eave, no saucer.', species: [...MED_HERBS, 'bay-laurel'], when: months(10, 11, 0, 1) },
     { id: 'sea-chives-split', kind: 'plant', title: 'Plant chives', body: 'Late Oct–early Nov is a good time to plant or split chive clumps (WSU).', species: ['chives'], when: [{ month: 9, from: 20 }, { month: 10, to: 10 }] },
 
     // Fruit.
     { id: 'sea-plant-berries', kind: 'plant', title: 'Plant strawberries', body: 'Crown level with the soil: too deep rots, too high dries out.', species: ['strawberry'], when: months(2, 3) },
-    { id: 'sea-net-berries', kind: 'protect', title: 'Net the berries', body: 'Birds love ripening berries. Net the pot and keep fruit off wet soil.', species: BERRIES, when: [{ month: 4, from: 15 }, { month: 5 }, { month: 6 }] },
+    { id: 'sea-net-berries', outdoorOnly: true, kind: 'protect', title: 'Net the berries', body: 'Birds love ripening berries. Net the pot and keep fruit off wet soil.', species: BERRIES, when: [{ month: 4, from: 15 }, { month: 5 }, { month: 6 }] },
     { id: 'sea-pick-strawberries', kind: 'harvest', title: 'Pick strawberries', body: 'Fully red, on a dry morning. Everbearers keep going into September.', species: ['strawberry'], when: all(5, 8) },
     { id: 'sea-runners', kind: 'care', title: 'Snip runners', body: 'Cut runners for bigger fruit, or pin a few into small pots for new plants.', species: ['strawberry'], when: months(6, 7) },
     { id: 'sea-blueberry-feed', kind: 'feed', title: 'Feed blueberries', body: 'Acid (ericaceous) feed in spring only. Soft tap water or rainwater suits them.', species: ['blueberry'], when: [{ month: 2, from: 15 }, { month: 3 }, { month: 4 }] },
@@ -863,9 +865,9 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-pick-raspberries', kind: 'harvest', title: 'Pick raspberries', body: 'Ripe ones slip off the core. Autumn types keep cropping into October.', species: ['raspberry'], when: all(6, 9) },
     { id: 'sea-prune-berries', kind: 'care', title: 'Prune berries', body: 'Blueberries: remove dead and oldest wood. Autumn raspberries: cut all canes down.', species: ['blueberry', 'raspberry'], when: months(0, 1) },
     { id: 'sea-lemon-out', kind: 'plant', title: 'Lemon outside', body: 'Once nights stay above 10°C. Ease it into full sun over a week so leaves don’t scorch.', species: ['meyer-lemon'], when: [{ month: 4, from: 15 }, { month: 5, to: 15 }] },
-    { id: 'sea-lemon-in', kind: 'protect', title: 'Lemon comes inside', body: 'In before nights drop under 7°C: the brightest window, away from heaters.', species: ['meyer-lemon'], when: [{ month: 9 }, { month: 10, to: 10 }] },
+    { id: 'sea-lemon-in', outdoorOnly: true, kind: 'protect', title: 'Lemon comes inside', body: 'In before nights drop under 7°C: the brightest window, away from heaters.', species: ['meyer-lemon'], when: [{ month: 9 }, { month: 10, to: 10 }] },
     { id: 'sea-pick-figs', kind: 'harvest', title: 'Pick figs', body: 'Soft, drooping, a bead of nectar at the eye. Desert King gives a July crop too.', species: ['common-fig'], when: all(6, 8) },
-    { id: 'sea-fig-shelter', kind: 'protect', title: 'Shelter the fig', body: 'Potted roots feel cold more. Push it against the wall, or into a garage in a deep freeze.', species: ['common-fig', 'bay-laurel'], when: months(11, 0, 1) },
+    { id: 'sea-fig-shelter', outdoorOnly: true, kind: 'protect', title: 'Shelter the fig', body: 'Potted roots feel cold more. Push it against the wall, or into a garage in a deep freeze.', species: ['common-fig', 'bay-laurel'], when: months(11, 0, 1) },
   ],
   /*
    * Accra: harmattan Dec–Feb, major rains Apr–Jul, a short dry spell in August, minor rains Sep–Oct.
@@ -877,10 +879,10 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'acc-harmattan-water', kind: 'care', title: 'Harmattan watering', body: 'Dry winds empty pots fast. Check daily and mulch the top.', species: ACC_ALL, when: [{ month: 11 }, { month: 0 }, { month: 1 }] },
     { id: 'acc-mites', kind: 'protect', title: 'Spider mite check', body: 'Dry air brings mites. Look under leaves for speckles and fine webbing.', species: ['tomato', ...PEPPERS, 'basil', 'eggplant', 'garden-egg', 'okra', ...VINES, ...BEANS, 'strawberry', 'meyer-lemon'], when: months(11, 0, 1, 2) },
     { id: 'acc-tomato-prime', kind: 'harvest', title: 'Tomato picking time', body: 'Cooler, drier weeks are when tomatoes set best. Pick them fully coloured.', species: ['tomato'], when: months(0, 1) },
-    { id: 'acc-shade', kind: 'protect', title: 'Afternoon shade', body: 'Days over 32°C drop tomato flowers. Shade from about 1–4 pm and water evenly.', species: ['tomato', 'mint'], when: months(1, 2, 3) },
+    { id: 'acc-shade', outdoorOnly: true, kind: 'protect', title: 'Afternoon shade', body: 'Days over 32°C drop tomato flowers. Shade from about 1–4 pm and water evenly.', species: ['tomato', 'mint'], when: months(1, 2, 3) },
     { id: 'acc-peppers-hot', kind: 'care', title: 'Peppers keep going', body: 'Peppers handle the heat better than tomatoes. Keep moisture steady.', species: [...PEPPERS], when: months(2, 3) },
-    { id: 'acc-rains', kind: 'protect', title: 'Rains are back', body: 'Raise pots on feet and clear drainage holes so roots don’t drown.', species: ACC_ALL, when: [{ month: 3 }, { month: 8 }] },
-    { id: 'acc-heavy-rains', kind: 'protect', title: 'Heavy-rain weeks', body: 'Move pots under cover in downpours. Waterlogging and blight love May–June.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', ...MED_HERBS, 'strawberry', 'pineapple'], when: months(4, 5) },
+    { id: 'acc-rains', outdoorOnly: true, kind: 'protect', title: 'Rains are back', body: 'Raise pots on feet and clear drainage holes so roots don’t drown.', species: ACC_ALL, when: [{ month: 3 }, { month: 8 }] },
+    { id: 'acc-heavy-rains', outdoorOnly: true, kind: 'protect', title: 'Heavy-rain weeks', body: 'Move pots under cover in downpours. Waterlogging and blight love May–June.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', ...MED_HERBS, 'strawberry', 'pineapple'], when: months(4, 5) },
     { id: 'acc-gnats', kind: 'care', title: 'Gnat and rot watch', body: 'Pots stay wet in the rains. Let the top dry before watering again.', species: ['basil', 'mint', 'spring-onion', 'scent-leaf', 'parsley', 'cilantro', 'chives', 'microgreens'], when: months(4, 5, 9) },
     { id: 'acc-sow-onion', kind: 'sow', title: 'Sow spring onions', body: 'They grow all year here. Shade the seed tray in the hottest weeks.', species: ['spring-onion'], when: months(5, 6, 10) },
     { id: 'acc-sow-pepper', kind: 'sow', title: 'Sow peppers', body: 'Nursery tray now, move to pots at 4–6 true leaves (6–8 weeks).', species: [...PEPPERS], when: months(3, 7) },
@@ -901,7 +903,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'acc-pick-roselle', kind: 'harvest', title: 'Pick sobolo calyces', body: 'Pick plump red calyces about 10 days after the flowers, then dry them in the shade.', species: ['roselle'], when: months(9, 10, 11) },
     { id: 'acc-plant-sweet', kind: 'plant', title: 'Plant sweet potato', body: 'Push 30 cm vine cuttings into a deep pot or sack. Tubers in about four months.', species: ['sweet-potato'], when: months(3, 4, 8) },
     { id: 'acc-ginger', kind: 'plant', title: 'Plant ginger', body: 'Plant budded pieces just before the rains. Dig after 8–10 months, when leaves yellow.', species: ['ginger'], when: months(2, 3) },
-    { id: 'acc-caterpillars', kind: 'protect', title: 'Leaf-eater check', body: 'Rainy weeks bring caterpillars and beetles to greens. Pick them off morning and evening.', species: ['kale', 'chard', 'bok-choy', 'mustard-greens', 'amaranth', 'ayoyo', 'lettuce'], when: months(4, 5, 6, 8, 9) },
+    { id: 'acc-caterpillars', outdoorOnly: true, kind: 'protect', title: 'Leaf-eater check', body: 'Rainy weeks bring caterpillars and beetles to greens. Pick them off morning and evening.', species: ['kale', 'chard', 'bok-choy', 'mustard-greens', 'amaranth', 'ayoyo', 'lettuce'], when: months(4, 5, 6, 8, 9) },
     { id: 'acc-beans', kind: 'sow', title: 'Sow beans', body: 'Sow with the rains in free-draining pots. Pick pods young, every few days.', species: BEANS, when: months(3, 4, 8, 9) },
 
     // The cooler, drier months suit salads, roots and cucumbers (with watering).
@@ -911,8 +913,8 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'acc-sow-vines', kind: 'sow', title: 'Sow cucumbers', body: 'Drier months mean less mildew. Big pots, a trellis, and water at the base.', species: VINES, when: months(9, 10, 1, 2) },
     { id: 'acc-plant-garlic', kind: 'plant', title: 'Plant garlic', body: 'Worth a try in the cool dry season. Chill cloves in the fridge for a few weeks first.', species: ['garlic'], when: months(10, 11) },
     { id: 'acc-sow-herbs', kind: 'sow', title: 'Sow cilantro and dill', body: 'They bolt in the heat; the harmattan months suit them best. Sow every 3 weeks.', species: ['cilantro', 'dill', 'parsley', 'chives'], when: months(10, 11, 0) },
-    { id: 'acc-herb-shade', kind: 'protect', title: 'Shade soft herbs', body: 'Cilantro, parsley, dill and lettuce bolt in the heat. Morning sun only.', species: ['cilantro', 'parsley', 'dill', 'lettuce', 'lemon-balm'], when: months(1, 2, 3) },
-    { id: 'acc-dry-herbs', kind: 'protect', title: 'Keep herbs dry-footed', body: 'Rosemary, thyme and lavender hate wet roots. Shelter them from downpours.', species: [...MED_HERBS, 'bay-laurel'], when: months(4, 5, 9) },
+    { id: 'acc-herb-shade', outdoorOnly: true, kind: 'protect', title: 'Shade soft herbs', body: 'Cilantro, parsley, dill and lettuce bolt in the heat. Morning sun only.', species: ['cilantro', 'parsley', 'dill', 'lettuce', 'lemon-balm'], when: months(1, 2, 3) },
+    { id: 'acc-dry-herbs', outdoorOnly: true, kind: 'protect', title: 'Keep herbs dry-footed', body: 'Rosemary, thyme and lavender hate wet roots. Shelter them from downpours.', species: [...MED_HERBS, 'bay-laurel'], when: months(4, 5, 9) },
     { id: 'acc-strawberry', kind: 'care', title: 'Strawberry season', body: 'Lowland heat is hard on strawberries. They do best now, with morning sun only.', species: ['strawberry'], when: months(10, 11, 0, 1) },
 
     // Fruit.

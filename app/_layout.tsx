@@ -97,7 +97,7 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="badge/[id]"
-          options={{ presentation: 'formSheet', sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}
+          options={{ presentation: 'fullScreenModal', animation: 'fade', contentStyle: { backgroundColor: c.bg } }}
         />
         <Stack.Screen
           name="harvest/[id]"

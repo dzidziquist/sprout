@@ -16,6 +16,7 @@ import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import * as haptics from '@/lib/haptics';
 import type { Soil } from '@/types';
+import { useSheetTop } from '@/lib/sheetTop';
 
 /** Mixes that make sense for a freshly rooted cutting; the species' own default is always offered first. */
 const SOILS: Soil[] = ['potting_mix', 'chunky_aroid', 'perlite_mix', 'gritty', 'coir', 'leca', 'water'];
@@ -40,6 +41,7 @@ export default function PotUpScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
@@ -61,7 +63,7 @@ export default function PotUpScreen() {
 
   if (!plant?.rooting) {
     return (
-      <View style={[styles.page, styles.center, { backgroundColor: c.bg, paddingTop: insets.top + 12 }]}>
+      <View style={[styles.page, styles.center, { backgroundColor: c.bg, paddingTop: sheetTop + 12 }]}>
         <View style={styles.toolbar}>{close}</View>
         <Title style={{ textAlign: 'center' }}>{plant ? `${plant.name} is already potted` : 'Cutting not found'}</Title>
         <Button title="Back" raised bg={c.card} onPress={() => router.back()} style={{ alignSelf: 'stretch', minHeight: 52 }} />

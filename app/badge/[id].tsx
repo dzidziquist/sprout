@@ -1,5 +1,6 @@
-import { useMemo, useRef } from 'react';
-import { Animated, Easing, Image, PanResponder, StyleSheet, Text, View } from 'react-native';
+import { useRef } from 'react';
+import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
+import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -24,60 +25,54 @@ export default function BadgeScreen() {
   const insets = useSafeAreaInsets();
   const { badges } = useBadges();
   const badge = badges.find((b) => b.id === id);
-  const angle = useRef(new Animated.Value(0)).current;
-  const base = useRef(0);
-  const current = useRef(0);
+  // The spin is `base` (where it rests) plus the live drag. The drag is wired straight to the native
+  // driver, so following the finger never waits on JavaScript and doesn't stutter.
+  const base = useRef(new Animated.Value(0)).current;
+  const dragX = useRef(new Animated.Value(0)).current;
+  const angle = useRef(Animated.add(base, Animated.multiply(dragX, TURN))).current;
+  const rest = useRef(0);
+  const onDrag = useRef(Animated.event([{ nativeEvent: { translationX: dragX } }], { useNativeDriver: true })).current;
 
   // Settle on the nearest face-forward turn so it always comes to rest showing the front.
   const settle = () => {
-    const target = Math.round(current.current / 360) * 360;
-    Animated.spring(angle, { toValue: target, useNativeDriver: true, friction: 6, tension: 40 }).start(() => {
-      current.current = target;
+    const target = Math.round(rest.current / 360) * 360;
+    Animated.spring(base, { toValue: target, useNativeDriver: true, friction: 6, tension: 40 }).start(() => {
+      rest.current = target;
     });
   };
 
-  const pan = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 4,
-        onPanResponderGrant: () => {
-          angle.stopAnimation((v) => {
-            base.current = v;
-            current.current = v;
-          });
-        },
-        onPanResponderMove: (_, g) => {
-          current.current = base.current + g.dx * TURN;
-          angle.setValue(current.current);
-        },
-        onPanResponderRelease: (_, g) => {
-          if (Math.abs(g.dx) < 4 && Math.abs(g.vx) < 0.1) {
-            // A tap: one full twirl.
-            haptics.tap();
-            const to = Math.round(current.current / 360) * 360 + 360;
-            Animated.timing(angle, { toValue: to, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start(() => {
-              current.current = to;
-            });
-            return;
-          }
-          if (Math.abs(g.vx) > 0.3) haptics.tap();
-          Animated.decay(angle, { velocity: g.vx * TURN, deceleration: 0.996, useNativeDriver: true }).start(({ finished }) => {
-            angle.stopAnimation((v) => {
-              current.current = v;
-              if (finished) settle();
-            });
-          });
-        },
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
+    if (e.state === State.BEGAN) {
+      base.stopAnimation((v) => (rest.current = v));
+      return;
+    }
+    if (e.state !== State.END && e.state !== State.CANCELLED && e.state !== State.FAILED) return;
+    // Fold the drag into the resting angle in one go, then let go of the finger's value.
+    rest.current += e.translationX * TURN;
+    base.setValue(rest.current);
+    dragX.setValue(0);
+    if (Math.abs(e.translationX) < 4 && Math.abs(e.velocityX) < 100) {
+      // A tap: one full twirl.
+      haptics.tap();
+      const to = Math.round(rest.current / 360) * 360 + 360;
+      Animated.timing(base, { toValue: to, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start(() => {
+        rest.current = to;
+      });
+      return;
+    }
+    if (Math.abs(e.velocityX) > 300) haptics.tap();
+    Animated.decay(base, { velocity: (e.velocityX / 1000) * TURN, deceleration: 0.996, useNativeDriver: true }).start(({ finished }) => {
+      base.stopAnimation((v) => {
+        rest.current = v;
+        if (finished) settle();
+      });
+    });
+  };
 
   if (!badge) return null;
   const earned = !!badge.earnedAt;
   const art = BADGE_ART[badge.art === undefined ? badge.id : (badge.art ?? '')];
-  const fill = earned ? badgeFill(c)[badge.id] ?? c.sun : c.cloud;
+  const fill = earned ? (badgeFill(c)[badge.id] ?? c.sun) : c.cloud;
   const lv = badge.levels;
   const date = earned ? new Date(badge.earnedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
   const front = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-36000deg', '36000deg'] });
@@ -85,32 +80,34 @@ export default function BadgeScreen() {
   const close = () => (router.canGoBack() ? router.back() : router.replace('/me'));
 
   return (
-    <View style={[styles.page, { backgroundColor: c.bg, paddingTop: 16, paddingBottom: insets.bottom + 24 }]}>
+    <View style={[styles.page, { backgroundColor: c.bg, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 24 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
           <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
         </GlassButton>
       </View>
 
-      <View style={styles.stage} {...pan.panHandlers} accessible accessibilityRole="adjustable" accessibilityLabel={`${badge.title}. Swipe to spin.`}>
-        <Animated.View style={[styles.face, { transform: [{ perspective: 900 }, { rotateY: front }] }]}>
-          {art ? (
-            <Image source={earned ? art.earned : art.locked} style={{ width: SIZE, height: SIZE }} resizeMode="contain" />
-          ) : (
-            <View style={[styles.disc, { backgroundColor: fill, borderColor: earned ? c.line : c.inkMuted }, !earned && { borderStyle: 'dashed', opacity: 0.6 }]}>
-              <Svg width={96} height={96} viewBox="0 0 24 24">
-                <Path d={BADGE_ICON[badge.id] ?? ''} stroke={earned ? textOn(fill, c) : c.inkMuted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </Svg>
+      <PanGestureHandler minDist={0} onGestureEvent={onDrag} onHandlerStateChange={onState}>
+        <Animated.View style={styles.stage} accessible accessibilityRole="adjustable" accessibilityLabel={`${badge.title}. Swipe to spin.`}>
+          <Animated.View style={[styles.face, { transform: [{ perspective: 900 }, { rotateY: front }] }]}>
+            {art ? (
+              <Image source={earned ? art.earned : art.locked} style={{ width: SIZE, height: SIZE }} resizeMode="contain" />
+            ) : (
+              <View style={[styles.disc, { backgroundColor: fill, borderColor: earned ? c.line : c.inkMuted }, !earned && { borderStyle: 'dashed', opacity: 0.6 }]}>
+                <Svg width={96} height={96} viewBox="0 0 24 24">
+                  <Path d={BADGE_ICON[badge.id] ?? ''} stroke={earned ? textOn(fill, c) : c.inkMuted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </Svg>
+              </View>
+            )}
+          </Animated.View>
+          <Animated.View style={[styles.face, styles.backFace, { transform: [{ perspective: 900 }, { rotateY: back }] }]}>
+            <View style={[styles.disc, { backgroundColor: earned ? fill : c.cloud, borderColor: c.line }]}>
+              <Text style={[styles.backKicker, { color: earned ? textOn(fill, c) : c.inkMuted }]}>{earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}</Text>
+              <Text style={[styles.backText, { color: earned ? textOn(fill, c) : c.ink }]}>{earned ? date : badge.hint}</Text>
             </View>
-          )}
+          </Animated.View>
         </Animated.View>
-        <Animated.View style={[styles.face, styles.backFace, { transform: [{ perspective: 900 }, { rotateY: back }] }]}>
-          <View style={[styles.disc, { backgroundColor: earned ? fill : c.cloud, borderColor: c.line }]}>
-            <Text style={[styles.backKicker, { color: earned ? textOn(fill, c) : c.inkMuted }]}>{earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}</Text>
-            <Text style={[styles.backText, { color: earned ? textOn(fill, c) : c.ink }]}>{earned ? date : badge.hint}</Text>
-          </View>
-        </Animated.View>
-      </View>
+      </PanGestureHandler>
 
       <View style={{ gap: 6, alignItems: 'center' }}>
         <Text style={[styles.title, { color: c.ink }]}>{badge.title}</Text>
@@ -128,7 +125,9 @@ export default function BadgeScreen() {
               {lv.next ? `Level ${lv.level} of ${lv.tiers.length} · ${lv.next - lv.count} more ${lv.unit} to level ${lv.level + 1}` : `Every level done · ${lv.count} ${lv.unit}`}
             </Text>
             {lv.level > 1 && lv.levelAt && (
-              <Text style={[styles.hint, { color: c.inkMuted, marginTop: 0 }]}>Level {lv.level} reached {new Date(lv.levelAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Text>
+              <Text style={[styles.hint, { color: c.inkMuted, marginTop: 0 }]}>
+                Level {lv.level} reached {new Date(lv.levelAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </Text>
             )}
           </View>
         )}
