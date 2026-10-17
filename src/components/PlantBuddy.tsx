@@ -38,6 +38,8 @@ const ART_FOR: Record<ArtId, Art> = {
   potato: 'tomato',
   'sweet-potato': 'pothos',
   okra: 'pepper',
+  cucumber: 'pothos',
+  zucchini: 'pothos',
   'spring-onion': 'onion',
 };
 

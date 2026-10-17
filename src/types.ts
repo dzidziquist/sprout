@@ -89,6 +89,8 @@ export type ArtId =
   | 'potato'
   | 'sweet-potato'
   | 'okra'
+  | 'cucumber'
+  | 'zucchini'
   | 'spring-onion';
 
 /** Catalogue id (e.g. 'monstera', 'philodendron-brasil'), or 'other-<group>' for a plant not in the catalogue. */

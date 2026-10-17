@@ -58,7 +58,7 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/pepper-thirsty.png'),
     snoozing: require('../../assets/buddies/pepper-snoozing.png'),
   },
-  // Bell pepper, potato, sweet potato and okra have one drawing so far: the happy buddy stands in for every mood.
+  // Bell pepper, potato, sweet potato, okra, cucumber and zucchini have one drawing so far: the happy buddy stands in for every mood.
   'bell-pepper': {
     happy: require('../../assets/buddies/bell-pepper-happy.png'),
     thirsty: require('../../assets/buddies/bell-pepper-happy.png'),
@@ -78,6 +78,16 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     happy: require('../../assets/buddies/okra-happy.png'),
     thirsty: require('../../assets/buddies/okra-happy.png'),
     snoozing: require('../../assets/buddies/okra-happy.png'),
+  },
+  'cucumber': {
+    happy: require('../../assets/buddies/cucumber-happy.png'),
+    thirsty: require('../../assets/buddies/cucumber-happy.png'),
+    snoozing: require('../../assets/buddies/cucumber-happy.png'),
+  },
+  'zucchini': {
+    happy: require('../../assets/buddies/zucchini-happy.png'),
+    thirsty: require('../../assets/buddies/zucchini-happy.png'),
+    snoozing: require('../../assets/buddies/zucchini-happy.png'),
   },
   'pink-princess': {
     happy: require('../../assets/buddies/pink-princess-happy.png'),
