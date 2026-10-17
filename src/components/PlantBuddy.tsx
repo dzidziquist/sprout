@@ -34,6 +34,7 @@ const ART_FOR: Record<ArtId, Art> = {
   mint: 'calathea',
   tomato: 'tomato',
   pepper: 'pepper',
+  'bell-pepper': 'pepper',
   'spring-onion': 'onion',
 };
 

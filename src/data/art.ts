@@ -14,6 +14,7 @@ export const ART = {
   harvest: require('../../assets/art/moment-harvest.png'),
   roots: require('../../assets/art/moment-roots.png'),
   thanks: require('../../assets/art/celebrate-thanks.png'),
+  weekSaver: require('../../assets/art/week-saver.png'),
 } satisfies Record<string, ImageSourcePropType>;
 
 export type SeasonArt = 'season-grey' | 'season-dry-summer' | 'season-spring' | 'season-harmattan' | 'season-rains' | 'season-winter';

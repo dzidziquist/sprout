@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Sticker } from '@/components/ui';
+import { ART } from '@/data/art';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import { FREEZES_PER_MONTH, type StreakResult } from '@/engine/streak';
@@ -80,16 +81,12 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
             {Array.from({ length: FREEZES_PER_MONTH }, (_, i) => {
               const left = i < streak.freezesLeft;
               return (
-                <View
+                <Image
                   key={i}
-                  style={[
-                    styles.saver,
-                    { transform: [{ rotate: i % 2 ? '8deg' : '-8deg' }], marginLeft: i ? -6 : 0 },
-                    left ? { backgroundColor: c.sky, borderColor: c.line } : { borderColor: c.inkMuted, borderStyle: 'dashed', backgroundColor: c.card, opacity: 0.7 },
-                  ]}
-                >
-                  <Svg width={14} height={14} viewBox="0 0 24 24"><Path d={FREEZE} stroke={left ? c.onBright : c.inkMuted} strokeWidth={2.6} strokeLinecap="round" fill="none" /></Svg>
-                </View>
+                  source={ART.weekSaver}
+                  resizeMode="contain"
+                  style={[styles.saver, { transform: [{ rotate: i % 2 ? '8deg' : '-8deg' }], marginLeft: i ? -8 : 0 }, !left && { opacity: 0.25 }]}
+                />
               );
             })}
           </View>
@@ -119,7 +116,7 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
   savers: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 5, paddingLeft: 6, paddingRight: 10, borderRadius: 16, borderWidth: 2 },
   tokens: { flexDirection: 'row', alignItems: 'center' },
-  saver: { width: 28, height: 28, borderRadius: 9, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  saver: { width: 34, height: 34 },
   saverTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 15 },
   saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 10, lineHeight: 12 },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
