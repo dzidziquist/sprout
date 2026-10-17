@@ -9,6 +9,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { OTHER, SPECIES, SPECIES_LIST, getSpecies, isOtherId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { defaultSpot, type Spot } from '@/lib/spots';
 import { daysAgo, JOINED, WATERED, type JoinedId, type WateredId } from '@/lib/when';
 import { edibleGuide, type EdibleGuide } from '@/data/edibles';
@@ -362,7 +363,7 @@ export default function AddPlantScreen() {
   const lastWateredDays = WATERED.find((w) => w.id === watered)?.days ?? null;
   const guide = sp.edible && !isOther ? edibleGuide(speciesId) : undefined;
   const nowStage = guide ? (stage && guide.stages.includes(stage) ? stage : startStage(guide, origin)) : undefined;
-  const joinedLabel = origin === 'seed' ? 'When did you sow it?' : origin === 'scraps' ? 'When did you start it?' : 'When did it join the fam?';
+  const joinedLabel = origin === 'seed' ? 'Sown' : origin === 'scraps' ? 'Started' : 'Joined the fam';
   const save = () => {
     const plant = addPlant({
       name: name.trim() || suggestions[0],
@@ -488,52 +489,36 @@ export default function AddPlantScreen() {
       </View>
       <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
 
-      {guide && (
-        <>
-          <Label>How did it start?</Label>
-          <View style={styles.wrap}>
-            {EDIBLE_ORIGINS.filter((o) => !o.regrowOnly || guide.regrows).map((o) => (
-              <Pill
-                key={o.id}
-                on={origin === o.id}
-                bg={c.mint}
-                label={o.label}
-                onPress={() => {
-                  setOrigin(o.id);
-                  setStage(null);
-                }}
+      <Label>A little history</Label>
+      <DropdownGroup>
+        {guide && (
+          <>
+            <Dropdown
+              label="How it started"
+              value={origin}
+              tint={c.mint}
+              options={EDIBLE_ORIGINS.filter((o) => !o.regrowOnly || guide.regrows)}
+              onChange={(o) => {
+                setOrigin(o);
+                setStage(null);
+              }}
+            />
+            {origin === 'cutting' && parents.length > 0 && (
+              <Dropdown
+                label="Cut from"
+                value={parentId ?? null}
+                tint={c.lavender}
+                placeholder="Choose"
+                options={parents.map((p) => ({ id: p.id, label: p.name }))}
+                onChange={(id) => setParentId(id ?? undefined)}
               />
-            ))}
-          </View>
-          {origin === 'cutting' && parents.length > 0 && (
-            <View style={styles.wrap}>
-              {parents.map((p) => (
-                <Pill key={p.id} on={parentId === p.id} bg={c.lavender} label={`From ${p.name}`} onPress={() => setParentId(p.id)} />
-              ))}
-            </View>
-          )}
-          <Label>Where is it at now?</Label>
-          <View style={styles.wrap}>
-            {guide.stages.map((s) => (
-              <Pill key={s} on={nowStage === s} bg={c.butter} label={guide.info[s]?.label ?? s} onPress={() => setStage(s)} />
-            ))}
-          </View>
-        </>
-      )}
-
-      <Label>{joinedLabel}</Label>
-      <View style={styles.wrap}>
-        {JOINED.map((j) => (
-          <Pill key={j.id} on={joined === j.id} bg={c.lavender} label={j.label} onPress={() => setJoined(j.id)} />
-        ))}
-      </View>
-
-      <Label>{isReservoir(soil) ? 'When was it last topped up?' : 'When was it last watered?'}</Label>
-      <View style={styles.wrap}>
-        {WATERED.map((w) => (
-          <Pill key={w.id} on={watered === w.id} bg={c.ice} label={w.label} onPress={() => setWatered(w.id)} />
-        ))}
-      </View>
+            )}
+            <Dropdown label="Stage now" value={nowStage ?? null} tint={c.butter} options={guide.stages.map((s) => ({ id: s, label: guide.info[s]?.label ?? s }))} onChange={(s) => s && setStage(s)} />
+          </>
+        )}
+        <Dropdown label={joinedLabel} value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} />
+        <Dropdown label={isReservoir(soil) ? 'Last topped up' : 'Last watered'} value={watered} tint={c.ice} options={WATERED} onChange={setWatered} last />
+      </DropdownGroup>
       <Text style={[styles.note, { color: c.inkMuted }]}>
         {lastWateredDays === null ? 'Not sure? No problem: we’ll ask you to check its soil today.' : 'Its first check is planned from that watering.'}
       </Text>

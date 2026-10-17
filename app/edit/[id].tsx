@@ -13,6 +13,7 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ARCHIVE_COPY, confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
 import { GlassButton } from '@/components/GlassButton';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
@@ -237,29 +238,29 @@ export default function EditPlantScreen() {
         ))}
       </View>
 
-      <Label>Joined the fam</Label>
-      <View style={styles.wrap}>
-        {JOINED.map((j) => (
-          <Pill key={j.id} on={joined === j.id} bg={c.lavender} label={j.label} onPress={() => setJoined(j.id)} />
-        ))}
-      </View>
-
+      <Label>A little history</Label>
+      <DropdownGroup>
+        <Dropdown label="Joined the fam" value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} last={!!plant.rooting} />
+        {!plant.rooting && (
+          <Dropdown
+            label={isReservoir(soil) ? 'Last topped up' : 'Last watered'}
+            value={watered}
+            tint={c.ice}
+            placeholder="No change"
+            options={[{ id: null, label: 'No change' }, ...WATERED.filter((w) => w.days !== null)]}
+            onChange={setWatered}
+            last
+          />
+        )}
+      </DropdownGroup>
       {!plant.rooting && (
-        <>
-          <Label>{isReservoir(soil) ? 'Last topped up' : 'Last watered'}</Label>
-          <View style={styles.wrap}>
-            {WATERED.filter((w) => w.days !== null).map((w) => (
-              <Pill key={w.id} on={watered === w.id} bg={c.ice} label={w.label} onPress={() => setWatered(watered === w.id ? null : w.id)} />
-            ))}
-          </View>
-          <Text style={[styles.note, { color: c.inkMuted }]}>
-            {watered
-              ? 'Saving logs that watering and plans the next check from it.'
-              : lastWater
-                ? `Last logged ${new Date(lastWater).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. Pick one if you've watered since.`
-                : "Nothing logged yet. Pick one if you know."}
-          </Text>
-        </>
+        <Text style={[styles.note, { color: c.inkMuted }]}>
+          {watered
+            ? 'Saving logs that watering and plans the next check from it.'
+            : lastWater
+              ? `Last logged ${new Date(lastWater).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. Pick one if you've watered since.`
+              : "Nothing logged yet. Pick one if you know."}
+        </Text>
       )}
 
       <Label>How sunny is its spot?</Label>

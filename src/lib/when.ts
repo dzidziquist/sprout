@@ -1,6 +1,6 @@
 /*
  * "Roughly when" choices for dates people rarely know exactly: when a plant joined the fam and
- * when it was last watered. Chips instead of a date picker keep it quick and need no native module.
+ * when it was last watered. A short list instead of a date picker keeps it quick and needs no native module.
  */
 
 export interface WhenOption<Id extends string> {
