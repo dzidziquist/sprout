@@ -41,6 +41,17 @@ export const CUT: WhenOption<CutId>[] = [
   { id: 'months', label: '2+ months ago', days: 60 },
 ];
 
+/** When a plant was gifted away or lost, for ones that left before they were archived in the app. */
+export type GoneId = 'today' | 'week' | 'month' | 'months' | 'half' | 'year';
+export const GONE: WhenOption<GoneId>[] = [
+  { id: 'today', label: 'Today', days: 0 },
+  { id: 'week', label: 'Last week', days: 7 },
+  { id: 'month', label: 'Last month', days: 30 },
+  { id: 'months', label: 'A few months ago', days: 90 },
+  { id: 'half', label: 'About 6 months ago', days: 180 },
+  { id: 'year', label: 'Over a year ago', days: 400 },
+];
+
 /** The option nearest a date (for showing an existing value). */
 export function closestOption<Id extends string>(options: WhenOption<Id>[], iso: string, now = new Date()): Id {
   const days = (now.getTime() - new Date(iso).getTime()) / 86_400_000;

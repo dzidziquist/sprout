@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { closestJoined, closestOption, CUT, WATERED } from './when';
+import { closestJoined, closestOption, CUT, GONE, WATERED } from './when';
 
 const now = new Date('2026-10-17T12:00:00');
 const ago = (d: number) => new Date(now.getTime() - d * 86_400_000).toISOString();
@@ -10,6 +10,10 @@ describe('when', () => {
     expect(closestOption(CUT, ago(4), now)).toBe('few');
     expect(closestOption(CUT, ago(18), now)).toBe('weeks');
     expect(closestOption(CUT, ago(200), now)).toBe('months');
+  });
+
+  it('buckets when a plant left', () => {
+    expect(closestOption(GONE, ago(100), now)).toBe('months');
   });
 
   it('skips "not sure"', () => {

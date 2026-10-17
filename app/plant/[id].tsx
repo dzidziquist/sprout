@@ -12,6 +12,8 @@ import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { edibleGuide } from '@/data/edibles';
 import { feedingAdvice } from '@/engine/growPatch';
 import { growDay, stageAtPhoto } from '@/engine/photoDiary';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
+import { closestOption, daysAgo as daysBefore, GONE } from '@/lib/when';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles } from '@/components/GoldSparkles';
 import { usePlantActions } from '@/components/PlantMenu';
@@ -35,7 +37,8 @@ function daysAgo(iso: string | undefined, now: Date) {
   return d <= 0 ? 'Today' : d === 1 ? 'Yesterday' : `${d} days ago`;
 }
 
-const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const shortDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', ...(new Date(iso).getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) });
 
 function describe(e: CareEvent, plants: Plant[], reservoir: boolean): string {
   switch (e.type) {
@@ -81,7 +84,7 @@ export default function PlantDetail() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { plants, events, profile, addPhoto } = usePlantStore();
+  const { plants, events, profile, addPhoto, setArchivedAt } = usePlantStore();
   const plant = plants.find((p) => p.id === id);
   const actions = usePlantActions(plant);
   const [showPhoto, setShowPhoto] = useState(true);
@@ -186,6 +189,16 @@ export default function PlantDetail() {
                 ? `${plant.name} is growing somewhere new. Their story stays in your Offshoots.`
                 : `Thanks for the leaves, ${plant.name}. Every plant teaches us something, and their diary stays here.`}
             </Text>
+            <DropdownGroup>
+              <Dropdown
+                label={plant.archivedReason === 'gifted' ? 'Gifted' : 'Lost'}
+                value={closestOption(GONE, plant.archivedAt!)}
+                tint={plant.archivedReason === 'gifted' ? c.blush : c.cloud}
+                options={GONE}
+                onChange={(g) => setArchivedAt(plant.id, daysBefore(GONE.find((o) => o.id === g)?.days ?? 0))}
+                last
+              />
+            </DropdownGroup>
             <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
           </Sticker>
         )}

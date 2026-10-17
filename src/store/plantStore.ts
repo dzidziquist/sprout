@@ -92,6 +92,8 @@ interface PlantState {
   updatePlant: (plantId: string, patch: Partial<NewPlant>, now?: Date) => void;
   /** Plants are never hard-deleted from lineage: archived plants leave the round but stay in Offshoots. */
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
+  /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
+  setArchivedAt: (plantId: string, at: Date) => void;
   /** Hard delete (mistakes only). Children keep their lineage by pointing to the grandparent. */
   deletePlant: (plantId: string) => void;
   /** A rooting cutting is ready: pot it up and start normal checks. */
@@ -286,6 +288,24 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: at, archivedReason: reason } : p)),
           events: [...s.events, { id: uid(), plantId, type: 'archived', note: reason, at }],
         }));
+      },
+
+      setArchivedAt: (plantId, at) => {
+        set((s) => {
+          const plant = s.plants.find((p) => p.id === plantId);
+          if (!plant?.archivedAt) return s;
+          // Never before it joined the fam.
+          const iso = new Date(Math.max(at.getTime(), new Date(plant.acquiredAt).getTime())).toISOString();
+          const entry = [...s.events].reverse().find((e) => e.plantId === plantId && e.type === 'archived');
+          let events = s.events;
+          if (entry) {
+            // Re-insert in date order so the diary still reads oldest to newest.
+            const rest = s.events.filter((e) => e !== entry);
+            const i = rest.findIndex((e) => e.at > iso);
+            events = i < 0 ? [...rest, { ...entry, at: iso }] : [...rest.slice(0, i), { ...entry, at: iso }, ...rest.slice(i)];
+          }
+          return { events, plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: iso } : p)) };
+        });
       },
 
       deletePlant: (plantId) => {

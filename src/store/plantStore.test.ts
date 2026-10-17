@@ -108,6 +108,22 @@ describe('plant store', () => {
     expect(usePlantStore.getState().events.find((e) => e.type === 'cutting')?.at).toBe(taken.toISOString());
   });
 
+  it('moves the day a plant was gifted, never before it joined', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Gift', acquiredAt: new Date(now.getTime() - 200 * 86400000).toISOString() }, now);
+    s.logCheck(p.id, 'damp', new Date(now.getTime() - 120 * 86400000));
+    s.archivePlant(p.id, 'gifted', now);
+    usePlantStore.getState().setArchivedAt(p.id, new Date(now.getTime() - 90 * 86400000));
+    const st = usePlantStore.getState();
+    expect(st.plants[0].archivedAt).toBe(new Date(now.getTime() - 90 * 86400000).toISOString());
+    const mine = st.events.filter((e) => e.plantId === p.id);
+    expect(mine[mine.length - 1].type).toBe('archived');
+    usePlantStore.getState().setArchivedAt(p.id, new Date(now.getTime() - 900 * 86400000));
+    expect(usePlantStore.getState().plants[0].archivedAt).toBe(new Date(now.getTime() - 200 * 86400000).toISOString());
+    const order = usePlantStore.getState().events.filter((e) => e.plantId === p.id).map((e) => e.type);
+    expect(order.indexOf('archived')).toBeLessThan(order.indexOf('check'));
+  });
+
   it('schedules "other" plants by their care type', () => {
     const s = usePlantStore.getState();
     const cactus = s.addPlant({ ...base, speciesId: 'other-succulent', custom: { commonName: 'Bunny ear' }, soil: 'gritty', name: 'Bun' }, now, { firstCheck: 'scheduled' });
