@@ -259,6 +259,46 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/roselle-happy.png'),
     snoozing: require('../../assets/buddies/roselle-happy.png'),
   },
+  'dill': {
+    happy: require('../../assets/buddies/dill-happy.png'),
+    thirsty: require('../../assets/buddies/dill-happy.png'),
+    snoozing: require('../../assets/buddies/dill-happy.png'),
+  },
+  'cilantro': {
+    happy: require('../../assets/buddies/cilantro-happy.png'),
+    thirsty: require('../../assets/buddies/cilantro-happy.png'),
+    snoozing: require('../../assets/buddies/cilantro-happy.png'),
+  },
+  'parsley': {
+    happy: require('../../assets/buddies/parsley-happy.png'),
+    thirsty: require('../../assets/buddies/parsley-happy.png'),
+    snoozing: require('../../assets/buddies/parsley-happy.png'),
+  },
+  'bay-laurel': {
+    happy: require('../../assets/buddies/bay-laurel-happy.png'),
+    thirsty: require('../../assets/buddies/bay-laurel-happy.png'),
+    snoozing: require('../../assets/buddies/bay-laurel-happy.png'),
+  },
+  'chives': {
+    happy: require('../../assets/buddies/chives-happy.png'),
+    thirsty: require('../../assets/buddies/chives-happy.png'),
+    snoozing: require('../../assets/buddies/chives-happy.png'),
+  },
+  'tarragon': {
+    happy: require('../../assets/buddies/tarragon-happy.png'),
+    thirsty: require('../../assets/buddies/tarragon-happy.png'),
+    snoozing: require('../../assets/buddies/tarragon-happy.png'),
+  },
+  'lavender': {
+    happy: require('../../assets/buddies/lavender-happy.png'),
+    thirsty: require('../../assets/buddies/lavender-happy.png'),
+    snoozing: require('../../assets/buddies/lavender-happy.png'),
+  },
+  'lemon-balm': {
+    happy: require('../../assets/buddies/lemon-balm-happy.png'),
+    thirsty: require('../../assets/buddies/lemon-balm-happy.png'),
+    snoozing: require('../../assets/buddies/lemon-balm-happy.png'),
+  },
   'pink-princess': {
     happy: require('../../assets/buddies/pink-princess-happy.png'),
     thirsty: require('../../assets/buddies/pink-princess-thirsty.png'),
