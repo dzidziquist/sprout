@@ -36,7 +36,7 @@ export function MeBuddy() {
       <Pressable onPress={bounce} accessibilityRole="button" accessibilityLabel={party ? 'Your party buddy. Tap to make it hop' : 'Your buddy. Tap to make it hop'}>
         <Animated.View style={{ transform: [{ translateY: lift }, { rotate: tilt }] }}>
           {party ? (
-            <Image source={require('../../assets/art/buddy-party.png')} style={styles.buddy} resizeMode="contain" />
+            <Image source={require('../../assets/art/reward-party-buddy.png')} style={styles.buddy} resizeMode="contain" />
           ) : (
             <PlantBuddy speciesId="pothos" size={86} />
           )}

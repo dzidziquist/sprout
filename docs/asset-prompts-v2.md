@@ -1,5 +1,7 @@
 # PlantFam: production asset prompts (v2, one asset per image)
 
+Current production paths and milestone names are documented in [`assets/README.md`](../assets/README.md). The filenames below describe the original delivery, preserved in `assets/incoming/PlantFam/`; use the production names when wiring app screens.
+
 These prompts are based on the style ChatGPT already nailed in `design/asset-concepts/chatgpt-sheet-1.png` and `chatgpt-sheet-2.png`. Use this file for **final, app-ready assets**. The v1 file (`asset-prompts.md`) produced the concept sheets.
 
 ---
