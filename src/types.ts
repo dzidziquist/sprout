@@ -92,7 +92,6 @@ export type ArtId =
   | 'cucumber'
   | 'zucchini'
   | 'lettuce'
-  | 'heartleaf'
   | 'oregano'
   | 'sage'
   | 'lemon-balm'
@@ -229,6 +228,8 @@ export type CareEventType =
   | 'refresh'
   /** Given a stake, cage or trellis. */
   | 'staked'
+  /** A plant doctor result the person saved. `note` holds what they saw and the likely cause. */
+  | 'diagnosis'
   | 'archived';
 
 export interface CareEvent {

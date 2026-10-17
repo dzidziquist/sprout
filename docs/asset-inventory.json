@@ -1,0 +1,4252 @@
+[
+  {
+    "path": "assets/art/away-trip.png",
+    "width": 960,
+    "height": 603,
+    "bytes": 130248,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2d72b4bcc38b44fa26ec981cc7e64eb3a3d232d5e3febe3ec3cc999940f2c9ba",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-check-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 58674,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b477cac316556b20393fed7eb40895e27cc7a72eeec1aaf3f994a2a2508e4214",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-check.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 67701,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "be4f8188e90122f869f929f6e626d1516c88700a64cc8534d6f5e859b4dff9fa",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-cutting-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75835,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "1cfb57a6021f65151bd487c65bf5abedbdd76e8d8d89fa24d1fc273fccdf3da5",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-cutting.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 96720,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2cb101083c4a9a956447e8eb853c6fca300d6f69bb125badfdeca06baa71453b",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-harvest-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 56587,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d2f1f64f128b0e14d7179b8ff69012ec04c92bbe702c23cac58a50317bcc0320",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-harvest.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 67219,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d336b910e015f8d22bebed150ce5d735160068429d87ed612178135ef4540414",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-photo-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 45269,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "13a5b1583def020f1c1bab6017ab21d24ea559eff0ba1e38d82578f859eef1f2",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-photo.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 78881,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a5017e999ea5eddf6354c883606449ff97469eba25a87ac1ef79148be6fadcb7",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-roots-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83591,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a899af6b5a4794520a896fce4cd8b89bcb71f4acb19d0916809bcb61126b6aa6",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-roots.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 99056,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d611d2781c40605ac4b8c5d56852c78d4ee52ef6d9448f9e6729194a6d226c3e",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-skip-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 59070,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "eb8eb60c2519df5e4728c03c458ef9c949fd4cad1a359d4e16614aa4b7e3edd0",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-first-skip.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 79966,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "16e733976479b62ab689e7e34d49267a449d79ae31ac9bde9c4bc8b3a9e4f2ae",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-five-plant-fam-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 65394,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f6a6fee106f4f73237e79b5ea9c999e9b84c4dac2c84f5b88a7433d2b8836d00",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-five-plant-fam.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 126368,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d2b2a0f2881fb88e7586b3311c3f788a85feecdca89f87365e2d405b526a97a8",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-four-week-streak-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 40158,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0fa87a8bc1cbbc6d284dfaffccde8aeeb154b77adc683b0477a88a8309edee57",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-four-week-streak.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 55212,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "48a1ad1a6a271d7c136eb0aaa8a9213bc4bca7eabfa83cbb92d6b7d2ed03b34a",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-generous-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 45531,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "165aed831dd8cd8817498c3e4f2f1dacea41f42a1df425acada89b2ccc51966a",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-generous.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 65064,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "fbb2b589298a4f362bb44908207d1858a01a46910dd11f3d0f15451576777152",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-grandma-plant-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 54492,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "fa4cbf5167879ac682a509f2cd9c49288dfe69b9327f9615adb7084c126ec25f",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-grandma-plant.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 97512,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "dabf96cb69774e4caaf6872b42e2d5556cb6c110b66691e6ba9fd591961f6f69",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-medal.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 92892,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7190cf034b0da8675ceae032c45829e48de84e57e3655f4cb6717a5fba4b0749",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-propagator-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 57939,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e69f8409a4c376fc0fcf09bd155789f93aa27e46669ea5fc35cc69f95ec303d0",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-propagator.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 68788,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a475bbc7146114dc6d0bf6fe33714c501c6c1441bcdb29905dc2fda0040e4946",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-survived-dry-season-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 66495,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b848ea1da4b377130fa6600afec9db26c36c28c8da3ecbe253ebfe3ef63949d5",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-survived-dry-season.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 105393,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "76faeb8b1448f05287d6d9bf9ac49bfcc258426f54de088bfc91f4d6d51ca170",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-survived-grey-season-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 56047,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c73e18f1529a611ee1656f21241f665ec18aa5d0c14b26f409d071105ff87f80",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-survived-grey-season.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95800,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6f4f0af8341709bdbf114df8bc34058bd51432206b6dae1fb758b5a7db6ad215",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-survived-winter-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 67427,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b5111658aa2a2c2c97deaa5220684b88574c2a88f3bb82bc2a05d0ebe823a009",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-survived-winter.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 93152,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c11534c25f038fa3c3b4a62f9989c355dcb93301f2160cd4a28b662e438bfce8",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-ten-skips-locked.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62595,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c97553c4080c65ab7b7308081c2bfd58933322cdd7a1fdfcadd460f0af18c462",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/badge-ten-skips.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74326,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "897b9575d38ddd7f6205257b5a745cc12749b148d8c12a943e6d4100b88fc404",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/celebrate-thanks.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 108989,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "251c4cf8d55e4ff755a15df22636adce4bfe7eb3f33424adb55b63c2b9a7b574",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/empty-caught-up.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 109326,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e57f116215160b31c0e079d2c1f3740b2051adfbec6f7451818856705888b143",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/empty-jungle.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 36226,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "1cdd19ac8cafeb5c1e0db64054dff8217896333e484a86cfe847dd342aa54472",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/error-offline.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75128,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "3f4928beb1ade4885e1c619f4bd80e5ef7d122a196e14e8667e40809861be285",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/logo-sticker.png",
+    "width": 1024,
+    "height": 683,
+    "bytes": 80685,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2f15ec6a0409e7b0d3031a72f9ce3ec3ebbf6ef41ceecc206168b6d3bc03481e",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/memorial.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 45832,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "dff16807501b0f00ba5680feefe4269a1e84998997606a50ce1c110617a5a53f",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/moment-harvest.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 109388,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4aa4928811480e4fdc5431b200bb98cf92ba500c77e97fda4819010ae8d388a5",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/moment-new-leaf.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 146834,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2f50eebd9a65fbc254112221a5d9a217dfcd42f40feb0d779358c67544ab24d0",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/moment-roots.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80991,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "93799f26f4eada460d303ab7f81583e6d67c2748f77c3daff81968489955acb8",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/moment-smart-skip.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 133021,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "3ef6f44d929e8849183e936ed939d7b10419b9d4cbd1fa474a0fc910c880ff61",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/onboarding-grow-cuttings.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 154480,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2753416f2760042046d34dbb61c31902b5db739b6b13a5b1cb794bbf2261d723",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/onboarding-grow-edibles.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 181284,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "15e87884f363debb9e03884363daea24a10acd53e94d429bf6e8f1085a70c6db",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/onboarding-grow-houseplants.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 150300,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "fbd3e73093b65c63189782d3687ff1290862341e5d7399a5b3a232f6ddce5822",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/onboarding-welcome.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 98369,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c9d65ffdd3670ac1b938ef3c15227fc17ec4704a05fca208de2c2e6aebced997",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/reward-party-buddy.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 70485,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9257aacbe0ad0dab7162e4ded957e2222e4bb06d515b543e9769f39c0231a9af",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/season-dry-summer.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 109459,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "870200567f71daf7e9e95322d8663bc6b59a5beb6d410504e2b76f9c619f70ee",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/season-grey.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 121161,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e53819f26155ea05df8d03b389d936eb3fede35687f0499827dc4457812a73b4",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/season-harmattan.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 98579,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "fdd1cbf330c63d702111fe6814628e5b66312833f1be70e030df03c10c9d7829",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/season-rains.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 102749,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "58a85a0215df42974004665cd7398e98c790a3958b463b09cc3442ecaa7b1781",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/season-spring.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 89821,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7459ff0f461997a35897b9a2628b76f5effe926a9c8e68b57509725be11fab13",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/season-winter.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 111443,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "096eed10caf5d12506fd03feac0c7399076f2eed7c243228f77d6a46059426e0",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/splash.png",
+    "width": 768,
+    "height": 768,
+    "bytes": 61858,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7933ac0467eaf44e0f30d6e97d1802bd585db15306247a94ac91256d67182e39",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/state-away-mode.png",
+    "width": 1024,
+    "height": 683,
+    "bytes": 146809,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7579767abd77c2d1c534058f9246ae012d819c7f5dfc9fccde8f0c5c917b0707",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/week-saver.png",
+    "width": 192,
+    "height": 192,
+    "bytes": 13762,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f745e5bbce7827b3bdab41e51e2fe1c74dade2ece02a7fa17967e31e0ea58dfc",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/african-violet-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76907,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "215a4897bccd7b7626b3f9af19d06fda446b4d910eeff079dcb34b4fb702f363",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/african-violet-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75625,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7d3454d6717c35a98b13fc9fa1139da71b4ddcc5266a1b9842b59a12e460233f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/african-violet-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 72327,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "79d29b17c7c0ad17833a8e391d5f42ce10437b791546a755a3d5589800b4bd99",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/aglaonema-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 106507,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "94f945177945a80a7d4882f63b6d957c2e4bb4bf2fef797612314ea48c47ad37",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/aglaonema-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 105568,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "80d65c75fd904069309971db1b1c2aad508d950a5736e7eed118722627511d13",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/aglaonema-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 102211,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "abbc2e19e18d9bdac70eea2aee0b901ad6b732b9fd636cb53286ed87900665c3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/alocasia-polly-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 68131,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5e8c4b0c7ae39b267e4eb5ccfd4eea02536594b3b5ac7721ff85fa854f54eeae",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/alocasia-polly-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 56608,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4a5b0dd9c2cc09aca925d92afa33c71b4231f34ed42d5f7aa1681df977344b8c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/alocasia-polly-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 63387,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ee739b6a1fc17b267b66b5e9a325a903b8cc4a5b6c89e4967cb067df17fdd4ef",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/aloe-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 53136,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b47441ff86558d5cb2979084c15d3074bdf082bfb31108af4eba1a19c1ce52f1",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/aloe-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 45257,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "1c32d6889d8682e4da66dfeb57bf94f9377088f0e889606f6e61f9f49b4750e0",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/aloe-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 45883,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0c0905efe99097c1ba76746195678a6dba9cb469568d51a957d825f53411bbe3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/amaranth-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 109124,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0d75d94f2a35dba1213ba020dd731b9db22bc93b9948274c6e015b2e7bf233ae",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/anthurium-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76262,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7a8f011d137ed4518f75f54afa29f470dd4e89d73000ee7d889bb3077ce2d7d4",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/anthurium-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74917,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b64cd0be172199fe4ccf3ac2df15f9f0046acb540def8999f7a0db38ceb1ee3d",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/anthurium-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80371,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d42228f03c98bfdd33c71fb9cd64da6f002e6ef5150751ca2b32bad13a21ffe4",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/arugula-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 96133,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "458086aab2350415015b3cf2442a6c4507e360bd78780737b584b1ff73324c47",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/ayoyo-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 110834,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d7ddd28e09f49bcb5d02d91dcd749085f9dff3be02cf384bf08d20806643ed86",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/basil-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 82325,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "636d22b3f703bce252eeff3153477fdee213b60ca769e8d54b9714dcceaf6c2a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/basil-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74919,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5cf90343c20d9cf0bb77746a3ac96693a523e6099fea7d484d23d1d2fdf54b3e",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/basil-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74385,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "1c5023895075b1f6284b49161657b2b3c324b0604a4f4d1f024f909e16b9baa3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bay-laurel-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 73401,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "19c2b58d4e85e6331a9ed9f6bedf458ccf4b8d7b80dfe67e46ff53b27ba92ffd",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bay-laurel-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80765,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9be821acd3dce03faba2d3673a51b22c9f3379970af81f881500a84e4ab2020c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bay-laurel-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 79230,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5c82b7a43735065212eac36d6a14e3c60505e482b1b455eac7888902af01d593",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/begonia-maculata-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 92303,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2aeb89ecdcc899c684e75407565677b45c87f3686109e2aee95e01c472226d87",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/begonia-maculata-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 88651,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d88068924dc10829250128c50f18ad6f7c2a08698408ea1d0bb42c094d499b89",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/begonia-maculata-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 93944,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "758d4b8bb936cc1a913f06c3b95028a41dd68ae97a53aca2c4b941cc93b3e896",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bell-pepper-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 73959,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "78ae55ebbeafaf319cabb759b41eb567d3df9b71f78d37a0ff01fd9ab596056b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bell-pepper-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74786,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "30d417ade5a4bd6305bccb153c276e12a8df5fd68eb27076c3e2f53f4b34e2bd",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bell-pepper-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80810,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5b65ec05112c57e56a3e3693a33d638bf55bff6d1bc066a321771bab6cbf360e",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bird-of-paradise-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 85556,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2f71e26474db34cfaf58195ac14e8bacff764eafc12f54a09b9aebbcef8ba21e",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bird-of-paradise-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 69371,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7e6cff9e132a73761d29213ab39aa21677b39d4b9e7aa842376e504cce729e39",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bird-of-paradise-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 77711,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "41f72639515f70695e603654c2207e2fdb8af08e27798edb4356d7693c9783be",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/blueberry-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 89015,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "443a76e03fa5e7a448e55ae3c4a667f9b450b8de60fd48b32c626179164c5719",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/blueberry-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 86552,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8eec8199a562bc596accc6cb5151184cca8f3f8a3eb2f922cd6320dca4a3bafc",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/blueberry-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87560,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "07260b9ee2eec9451290e78bac6178edfd0dba6ae878789f391f405048e447b5",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bok-choy-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95244,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e40d333dfcf803222cd5bcdc8e02a9bbfc14ba4aca1ab4e3d5e0babcb24a8f55",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/boston-fern-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 114812,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0202c93ede3bfb95fbfd345abdb58a9275d33d73b85bbf335ba2dadad48644f9",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/boston-fern-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 114175,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "95cbfd04bf1d92c0c5424f5980ad470d7b6e9fcfffa27711f7a26d746f0a6bad",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/boston-fern-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 99358,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "63dae12ec2f11123044c006982e05d1b8fff974e30983133e46610dcfa0d0844",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bush-bean-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76249,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "51c1b9125cb73f3ebf4d51e1d480db055c699e4abd71c1c88377a7105ac99349",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bush-bean-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 68421,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "340be0fa0d5d49b866f95554960da4c18a6ebb901f0865560f3bae13555f9c30",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/bush-bean-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 72036,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "adb5efad2ba3e01d814b2c8ce9622539595dddc2ae55f8a53fba59515a076f2f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/calathea-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 81706,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "62dbba8f7fa173743752efb7d53194d43d44899241cd160ac02ae2e1fc195f5f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/calathea-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 66623,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6cac894907674104dbb2b8d0a1ac1a87304770822b1525e65b28d2f3a2a245bf",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/calathea-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 67078,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "feb33ed70059956561e8b16215eaa510b584d5529b0c270a10cd24ef9b70675a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cape-gooseberry-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 101596,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f075b4c528b5776787e07cebe19cd57393805397ce865e7b971b5d02107d9d4c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/carrot-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 102173,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "bc5fff526e4954c4200c224f29967d4fd59e3e94f3491e8c7a152f3be3150f57",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/carrot-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 96323,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d6940bdacb088da867f2b6f34c53d2e5df458bc7be0cdd85fc13b5588c5f5da2",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/carrot-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83120,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b68a43fcb8803fd237b4c1a1175b4a73b083227ea3ffd79d91af3273c88d5cc5",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/chard-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 88157,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a2fd00ce26751d2632f0693eb4a201302cd7a35f3f3e20dc4c8ad5ae6cbffb45",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/chard-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87833,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "88dce119d7aecfed9e45752127f356c34927f4a775012b3342a69b17e44f7dfd",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/chard-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87208,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a89cd8903666dbd9a13c78b8dfb8b7d2ef72494b356119cca784c510a67101c3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/chives-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 81142,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "39bd9cbc32bb5d113f04ec987a0e52baa2142b54f012ce37bbc530da62828d77",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/chives-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80474,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "721777fb941e8d728bc5fc79b0264f71b2f77767798dbd0823c6c28925d0ff6f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/chives-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74973,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2704dcb80c0b11e6544135b0446d47674c4b479ae68c5374f82b9a65bbf4e873",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/christmas-cactus-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 98815,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d8046b811f8596c8843b0ed89357692598006abe475b3cc814363886118496ea",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/christmas-cactus-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 96877,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6b4f43971dec2e379d663ab7eb3ad1947700b68501efe5acd258f558d9f8625b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/christmas-cactus-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 89612,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ccbf921ab0a8db50507176d978faa219939ce3b0e2d2e59261e4a92913d04f36",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cilantro-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 88718,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "97ba06af7d82932796909928459b59658d0fec53a23eb5628ed6964c964ec76d",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cilantro-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 88568,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "61997f869940921a5cd064d32105f444ab15a316b2a661099f4b330214c4ed30",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cilantro-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 85025,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "686b2b2283963e309fb2e2a00e8c2189d59e32ae0d86a263088bbe51dd9e190a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/common-fig-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 107525,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ca89b1aae0ee53f8189a6b666bf07c96bb3f9b341295a29cbcbe45bf5e6a6f75",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/croton-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 101257,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b9b200224c5ff029cc0fff43b60bb249dd481ee957281bb7a3a2c812475f7b56",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/croton-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 99802,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ddc84e4fb6553f5d95e1758feb206d6f1819bddd301285c30d6fea3c5cf003f4",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/croton-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 96096,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "72f47305403d5706f7f7b664a77449fe38ae76f703c482b60075c0150d8805d9",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cucumber-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80646,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f4896b46dd3b6754bba4fa8965429a61f1df472e5f6681f0665e92a2a82ac9ea",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cucumber-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74906,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f8184a98d86c72f6b9b433b98a10f0e02d82076f31d1736f69bb2b172dfb5027",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cucumber-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 77354,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c3ff7c56d70080bee192fdbe7eb1e876d0360379ad94967cf7ba96fcbd86b220",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cutting-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 73846,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4eec38acdbb8d6c9b714640063819aa9dfbc5c7a56bf4c54ea94b8efe0a850fe",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cutting-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 77767,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8630cb7086599eb2cd6b2bc33f0125ab0850b346077b558dc58c24abd2cc2cfa",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/cutting-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75888,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "00e531988bba3359f13ca3ab7208d41423b16d74f0d2a236860a3b9ddf506a96",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/dill-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 143374,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "10b183deecaeb1779c6071d4f5201c96e164472d5ac4efdb511ed6f9b46b2559",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/dracaena-marginata-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 79295,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b19e218b529c29f6674db6b96361e32819efd93f25643e03d07e3f14bdac05c0",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/dracaena-marginata-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75926,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9b2ef04d94ea0d6445ad45c71a25c542c2d47512042fe065d1e4b6096c11f1ba",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/dracaena-marginata-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75479,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "24dfbf2b57bdb8e7ce04b5ce7e56d8ca21b0d5b7a5309216fb238c2914acefb3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/echeveria-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62336,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "04c72c81d5220e082d67e4c08b0c75a91a8439764de705b5922a55ac14efba88",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/echeveria-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 61248,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d60f92b07ca50f1b8043d2d33a003fafb64a99f41aa5359ffa6dc84ec43a0c57",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/echeveria-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62984,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "795277271b4b331d04d2e1080a8ccc78dbad937a2247242f0ec699ec124b3305",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/eggplant-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74964,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a1839710b9f46c17c70760f50d0e1d3bce17eeb13ef7f97f7bbf99079a75d947",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/eggplant-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 96837,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c9d302b64cc9c54042771688ffa62aec77104eb19ea2c0a21f3ad64e2a2ba9c5",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/english-ivy-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 91415,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a01b2188911a7a4d1f682c29bd8317f19dcb2042b2500fb82d145d546c92d406",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/english-ivy-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87281,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a90bfd30f390d84cf078f0a55b5a3356f98b8d237c3a609a75a95c6e3ebcac4b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/english-ivy-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 89889,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7b00d4eef799dfb3ad8fb3198368ae14dd30177d184a8b1361246882c3f46d47",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/fava-bean-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 94971,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "39f0991e5ace227b688cd66d08c9e103eede2fbfd843ee060951d4da5e64826c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/fig-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 77354,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "03b8894bef0f9e40d8f287c87bf3afd2c8b2aa7a87c6aecfb3bc03d22774b468",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/fig-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 63203,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f9e4715f73e577a2dca1601f89a12ca3bc093767ce292934d2dc1a29d91cdab0",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/fig-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 65991,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "3aae29b3307ea01b102cefb966e349da6ab31c0d0e143c5941867b403a1f3ba1",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/garden-egg-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87384,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "58886b8e719ed25c80766ca79c613071765f42e4c093660d07f4f6ab724e4b96",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/garden-egg-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 109927,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "52fa47b562aa1a5141caae75fad70175fb0ea3f9dff2c18439ff6053f4f22d4f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/garlic-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 51239,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b7abf41f621626080d17909a495ad8119e3deda233eab3e8533f71209eb11ee9",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/garlic-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 50616,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "581fc9a0d13096e77d99b613b99eeb58b43e29aae220f98727cef488ac3fa55a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/garlic-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 48669,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d8d5ac73e63ff3802ac0bc1dc5c97af30fac01241bb98fb2278fc7f39474d927",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/ginger-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 73387,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e64d4aa225f0dd175a42ea76e9a7159862336e7e322bb8afca288041d4b87d2f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/hoya-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 72155,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "81f126283c153b9c0841fcba72287bc89895c942a6e198031445a76c3bfda7b8",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/hoya-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 60510,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5814a7adb954c438ac59e7682635d1a51e2ee4c1fbc75c468917ce17db7942e6",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/hoya-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 60039,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e8c8a034229c386783d47c51774153d4ad30545055393c8bd029e6f835fc9fed",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/jade-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 78093,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "295c544a19ee73f1f4f09c4073a58d206c18bee55f9afaad16f2df1475d7bccc",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/jade-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76414,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0e4738dce4dd793c2020724d466aa42de683fba199b7b3530f7bb8908237b267",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/jade-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 82220,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "81f05866c6dab7113a1a042d2f32852044dd9a08f2830528911e3d23a04d4de8",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/kale-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 94386,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "056f423e079060450e7d1a027f8296a57e98741a67a354248f3d51b3d67c3747",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/kale-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 91564,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ff1667380c7ab4bd3a7d91fbe125dd6637a092950f6506fc7af82d42e0512eed",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/kale-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 86769,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e908b279fabd26342c5456b74015287f5e753164bf346a0c1ad03445cd131edf",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/kontomire-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 103317,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a4ebf803fb9ee7e5cec1c8eb9e2a384720784fb4b940f31e85b77e57f214e2b7",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lavender-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95611,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e597725fb7937a99144f232a2710ba471de48fe3dcf20b308bc0c3458360ecfd",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lavender-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 93175,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ff130dc66bee9258bc4ac46ecc8c4a797cd7555f93f95d668f5befa16af899d3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lavender-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95835,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9631388cfebc1ca04af0476f1258c936ff072c3db4f9343f2eafddadab2e1ccc",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/leek-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87687,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "44642d4db2b50ed0ace448f5298b2b7ea66b35837adc6a0430b2e2651016f57a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lemon-balm-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 85342,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9e978965bacf972897b9e94c99912ff424c2540af0ef687ecc2264281b45f616",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lemon-balm-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80349,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "094d34b9434557e2a6824f603985e1b5804b5f0ec549faa936a4c15c0cd25352",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lemon-balm-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 78616,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6049b970ff3f8b0b1fc33ac83ff1275900308e1624648c511d6d3bf666b1e5c1",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lettuce-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 86093,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a870bf4e6b970ad4b9390d7e2dcbd4fdd56e963822ad681b5c88491ed1ac6836",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lettuce-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 82495,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7d5f067d3ce809d5ebc5a2528ad1eca097818dd38797d33bd7cfc50fd110bb07",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/lettuce-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 82957,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "08a57f61a8a74b5850688bbba29d0bc723565e540df308067e8bd7b428393f41",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/maranta-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 101988,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0b607ebead684386b8d782be68381c48a3d4de2b57d554d74335170d13a96618",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/maranta-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 81655,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d0a4fc46e2baee928dcf5cd939ed202f1aca066fd849530bf9893127343a5a69",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/maranta-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 90623,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0eb1f3ac70d76d3a09680e73045a4fdca514051180939afc1c61568b68d834f4",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/meyer-lemon-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75473,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "051ee6704703472e34434d1345f707c032f34f8d96531dea6c16b7782669aaf0",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/meyer-lemon-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75486,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "49551a7c2f68a6242196487ed601d044f115cc49356faace3161cff40c63551f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/meyer-lemon-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 73269,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2d1d700e4c1d892a65dfaf99f24a5df71eb2d9a8354310524e752d24e867c614",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/microgreens-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 100009,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "cff0ad28adf5f19d3213c5228cf6422f1382f1bc858b3286a0ba05b6b58f8a2f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/mint-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87560,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "57be19293d7c5427cda7d5d6757f18eaa34fef7d6bfcf3143f9a15f4b18fea49",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/mint-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 78806,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "fce81ebe1a92cc91421cbed3a68029a268edce9f57f2f04b008e0215fa9d0377",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/mint-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76270,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e1d34db07ac0d571d2b53ddcc9831c4da0e40132870b3ec0c90bdb928cdd2613",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/monstera-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83186,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e6660b0eac53e3c61908212087bc7db648547af2ae82c9fbab53e7d098fb7263",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/monstera-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75928,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "3b7c45ac2702d8148bd8dfd73ff6293b6f6e70f256bfbe2063c116cbdb7e0597",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/monstera-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 77752,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "42535334a2928a514c2ccc169da9b88e7b5655aa72d199b980689cf81fe596bb",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/mustard-greens-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 109109,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "cbfc841cc45bfc20675e97dcb170c2789789dda9de03f69d9e908ae7299d600b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/okra-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 85001,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "defd0e77803631bc7eee163175641642caecdfe647d70716e4d7c67bcc113117",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/okra-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87982,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8251cafcf9b08a62a6f0350ca678518ce6eb5ae1029a2cf0846efca6ed3e6322",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/okra-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 90686,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "251c4468f4140878669b16469e81c04bdbd6cf3bb9143c1dd706e0cfcd5469d2",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/oregano-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 108975,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e4910f72dbace68e35b6a0204e2d4ec543f01a8f564897d503fe7b7ab65af522",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/parlor-palm-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 84740,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "86865f08bb08ae93524e9ca859b197c9bee2291448b6ca66b981093f625cac10",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/parlor-palm-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80489,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "29ce8874a7522b985564182b567147839426c12720f0eafea38ac2c0ba7a4b04",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/parlor-palm-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 86638,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "378eeaeafc5d7271a1b4fe22e6486ed138f828ba516607249e613e8c309e9b23",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/parsley-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 97544,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ecfb5757a55e40375bef0ef9d0a46c5ae067e572a2751c2b904d2ec87f7fe42c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/parsley-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95034,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d145e3dbb5df50aa61007eaa79d9dc8db1eed1aeaf60e7250869f6c87491c1f4",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/parsley-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 90008,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9c392b13b3c614efab23561acd0938a319193fa03a9ef2e0a129a1db99c0e726",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/passion-fruit-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 112932,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "475eaa2f22a69e97d157a974154b931715e1ceb3e8817b3dbfc97cdf59ced47e",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pea-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 87983,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d55e91c7390e6212e27283cf6e854c217807c1f9c1ace08b6df917baf67f87ef",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pea-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 86085,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0cebd9ecc815df06c13c05e26b20ea9842b944020be144e6f6ef10f6ed985860",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pea-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 79155,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "dece5d68a33868072409218b63beeb8cba3bc172e7f83180c77b0b07c580fbc6",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/peace-lily-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62236,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7260df91df07cd62bf7c6eaa6a9c30e028d739406818da22acfba18edd36fd66",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/peace-lily-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 51308,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4863649e7b4057cfe22c584efb2242c868458d1e1eaf7295a23d4ad9248091af",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/peace-lily-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 52678,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5c312434cb0a598228002b214d37bd5ef0b486bbef003868e3a039e7cb9121e8",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pepper-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83073,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8f68f15b5208aaa9631e9adc7246ebb5b8377ba83e1077e70511c4ac7c200b90",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pepper-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 69533,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "000096b34687195be07a9e032b571d937f2f8eb1e1745a1d73a7b529103e5e71",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pepper-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 81444,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "508434fd9eef58ee3f9bfe7656ba0ee66753595882aa81cf7c0012756caf1dcd",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/phalaenopsis-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62592,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "db5a40cd862569d6c52f5038f2c11091d864baae8738dc1486b0486e78cfce98",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/phalaenopsis-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62660,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9d6c0db175b8c5586d7af6011db0aad7f25793c0ca201d7c0108e415d7553440",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/phalaenopsis-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 61836,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c92809d2674bd3930be6b9054d7044548159eee906b20841ed8d8c0e799087fd",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/philodendron-brasil-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 94377,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "678c0a1717023e002a11e3aecf2b986557cda89c619351e81bdb602f26356848",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/philodendron-brasil-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 91905,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ad3ba3bab44a6b8ff66b2faa244f4d25820b03d72e30d832c92e1c094f76838b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/philodendron-brasil-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 86308,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6dcb39dcf054218fb4e1ecfa552b85c26720a8d95335691af91662942eb6560b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/philodendron-heartleaf-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83558,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0997a86525212bb97bc37ee1f163b621f20a162f0caddd04394d638fd5a1dc35",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/philodendron-heartleaf-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 88331,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2ae1c8ed10ea1dc242846f5a921a3777b1cc0637aa4dfd4f70ff628baa7ad5df",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/philodendron-heartleaf-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 81756,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "41f48c4aa64ee3db2029d1829617d2385f8ea97660cbf478a5379601ccb837c3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pilea-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 66226,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e847a8dd31b66d20718ac150ae9170a305957cbecb46dcc753ae16295038acf1",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pilea-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 66767,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "594a93313e8b8f7e1f1523dc6064db2b63ac20e2c29b9c2556db2a97c8fc9b67",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pilea-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 65972,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "fe9d0e4b9210a807ca2cb8eb51263259c2e9c80214d361fd354a97b41a10c1a3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pineapple-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 103849,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d4f107759c5a04d7662cf7edbbf09d3e910e24006b9b37b4b470438fb96f4f19",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pineapple-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95317,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c785d1bbbdb28216d426f177ba6ba61e29876c96df2f00dfcd1de17c195810d9",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pineapple-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 100180,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c61f328c1b9b9ca70ca8e764d6efc402f82ddc552ecfe1a01d58358b7f1649ee",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pink-princess-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 72676,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "227e4689425088c1f65b3813203bbc997dc50845256837ff1238ae671335c29e",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pink-princess-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 68453,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b82a2044334ad561f506d1647f23e25a2cad0a065bc088379da693c5e43f2b75",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pink-princess-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62986,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d40c40e1cb97d90e967f03c9d474731f0ba89eabdaf62ff9d2463d4c2e750d64",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/potato-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 82602,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f36d1a315765bdbe7db346ccf5bc8879d48a18c6f62b82eb2b93ead760a1182f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/potato-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 82251,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "52731455175311659a241058fec953153e8dbcd575db98ad0b4d93608f33dba9",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/potato-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 84882,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "64c3569a2f8e0f5d00824cf7d178b7af468930e5bae69cbf375be4e2ead7e73b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pothos-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 104681,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8c3e5c0908adad921bbcdf1731fbd7b5b75d038771504a302c50e3fa243e78b8",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pothos-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 88844,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "be1663c962f0bb083896287eeb1e5d5a27028adba0cee323d66dadf6cc594239",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/pothos-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 92419,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ba489b3140154b9e4cdc38c47138457850796c367a0d9474d88939f77b308884",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/radish-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 74697,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8e15dc68be5005dc15130a447f66a10ce1e441696107911c7772ddbe62a4c0c4",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/radish-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 75548,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4abbbfe9171fcb22f4982087d070410d92c4f0262a9cce60fa34dd82ca86a6b5",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/radish-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 69518,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f521ac12e3941fdc7b5c5056c88db21cca6d734412df8e487c4279aebdf8051b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/raspberry-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 123433,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "43b6fb38f7615cce66a45ccc86480d91201a4e4da5eba5deb35dc1dcae63dbfd",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/roselle-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83127,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a446c1465925978f93a856e095734c81c585c7a5e6efe52572ed0ae623df3aa7",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/rosemary-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 109069,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7d89cc2d84b7936be088d61ea7df3da144784ff3dbfbbeff211214fd82ff341d",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/rosemary-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 103465,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "607972bb352bdc8a93b7fe936a11fedd65d5ddc26eb5dac4b10919dbfa99596f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/rosemary-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 103323,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f9e1bce1b2ea5434d7c525d5ccd8041b57d8db9e448323c23eb1657231722ec6",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/rubber-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 82133,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8867b443fc1f7c2af9e9d2cbfdad529a484598b59b424843b6d8f85cba739498",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/rubber-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 73942,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f46af7233788d4f651e205d626cd7b3d7105c8d9843660e3ab9c4220b9d73640",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/rubber-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76761,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "26df4bf8b43f90e6d28f3ebb48d0148b7a034d632c7a325d5e98961035a3d291",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/runner-bean-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 98703,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b7aca6be724a6e70cea88a0b4d487f5d72630e74c66777a43d0c5fd373f30f7a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/runner-bean-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 106856,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9ec0cb700d37a487ac99f2e39b27782a440f1d02eae5b58e4096cb0512bf66a3",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/sage-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 86210,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e7b5d4c5a20c4f71cddcf4235a662fc2efb186ff6f82ef37bb0bee7fad6dbe6f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/scent-leaf-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 103755,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7d9459b171983915312eb984cc7532993377ba4209db4a511199a5997e83703b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/snake-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 45531,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "899e7569264fb7f53b65a26bb383a7aa636bcbc2a9304d4470985ee3f6cfb08f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/snake-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 39165,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5ae6082938c23204b65d1f40596a0b47e4d80528808ac90768db2ec8bdfe02c2",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/snake-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 38599,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a8c0f9ded3e19681008838d2b713f427f762fa40584f10754a836969a5a2614c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/spider-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 71111,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f36751a1b616913529188d8f912e04453f53413122dc52c6fe7d1398f46ea08f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/spider-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 67212,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "aa42e9d475b665b94e6d754a46637aba74139cf283ff5096664a2e9de27c75f5",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/spider-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 61001,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "08d13dc31d82cbab9087bdcc8b88e6cf22e5fb3b2e0bf88020f9186f41393369",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/spinach-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80958,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "22384b424f75a17041945a0ae05b137207096896b45769431ce8c134a5719452",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/spring-onion-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 56062,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "c20d4ba3f85816d947e471a34d5ae9877f3d4ee7aab0365abdfc938f61859302",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/spring-onion-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 53009,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "bd70920ead161a7f473da6916edbc562d45e00eb711a55741479bab73da032f4",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/spring-onion-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 49688,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8c413c55ab3ee3a493c787180ee6f09ebe3b9ddf970b51700a6ebc8aebc51170",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/strawberry-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 77591,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6f299c6793425fd420b04d76c8afdeee7bbb093843baf5717f230cec2c8d75dc",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/strawberry-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76053,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "5e43a94427e70e885e3e1a0ca8fa6a0e3875ec7444baaa0e31f5a526f8348192",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/strawberry-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 70298,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f93e77a8db7f7f71d4c359f7209b01d60ae81c5828bd15b4c7dab55c2ea5e505",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/string-of-pearls-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 64976,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "64997c440ec890c33a076b8f9c4671095af071d69ef7e8ea347c4c4ed978295a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/string-of-pearls-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 68247,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8663b6bd20695d94342bbedb6e3d7ec3e6ece24b4c97c77a12a4d327eb63a8bb",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/string-of-pearls-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 53315,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "270e712913f9252efdf7e9f9a3729aeea06c60dbb1fd54d8ced8ae4c718f828c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/sweet-potato-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 79268,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f5338db9cda3b7298ac96dbd9e5e29551a6f100c298621354220bbe2ec4c6d31",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/syngonium-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83211,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6cdd30727553c54ec0875016eb542af4ce3a03d1f0e14784c009e350b9883c37",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/syngonium-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 80686,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "eeee7165ffd59ca4095ac3babd3f9330b393d82d843d6fbfef350f39ad35f884",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/syngonium-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 78935,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "89d5e5e540af2223dda8bd43c0de7c3aab003510d83c020539cf959f53b94580",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tarragon-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 92719,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "79a448931e00f6f3f3999f10e0cbe46f808159165264b055a4058562ab494580",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tarragon-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 92539,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "55444636d0b14862857e4510faa1e357330ea2d209b87f01931dc03e58d37709",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tarragon-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95255,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "15fa5c9efc6acd437e36bf559e24abf97cbeb56e63c234c04516aa453bdb8785",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/thyme-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 83721,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e693c89135f3c77214ba12748e9c66a162f6ab98847a931883ea8146b0e93f3f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tomato-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 85093,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "1a664af75d4a70a452680ebd0875b4accef5e51df629cb387a462505505874a6",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tomato-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76383,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "34551310a6c13d0d995bba1e159cb7cbb1980bdd42042585ab745742d8fde86b",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tomato-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 69841,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "41a621c35b8a4b8fa87feaedbad5b354fd02dc6f8e55468d80542f15cc1e966f",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tradescantia-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 98842,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4c50509cbf3004749a5fd262ee71cdeee865c4aa28b21299f8ef76612def3544",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tradescantia-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 95827,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2056e3b4b31c089a36824e62f313094f164433534399c822f265750237ac2e36",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/tradescantia-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 98697,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "3df588180a5cbc6474c878a01a4a592bb5135b98cf63c298ec29af69bf4916e2",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/zucchini-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 104925,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "64138e0d96523b39204acb358dea72e047973b646a7350243027b6237c05536c",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/zucchini-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 102077,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2ebd0a6ef37de806eb4ffdfa37d7429c798cf5dda34db74411e9e602998d8b71",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/zucchini-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 76867,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "20e50de7bf6c1f48cc0aacbdab829bdbfdaae0f33d3bc45519ff4ff17de50db8",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/zz-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 59759,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "71f3f0127e594e7518cdd2abf8708eb53b56b9f43dff21d49c2be06a71ed5969",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/zz-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 57833,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "628213cf5ede64230672140e366cd56a8fcff099d56f1b39c04fda9c70604dbb",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/zz-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 50492,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "bbb043d10d9ad2e6ded400690ddefce45f6de7f48ac8a71db9599cbe5b551f19",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-cactus-foreground.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 470048,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "c9c4e6e070da8bde8047ec6bf86b4342ad4176ee9d6f6d21da7d3e5a106f260b",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-cactus.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 679325,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ef4785f237f694870711f0886b655e44d1817dfefa71b2a2f7bda0725a4a6582",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-default-dark.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1199212,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "83c2df679d6e2b922b3639b62399df27c7376ce1dcc082f51d9985347e2fcf46",
+    "referenced": false
+  },
+  {
+    "path": "assets/icons/icon-default-tinted.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 862577,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "1d491142528d018f1cf98fadd263a41f405abd5d693141cbf3dfd60d6536299f",
+    "referenced": false
+  },
+  {
+    "path": "assets/icons/icon-default.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1186465,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e95ab99d4af55f10dbe9b13fe826d2d295fea5fb617467252026d58a60136c4b",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-night-foreground.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 576613,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "0ec5ed57677c070ac169dadf65be094d18993b7a713bb3b58c90370d51bcaae1",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-night.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 974011,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "45ac2da21829fa986b5e85042f72b3a7aa0c40e75fcc82b731194f9c3fc03970",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-party-foreground.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 585814,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "ee72f45e57412cf3f9fb7316a3bc601481489c20d0c71c70e781801b3ed17b09",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-party.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 814366,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "749b3a82b0d927b2bd0f6988fcd0d43bbbabd14cd01e484db6c448f74c42136d",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-sunny-foreground.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 386921,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "7cd2eb8495ebbc6684bb7d1a447fbc3125e5f51b281fed4cbece997fb3580075",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-sunny.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 512542,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "029fd90ed1b5964078a35502857c8707bd3419f31a3a6d4a9a77cd4a04200a83",
+    "referenced": true
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-first-harvest-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 855612,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "fbe9a2c9f2734e85c4fdcdeae836fbec57135a443ce1415943ae2d7223822203",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-first-harvest.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 880938,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "c76d46743732e60524092954d6071fafc33a63ce4773a8cd5d473608093c0a29",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-first-new-leaf-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 849014,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "f83664e67ee78fe0f1a8a22c62c3c860a3a7bde4bbf118bead8b563b2e39f63d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-first-new-leaf.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 914282,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "44c7c91d4fba9174b2ec7dc4e20a05e0574f1b4afe7c7e89a6c6f934e146a01f",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-first-root-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1105384,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "70fff43708e672de8977913df5fe32bd5122cc25e7c9babb5b418b1e0b9c110f",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-first-root.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1108561,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "ff4e07a19fd0ebffceafa7ad9d4eaa072df213391b13ce3af13f6aa2a1368aa9",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-generous-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 780221,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "ee0079bbf4f98e17f92c2bbe8b8c23e9e6751906df770638eeb02bfa424027f6",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-generous.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 929436,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "62825958e7f316313c748ceadbdfb3621590b4aa9e92d4c3381f52c0f9fc2799",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-grandma-plant-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 909667,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "6c117aef4702d2a9607bbe696ee9322b6a1ac9f7d5be2c8a30d9fb7c0f0eecf4",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-grandma-plant.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1118610,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "754e1089fb15c35323dcaa672e64f658c613885347b0711033dcab6fba3a5dc4",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-jungle-10-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1045276,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "ba3fce387d0c024ce3368acff35226c7e615b8422fc1bc5499ffec04d9dff482",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-jungle-10.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1348711,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "b371018628a5965dff82dfb8e4e28512c8f5f42c2cf23ce9811868c777b70d5b",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-knows-when-to-wait-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 833664,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "c868204b219601e12773fb3021a440bd5c94f416832efd5850972e3f89b02a33",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-knows-when-to-wait.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1006191,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "a5dcee92276f8edc312e7537a8d8640e26ca12bef999b54711769790a6f7525c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-offshoots-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1116550,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "ba095baad71f63800246bc1230f39f113acb7a71997951104a7f77abed40b04d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-offshoots.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1205885,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "32ddab84bdbf20e36d4b9c6ca60c7f9e2529b0c604fb8100ebdaffa7dd50aa48",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-photo-diary-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 766199,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "5d810c181949eb34a6d2e2b958ffd721cb5eac259bfdb1baefaaa0b64e6eb717",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-photo-diary.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1027593,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "d08df2980fc2cc4f442a7888998c38588a509adf72fd42401da7420b352ce560",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-propagator-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 868333,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "70fd247c9ffa935da18616ad508e5717ad78a32a9c4cd770f4e99650b1c38c73",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-propagator.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 926861,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "33b840979e47e14774c553968bc880af47f859d56ed5df35e603e1549b1aec45",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-survived-grey-season-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 900694,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "0779da8582ec703c667e7185f26de9ef76eb978b0cf575f27485ce1ef913b498",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-survived-grey-season.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1135377,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "3d7a9444fadef219c9bcf36b46f17336229744a94b4c2ce164ab0ca5ba04a559",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-survived-winter-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1081339,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "2f63a4a53c88d73f317b48ad59dfb4fd5e4437c2a897a232a24510c603f29f59",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-survived-winter.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1090048,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "da871649053d9d9171d555e201e1e69a4638a95c1c6d90891250ac1a0c6072f1",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-week-streak-locked.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 737212,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "8df847fe9957522a2ea2fc95fdc9152b5530588a192626152ab9508e4107b9fb",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/badges/badge-week-streak.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 789275,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "e1f65cd098e7b462446d88c3013900bae6093c8daa72a9ca6808e353d775e567",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/brand/app-icon-1024.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1227747,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "83a33742346b51a8ed90cba4cc7a7bff887ed387c7b8fa4537ceb247e9f030d7",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/brand/app-icon-dark-1024.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1199212,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "83c2df679d6e2b922b3639b62399df27c7376ce1dcc082f51d9985347e2fcf46",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/brand/app-icon-tinted-1024.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 862577,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "1d491142528d018f1cf98fadd263a41f405abd5d693141cbf3dfd60d6536299f",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/brand/logo-sticker.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 1427886,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "f85e36d14a9c93f72b7031599de7c5dc241798230066125b93f8480c1b8b8fe5",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/brand/splash.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 498004,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "5118c2a53fc0996161e501897624b2e7506a89beaf76e9676c33e86f1a696e30",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-aloe-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 649724,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "2f1b94bedec588347e896dda0ed08641f436f9e13010a14554cf72cdcb62c255",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-aloe-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 528375,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "caad02320cfd83e4d62bb28866ac703bf69641fc043ca41d9ff17ae016599962",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-aloe-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 538355,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "85a6fadf5c6ae0d9e66cb78a05cd8ffbfe5becfebbeda4f3b5f28cfdd94e8f12",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-basil-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 931166,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "1d3ad7d4a5a4c9570f8d93c08338ab7946c779fd34425a29c6a09b3a27f0294c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-basil-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 828181,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "d9be74434852704469bfd06c84a9121600b8200edc558db6eab087fff51c29b9",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-basil-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 821937,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "fa01cde2d4b7b370855d3e30dee1228532790744a36afc955e0e3608c87b7ebe",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-bird-of-paradise-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 937972,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "a6719de8e0bf8344c6825f6901ab6865d7c97d7ca741d4547a557daf5950866e",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-bird-of-paradise-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 726240,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "7b05545d1759ee2770e47082bf4b6d5357090b9e4894232317625d46af3ec799",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-bird-of-paradise-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 827952,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "0cfd511dcb82894e510ded7bae9dcf2080784cff606d305115066591c61d662d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-calathea-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 915694,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "39f8372368e9dd2ec9a42b0584c2a9517c24f3a68acb63a73e7747f0715501b8",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-calathea-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 719509,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "d867b1cc9320127b0ede0f3fbc7721ace1a6a4ef552aaeebe3f42385eb4416b0",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-calathea-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 728605,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "de4b9a610d19861409199ab959b5012eec16e2c9bd80e06a6d4394b7d456ba29",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-cutting-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 817518,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "017e0e03d69014dc7df8b5b6e62782754ad2b3348db0e95bca1deaabb66dd8cb",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-cutting-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 867833,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "b7e98a0cc9fbd27e69768b83f2ab761b26c4d7f8552afcd55c1e46021cb9e0c3",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-cutting-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 816487,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "e3c331cb7da5c848ab87cb239eafde22c469cdf2188763656d4b86a92509ffbb",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-fig-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 850094,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "a6f969e3903d35ca036fba27834ac94f02aeb6af2b27d33a60bda9137d308143",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-fig-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 685415,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "2b9b8408afda7bd76f764b99165d6d9fb66e94e6d2b5fc4e4a7b3b64aad8f78c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-fig-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 695805,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "7c18e32f81ddd9d4ea36239605ab0a8502f2f3feef40cfad710f061e33ec503c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-hoya-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 839534,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "8f034bee7d9f78a6de82e5f28ee0579b8abce05e6a2c83473f60e2c774c2c78c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-hoya-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 666636,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "608bb999578f3afd7a2a939467ee5b13cc445e0559709e56452e886517f58f0d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-hoya-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 664474,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "565265f710752c16c7e6f53343a8c876818db73d98ec758241119e36457c9cbe",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-mint-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 948134,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "61a274e6a2a727274cafb2b687b847dd2c4246db803ecdc8347d637fa4cf2e4d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-mint-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 842355,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "516acb685a89c6e630dbdb8a2f5818a3fb247d038ef5dcdadfd31a3eacad71c4",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-mint-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 800046,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "2fe18f160c284beb08b39b2c6a8164fa983ec372f19747171f567d8a0708a8c9",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-monstera-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 934740,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "3c6ba3f5bdbe5996844ea4822c3fe32c27c5caf0e86a36782921901f0013148c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-monstera-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 918871,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "80b6498450104dacef00b1cb38777cc9f17139ce241a573a7dce8bfc7b12a24c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-monstera-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 923547,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "980e1704268b167a5df01bcda99ec3704e9e031a9f16f70e661d383c9e165d31",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-peace-lily-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 732048,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "2b4a0dcc08dee38d5f12e3e619703a5b11503f5166ca0bd3f857913778f502c7",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-peace-lily-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 575526,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "3c1e19fbe2d12216a078059fe3ce75dd453349c9efdefeb6f372014326bc23bc",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-peace-lily-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 585975,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "667dd3aedb049294c1b57083c5b9861a2ff584ac7b29d778537ebbb3b8cde807",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pepper-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 944694,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "c036fa6c479ed16873f763f2356dfef3e359dcb25f6c6e981b9509e571d60ea1",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pepper-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 792489,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "7cb07bb3d03fd265a1f7cb4d798ff9bc1e017e09e021bc912db8c98ef8354a8e",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pepper-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 874734,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "c38f4409b5ff5e41ea6b9c6f2c13df54c63ff2b4adf798ecf36ae58fbaf3ef7a",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pink-princess-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 863405,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "19a7dd7fb809c3f8fbd25c9c439f8399041887edec7dc3e48f264b9ce5992441",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pink-princess-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 752614,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "7a4f13fdda0f86c6a6c39b77dd530351759817674512f88a8b0846a1478864b1",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pink-princess-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 696366,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "45dd5125736c665be8b87991cef689b6189c884e51fecf72ba6172b6ca4e133f",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pothos-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1099474,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "94e86edd3162a12ac6b41d40c7be06221aa3ca6115be8ad45e759443ed0b69a3",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pothos-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 943325,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "d2856b7cdbf5e806d6e21a0bbc3937450bdef8bdf43398185a1bbffa2150b686",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-pothos-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 942691,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "044968b9ead7c74ee7aafeadbb5f3f30cf1ec3de34881eb772639ad526f22192",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-rubber-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 881508,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "f31c29f8405cffd48850697d8d6db82509e301961d6abc8d8724c6a45b3b39e2",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-rubber-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 778087,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "adbbb5f36e31bb7585a1110d26675d009c2a8d1117699b1bae2950336092d258",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-rubber-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 814614,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "688686d08f6c8c12f583e54eb5da9d414bdf0821e39cc044984646401a8bfa70",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-snake-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 523402,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "49970196e7cf73c0a51fae28a5ac569cfd79cabda8bb2fb40ba0fcbe2fa6953d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-snake-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 428034,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "d4c9baea597d0c4c73f732ab2fdd43d4c4a3484079ef2ec06d2e6bc2f07bfbd9",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-snake-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 429924,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "37d58fad18ed4d93ddd9caecd55977ed9b6f97e8b538733b7284a07651c1d637",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-spider-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 874966,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "698681de86b536086c1a8db5b1a412122855db1a7d8751a2230593850b8ee36a",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-spider-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 841563,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "ae8831afa037a390d4b00a8bb9eb1ffedeae2a6d67311673f0fc0494060c7bba",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-spider-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 722616,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "650420d71637a63efbf09d34e79914dd088eaf5381696ddfbfed9c2c1c190e42",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-spring-onion-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 611986,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "f7b2d8b0543eaec70abbbe81e05c76e10e792985fb2d3273838da826798333c9",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-spring-onion-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 585996,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "7b4e4087df132a5c6171ff2b23c1e10f8cf317ebeea725a0327946151c34b471",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-spring-onion-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 527876,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "524b005fdc88f1a0a9cd869f71ad82620e610caaf7d522c7e577b3cea774df65",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-string-of-pearls-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 750190,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "9ba407fcaa550b39bf57b9cac23716a3a9546bfc501522b2508919020218b9ab",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-string-of-pearls-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 790626,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "0025738d80cb3ebb50045d4c612db1acd9a8253da4ed2150931e775e8e04bd45",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-string-of-pearls-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 605537,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "bc52c2f4ce2dde4e80d6e3e8c669e97a185b1d9bc9adf1798b2d607c3fa68364",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-tomato-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 940707,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "7e44c744b1d0a9269278c1c2d647e939a588c213723aa46c94cf77bb1f48de75",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-tomato-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 828694,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "2de09ed158e1fb1b809f7016aef0a8886808f1f8808ed762c10bde819976f8e6",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-tomato-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 749381,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "14553f0bb4d5670baf360bd77656884a94c8608abb8145b88ad302d0f16b3dda",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-zz-happy.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 692881,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "2248fa0ec02bbc02eba0c57cbc9d1dfb5208a5d2e9bdc9e4572fb17bf7afdb57",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-zz-snoozing.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 652454,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "dfc176ced9ba6433689ff61d9dc77b628f97bc9ad700bc7363c1fdd50bbcc6ab",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/buddies/buddy-zz-thirsty.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 566881,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "f9c72dac678021c7241df19079112b867852cbc59f3ab7f59c4864a18fddca12",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/celebration/celebrate-thanks.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1188627,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "23c384132454609f9cf59f6e8de862978ed52f713d653eab2935bb88356a71a6",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/celebration/moment-harvest.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1112863,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "96e5e0117b34d47abf866e324f9c6d0e95c632de5e7a347b56fb806ac885268b",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/celebration/moment-new-leaf.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 856240,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "88f9bbe11fa330c3ddf71bb3e10ee21058b1c07b16b51449914c9b6db6a4a913",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/celebration/moment-roots.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 885420,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "64880c32c9f05ebda99cafddbbb2e24379ffbebb2f3f079ba646268ee1d3cb7c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/celebration/moment-smart-skip.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 841932,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "74d34042c1c060e10eea676d60b23f617677c60653b908723193cfa6307b234d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/grow-cuttings.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 847660,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "77235c8842045fea6edd8811c2fa0f728bc523d0f8e03865fccab1aba91f62f1",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/grow-edibles.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 984324,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "20013885f1e123c639ddfed396401d42ba3998ff63bf8d67d16bc31e701b68f2",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/grow-houseplants.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 878853,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "fe4f8d6522e69c44c1eee69bda102d0c82e5643cb37ea8729cadb090e21a8c3e",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/onboarding-welcome.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1115105,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "a1eb25aff009d7788c7a7dfa1e97130d9e6438f978ea05a79c703c77c072c788",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/season-dry-summer.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1163215,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "d765dff2ad4a2be5021c8e973fa33a26ecbaadcbbfba2b06eb39f7553c7cedd2",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/season-grey.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1291494,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "17f4d736cfc129a7e0c94c91cc67165ab101441b7cef2ea0a68e85841673ed90",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/season-harmattan.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1171895,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "a167aaf26f1af0ad8e247b95ff78cdc4c30a2429b15d4e01378e63a7df32b83c",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/season-rains.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1082846,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "b68cd0626e55b682897a91c6965d084441ee702166e563d3aca66756b5d6687e",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/season-spring.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 939179,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "abec124084972d46e00fd25fb352c81e415595a7161e76b5812b76e5a9dc92a3",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/onboarding/season-winter.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1235280,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "f4e2b4ae58774f5c1aabdd595134b7ad45d4cd65a4518e874f8e4d2796f4fefe",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/sharing/recap-cover.png",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 2526280,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "4b6446a631b7afcdcdc158c7730e2a03c49389fd319fa2006fd14e0788eb2c61",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/sharing/share-gift.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 1742970,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "9b676a51a05ae3dc9f43f771bdbc264dd7973327ebd68ee359fb0e0c4862b9d1",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/sharing/share-harvest-bg.png",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 1752249,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "469ec2274efc983d102a334640fc85804ec895c4c291fb96beb3cd69a5e26c83",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/sharing/share-tree-bg.png",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 1354520,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "6f1aaebf12c01b8a6b6f474095c8d7132547851339991ea63a687d4507f9485a",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/states/away-mode.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2123686,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "4b254258f6442984a035fe912a7f8dee65b678b1b6d5bfb7215ac13a7ffdc480",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/states/empty-caught-up.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1186123,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "9a6839681afd522d4e0a35bcadc9a97a744c6e1a8a62d11617d83e2fa7401ed6",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/states/empty-jungle.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 473794,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "1f6015d519619581dd18c142bf3ff48f17fa73ca70ab00e13f03acdc588314e3",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/states/error-offline.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 930331,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "a7efb35bea21c680831fb38b5d1791f72fc0ebb98c18d14aad747e06c98b3001",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/states/memorial.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 550595,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "52da9943747a7cbfdb83dbfaec507d96959fefc783ab78c44e6659b0d9b159cd",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/store/store-bg-1.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1716979,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "2d1bed62030b28d120980ddca23ef0b85e3d962efd6c9f5fdff383f60cf0da75",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/store/store-bg-2.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1644225,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "50d19859edfc6f33331e921e4354a1a1efb3a7aa706268383b4ab8ff45e46381",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/store/store-bg-3.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1675343,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "1bf849f3006dac80fd2737e547eb2238161624f0224f8c0f087444829419dd7a",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/store/store-bg-4.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1644333,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "8d78fd6eff16c42f2ebeefc513235d9baa729d57b06487fa868d1d73389febbc",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/store/store-bg-5.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1804908,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "03340c2d8e6d13f9c14e67bd80213c4d56b3c4a6c613c8cd51f46031cfb00040",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/widgets/notif-avatar.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1302647,
+    "alphaChannel": true,
+    "sourceArchive": true,
+    "sha256": "d7225fa6fb2d721ceecedc242d92e6204087bf2a6b4288fcace0b708057cca45",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/widgets/widget-medium.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 1621369,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "f2c1365e9afec8250fa7ad9f7ee49948eceedf889e6dbf7ac3551f5b513d070d",
+    "referenced": false
+  },
+  {
+    "path": "assets/incoming/PlantFam/assets/widgets/widget-small.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 997781,
+    "alphaChannel": false,
+    "sourceArchive": true,
+    "sha256": "ed46bf1e0c193c2ef01823f975f317a6c494e3d477d5d94e0ff198dede1431eb",
+    "referenced": false
+  },
+  {
+    "path": "assets/sharing/recap-cover.png",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 2526280,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4b6446a631b7afcdcdc158c7730e2a03c49389fd319fa2006fd14e0788eb2c61",
+    "referenced": false
+  },
+  {
+    "path": "assets/sharing/share-gift.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 1742970,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9b676a51a05ae3dc9f43f771bdbc264dd7973327ebd68ee359fb0e0c4862b9d1",
+    "referenced": false
+  },
+  {
+    "path": "assets/sharing/share-harvest-background.png",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 1752249,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "469ec2274efc983d102a334640fc85804ec895c4c291fb96beb3cd69a5e26c83",
+    "referenced": false
+  },
+  {
+    "path": "assets/sharing/share-tree-background.png",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 1354520,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "6f1aaebf12c01b8a6b6f474095c8d7132547851339991ea63a687d4507f9485a",
+    "referenced": false
+  },
+  {
+    "path": "assets/store/store-background-coral.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1675343,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "1bf849f3006dac80fd2737e547eb2238161624f0224f8c0f087444829419dd7a",
+    "referenced": false
+  },
+  {
+    "path": "assets/store/store-background-grape.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1804908,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "03340c2d8e6d13f9c14e67bd80213c4d56b3c4a6c613c8cd51f46031cfb00040",
+    "referenced": false
+  },
+  {
+    "path": "assets/store/store-background-leaf.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1716979,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2d1bed62030b28d120980ddca23ef0b85e3d962efd6c9f5fdff383f60cf0da75",
+    "referenced": false
+  },
+  {
+    "path": "assets/store/store-background-sky.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1644333,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8d78fd6eff16c42f2ebeefc513235d9baa729d57b06487fa868d1d73389febbc",
+    "referenced": false
+  },
+  {
+    "path": "assets/store/store-background-yellow.png",
+    "width": 1290,
+    "height": 2796,
+    "bytes": 1644225,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "50d19859edfc6f33331e921e4354a1a1efb3a7aa706268383b4ab8ff45e46381",
+    "referenced": false
+  },
+  {
+    "path": "assets/widgets/notification-avatar.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 1302647,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "d7225fa6fb2d721ceecedc242d92e6204087bf2a6b4288fcace0b708057cca45",
+    "referenced": false
+  },
+  {
+    "path": "assets/widgets/widget-medium.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 1621369,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f2c1365e9afec8250fa7ad9f7ee49948eceedf889e6dbf7ac3551f5b513d070d",
+    "referenced": false
+  },
+  {
+    "path": "assets/widgets/widget-small.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 997781,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "ed46bf1e0c193c2ef01823f975f317a6c494e3d477d5d94e0ff198dede1431eb",
+    "referenced": false
+  }
+]

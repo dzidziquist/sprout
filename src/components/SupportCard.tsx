@@ -32,7 +32,7 @@ export function SupportCard() {
     >
       <View style={[styles.buddyTile, { backgroundColor: c.card, borderColor: c.line }]}>
         {party ? (
-          <Image source={require('../../assets/art/buddy-party.png')} style={{ width: 66, height: 66 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+          <Image source={require('../../assets/art/reward-party-buddy.png')} style={{ width: 66, height: 66 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         ) : (
           <PlantBuddy speciesId="monstera" size={64} />
         )}

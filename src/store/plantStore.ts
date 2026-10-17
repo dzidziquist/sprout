@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Trip } from '../engine/away';
-import { addDays, applyCheck, initialNextCheck, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
+import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
 import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent } from '../types';
@@ -111,6 +111,11 @@ interface PlantState {
   endTrip: (now?: Date) => void;
   /** Tick (or untick) a before-you-go item on the trip that starts at `from`. */
   setPrepDone: (from: string, itemId: string, done: boolean) => void;
+  /**
+   * Save a plant doctor result to the diary. A confirmed watering cause also nudges how fast this
+   * plant is expected to dry out: 'slow-water' spaces checks out, 'more-water' brings them closer.
+   */
+  logDiagnosis: (plantId: string, note: string, tweak?: 'slow-water' | 'more-water', now?: Date) => void;
   /** Mark plants as staked (or trellised), or take the mark back off. */
   setStaked: (plantIds: string[], on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
@@ -399,6 +404,26 @@ export const usePlantStore = create<PlantState>()(
               return { ...t, done: done ? [...rest, itemId] : rest };
             }),
           },
+        }));
+      },
+
+      logDiagnosis: (plantId, note, tweak, now = new Date()) => {
+        const factor = tweak === 'slow-water' ? 1.2 : tweak === 'more-water' ? 0.85 : 1;
+        set((s) => ({
+          events: [...s.events, { id: uid(), plantId, type: 'diagnosis', note, at: now.toISOString() }],
+          plants:
+            factor === 1
+              ? s.plants
+              : s.plants.map((p) => {
+                  if (p.id !== plantId) return p;
+                  // Stretch or shrink the wait for the check that's already booked, not just future ones.
+                  const left = Math.max(0, new Date(p.nextCheckAt).getTime() - now.getTime());
+                  return {
+                    ...p,
+                    k: Math.round(Math.min(K_MAX, Math.max(K_MIN, p.k * factor)) * 100) / 100,
+                    nextCheckAt: new Date(now.getTime() + left * factor).toISOString(),
+                  };
+                }),
         }));
       },
 

@@ -16,6 +16,12 @@ export const ART = {
   thanks: require('../../assets/art/celebrate-thanks.png'),
   weekSaver: require('../../assets/art/week-saver.png'),
   awayTrip: require('../../assets/art/away-trip.png'),
+  newLeaf: require('../../assets/art/moment-new-leaf.png'),
+  smartSkip: require('../../assets/art/moment-smart-skip.png'),
+  away: require('../../assets/art/state-away-mode.png'),
+  growHouseplants: require('../../assets/art/onboarding-grow-houseplants.png'),
+  growEdibles: require('../../assets/art/onboarding-grow-edibles.png'),
+  growCuttings: require('../../assets/art/onboarding-grow-cuttings.png'),
 } satisfies Record<string, ImageSourcePropType>;
 
 export type SeasonArt = 'season-grey' | 'season-dry-summer' | 'season-spring' | 'season-harmattan' | 'season-rains' | 'season-winter';
@@ -34,15 +40,15 @@ export const SEASON_ART: Record<SeasonArt, ImageSourcePropType> = {
  * the line icon. 'survived-winter' and 'survived-dry-season' are the season badge's art in frosty and tropical climates.
  */
 export const BADGE_ART: Partial<Record<string, { earned: ImageSourcePropType; locked: ImageSourcePropType }>> = {
-  'first-roots': { earned: require('../../assets/art/badge-first-root.png'), locked: require('../../assets/art/badge-first-root-locked.png') },
+  'first-roots': { earned: require('../../assets/art/badge-first-roots.png'), locked: require('../../assets/art/badge-first-roots-locked.png') },
   'first-harvest': { earned: require('../../assets/art/badge-first-harvest.png'), locked: require('../../assets/art/badge-first-harvest-locked.png') },
-  'streak-4': { earned: require('../../assets/art/badge-week-streak.png'), locked: require('../../assets/art/badge-week-streak-locked.png') },
-  'fam-5': { earned: require('../../assets/art/badge-jungle-10.png'), locked: require('../../assets/art/badge-jungle-10-locked.png') },
-  'first-photo': { earned: require('../../assets/art/badge-photo-diary.png'), locked: require('../../assets/art/badge-photo-diary-locked.png') },
-  'first-cutting': { earned: require('../../assets/art/badge-offshoots.png'), locked: require('../../assets/art/badge-offshoots-locked.png') },
-  'first-check': { earned: require('../../assets/art/badge-first-new-leaf.png'), locked: require('../../assets/art/badge-first-new-leaf-locked.png') },
+  'streak-4': { earned: require('../../assets/art/badge-four-week-streak.png'), locked: require('../../assets/art/badge-four-week-streak-locked.png') },
+  'fam-5': { earned: require('../../assets/art/badge-five-plant-fam.png'), locked: require('../../assets/art/badge-five-plant-fam-locked.png') },
+  'first-photo': { earned: require('../../assets/art/badge-first-photo.png'), locked: require('../../assets/art/badge-first-photo-locked.png') },
+  'first-cutting': { earned: require('../../assets/art/badge-first-cutting.png'), locked: require('../../assets/art/badge-first-cutting-locked.png') },
+  'first-check': { earned: require('../../assets/art/badge-first-check.png'), locked: require('../../assets/art/badge-first-check-locked.png') },
   season: { earned: require('../../assets/art/badge-survived-grey-season.png'), locked: require('../../assets/art/badge-survived-grey-season-locked.png') },
-  'first-skip': { earned: require('../../assets/art/badge-knows-when-to-wait.png'), locked: require('../../assets/art/badge-knows-when-to-wait-locked.png') },
+  'first-skip': { earned: require('../../assets/art/badge-first-skip.png'), locked: require('../../assets/art/badge-first-skip-locked.png') },
   propagator: { earned: require('../../assets/art/badge-propagator.png'), locked: require('../../assets/art/badge-propagator-locked.png') },
   generous: { earned: require('../../assets/art/badge-generous.png'), locked: require('../../assets/art/badge-generous-locked.png') },
   'grandma-plant': { earned: require('../../assets/art/badge-grandma-plant.png'), locked: require('../../assets/art/badge-grandma-plant-locked.png') },
