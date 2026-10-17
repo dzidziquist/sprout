@@ -119,6 +119,16 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/eggplant-happy.png'),
     snoozing: require('../../assets/buddies/eggplant-happy.png'),
   },
+  'ginger': {
+    happy: require('../../assets/buddies/ginger-happy.png'),
+    thirsty: require('../../assets/buddies/ginger-happy.png'),
+    snoozing: require('../../assets/buddies/ginger-happy.png'),
+  },
+  'radish': {
+    happy: require('../../assets/buddies/radish-happy.png'),
+    thirsty: require('../../assets/buddies/radish-happy.png'),
+    snoozing: require('../../assets/buddies/radish-happy.png'),
+  },
   'pink-princess': {
     happy: require('../../assets/buddies/pink-princess-happy.png'),
     thirsty: require('../../assets/buddies/pink-princess-thirsty.png'),

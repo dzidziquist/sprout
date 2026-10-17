@@ -42,6 +42,8 @@ const ART_FOR: Record<ArtId, Art> = {
   zucchini: 'pothos',
   lettuce: 'calathea',
   kale: 'calathea',
+  radish: 'onion',
+  ginger: 'onion',
   eggplant: 'pepper',
   'garden-egg': 'pepper',
   carrot: 'onion',

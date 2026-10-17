@@ -92,6 +92,8 @@ export type ArtId =
   | 'cucumber'
   | 'zucchini'
   | 'lettuce'
+  | 'radish'
+  | 'ginger'
   | 'eggplant'
   | 'garden-egg'
   | 'carrot'
