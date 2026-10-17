@@ -92,6 +92,7 @@ export type ArtId =
   | 'cucumber'
   | 'zucchini'
   | 'lettuce'
+  | 'arugula'
   | 'bok-choy'
   | 'leek'
   | 'amaranth'
