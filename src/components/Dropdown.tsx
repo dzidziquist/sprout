@@ -5,7 +5,8 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 
-export type DropdownOption<T> = { id: T; label: string };
+/** `swatch` shows a colour dot beside the label (for colour choices). */
+export type DropdownOption<T> = { id: T; label: string; swatch?: string };
 
 /** Which dropdown in the group is open; opening one closes the others. */
 const Open = createContext<{ open: string | null; setOpen: (k: string | null) => void } | null>(null);
@@ -68,6 +69,7 @@ export function Dropdown<T extends string | null>({
         style={({ pressed }) => [styles.row, pressed && { backgroundColor: c.cloud }]}
       >
         <Text style={[styles.label, { color: c.ink }]}>{label}</Text>
+        {current?.swatch && <View style={[styles.swatch, { backgroundColor: current.swatch, borderColor: c.line }]} />}
         <Text style={[styles.value, { color: current ? c.ink : c.inkMuted }]} numberOfLines={1}>
           {current?.label ?? placeholder}
         </Text>
@@ -91,7 +93,10 @@ export function Dropdown<T extends string | null>({
                 }}
                 style={({ pressed }) => [styles.option, { backgroundColor: on ? fill : pressed ? c.cloud : 'transparent' }]}
               >
-                <Text style={[styles.optionText, { color: on ? textOn(fill, c) : c.ink }]}>{o.label}</Text>
+                <View style={styles.optionLabel}>
+                  {o.swatch && <View style={[styles.swatch, { backgroundColor: o.swatch, borderColor: c.line }]} />}
+                  <Text style={[styles.optionText, { color: on ? textOn(fill, c) : c.ink }]}>{o.label}</Text>
+                </View>
                 {on && (
                   <Svg width={18} height={18} viewBox="0 0 24 24">
                     <Path d="m5 12.5 4.5 4.5L19 7.5" stroke={textOn(fill, c)} strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -114,4 +119,6 @@ const styles = StyleSheet.create({
   list: { paddingHorizontal: 8, paddingBottom: 8, gap: 2 },
   option: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 12 },
   optionText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  optionLabel: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  swatch: { width: 20, height: 20, borderRadius: 10, borderWidth: 2 },
 });
