@@ -16,6 +16,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
+import { useSheetTop } from '@/lib/sheetTop';
 
 
 type Why = 'heart' | 'camera' | 'sprout' | 'medal' | 'star' | 'hat' | 'moon' | 'share' | 'idea';
@@ -98,6 +99,7 @@ function Buddies({ c, ids, party }: { c: Palette; ids: [SpeciesId, SpeciesId, Sp
 export default function SupportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const c = useColors();
   const rewards = useRewards();
   const { supporter, ready, tips, tip, available } = useTips();
@@ -139,7 +141,7 @@ export default function SupportScreen() {
   const party = rewards.party.unlocked || justTipped;
 
   return (
-    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 28 }]}>
+    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 28 }]}>
       <View style={styles.header}>
         <Title style={{ flex: 1, fontSize: 26 }}>Support PlantFam</Title>
         <GlassButton accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>

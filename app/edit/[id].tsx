@@ -20,6 +20,7 @@ import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { Light, Origin, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
 import { edibleGuide } from '@/data/edibles';
+import { useSheetTop } from '@/lib/sheetTop';
 
 const CARD_COLORS: { id: PotColor; label: string }[] = [
   { id: 'yellow', label: 'Butter' },
@@ -119,6 +120,7 @@ export default function EditPlantScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const c = useColors();
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
   const updatePlant = usePlantStore((s) => s.updatePlant);
@@ -206,7 +208,7 @@ export default function EditPlantScreen() {
   const input = [styles.input, { borderColor: c.line, color: c.ink, backgroundColor: c.card }];
 
   return (
-    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Cancel" onPress={back}>
           <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>

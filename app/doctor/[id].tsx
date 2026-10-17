@@ -17,6 +17,7 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { useColors, type Palette } from '@/theme/theme';
+import { useSheetTop } from '@/lib/sheetTop';
 
 const canUseCamera = Platform.OS === 'ios' || Platform.OS === 'android';
 const today = () => new Date().toDateString();
@@ -42,6 +43,7 @@ export default function DoctorScreen() {
   const router = useRouter();
   const c = useColors();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
   const events = usePlantStore((s) => s.events);
   const climate = usePlantStore((s) => s.profile.climate);
@@ -144,7 +146,7 @@ export default function DoctorScreen() {
   };
 
   return (
-    <ScrollView ref={scroll} style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 32 }]}>
+    <ScrollView ref={scroll} style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
           <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />

@@ -14,6 +14,7 @@ import { GROW_ICON, Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
+import { useSheetTop } from '@/lib/sheetTop';
 
 const UNIT_LABEL: Record<HarvestUnit, string> = { fruit: 'Fruit', handful: 'Handful', bunch: 'Bunch', bulb: 'Bulb', grams: 'Grams' };
 const STEP: Record<HarvestUnit, number> = { fruit: 1, handful: 1, bunch: 1, bulb: 1, grams: 10 };
@@ -46,6 +47,7 @@ export default function HarvestSheet() {
   const router = useRouter();
   const c = useColors();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
   const events = usePlantStore((s) => s.events);
   const faces = usePlantStore((s) => s.profile.faces);
@@ -80,7 +82,7 @@ export default function HarvestSheet() {
     const total = formatTotals(harvestStats(events, [plant]).byPlant[plant.id]?.totals);
     const bg = saved.first ? c.butter : c.mint;
     return (
-      <View style={[styles.done, { backgroundColor: bg, paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
+      <View style={[styles.done, { backgroundColor: bg, paddingTop: sheetTop + 24, paddingBottom: insets.bottom + 24 }]}>
         {saved.first ? <Confetti c={c} /> : null}
         <View style={[styles.circle, { backgroundColor: c.card, borderColor: c.line, boxShadow: `0px 5px 0px ${c.drop}` }]}>
           {saved.first ? (
@@ -106,7 +108,7 @@ export default function HarvestSheet() {
   }
 
   return (
-    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
+    <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
           <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />

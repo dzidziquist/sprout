@@ -12,24 +12,16 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
+import { useSheetTop } from '@/lib/sheetTop';
 
-type LeaveId = '0' | '1' | '2' | '3' | '7';
-type StayId = '3' | '7' | '10' | '14' | '21' | '30';
-const LEAVE: { id: LeaveId; label: string }[] = [
-  { id: '0', label: 'Today' },
-  { id: '1', label: 'Tomorrow' },
-  { id: '2', label: 'In 2 days' },
-  { id: '3', label: 'In 3 days' },
-  { id: '7', label: 'In a week' },
-];
-const STAY: { id: StayId; label: string }[] = [
-  { id: '3', label: '3 days' },
-  { id: '7', label: '1 week' },
-  { id: '10', label: '10 days' },
-  { id: '14', label: '2 weeks' },
-  { id: '21', label: '3 weeks' },
-  { id: '30', label: 'A month' },
-];
+// Every day for the first week, then the usual longer trips.
+const LEAVE = [0, 1, 2, 3, 4, 5, 6, 7].map((n) => ({ id: String(n), label: n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === 7 ? 'In a week' : `In ${n} days` }));
+/** Trip length: a day at a time for the first two weeks, then a week at a time, up to two months. */
+const MAX_DAYS = 60;
+const stepUp = (n: number) => Math.min(MAX_DAYS, n < 14 ? n + 1 : n + 7);
+const stepDown = (n: number) => Math.max(1, n <= 14 ? n - 1 : n - 7);
+const stayLabel = (n: number) => (n === 1 ? '1 day' : n % 7 === 0 && n >= 7 ? (n === 7 ? '1 week' : `${n / 7} weeks`) : `${n} days`);
+type LeaveId = string;
 
 const plusDays = (d: Date, n: number) => {
   const x = new Date(d);
@@ -43,6 +35,7 @@ export default function AwayScreen() {
   const router = useRouter();
   const c = useColors();
   const insets = useSafeAreaInsets();
+  const sheetTop = useSheetTop();
   const plants = usePlantStore((s) => s.plants);
   const climate = usePlantStore((s) => s.profile.climate);
   const trips = usePlantStore((s) => s.profile.trips);
@@ -55,11 +48,11 @@ export default function AwayScreen() {
   const current = activeTrip(trips, now) ?? upcomingTrip(trips, now);
   const away = !!activeTrip(trips, now);
   const [leave, setLeave] = useState<LeaveId>('1');
-  const [stay, setStay] = useState<StayId>('7');
+  const [stay, setStay] = useState(7);
 
   const draft: Trip = (() => {
     const from = dayStart(plusDays(now, Number(leave)));
-    return { from: from.toISOString(), to: plusDays(from, Number(stay)).toISOString() };
+    return { from: from.toISOString(), to: plusDays(from, stay).toISOString() };
   })();
   const trip = current ?? draft;
   const list = prepList(plants, trip);
@@ -79,7 +72,7 @@ export default function AwayScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 32 }]}>
+    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
           <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
@@ -102,7 +95,12 @@ export default function AwayScreen() {
         <>
           <DropdownGroup>
             <Dropdown label="Leaving" value={leave} tint={c.ice} options={LEAVE} onChange={setLeave} />
-            <Dropdown label="Away for" value={stay} tint={c.ice} options={STAY} onChange={setStay} last />
+            <View style={styles.stepRow}>
+              <Text style={[styles.stepLabel, { color: c.ink }]}>Away for</Text>
+              <StepButton d="M5 12h14" label="One day less" disabled={stay <= 1} onPress={() => setStay(stepDown)} />
+              <Text style={[styles.stepValue, { color: c.ink }]} accessibilityLiveRegion="polite">{stayLabel(stay)}</Text>
+              <StepButton d="M12 5v14M5 12h14" label="One day more" disabled={stay >= MAX_DAYS} onPress={() => setStay(stepUp)} />
+            </View>
           </DropdownGroup>
           <Text style={[styles.note, { color: c.inkMuted }]}>Back on {fmt(draft.to)}. You'll get one catch-up round that morning.</Text>
         </>
@@ -173,6 +171,23 @@ export default function AwayScreen() {
   );
 }
 
+function StepButton({ d, label, disabled, onPress }: { d: string; label: string; disabled: boolean; onPress: () => void }) {
+  const c = useColors();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      hitSlop={6}
+      onPress={() => (haptics.tap(), onPress())}
+      style={({ pressed }) => [styles.stepBtn, { borderColor: c.line, backgroundColor: pressed ? c.cloud : c.ice, opacity: disabled ? 0.35 : 1 }]}
+    >
+      <Icon d={d} color={c.ink} size={16} width={2.8} />
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   page: { paddingHorizontal: 20, gap: 16 },
   toolbar: { flexDirection: 'row' },
@@ -186,6 +201,10 @@ const styles = StyleSheet.create({
   box: { width: 24, height: 24, borderRadius: 7, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginTop: 0 },
   struck: { textDecorationLine: 'line-through' },
   itemText: { flex: 1, fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20 },
+  stepRow: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14 },
+  stepLabel: { flex: 1, fontFamily: fonts.displaySemi, fontSize: 16 },
+  stepValue: { minWidth: 76, textAlign: 'center', fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  stepBtn: { width: 38, height: 38, borderRadius: 19, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   share: { borderWidth: 2, borderRadius: 18, padding: 14, gap: 2 },
   shareTitle: { fontFamily: fonts.display, fontSize: 17 },
   shareSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
