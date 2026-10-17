@@ -92,6 +92,8 @@ export type ArtId =
   | 'cucumber'
   | 'zucchini'
   | 'lettuce'
+  | 'oregano'
+  | 'sage'
   | 'lemon-balm'
   | 'lavender'
   | 'tarragon'
