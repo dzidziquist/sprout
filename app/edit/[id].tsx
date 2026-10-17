@@ -18,7 +18,8 @@ import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { Light, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
+import type { Light, Origin, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
+import { edibleGuide } from '@/data/edibles';
 
 const CARD_COLORS: { id: PotColor; label: string }[] = [
   { id: 'yellow', label: 'Butter' },
@@ -95,6 +96,19 @@ function Pill({ on, label, onPress, bg, children }: { on: boolean; label: string
   );
 }
 
+/** How a plant started. Seeds for everything; scraps only for crops that regrow from a base. */
+function originOptions(speciesId: string): { id: Origin; label: string }[] {
+  const regrows = edibleGuide(speciesId)?.regrows;
+  return [
+    { id: 'bought', label: 'Bought as a plant' },
+    { id: 'seed', label: 'From seed' },
+    ...(regrows ? [{ id: 'scraps' as const, label: 'Regrown from scraps' }] : []),
+    { id: 'cutting', label: 'My cutting' },
+    { id: 'gift', label: 'Gift' },
+    { id: 'swap', label: 'Swap' },
+  ];
+}
+
 export default function EditPlantScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -124,6 +138,7 @@ export default function EditPlantScreen() {
   const [joined, setJoined] = useState<JoinedId>(initialJoined);
   const initialCut = plant?.rooting ? closestOption(CUT, plant.rooting.startedAt) : 'today';
   const [cut, setCut] = useState<CutId>(initialCut);
+  const [origin, setOrigin] = useState<Origin>(plant?.origin ?? 'bought');
   const [watered, setWatered] = useState<WateredId | null>(null);
   const [confirming, setConfirming] = useState(false);
   // "Other" plants (not in the catalogue) can change their species name, care type and pet info.
@@ -143,6 +158,7 @@ export default function EditPlantScreen() {
 
   const save = () => {
     updatePlant(plant.id, {
+      origin,
       name: name.trim() || plant.name,
       light,
       soil,
@@ -252,7 +268,10 @@ export default function EditPlantScreen() {
         {plant.rooting ? (
           <Dropdown label="Cutting taken" value={cut} tint={c.ice} options={CUT} onChange={setCut} last />
         ) : (
-          <Dropdown label="Joined the fam" value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} />
+          <>
+            <Dropdown label="How it started" value={origin} tint={c.mint} options={originOptions(plant.speciesId)} onChange={setOrigin} />
+            <Dropdown label={origin === 'seed' ? 'Sown' : origin === 'scraps' ? 'Started' : 'Joined the fam'} value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} />
+          </>
         )}
         {!plant.rooting && (
           <Dropdown
