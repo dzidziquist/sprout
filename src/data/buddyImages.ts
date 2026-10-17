@@ -169,6 +169,26 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/fava-bean-happy.png'),
     snoozing: require('../../assets/buddies/fava-bean-happy.png'),
   },
+  'bush-bean': {
+    happy: require('../../assets/buddies/bush-bean-happy.png'),
+    thirsty: require('../../assets/buddies/bush-bean-happy.png'),
+    snoozing: require('../../assets/buddies/bush-bean-happy.png'),
+  },
+  'amaranth': {
+    happy: require('../../assets/buddies/amaranth-happy.png'),
+    thirsty: require('../../assets/buddies/amaranth-happy.png'),
+    snoozing: require('../../assets/buddies/amaranth-happy.png'),
+  },
+  'leek': {
+    happy: require('../../assets/buddies/leek-happy.png'),
+    thirsty: require('../../assets/buddies/leek-happy.png'),
+    snoozing: require('../../assets/buddies/leek-happy.png'),
+  },
+  'bok-choy': {
+    happy: require('../../assets/buddies/bok-choy-happy.png'),
+    thirsty: require('../../assets/buddies/bok-choy-happy.png'),
+    snoozing: require('../../assets/buddies/bok-choy-happy.png'),
+  },
   'pink-princess': {
     happy: require('../../assets/buddies/pink-princess-happy.png'),
     thirsty: require('../../assets/buddies/pink-princess-thirsty.png'),
