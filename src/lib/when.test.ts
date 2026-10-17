@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { closestJoined, closestOption, CUT, GONE, WATERED } from './when';
+import { closestJoined, closestOption, CUT, GONE, optionsSince, WATERED } from './when';
 
 const now = new Date('2026-10-17T12:00:00');
 const ago = (d: number) => new Date(now.getTime() - d * 86_400_000).toISOString();
@@ -25,3 +25,13 @@ describe('when', () => {
     expect(closestJoined(ago(500), now)).toBe('year');
   });
 });
+
+describe('optionsSince', () => {
+  it('only offers leaving dates after the plant joined, and always keeps Today', () => {
+    const now = new Date('2026-10-17T12:00:00');
+    expect(optionsSince(GONE, '2026-10-17T08:00:00', now).map((o) => o.id)).toEqual(['today']);
+    expect(optionsSince(GONE, '2026-10-12T08:00:00', now).map((o) => o.id)).toEqual(['today', 'yesterday', 'few']);
+    expect(optionsSince(GONE, '2024-01-01T00:00:00', now)).toHaveLength(GONE.length);
+  });
+});
+

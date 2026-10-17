@@ -14,7 +14,7 @@ import { feedingAdvice } from '@/engine/growPatch';
 import { growDay, stageAtPhoto } from '@/engine/photoDiary';
 import { activeTrip } from '@/engine/away';
 import { Dropdown, DropdownGroup } from '@/components/Dropdown';
-import { closestOption, daysAgo as daysBefore, GONE } from '@/lib/when';
+import { closestOption, optionsSince, daysAgo as daysBefore, GONE } from '@/lib/when';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles } from '@/components/GoldSparkles';
 import { usePlantActions } from '@/components/PlantMenu';
@@ -106,6 +106,7 @@ export default function PlantDetail() {
   const pets = petToxicKnown(plant);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
+  const goneOptions = optionsSince(GONE, plant.acquiredAt, now);
   const rhythm = Math.round(checkIntervalDays({ group: species.group, plant, profile: profile.climate, at: now }));
   const mine = events.filter((e) => e.plantId === plant.id);
   const lastWater = [...mine].reverse().find((e) => e.type === 'water');
@@ -200,16 +201,22 @@ export default function PlantDetail() {
                 ? `${plant.name} is growing somewhere new. Their story stays in your Offshoots.`
                 : `Thanks for the leaves, ${plant.name}. Every plant teaches us something, and their diary stays here.`}
             </Text>
-            <DropdownGroup>
+            {/* Sits on the card's own tint, with the chosen answer picked out in the card colour. */}
+            <DropdownGroup bg="transparent">
               <Dropdown
                 label={plant.archivedReason === 'gifted' ? 'Gifted' : 'Lost'}
-                value={closestOption(GONE, plant.archivedAt!)}
-                tint={plant.archivedReason === 'gifted' ? c.blush : c.cloud}
-                options={GONE}
+                value={closestOption(goneOptions, plant.archivedAt!)}
+                tint={c.card}
+                options={goneOptions}
                 onChange={(g) => setArchivedAt(plant.id, daysBefore(GONE.find((o) => o.id === g)?.days ?? 0))}
                 last
               />
             </DropdownGroup>
+            {goneOptions.length < GONE.length && (
+              <Text style={[styles.archivedNote, { color: c.ink }]}>
+                {plant.name} joined on {shortDate(plant.acquiredAt)}, so it can’t have left before that. To go further back, change that date in Edit.
+              </Text>
+            )}
             <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
           </Sticker>
         )}
@@ -390,6 +397,7 @@ const styles = StyleSheet.create({
   body: { padding: 20, gap: 16 },
   archived: { padding: 14, gap: 4 },
   archivedTitle: { fontFamily: fonts.display, fontSize: 18 },
+  archivedNote: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17, opacity: 0.75 },
   archivedBody: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   stats: { flexDirection: 'row', gap: 8 },
   stat: { flex: 1, padding: 10, borderRadius: 16 },

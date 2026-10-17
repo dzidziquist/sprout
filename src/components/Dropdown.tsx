@@ -10,13 +10,13 @@ export type DropdownOption<T> = { id: T; label: string };
 /** Which dropdown in the group is open; opening one closes the others. */
 const Open = createContext<{ open: string | null; setOpen: (k: string | null) => void } | null>(null);
 
-/** A card of dropdown rows, laid out like a Settings group. Only one row is open at a time. */
-export function DropdownGroup({ children }: { children: React.ReactNode }) {
+/** A card of dropdown rows, laid out like a Settings group. Only one row is open at a time. `bg` lets it sit on a tinted card. */
+export function DropdownGroup({ children, bg }: { children: React.ReactNode; bg?: string }) {
   const c = useColors();
   const [open, setOpen] = useState<string | null>(null);
   return (
     <Open.Provider value={{ open, setOpen }}>
-      <View style={[styles.group, { backgroundColor: c.card, borderColor: c.line }]}>{children}</View>
+      <View style={[styles.group, { backgroundColor: bg ?? c.card, borderColor: c.line }]}>{children}</View>
     </Open.Provider>
   );
 }
