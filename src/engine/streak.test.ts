@@ -116,6 +116,15 @@ describe('badges', () => {
     expect(b.find((x) => x.id === 'first-skip')?.hint).toMatch(/Damp/);
   });
 
+  it('level up after the first tier, keeping the first date for rewards', () => {
+    const checks = Array.from({ length: 30 }, (_, i) => check('a', new Date(Date.UTC(2026, 4, 1 + i, 9)).toISOString(), 'dry'));
+    const b = badgesFor({ plants: [plant('a')], events: checks, climate: 'seattle', now }).find((x) => x.id === 'first-check')!;
+    expect(b.earnedAt).toBe(checks[0].at);
+    expect(b.levels).toMatchObject({ level: 2, count: 30, next: 100, levelAt: checks[24].at, unit: 'checks' });
+    const none = badgesFor({ plants: [plant('a')], events: [], climate: 'seattle', now }).find((x) => x.id === 'first-check')!;
+    expect(none.levels).toMatchObject({ level: 0, count: 0, next: 1 });
+  });
+
   it('record when skips, cuttings and the 5th plant happened', () => {
     const skips = Array.from({ length: 10 }, (_, i) => check('a', `2026-06-${String(10 + i).padStart(2, '0')}T09:00:00`, 'damp'));
     const plants = ['a', 'b', 'c', 'd', 'e'].map((id, i) => plant(id, { createdAt: `2026-06-0${i + 1}T09:00:00` }));

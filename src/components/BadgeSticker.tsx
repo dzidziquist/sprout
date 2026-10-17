@@ -1,11 +1,11 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { Badge, BadgeId } from '@/engine/streak';
 import { BADGE_ART } from '@/data/art';
 
-const ICON: Record<BadgeId, string> = {
+export const BADGE_ICON: Record<BadgeId, string> = {
   'first-check': 'M3 17c3-1.5 6-1.5 9 0s6 1.5 9 0M12 3v9M8.5 8.5 12 12l3.5-3.5',
   'first-skip': 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11zM4 4l16 16',
   'ten-skips': 'M8 4s4 4.5 4 7.5a4 4 0 0 1-8 0C4 8.5 8 4 8 4zM16 9s4 4.5 4 7.5a4 4 0 0 1-8 0c0-3 4-7.5 4-7.5z',
@@ -22,7 +22,7 @@ const ICON: Record<BadgeId, string> = {
   season: 'M7 19h10a4 4 0 0 0 .5-7.97A6 6 0 0 0 6 12.5 3.5 3.5 0 0 0 7 19zM17 3v2M21 7h-2M20 4l-1.5 1.5',
 };
 
-const fill = (c: Palette): Record<BadgeId, string> => ({
+export const badgeFill = (c: Palette): Record<BadgeId, string> => ({
   'first-check': c.leaf,
   'first-skip': c.sky,
   'ten-skips': c.sky,
@@ -40,31 +40,41 @@ const fill = (c: Palette): Record<BadgeId, string> => ({
 });
 
 /** Milestone sticker. Earned: colourful with the date. Locked: faded, with a hint on how to earn it. */
-export function BadgeSticker({ badge }: { badge: Badge }) {
+export function BadgeSticker({ badge, onPress }: { badge: Badge; onPress?: () => void }) {
   const c = useColors();
   const earned = !!badge.earnedAt;
-  const bg = earned ? fill(c)[badge.id] : c.cloud;
+  const bg = earned ? badgeFill(c)[badge.id] : c.cloud;
   const fg = earned ? textOn(bg, c) : c.inkMuted;
   const art = BADGE_ART[badge.art === undefined ? badge.id : (badge.art ?? '')];
   const date = earned ? new Date(badge.earnedAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+  const lv = badge.levels;
+  // Levelled badges show progress to the next level instead of the date (the badge screen has the dates).
+  const sub = !earned ? badge.hint : lv && lv.tiers.length > 1 ? (lv.next ? `${lv.count} of ${lv.next} ${lv.unit}` : `Every level · ${lv.count} ${lv.unit}`) : date;
   return (
-    <View
-      style={styles.wrap}
-      accessible
-      accessibilityLabel={earned ? `${badge.title}, earned ${date}` : `${badge.title}, locked. ${badge.hint}`}
+    <Pressable
+      style={({ pressed }) => [styles.wrap, pressed && { transform: [{ scale: 0.94 }] }]}
+      onPress={onPress}
+      disabled={!onPress}
+      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityLabel={earned ? `${badge.title}${lv && lv.level > 1 ? `, level ${lv.level}` : ''}, earned ${date}` : `${badge.title}, locked. ${badge.hint}`}
     >
       {art ? (
         <Image source={earned ? art.earned : art.locked} style={styles.art} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
       ) : (
         <View style={[styles.circle, { backgroundColor: bg, borderColor: earned ? c.line : c.inkMuted }, earned ? { boxShadow: `0px 3px 0px ${c.drop}` } : { opacity: 0.6, borderStyle: 'dashed' }]}>
           <Svg width={30} height={30} viewBox="0 0 24 24">
-            <Path d={ICON[badge.id]} stroke={fg} strokeWidth={2.1} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            <Path d={BADGE_ICON[badge.id]} stroke={fg} strokeWidth={2.1} strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </Svg>
         </View>
       )}
       <Text style={[styles.title, { color: earned ? c.ink : c.inkMuted }]} numberOfLines={2}>{badge.title}</Text>
-      <Text style={[styles.sub, { color: c.inkMuted }]} numberOfLines={2}>{earned ? date : badge.hint}</Text>
-    </View>
+      {lv && lv.level > 1 && (
+        <View style={[styles.level, { backgroundColor: c.sun, borderColor: c.line }]}>
+          <Text style={[styles.levelText, { color: c.onBright }]}>Lv {lv.level}</Text>
+        </View>
+      )}
+      <Text style={[styles.sub, { color: c.inkMuted }]} numberOfLines={2}>{sub}</Text>
+    </Pressable>
   );
 }
 
@@ -72,6 +82,8 @@ const styles = StyleSheet.create({
   wrap: { width: '31%', alignItems: 'center', gap: 4, paddingVertical: 4 },
   art: { width: 72, height: 72 },
   circle: { width: 62, height: 62, borderRadius: 31, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  level: { position: 'absolute', top: 0, right: 14, borderWidth: 2, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1, transform: [{ rotate: '8deg' }] },
+  levelText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   title: { fontFamily: fonts.bodyHeavy, fontSize: 13, textAlign: 'center', lineHeight: 16 },
   sub: { fontFamily: fonts.body, fontSize: 11, textAlign: 'center', lineHeight: 14 },
 });

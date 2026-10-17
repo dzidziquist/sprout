@@ -14,6 +14,7 @@ import { Label, Title } from '@/components/ui';
 import { useRewards } from '@/hooks/useRewards';
 import { SPOTS } from '@/lib/spots';
 import { requestPermission } from '@/lib/notifications';
+import { activeTrip, upcomingTrip } from '@/engine/away';
 import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
@@ -115,6 +116,13 @@ export default function SettingsScreen() {
     if (!data.busy) fn();
   };
 
+  const awayNow = activeTrip(profile.trips, new Date());
+  const awaySoon = upcomingTrip(profile.trips, new Date());
+  const awayValue = awayNow
+    ? `Until ${new Date(awayNow.to).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+    : awaySoon
+      ? `From ${new Date(awaySoon.from).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+      : 'Off';
   const roundValue = profile.round.enabled ? (TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null) : 'Off';
 
   const eraseAll = async () => {
@@ -157,7 +165,7 @@ export default function SettingsScreen() {
             }}
           />
         </Field>
-        <Field label="Progress photos" last note={PHOTO_NOTE[profile.photos ?? 'monthly']}>
+        <Field label="Progress photos" note={PHOTO_NOTE[profile.photos ?? 'monthly']}>
           <Segmented
             label="Progress photos"
             value={profile.photos ?? 'monthly'}
@@ -169,6 +177,7 @@ export default function SettingsScreen() {
             onChange={(v) => setProfile({ photos: v })}
           />
         </Field>
+        <Row label="Away mode" value={awayValue} onPress={() => router.push('/away')} last />
       </Section>
 
       <Section title="Look and feel">

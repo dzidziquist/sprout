@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { useRewards } from '@/hooks/useRewards';
-import { closestJoined, daysAgo, JOINED, WATERED, type JoinedId, type WateredId } from '@/lib/when';
+import { closestJoined, closestOption, CUT, daysAgo, JOINED, WATERED, type CutId, type JoinedId, type WateredId } from '@/lib/when';
 import { isReservoir } from '@/engine/careEngine';
 import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
@@ -18,7 +18,8 @@ import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { Light, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
+import type { Light, Origin, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
+import { edibleGuide } from '@/data/edibles';
 
 const CARD_COLORS: { id: PotColor; label: string }[] = [
   { id: 'yellow', label: 'Butter' },
@@ -95,6 +96,25 @@ function Pill({ on, label, onPress, bg, children }: { on: boolean; label: string
   );
 }
 
+/** How a plant started. Seeds for everything; scraps only for crops that regrow from a base. */
+function originOptions(speciesId: string): { id: Origin; label: string }[] {
+  const regrows = edibleGuide(speciesId)?.regrows;
+  return [
+    { id: 'bought', label: 'Bought as a plant' },
+    { id: 'seed', label: 'From seed' },
+    ...(regrows ? [{ id: 'scraps' as const, label: 'Regrown from scraps' }] : []),
+    { id: 'cutting', label: 'My cutting' },
+    { id: 'gift', label: 'Gift' },
+    { id: 'swap', label: 'Swap' },
+  ];
+}
+
+const SELF_WATER: { id: 'no' | 'always' | 'away'; label: string }[] = [
+  { id: 'no', label: 'No' },
+  { id: 'always', label: 'Yes, I keep it filled' },
+  { id: 'away', label: 'Only fill it when I’m away' },
+];
+
 export default function EditPlantScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -116,12 +136,16 @@ export default function EditPlantScreen() {
   const [light, setLight] = useState<Light>(plant?.light ?? 'bright');
   const [soil, setSoil] = useState<Soil>(plant?.soil ?? 'potting_mix');
   const [size, setSize] = useState(plant ? nearestSize(plant.potDiameterCm) : 15);
+  const [selfWatering, setSelfWatering] = useState<'always' | 'away' | undefined>(plant?.selfWatering);
   const [material, setMaterial] = useState<PotMaterial>(plant?.potMaterial ?? 'plastic');
   const [placement, setPlacement] = useState<Placement>(plant?.placement ?? 'indoor');
   const [room, setRoom] = useState(plant?.room ?? '');
   const [potColor, setPotColor] = useState<PotColor>(plant?.potColor ?? 'yellow');
   const initialJoined = plant ? closestJoined(plant.acquiredAt) : 'today';
   const [joined, setJoined] = useState<JoinedId>(initialJoined);
+  const initialCut = plant?.rooting ? closestOption(CUT, plant.rooting.startedAt) : 'today';
+  const [cut, setCut] = useState<CutId>(initialCut);
+  const [origin, setOrigin] = useState<Origin>(plant?.origin ?? 'bought');
   const [watered, setWatered] = useState<WateredId | null>(null);
   const [confirming, setConfirming] = useState(false);
   // "Other" plants (not in the catalogue) can change their species name, care type and pet info.
@@ -141,17 +165,26 @@ export default function EditPlantScreen() {
 
   const save = () => {
     updatePlant(plant.id, {
+      origin,
       name: name.trim() || plant.name,
       light,
       soil,
       // Only touch the exact diameter if the size bucket actually changed.
       ...(size !== nearestSize(plant.potDiameterCm) ? { potDiameterCm: size } : {}),
       potMaterial: material,
+      selfWatering: placement !== 'ground' && !isReservoir(soil) ? selfWatering : undefined,
       placement,
       room: room.trim() || undefined,
       potColor,
       // Only move the date when the chip changed, so an exact date isn't rounded away.
-      ...(joined !== initialJoined ? { acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString() } : {}),
+      ...(joined !== initialJoined && !plant.rooting ? { acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString() } : {}),
+      // A rooting cutting joined the day it was taken, so both dates move together.
+      ...(plant.rooting && cut !== initialCut
+        ? (() => {
+            const at = daysAgo(CUT.find((t) => t.id === cut)?.days ?? 0).toISOString();
+            return { acquiredAt: at, rooting: { ...plant.rooting, startedAt: at } };
+          })()
+        : {}),
       ...(isOther
         ? {
             speciesId: otherId,
@@ -240,7 +273,14 @@ export default function EditPlantScreen() {
 
       <Label>A little history</Label>
       <DropdownGroup>
-        <Dropdown label="Joined the fam" value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} last={!!plant.rooting} />
+        {plant.rooting ? (
+          <Dropdown label="Cutting taken" value={cut} tint={c.ice} options={CUT} onChange={setCut} last />
+        ) : (
+          <>
+            <Dropdown label="How it started" value={origin} tint={c.mint} options={originOptions(plant.speciesId)} onChange={setOrigin} />
+            <Dropdown label={origin === 'seed' ? 'Sown' : origin === 'scraps' ? 'Started' : 'Joined the fam'} value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} />
+          </>
+        )}
         {!plant.rooting && (
           <Dropdown
             label={isReservoir(soil) ? 'Last topped up' : 'Last watered'}
@@ -291,6 +331,17 @@ export default function EditPlantScreen() {
           <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
         ))}
       </View>
+      {!isReservoir(soil) && placement !== 'ground' && (
+        <>
+          <Label>Self-watering pot?</Label>
+          <View style={styles.wrap}>
+            {SELF_WATER.map((o) => (
+              <Pill key={o.id} on={(selfWatering ?? 'no') === o.id} bg={c.ice} label={o.label} onPress={() => setSelfWatering(o.id === 'no' ? undefined : o.id)} />
+            ))}
+          </View>
+          {selfWatering && <Text style={[styles.note, { color: c.inkMuted }]}>{selfWatering === 'always' ? 'Checks become a quick peek at the water line, about half as often.' : 'Care stays the same. Away mode reminds you to fill it before a trip.'}</Text>}
+        </>
+      )}
 
       <Label>Where does it live?</Label>
       <View style={styles.wrap}>

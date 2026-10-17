@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import Svg, { Path } from 'react-native-svg';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import { usePlantStore } from '@/store/plantStore';
 import { isReadyToPotUp, layoutForest, POT_UP_AFTER_DAYS, rootingDays } from '@/engine/treeLayout';
@@ -61,7 +62,8 @@ export default function OffshootsScreen() {
   const shown = shownId === 'all' ? forest.families : forest.families.filter((f) => f.root.id === shownId);
   const babies = plants.filter((p) => p.parentId);
   const stats = [
-    { n: babies.length, label: 'cuttings taken', bg: c.lavender },
+    { n: babies.length, label: babies.length === 1 ? 'baby plant' : 'baby plants', bg: c.lavender },
+    // Rooted: made it out of the jar, whether they stayed or went to a new home.
     { n: babies.filter((p) => !p.rooting).length, label: 'rooted', bg: c.mint },
     { n: plants.filter((p) => p.archivedReason === 'gifted').length, label: 'gifted', bg: c.blush },
   ];
@@ -165,7 +167,12 @@ export default function OffshootsScreen() {
                   }}
                   style={({ pressed }) => [styles.jump, shownId === 'all' && { backgroundColor: c.lavender }, pressed && { transform: [{ translateY: 1 }] }]}
                 >
-                  <Text style={[styles.jumpText, shownId === 'all' && { color: textOn(c.lavender, c) }]}>All</Text>
+                  <View style={[styles.allDots, { backgroundColor: shownId === 'all' ? c.card : c.cloud }]}>
+                    <Svg width={16} height={16} viewBox="0 0 24 24">
+                      <Path d="M12 4v5M7 14l5-5 5 5M6 15v5M18 15v5" stroke={c.ink} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    </Svg>
+                  </View>
+                  <Text style={[styles.jumpText, shownId === 'all' && { color: textOn(c.lavender, c) }]}>All · {forest.families.reduce((n, f) => n + f.members, 0)}</Text>
                 </Pressable>
               </ScrollView>
             </View>
@@ -173,7 +180,8 @@ export default function OffshootsScreen() {
 
           {shown.map((f) => {
             const all = fullById.get(f.root.id) ?? f;
-            const archived = all.nodes.filter((n) => n.plant.archivedAt).length;
+            const gifted = all.nodes.filter((n) => n.plant.archivedAt && n.plant.archivedReason === 'gifted').length;
+            const lost = all.nodes.filter((n) => n.plant.archivedAt && n.plant.archivedReason !== 'gifted').length;
             // Wide even after folding big sibling groups (lots of grandchildren): read it as a list instead.
             const auto: View_ = (foldedWidth.get(f.root.id) ?? f.width) > available * 2 ? 'list' : 'tree';
             const mode = chosen[f.root.id] ?? auto;
@@ -186,7 +194,8 @@ export default function OffshootsScreen() {
                     <Text style={styles.familyTitle}>{f.root.name}'s family</Text>
                     <Label muted>
                       {f.members} plants · {f.generations} {f.generations === 1 ? 'generation' : 'generations'} · since {new Date(f.root.acquiredAt).getFullYear()}
-                      {archived ? ` · ${archived} remembered` : ''}
+                      {gifted ? ` · ${gifted} gifted` : ''}
+                      {lost ? ` · ${lost} in memory` : ''}
                     </Label>
                   </View>
                   {canToggle && (
@@ -268,6 +277,7 @@ function makeStyles(c: Palette) {
     fewerText: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.ink, textDecorationLine: 'underline' },
     jumpRow: { paddingHorizontal: PAGE_PAD, gap: 8 },
     jump: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 2, borderColor: c.line, borderRadius: 18, height: 40, paddingLeft: 4, paddingRight: 12, backgroundColor: c.card },
+    allDots: { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
     jumpText: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.ink, maxWidth: 160 },
     footnote: { fontFamily: fonts.body, fontSize: 12, lineHeight: 17, color: c.inkMuted, textAlign: 'center', paddingHorizontal: 12 },
     empty: { alignItems: 'center', gap: 10, padding: 20, marginTop: 12 },

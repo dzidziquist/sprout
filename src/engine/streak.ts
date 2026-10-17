@@ -1,3 +1,4 @@
+import { awayRanges, subtractRanges, type Trip } from './away';
 import { checkIntervalDays } from './careEngine';
 import { speciesOf } from '../data/species';
 import { localizeClimateText, modelOf, shiftOf } from '../lib/climate';
@@ -67,6 +68,8 @@ export interface StreakInput {
   events: CareEvent[];
   climate: ClimateProfile;
   now: Date;
+  /** Away-mode trips: lapses during a trip (and the catch-up days after) don't count. */
+  trips?: Trip[];
 }
 
 export function startOfWeek(d: Date): Date {
@@ -118,11 +121,11 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
   return out;
 }
 
-export function computeStreak({ plants, events, climate, now }: StreakInput): StreakResult {
+export function computeStreak({ plants, events, climate, now, trips }: StreakInput): StreakResult {
   const empty: StreakResult = { started: false, checkedThisWeek: false, current: 0, best: 0, thisWeek: 'clean', freezesLeft: FREEZES_PER_MONTH, weeks: [], reachedAt: [] };
   if (plants.length === 0) return empty;
   const first = Math.min(...plants.map((p) => new Date(p.createdAt).getTime()));
-  const lapses = plants.flatMap((p) => lapsesFor(p, events, climate, now));
+  const lapses = subtractRanges(plants.flatMap((p) => lapsesFor(p, events, climate, now)), awayRanges(trips));
   const touches = (from: number, to: number) => lapses.some(([a, b]) => a < to && b > from);
   // Streaks are earned: a week only counts once you've actually done a soil check in it.
   const checkTimes = events.filter((e) => e.type === 'check').map((e) => new Date(e.at).getTime());
@@ -205,6 +208,31 @@ export interface Badge {
   earnedAt?: string;
   /** Which illustration to show, when it isn't the one named after the badge id. null: the line icon. */
   art?: string | null;
+  /** Levelled badges keep going after the first one: how far you've got, and the next target. */
+  levels?: BadgeLevels;
+}
+
+export interface BadgeLevels {
+  /** Targets, in order; reaching the first is earning the badge. */
+  tiers: number[];
+  /** 1-based level reached (0 while still locked). */
+  level: number;
+  /** The count so far (checks, skips, years…). */
+  count: number;
+  /** The next target, or undefined once every level is done. */
+  next?: number;
+  /** When the first level (earning the badge) and the current level were reached. */
+  firstAt?: string;
+  levelAt?: string;
+  /** Word for the count: "checks", "years". */
+  unit: string;
+}
+
+/** Levels from a sorted list of when each unit was reached (the 1st check, the 2nd…). */
+function levelsFrom(dates: string[], tiers: number[], unit: string): BadgeLevels {
+  const count = dates.length;
+  const level = tiers.filter((t) => count >= t).length;
+  return { tiers, level, count, next: tiers[level], firstAt: level ? dates[tiers[0] - 1] : undefined, levelAt: level ? dates[tiers[level - 1] - 1] : undefined, unit };
 }
 
 function nth(events: CareEvent[], pred: (e: CareEvent) => boolean, n = 1): string | undefined {
@@ -253,50 +281,48 @@ function hardSeason(climate: ClimateProfile): { name: string; art: string | null
   return { name: localizeClimateText('grey season', climate), art: 'season' };
 }
 
-/**
- * "Grandma plant": the first plant to turn one in the fam (a year after it was added, so a demo or
- * a long-owned plant added today doesn't earn it on day one), while still in it or archived after.
- */
-function grandmaPlant(plants: Plant[], now: Date): string | undefined {
-  let earliest: number | undefined;
-  for (const p of plants) {
-    const birthday = new Date(p.createdAt);
-    birthday.setFullYear(birthday.getFullYear() + 1);
-    const t = birthday.getTime();
-    if (t > now.getTime()) continue;
-    if (p.archivedAt && new Date(p.archivedAt).getTime() < t) continue;
-    if (earliest === undefined || t < earliest) earliest = t;
+/** When some plant first reached each year in the fam (1st birthday, 2nd…), up to `max` years. */
+function birthdays(plants: Plant[], now: Date, max: number): string[] {
+  const out: string[] = [];
+  for (let y = 1; y <= max; y++) {
+    let earliest: number | undefined;
+    for (const p of plants) {
+      const d = new Date(p.createdAt);
+      d.setFullYear(d.getFullYear() + y);
+      const t = d.getTime();
+      if (t > now.getTime() || (p.archivedAt && new Date(p.archivedAt).getTime() < t)) continue;
+      if (earliest === undefined || t < earliest) earliest = t;
+    }
+    if (earliest === undefined) break;
+    out.push(new Date(earliest).toISOString());
   }
-  return earliest === undefined ? undefined : new Date(earliest).toISOString();
+  return out;
 }
 
-/** "Generous": the first plant given to a new home. */
-function firstGift(plants: Plant[]): string | undefined {
-  return plants
-    .filter((p) => p.archivedReason === 'gifted' && p.archivedAt)
-    .map((p) => p.archivedAt!)
-    .sort()[0];
-}
-
-export function badgesFor({ plants, events, climate, now }: StreakInput, streak?: StreakResult): Badge[] {
-  const s = streak ?? computeStreak({ plants, events, climate, now });
-  const isCheck = (e: CareEvent) => e.type === 'check';
-  const isSkip = (e: CareEvent) => e.type === 'check' && e.result === 'damp';
-  const fifth = [...plants].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[4]?.createdAt;
+export function badgesFor({ plants, events, climate, now, trips }: StreakInput, streak?: StreakResult): Badge[] {
+  const s = streak ?? computeStreak({ plants, events, climate, now, trips });
+  const ats = (pred: (e: CareEvent) => boolean) => events.filter(pred).map((e) => e.at).sort();
+  const checks = ats((e) => e.type === 'check');
+  const skips = ats((e) => e.type === 'check' && e.result === 'damp');
   const season = hardSeason(climate);
+  // Each levelled badge is earned at its first tier; that date is what rewards count, so levels never change the pace of gifts.
+  const levelled = (id: BadgeId, title: string, hint: string, l: BadgeLevels): Badge => ({ id, title, hint, earnedAt: l.firstAt, levels: l });
+  const make = levelsFrom;
+  const famDates = [...plants].map((p) => p.createdAt).sort();
+  const gifts = plants.filter((p) => p.archivedReason === 'gifted' && p.archivedAt).map((p) => p.archivedAt!).sort();
   return [
-    { id: 'first-check', title: 'First check', hint: 'Check any plant’s soil or water', earnedAt: nth(events, isCheck) },
-    { id: 'first-skip', title: 'Smart skip', hint: 'Skip when it’s "Damp" or "Plenty"', earnedAt: nth(events, isSkip) },
-    { id: 'ten-skips', title: '10 smart skips', hint: 'Skip a watering it didn’t need, 10 times', earnedAt: nth(events, isSkip, 10) },
-    { id: 'first-photo', title: 'First diary photo', hint: 'Add a photo to a plant', earnedAt: nth(events, (e) => e.type === 'photo' && !!e.photoUri) },
-    { id: 'first-cutting', title: 'First cutting', hint: 'Take a cutting from a plant', earnedAt: nth(events, (e) => e.type === 'cutting') },
+    levelled('first-check', 'First check', 'Check any plant’s soil or water', make(checks, [1, 25, 100, 250, 500], 'checks')),
+    { id: 'first-skip', title: 'Smart skip', hint: 'Skip when it’s "Damp" or "Plenty"', earnedAt: skips[0] },
+    levelled('ten-skips', '10 smart skips', 'Skip a watering it didn’t need, 10 times', make(skips, [10, 50, 100, 250], 'smart skips')),
+    levelled('first-photo', 'First diary photo', 'Add a photo to a plant', make(ats((e) => e.type === 'photo' && !!e.photoUri), [1, 10, 50, 100], 'photos')),
+    levelled('first-cutting', 'First cutting', 'Take a cutting from a plant', make(ats((e) => e.type === 'cutting'), [1, 10, 25, 50], 'cuttings')),
     { id: 'first-roots', title: 'First roots', hint: 'Pot up a rooted cutting', earnedAt: nth(events, (e) => e.type === 'rooted') },
-    { id: 'propagator', title: 'Propagator', hint: 'Root 3 cuttings', earnedAt: nth(events, (e) => e.type === 'rooted', 3) },
-    { id: 'first-harvest', title: 'First harvest', hint: 'Log a harvest from an edible', earnedAt: nth(events, (e) => e.type === 'harvest') },
-    { id: 'fam-5', title: '5-plant fam', hint: 'Welcome 5 plants home', earnedAt: fifth },
-    { id: 'generous', title: 'Generous', hint: 'Give a plant a new home', earnedAt: firstGift(plants) },
-    { id: 'grandma-plant', title: 'Grandma plant', hint: 'Keep a plant in the fam for a year', earnedAt: grandmaPlant(plants, now) },
-    { id: 'streak-4', title: '4-week streak', hint: 'Keep everyone checked for 4 weeks', earnedAt: s.reachedAt[3] },
+    levelled('propagator', 'Propagator', 'Root 3 cuttings', make(ats((e) => e.type === 'rooted'), [3, 10, 25, 50], 'rooted')),
+    levelled('first-harvest', 'First harvest', 'Log a harvest from an edible', make(ats((e) => e.type === 'harvest'), [1, 10, 50, 100], 'harvests')),
+    levelled('fam-5', '5-plant fam', 'Welcome 5 plants home', make(famDates, [5, 10, 25, 50], 'plants')),
+    levelled('generous', 'Generous', 'Give a plant a new home', make(gifts, [1, 5, 10, 25], 'gifted')),
+    levelled('grandma-plant', 'Grandma plant', 'Keep a plant in the fam for a year', make(birthdays(plants, now, 5), [1, 2, 3, 5], 'years')),
+    levelled('streak-4', '4-week streak', 'Keep everyone checked for 4 weeks', make(s.reachedAt, [4, 12, 26, 52], 'weeks')),
     { id: 'season', title: `Survived ${season.name}`, hint: `Keep a plant going through ${season.name}`, earnedAt: seasonSurvivor(plants, events, climate), art: season.art },
   ];
 }

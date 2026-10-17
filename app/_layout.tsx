@@ -46,13 +46,13 @@ export default function RootLayout() {
       clearTimeout(timer);
       timer = setTimeout(() => {
         const { plants, events, profile } = usePlantStore.getState();
-        rescheduleRounds(plants, events, profile.round, profile.photos ?? 'monthly').catch(() => {});
+        rescheduleRounds(plants, events, profile.round, profile.photos ?? 'monthly', profile.trips).catch(() => {});
       }, 400);
     };
     sync();
     if (TIPS_ENABLED) configurePurchases();
     const unsub = usePlantStore.subscribe((s, prev) => {
-      if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos) sync();
+      if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos || s.profile.trips !== prev.profile.trips) sync();
     });
     return () => {
       clearTimeout(timer);
@@ -81,6 +81,7 @@ export default function RootLayout() {
         <Stack.Screen name="support" options={{ presentation: 'modal' }} />
         <Stack.Screen name="identify" options={{ presentation: 'modal' }} />
         <Stack.Screen name="photos/[id]" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="away" options={{ presentation: 'modal' }} />
         <Stack.Screen name="grow" />
         <Stack.Screen name="help" />
         <Stack.Screen name="settings" />
@@ -92,6 +93,10 @@ export default function RootLayout() {
         <Stack.Screen
           name="cuttings/[id]"
           options={{ presentation: 'formSheet', sheetAllowedDetents: [0.9, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}
+        />
+        <Stack.Screen
+          name="badge/[id]"
+          options={{ presentation: 'formSheet', sheetAllowedDetents: [0.7, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}
         />
         <Stack.Screen
           name="harvest/[id]"

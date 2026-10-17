@@ -4,7 +4,7 @@ import { EDIBLE_PLANTS } from './edibles';
 import { CALENDAR, EDIBLES } from '../edibles';
 import { OTHER, SPECIES_LIST, searchSpecies, speciesOf } from '../species';
 
-const ART = ['monstera', 'pothos', 'fig', 'calathea', 'snake', 'hoya', 'peace-lily', 'zz', 'string-of-pearls', 'pink-princess', 'aloe', 'spider', 'rubber', 'bird-of-paradise', 'basil', 'mint', 'tomato', 'pepper', 'spring-onion'];
+const ART = ['monstera', 'pothos', 'fig', 'calathea', 'snake', 'hoya', 'peace-lily', 'zz', 'string-of-pearls', 'pink-princess', 'aloe', 'spider', 'rubber', 'bird-of-paradise', 'basil', 'mint', 'tomato', 'pepper', 'bell-pepper', 'potato', 'sweet-potato', 'okra', 'cucumber', 'zucchini', 'lettuce', 'kale', 'garlic', 'carrot', 'garden-egg', 'eggplant', 'ginger', 'radish', 'chard', 'spinach', 'pea', 'runner-bean', 'mustard-greens', 'microgreens', 'kontomire', 'fava-bean', 'bush-bean', 'amaranth', 'leek', 'bok-choy', 'arugula', 'blueberry', 'meyer-lemon', 'strawberry', 'cape-gooseberry', 'common-fig', 'passion-fruit', 'pineapple', 'raspberry', 'ayoyo', 'rosemary', 'thyme', 'scent-leaf', 'roselle', 'dill', 'cilantro', 'parsley', 'bay-laurel', 'chives', 'tarragon', 'lavender', 'lemon-balm', 'sage', 'oregano', 'heartleaf', 'spring-onion'];
 const SOILS = ['potting_mix', 'chunky_aroid', 'gritty', 'perlite_mix', 'bagged_cactus', 'veg_mix', 'coir', 'moisture_control', 'moss', 'garden_soil', 'leca', 'water', 'unsure'];
 const ALL = [...HOUSEPLANTS, ...EDIBLE_PLANTS];
 

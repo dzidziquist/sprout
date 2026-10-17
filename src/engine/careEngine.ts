@@ -60,6 +60,14 @@ export const isReservoir = (soil: Soil): soil is ReservoirMedium => soil === 'le
 
 export const RESERVOIR_BASE_DAYS = 7;
 
+/** A self-watering pot kept topped up wicks water to the roots, so the soil stays even far longer. */
+export const SELF_WATERING_MULTIPLIER = 2;
+
+/** Checks for this plant mean peeking at a water line (LECA, water, or a self-watering pot kept filled). */
+export function checksWaterLine(plant: Pick<Plant, 'soil' | 'selfWatering'>): boolean {
+  return isReservoir(plant.soil) || plant.selfWatering === 'always';
+}
+
 /** Days between full water changes (water culture) or flushes (LECA). Nutrient salts build up otherwise. */
 export const REFRESH_DAYS: Record<ReservoirMedium, number> = { water: 14, leca: 28 };
 
@@ -151,7 +159,7 @@ export const MAX_INTERVAL_DAYS = 45;
 
 export interface IntervalInput {
   group: SpeciesGroup;
-  plant: Pick<Plant, 'soil' | 'light' | 'potMaterial' | 'potDiameterCm' | 'placement' | 'k' | 'lastRepottedAt' | 'acquiredAt'>;
+  plant: Pick<Plant, 'soil' | 'light' | 'potMaterial' | 'potDiameterCm' | 'placement' | 'k' | 'lastRepottedAt' | 'acquiredAt'> & Partial<Pick<Plant, 'selfWatering'>>;
   profile: ClimateProfile;
   at: Date;
 }
@@ -184,7 +192,8 @@ export function checkIntervalDays({ group, plant, profile, at }: IntervalInput):
       SOIL_MULTIPLIER[plant.soil] *
       season *
       plant.k *
-      (isMixOld(plant, at) ? OLD_MIX_MULTIPLIER : 1);
+      (isMixOld(plant, at) ? OLD_MIX_MULTIPLIER : 1) *
+      (plant.selfWatering === 'always' ? SELF_WATERING_MULTIPLIER : 1);
   }
   return clamp(round1(days), MIN_INTERVAL_DAYS, MAX_INTERVAL_DAYS);
 }
@@ -276,7 +285,11 @@ export function isDue(plant: Pick<Plant, 'nextCheckAt'>, now: Date): boolean {
 }
 
 /** Mood is an honest read of state, never a guilt trip. */
-export function moodFor(plant: Pick<Plant, 'nextCheckAt' | 'lastResult' | 'lastCheckAt'>, now: Date): 'happy' | 'thirsty' | 'snoozing' {
+export function moodFor(plant: Pick<Plant, 'nextCheckAt' | 'lastResult' | 'lastCheckAt'> & Partial<Pick<Plant, 'rooting'>>, now: Date, away = false): 'happy' | 'thirsty' | 'snoozing' {
+  // Rooting cuttings have no soil checks, so they're never "due".
+  if (plant.rooting) return 'happy';
+  // Away mode: everyone's having a nap until you're back.
+  if (away) return isDue(plant, now) ? 'snoozing' : 'happy';
   if (isDue(plant, now)) return 'thirsty';
   if (plant.lastResult && plant.lastResult !== 'dry' && plant.lastCheckAt) {
     const since = (now.getTime() - new Date(plant.lastCheckAt).getTime()) / DAY_MS;

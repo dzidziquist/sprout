@@ -95,11 +95,13 @@ const PLACES: { id: Placement; label: string }[] = [
   { id: 'outdoor', label: 'Outside, in a pot' },
   { id: 'ground', label: 'Garden bed' },
 ];
+/** Everything without a growing guide, including plants that aren't in the library. */
 const ORIGINS: { id: Origin; label: string }[] = [
-  { id: 'bought', label: 'Bought' },
+  { id: 'bought', label: 'Bought as a plant' },
+  { id: 'seed', label: 'From seed' },
   { id: 'cutting', label: 'My cutting' },
-  { id: 'swap', label: 'Swap' },
   { id: 'gift', label: 'Gift' },
+  { id: 'swap', label: 'Swap' },
 ];
 
 /** Edibles: how it started, which also sets the stage it starts at. */
@@ -163,6 +165,12 @@ function defaultsFor(id: SpeciesId, spots?: Spot[]) {
   return { soil, light: spot?.light ?? sp.defaultLight, placement, name: (NAMES[id] ?? fallbackNames)[0] };
 }
 
+const SELF_WATER: { id: 'no' | 'always' | 'away'; label: string }[] = [
+  { id: 'no', label: 'No' },
+  { id: 'always', label: 'Yes, I keep it filled' },
+  { id: 'away', label: 'Only fill it when I’m away' },
+];
+
 export default function AddPlantScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -182,6 +190,7 @@ export default function AddPlantScreen() {
   const [light, setLight] = useState<Light>(presetDefaults?.light ?? 'bright');
   const [soil, setSoil] = useState<Soil>(presetDefaults?.soil ?? 'potting_mix');
   const [size, setSize] = useState(15);
+  const [selfWatering, setSelfWatering] = useState<'always' | 'away' | undefined>(undefined);
   const [material, setMaterial] = useState<PotMaterial>('plastic');
   const [placement, setPlacement] = useState<Placement>(presetDefaults?.placement ?? 'indoor');
   const [joined, setJoined] = useState<JoinedId>('today');
@@ -373,6 +382,7 @@ export default function AddPlantScreen() {
       soil,
       potMaterial: material,
       potDiameterCm: size,
+      selfWatering: placement !== 'ground' && !isReservoir(soil) ? selfWatering : undefined,
       light,
       placement,
       room: room.trim() || undefined,
@@ -491,30 +501,28 @@ export default function AddPlantScreen() {
 
       <Label>A little history</Label>
       <DropdownGroup>
+        <Dropdown
+          label="How it started"
+          value={origin}
+          tint={c.mint}
+          options={guide ? EDIBLE_ORIGINS.filter((o) => !o.regrowOnly || guide.regrows) : ORIGINS}
+          onChange={(o) => {
+            setOrigin(o);
+            setStage(null);
+          }}
+        />
+        {origin === 'cutting' && parents.length > 0 && (
+          <Dropdown
+            label="Cut from"
+            value={parentId ?? null}
+            tint={c.lavender}
+            placeholder="Choose"
+            options={parents.map((p) => ({ id: p.id, label: p.name }))}
+            onChange={(id) => setParentId(id ?? undefined)}
+          />
+        )}
         {guide && (
-          <>
-            <Dropdown
-              label="How it started"
-              value={origin}
-              tint={c.mint}
-              options={EDIBLE_ORIGINS.filter((o) => !o.regrowOnly || guide.regrows)}
-              onChange={(o) => {
-                setOrigin(o);
-                setStage(null);
-              }}
-            />
-            {origin === 'cutting' && parents.length > 0 && (
-              <Dropdown
-                label="Cut from"
-                value={parentId ?? null}
-                tint={c.lavender}
-                placeholder="Choose"
-                options={parents.map((p) => ({ id: p.id, label: p.name }))}
-                onChange={(id) => setParentId(id ?? undefined)}
-              />
-            )}
-            <Dropdown label="Stage now" value={nowStage ?? null} tint={c.butter} options={guide.stages.map((s) => ({ id: s, label: guide.info[s]?.label ?? s }))} onChange={(s) => s && setStage(s)} />
-          </>
+          <Dropdown label="Stage now" value={nowStage ?? null} tint={c.butter} options={guide.stages.map((s) => ({ id: s, label: guide.info[s]?.label ?? s }))} onChange={(s) => s && setStage(s)} />
         )}
         <Dropdown label={joinedLabel} value={joined} tint={c.lavender} options={JOINED} onChange={setJoined} />
         <Dropdown label={isReservoir(soil) ? 'Last topped up' : 'Last watered'} value={watered} tint={c.ice} options={WATERED} onChange={setWatered} last />
@@ -593,27 +601,21 @@ export default function AddPlantScreen() {
                   <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
                 ))}
               </View>
+              {!isReservoir(soil) && (
+                <>
+              <Label>Self-watering pot?</Label>
+              <View style={styles.wrap}>
+                {SELF_WATER.map((o) => (
+                  <Pill key={o.id} on={(selfWatering ?? 'no') === o.id} bg={c.ice} label={o.label} onPress={() => setSelfWatering(o.id === 'no' ? undefined : o.id)} />
+                ))}
+              </View>
+              {selfWatering && <Text style={[styles.note, { color: c.inkMuted }]}>{selfWatering === 'always' ? 'Checks become a quick peek at the water line, about half as often.' : 'Care stays the same. Away mode reminds you to fill it before a trip.'}</Text>}
+                </>
+              )}
             </>
           )}
 
           <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" />
-
-          {!guide && <Label>Where's it from?</Label>}
-          {!guide && <View style={styles.wrap}>
-            {ORIGINS.map((o) => (
-              <Pill key={o.id} on={origin === o.id} bg={c.grape} label={o.label} onPress={() => setOrigin(o.id)} />
-            ))}
-          </View>}
-          {!guide && origin === 'cutting' && parents.length > 0 && (
-            <View style={{ gap: 6 }}>
-              <Label muted>Cutting from which plant? It joins that plant's Offshoots.</Label>
-              <View style={styles.wrap}>
-                {parents.map((p) => (
-                  <Pill key={p.id} on={parentId === p.id} bg={c.lavender} label={p.name} onPress={() => setParentId(p.id)} />
-                ))}
-              </View>
-            </View>
-          )}
 
         </View>
       )}

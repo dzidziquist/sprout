@@ -5,6 +5,7 @@ import { useTabPadding } from '@/hooks/useTabPadding';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { isDue, moodFor } from '@/engine/careEngine';
+import { activeTrip } from '@/engine/away';
 import { rootingDays } from '@/engine/treeLayout';
 import { speciesOf } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -35,9 +36,10 @@ function nextCheckWords(plant: Plant, now: Date) {
 }
 
 /** The status pill shown on a card (short) or a row (with the next check). */
-function statusOf(plant: Plant, faded: boolean | undefined, c: Palette, now: Date, long: boolean) {
+function statusOf(plant: Plant, faded: boolean | undefined, c: Palette, now: Date, long: boolean, away = false) {
   if (faded) return { text: plant.archivedReason === 'gifted' ? 'Gifted' : 'In memory', bg: c.cloud };
   if (plant.rooting) return { text: long ? `Rooting · day ${rootingDays(plant.rooting.startedAt, now)}` : 'Rooting', bg: c.ice };
+  if (away && isDue(plant, now)) return { text: long ? 'Napping till you’re back' : 'Napping', bg: c.lavender };
   const mood = moodFor(plant, now);
   if (!long) return moodBadge(c)[mood];
   if (mood === 'thirsty') return { text: 'Check today', bg: c.peach };
@@ -47,10 +49,11 @@ function statusOf(plant: Plant, faded: boolean | undefined, c: Palette, now: Dat
 function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
   const c = useColors();
   const faces = usePlantStore((s) => s.profile.faces);
+  const away = !!activeTrip(usePlantStore((s) => s.profile.trips), new Date());
   const now = new Date();
-  const mood = moodFor(plant, now);
+  const mood = moodFor(plant, now, away);
   const tint = c.potTint[plant.potColor];
-  const badge = statusOf(plant, faded, c, now, false);
+  const badge = statusOf(plant, faded, c, now, false, away);
   return (
     <PlantMenu plant={plant} style={{ flex: 1 }}>
       <Sticker drop={faded ? 0 : 4} style={[{ flex: 1 }, faded && { opacity: 0.55 }]}>
@@ -84,10 +87,11 @@ function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
 function PlantRow({ plant, faded }: { plant: Plant; faded?: boolean }) {
   const c = useColors();
   const faces = usePlantStore((s) => s.profile.faces);
+  const away = !!activeTrip(usePlantStore((s) => s.profile.trips), new Date());
   const now = new Date();
-  const mood = moodFor(plant, now);
+  const mood = moodFor(plant, now, away);
   const tint = c.potTint[plant.potColor];
-  const pill = statusOf(plant, faded, c, now, true);
+  const pill = statusOf(plant, faded, c, now, true, away);
   const kind = speciesOf(plant).commonName;
   return (
     <PlantMenu plant={plant}>

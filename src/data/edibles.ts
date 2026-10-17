@@ -270,6 +270,18 @@ const GUIDES: EdibleGuide[] = [
       resting: { label: 'Winter', tip: 'Overwintering in a bright ~13°C spot. Water every ~2 weeks.', feed: 'No feed till spring' },
     },
   },
+  nightshade(
+    'bell-pepper',
+    {
+      seed: { tip: 'Bells like it hot to sprout: a heat mat at 27–32°C helps. Can take 2–3 weeks.' },
+      seedling: { tip: 'Bright light, warm feet. Pot on at 4–6 true leaves.' },
+      growing: { tip: 'Out only when nights stay above 10°C. A 5 gal pot and a stake: heavy fruit snaps branches.', feed: 'Balanced feed. Too much nitrogen means leaves, no peppers' },
+      flowering: { tip: 'Flowers drop when nights dip under 15°C or days top 32°C. It’s the weather, not you.' },
+      fruiting: { tip: 'Bells sizing up. Even watering keeps blossom-end rot away.' },
+      harvesting: { tip: 'Pick green when full-size and firm, or wait 2–3 weeks for red, yellow or orange. Cut, don’t pull.' },
+    },
+    { setDayMaxC: 32 }, // 90°F: bells drop flowers sooner than hot types
+  ),
   {
     id: 'spring-onion',
     stages: ['seed', 'seedling', 'growing', 'harvesting'],
@@ -673,6 +685,26 @@ const GUIDES: EdibleGuide[] = [
 
 export const EDIBLES: Record<EdibleId, EdibleGuide> = Object.fromEntries(GUIDES.map((g) => [g.id, g]));
 
+/** Crops that need a hand to stay upright: a stake (or cage) for the heavy croppers, a trellis or poles for climbers. */
+export type Support = 'stake' | 'trellis';
+const SUPPORT: Partial<Record<EdibleId, Support>> = {
+  tomato: 'stake',
+  pepper: 'stake',
+  'bell-pepper': 'stake',
+  eggplant: 'stake',
+  'garden-egg': 'stake',
+  'cape-gooseberry': 'stake',
+  okra: 'stake',
+  cucumber: 'trellis',
+  pea: 'trellis',
+  'runner-bean': 'trellis',
+  'passion-fruit': 'trellis',
+};
+
+export function supportFor(speciesId: SpeciesId): Support | undefined {
+  return SUPPORT[speciesId];
+}
+
 export function edibleGuide(speciesId: SpeciesId): EdibleGuide | undefined {
   return EDIBLES[speciesId];
 }
@@ -695,6 +727,8 @@ export interface CalendarTask {
   body: string;
   species: EdibleId[];
   when: TaskWindow[];
+  /** Only for plants at one of these stages (plants with no stage logged always count). */
+  stages?: EdibleStage[];
 }
 
 const all = (from: number, to: number): TaskWindow[] => Array.from({ length: to - from + 1 }, (_, i) => ({ month: (from + i) % 12 }));
@@ -703,6 +737,7 @@ const months = (...ms: number[]): TaskWindow[] => ms.map((month) => ({ month }))
 // Crop groups shared by several tasks.
 const SALAD = ['lettuce', 'spinach', 'arugula', 'bok-choy', 'mustard-greens'];
 const BEANS = ['bush-bean', 'runner-bean'];
+const PEPPERS = ['pepper', 'bell-pepper'];
 const VINES = ['cucumber', 'zucchini'];
 const ROOTS = ['carrot', 'radish'];
 const MED_HERBS = ['rosemary', 'thyme', 'sage', 'oregano', 'lavender', 'tarragon'];
@@ -711,38 +746,38 @@ const BERRIES = ['strawberry', 'blueberry', 'raspberry'];
 const TROPICAL = ['garden-egg', 'kontomire', 'scent-leaf', 'ginger', 'lemongrass', 'pineapple', 'passion-fruit', 'okra', 'roselle'];
 /** Accra: everything that's out in the weather. */
 const ACC_ALL = [
-  'tomato', 'pepper', 'spring-onion', 'basil', 'mint', ...SALAD, 'kale', 'chard', ...BEANS, 'pea', ...VINES, 'eggplant', 'garden-egg', 'okra',
+  'tomato', ...PEPPERS, 'spring-onion', 'basil', 'mint', ...SALAD, 'kale', 'chard', ...BEANS, 'pea', ...VINES, 'eggplant', 'garden-egg', 'okra',
   ...ROOTS, 'garlic', 'leek', 'sweet-potato', 'kontomire', 'ayoyo', 'amaranth', 'roselle', ...MED_HERBS, 'parsley', 'cilantro', 'chives', 'dill',
   'lemongrass', 'lemon-balm', 'bay-laurel', 'scent-leaf', 'ginger', ...BERRIES, 'meyer-lemon', 'common-fig', 'cape-gooseberry', 'passion-fruit', 'pineapple',
 ];
 
 export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
   seattle: [
-    { id: 'sea-plan', kind: 'care', title: 'Pick your seeds', body: 'Go early and small: cherries like Sungold, Sweet Million or Stupice (≤75 days).', species: ['tomato', 'pepper'], when: months(0, 1) },
+    { id: 'sea-plan', kind: 'care', title: 'Pick your seeds', body: 'Go early and small: cherries like Sungold, Sweet Million or Stupice (≤75 days).', species: ['tomato', ...PEPPERS], when: months(0, 1) },
     { id: 'sea-overwinter-care', kind: 'care', title: 'Winter pepper check', body: 'Water about every 2 weeks, no feed. Peek under leaves for aphids.', species: ['pepper'], when: months(10, 11, 0, 1, 2) },
     { id: 'sea-sow-onion', kind: 'sow', title: 'Sow spring onions', body: 'They’re hardy. A pinch per spot, ½ cm deep, indoors or out.', species: ['spring-onion'], when: months(1, 2, 3) },
-    { id: 'sea-sow-toms', kind: 'sow', title: 'Start seeds indoors', body: '6–8 weeks before mid-May. Peppers and eggplant want a heat mat at 27–32°C.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg', 'cape-gooseberry'], when: [{ month: 2, from: 15 }, { month: 3, to: 7 }] },
+    { id: 'sea-sow-toms', kind: 'sow', title: 'Start seeds indoors', body: '6–8 weeks before mid-May. Peppers and eggplant want a heat mat at 27–32°C.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', 'cape-gooseberry'], when: [{ month: 2, from: 15 }, { month: 3, to: 7 }] },
     { id: 'sea-mint-wake', kind: 'care', title: 'Wake up the mint', body: 'Cut last year’s stems, top up the pot, or split a crowded clump.', species: ['mint'], when: months(2, 3) },
-    { id: 'sea-pot-up', kind: 'plant', title: 'Pot up seedlings', body: 'At two true leaves, move each to its own pot. Keep above 16°C.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg', 'cape-gooseberry'], when: [{ month: 3 }, { month: 4, to: 10 }] },
+    { id: 'sea-pot-up', kind: 'plant', title: 'Pot up seedlings', body: 'At two true leaves, move each to its own pot. Keep above 16°C.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', 'cape-gooseberry'], when: [{ month: 3 }, { month: 4, to: 10 }] },
     { id: 'sea-sow-basil', kind: 'sow', title: 'Sow basil indoors', body: 'Warm windowsill only. It sulks below 10°C.', species: ['basil'], when: months(3, 4) },
     { id: 'sea-peppers-wake', kind: 'care', title: 'Peppers back to warmth', body: 'Move overwintered peppers somewhere warm and bright, and start feeding again.', species: ['pepper'], when: months(3) },
-    { id: 'sea-harden', kind: 'plant', title: 'Harden off', body: 'A week of outdoor time, a little longer each day, before planting out.', species: ['tomato', 'pepper', 'basil', 'eggplant', 'cape-gooseberry', ...VINES], when: [{ month: 3, from: 20 }, { month: 4, to: 20 }] },
+    { id: 'sea-harden', kind: 'plant', title: 'Harden off', body: 'A week of outdoor time, a little longer each day, before planting out.', species: ['tomato', ...PEPPERS, 'basil', 'eggplant', 'cape-gooseberry', ...VINES], when: [{ month: 3, from: 20 }, { month: 4, to: 20 }] },
     { id: 'sea-plant-toms', kind: 'plant', title: 'Plant tomatoes out', body: 'Once soil hits 10°C (about mid-May). Bury the stem deep, 6+ hours of sun.', species: ['tomato'], when: [{ month: 4, from: 10 }, { month: 5, to: 7 }] },
-    { id: 'sea-plant-peps', kind: 'plant', title: 'Peppers out', body: 'Late May or June, when nights stay above 10°C. A cloche helps.', species: ['pepper'], when: [{ month: 4, from: 25 }, { month: 5 }] },
+    { id: 'sea-plant-peps', kind: 'plant', title: 'Peppers out', body: 'Late May or June, when nights stay above 10°C. A cloche helps.', species: [...PEPPERS], when: [{ month: 4, from: 25 }, { month: 5 }] },
     { id: 'sea-basil-out', kind: 'plant', title: 'Basil outside', body: 'Only once nights are reliably warm. Otherwise the sunniest window.', species: ['basil'], when: months(5) },
-    { id: 'sea-feed-start', kind: 'feed', title: 'Start feeding', body: 'Balanced feed while they grow. Switch to high-potash once fruit swells.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg', ...VINES], when: [{ month: 4, from: 10 }, { month: 5 }] },
-    { id: 'sea-pollinate', kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz flower trusses at midday every 2–3 days. Balconies lack bees.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg'], when: months(5, 6, 7) },
-    { id: 'sea-water-daily', kind: 'care', title: 'Check pots daily', body: 'Dry summer: a sunny 5-gal pot can drink every day. Keep it even.', species: ['tomato', 'pepper', 'basil', 'mint', 'eggplant', ...VINES, ...BEANS, 'strawberry', 'blueberry', 'lettuce'], when: months(6, 7) },
+    { id: 'sea-feed-start', kind: 'feed', title: 'Start feeding', body: 'Balanced feed while they grow. Switch to high-potash once fruit swells.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', ...VINES], when: [{ month: 4, from: 10 }, { month: 5 }] },
+    { id: 'sea-pollinate', kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz flower trusses at midday every 2–3 days. Balconies lack bees.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: months(5, 6, 7) },
+    { id: 'sea-water-daily', kind: 'care', title: 'Check pots daily', body: 'Dry summer: a sunny 5-gal pot can drink every day. Keep it even.', species: ['tomato', ...PEPPERS, 'basil', 'mint', 'eggplant', ...VINES, ...BEANS, 'strawberry', 'blueberry', 'lettuce'], when: months(6, 7) },
     { id: 'sea-basil-pinch', kind: 'harvest', title: 'Pinch basil flowers', body: 'Pick from the top and nip flower spikes so it stays leafy.', species: ['basil'], when: months(6, 7, 8) },
     { id: 'sea-sow-onion-fall', kind: 'sow', title: 'Sow onions for autumn', body: 'A July–August sowing gives snips through autumn and spring.', species: ['spring-onion'], when: months(6, 7) },
-    { id: 'sea-feed-stop', kind: 'feed', title: 'Stop feeding', body: 'Mid-August is the cut-off for balcony edibles. Ripening time now.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg'], when: [{ month: 7, from: 10, to: 25 }] },
+    { id: 'sea-feed-stop', kind: 'feed', title: 'Stop feeding', body: 'Mid-August is the cut-off for balcony edibles. Ripening time now.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: [{ month: 7, from: 10, to: 25 }] },
     { id: 'sea-top-flowers', kind: 'care', title: 'Nip new flowers', body: 'New flowers won’t ripen in time. Pinch them so the plant ripens what’s there.', species: ['tomato'], when: [{ month: 7, from: 15 }, { month: 8, to: 10 }] },
     { id: 'sea-blight', kind: 'protect', title: 'Late blight watch', body: 'Brown blotches on leaves? Bin them. Water the soil, never the leaves.', species: ['tomato'], when: [{ month: 7, from: 15 }, { month: 8 }] },
     { id: 'sea-water-less', kind: 'care', title: 'Ease off watering', body: 'A bit less water from late August pushes ripening. Keep it even though.', species: ['tomato'], when: [{ month: 7, from: 20 }, { month: 8, to: 15 }] },
     { id: 'sea-basil-in', kind: 'protect', title: 'Basil comes inside', body: 'Bring it in before nights drop under 10°C, or take cuttings for the windowsill.', species: ['basil'], when: [{ month: 8, from: 10 }, { month: 9, to: 10 }] },
     { id: 'sea-green-toms', kind: 'harvest', title: 'Pick green tomatoes', body: 'Take every full-size green or blushing one. Ripen at 13–21°C, out of the fridge. ~2 weeks.', species: ['tomato'], when: [{ month: 9 }, { month: 10, to: 10 }] },
     { id: 'sea-overwinter', kind: 'protect', title: 'Bring peppers in', body: 'Pick the last pods, prune to a few Y-branches, check for bugs, then a bright ~13°C spot.', species: ['pepper'], when: [{ month: 9 }, { month: 10, to: 15 }] },
-    { id: 'sea-blight-bin', kind: 'care', title: 'Tidy the vines', body: 'Bin blighted vines (don’t compost) and don’t reuse their mix for tomatoes or peppers.', species: ['tomato'], when: [{ month: 9, from: 15 }, { month: 10 }] },
+    { id: 'sea-blight-bin', kind: 'care', title: 'Tidy the vines', body: 'Bin blighted vines (don’t compost) and don’t reuse their mix for tomatoes or peppers.', species: ['tomato'], when: [{ month: 9, from: 15 }, { month: 10 }], stages: ['fruiting', 'harvesting', 'resting'] },
     { id: 'sea-onion-eave', kind: 'protect', title: 'Onions under the eave', body: 'They’re hardy, just not fans of sitting soggy. Or bring a pot to the windowsill.', species: ['spring-onion'], when: months(9, 10) },
     { id: 'sea-onion-winter', kind: 'harvest', title: 'Snip lightly', body: 'Short days mean slow regrowth. Take a little, leave the rest.', species: ['spring-onion'], when: months(11, 0) },
     { id: 'sea-mint-rest', kind: 'care', title: 'Let mint rest', body: 'It dies back for winter. Cut the stems and keep it barely damp.', species: ['mint'], when: months(10, 11) },
@@ -840,17 +875,17 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
    */
   accra: [
     { id: 'acc-harmattan-water', kind: 'care', title: 'Harmattan watering', body: 'Dry winds empty pots fast. Check daily and mulch the top.', species: ACC_ALL, when: [{ month: 11 }, { month: 0 }, { month: 1 }] },
-    { id: 'acc-mites', kind: 'protect', title: 'Spider mite check', body: 'Dry air brings mites. Look under leaves for speckles and fine webbing.', species: ['tomato', 'pepper', 'basil', 'eggplant', 'garden-egg', 'okra', ...VINES, ...BEANS, 'strawberry', 'meyer-lemon'], when: months(11, 0, 1, 2) },
+    { id: 'acc-mites', kind: 'protect', title: 'Spider mite check', body: 'Dry air brings mites. Look under leaves for speckles and fine webbing.', species: ['tomato', ...PEPPERS, 'basil', 'eggplant', 'garden-egg', 'okra', ...VINES, ...BEANS, 'strawberry', 'meyer-lemon'], when: months(11, 0, 1, 2) },
     { id: 'acc-tomato-prime', kind: 'harvest', title: 'Tomato picking time', body: 'Cooler, drier weeks are when tomatoes set best. Pick them fully coloured.', species: ['tomato'], when: months(0, 1) },
     { id: 'acc-shade', kind: 'protect', title: 'Afternoon shade', body: 'Days over 32°C drop tomato flowers. Shade from about 1–4 pm and water evenly.', species: ['tomato', 'mint'], when: months(1, 2, 3) },
-    { id: 'acc-peppers-hot', kind: 'care', title: 'Peppers keep going', body: 'Peppers handle the heat better than tomatoes. Keep moisture steady.', species: ['pepper'], when: months(2, 3) },
+    { id: 'acc-peppers-hot', kind: 'care', title: 'Peppers keep going', body: 'Peppers handle the heat better than tomatoes. Keep moisture steady.', species: [...PEPPERS], when: months(2, 3) },
     { id: 'acc-rains', kind: 'protect', title: 'Rains are back', body: 'Raise pots on feet and clear drainage holes so roots don’t drown.', species: ACC_ALL, when: [{ month: 3 }, { month: 8 }] },
-    { id: 'acc-heavy-rains', kind: 'protect', title: 'Heavy-rain weeks', body: 'Move pots under cover in downpours. Waterlogging and blight love May–June.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg', ...MED_HERBS, 'strawberry', 'pineapple'], when: months(4, 5) },
+    { id: 'acc-heavy-rains', kind: 'protect', title: 'Heavy-rain weeks', body: 'Move pots under cover in downpours. Waterlogging and blight love May–June.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', ...MED_HERBS, 'strawberry', 'pineapple'], when: months(4, 5) },
     { id: 'acc-gnats', kind: 'care', title: 'Gnat and rot watch', body: 'Pots stay wet in the rains. Let the top dry before watering again.', species: ['basil', 'mint', 'spring-onion', 'scent-leaf', 'parsley', 'cilantro', 'chives', 'microgreens'], when: months(4, 5, 9) },
     { id: 'acc-sow-onion', kind: 'sow', title: 'Sow spring onions', body: 'They grow all year here. Shade the seed tray in the hottest weeks.', species: ['spring-onion'], when: months(5, 6, 10) },
-    { id: 'acc-sow-pepper', kind: 'sow', title: 'Sow peppers', body: 'Nursery tray now, move to pots at 4–6 true leaves (6–8 weeks).', species: ['pepper'], when: months(3, 7) },
-    { id: 'acc-cool-set', kind: 'care', title: 'Little dry season', body: 'The coolest weeks of the year: great for fruit set. Shake flowers at midday.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg'], when: [{ month: 6, from: 15 }, { month: 7 }] },
-    { id: 'acc-whitefly', kind: 'protect', title: 'Whitefly watch', body: 'They spread leaf curl virus. Yellow sticky traps, and check leaf undersides.', species: ['tomato', 'pepper', 'eggplant', 'garden-egg', 'okra', 'sweet-potato'], when: months(8, 9) },
+    { id: 'acc-sow-pepper', kind: 'sow', title: 'Sow peppers', body: 'Nursery tray now, move to pots at 4–6 true leaves (6–8 weeks).', species: [...PEPPERS], when: months(3, 7) },
+    { id: 'acc-cool-set', kind: 'care', title: 'Little dry season', body: 'The coolest weeks of the year: great for fruit set. Shake flowers at midday.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: [{ month: 6, from: 15 }, { month: 7 }] },
+    { id: 'acc-whitefly', kind: 'protect', title: 'Whitefly watch', body: 'They spread leaf curl virus. Yellow sticky traps, and check leaf undersides.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', 'okra', 'sweet-potato'], when: months(8, 9) },
     { id: 'acc-sow-toms', kind: 'sow', title: 'Sow tomatoes', body: 'Start a nursery tray now so fruit lands in the cooler Jan–Feb weeks.', species: ['tomato'], when: [{ month: 9, from: 15 }, { month: 10 }] },
     { id: 'acc-plant-toms', kind: 'plant', title: 'Move tomato seedlings', body: 'Pot on at 4–6 true leaves, deep, into 5 gal pots with fresh mix.', species: ['tomato'], when: [{ month: 10, from: 15 }, { month: 11 }] },
     { id: 'acc-basil-pinch', kind: 'harvest', title: 'Pinch basil weekly', body: 'Warm all year means flowers come fast. Pick tops and nip flower spikes.', species: ['basil', 'scent-leaf'], when: all(0, 11) },

@@ -254,6 +254,28 @@ describe('weatherAlerts', () => {
   });
 });
 
+describe('stages and support', () => {
+  it('holds harvest jobs until there is something to pick', () => {
+    const young = plant({ name: 'Tommy', speciesId: 'tomato', stage: 'growing' });
+    const fruiting = plant({ name: 'Sungold', speciesId: 'tomato', stage: 'fruiting' });
+    const oct = tasksFor([young, fruiting], 'seattle', new Date(2026, 9, 5));
+    expect(oct.find((t) => t.id === 'sea-green-toms')?.plantIds).toEqual([fruiting.id]);
+    expect(oct.find((t) => t.id === 'sea-blight-bin')?.plantIds).toEqual([fruiting.id]);
+    expect(tasksFor([young], 'seattle', new Date(2026, 9, 5)).map((t) => t.id)).not.toContain('sea-green-toms');
+  });
+
+  it('asks for a stake or trellis once growing, until one is logged', () => {
+    const tom = plant({ name: 'Tommy', speciesId: 'tomato', stage: 'growing' });
+    const cuke = plant({ name: 'Cuke', speciesId: 'cucumber', stage: 'flowering' });
+    const seedling = plant({ name: 'Tiny', speciesId: 'tomato', stage: 'seedling' });
+    const ids = tasksFor([tom, cuke, seedling], 'seattle', new Date(2026, 9, 5));
+    expect(ids.find((t) => t.id === 'stage-stake')?.plantIds).toEqual([tom.id]);
+    expect(ids.find((t) => t.id === 'stage-trellis')?.plantIds).toEqual([cuke.id]);
+    const after = tasksFor([tom], 'seattle', new Date(2026, 9, 5), [{ id: 's', plantId: tom.id, type: 'staked', at: '2026-10-01T09:00:00' }]);
+    expect(after.map((t) => t.id)).not.toContain('stage-stake');
+  });
+});
+
 describe('the wider edible patch', () => {
   it('October in Seattle: plant garlic once the window opens, lift it in July', () => {
     const garlic = plant({ name: 'Garlie', speciesId: 'garlic', placement: 'outdoor', stage: 'seed' });
@@ -263,8 +285,11 @@ describe('the wider edible patch', () => {
     expect(plantIt.thisWeek).toBe(true);
     // Early October: on the month list, not yet this week.
     expect(tasksFor([garlic], 'seattle', new Date(2026, 9, 2)).find((t) => t.id === 'sea-plant-garlic')!.thisWeek).toBe(false);
-    expect(tasksFor([garlic], 'seattle', new Date(2026, 6, 5)).map((t) => t.id)).toContain('sea-garlic-lift');
-    expect(tasksFor([garlic], 'seattle', new Date(2026, 6, 5)).map((t) => t.id)).not.toContain('sea-plant-garlic');
+    const grown = { ...garlic, stage: 'growing' as const };
+    expect(tasksFor([grown], 'seattle', new Date(2026, 6, 5)).map((t) => t.id)).toContain('sea-garlic-lift');
+    expect(tasksFor([grown], 'seattle', new Date(2026, 6, 5)).map((t) => t.id)).not.toContain('sea-plant-garlic');
+    // Still a clove in the ground: nothing to lift yet.
+    expect(tasksFor([garlic], 'seattle', new Date(2026, 6, 5)).map((t) => t.id)).not.toContain('sea-garlic-lift');
   });
 
   it('lettuce gets a succession-sowing nudge every month from March to September', () => {

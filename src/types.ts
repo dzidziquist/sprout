@@ -85,6 +85,57 @@ export type ArtId =
   | 'mint'
   | 'tomato'
   | 'pepper'
+  | 'bell-pepper'
+  | 'potato'
+  | 'sweet-potato'
+  | 'okra'
+  | 'cucumber'
+  | 'zucchini'
+  | 'lettuce'
+  | 'heartleaf'
+  | 'oregano'
+  | 'sage'
+  | 'lemon-balm'
+  | 'lavender'
+  | 'tarragon'
+  | 'chives'
+  | 'bay-laurel'
+  | 'parsley'
+  | 'cilantro'
+  | 'dill'
+  | 'roselle'
+  | 'scent-leaf'
+  | 'thyme'
+  | 'rosemary'
+  | 'ayoyo'
+  | 'raspberry'
+  | 'pineapple'
+  | 'passion-fruit'
+  | 'common-fig'
+  | 'cape-gooseberry'
+  | 'strawberry'
+  | 'meyer-lemon'
+  | 'blueberry'
+  | 'arugula'
+  | 'bok-choy'
+  | 'leek'
+  | 'amaranth'
+  | 'bush-bean'
+  | 'fava-bean'
+  | 'kontomire'
+  | 'microgreens'
+  | 'mustard-greens'
+  | 'runner-bean'
+  | 'pea'
+  | 'spinach'
+  | 'chard'
+  | 'radish'
+  | 'ginger'
+  | 'eggplant'
+  | 'garden-egg'
+  | 'carrot'
+  | 'garlic'
+  | 'kale'
   | 'spring-onion';
 
 /** Catalogue id (e.g. 'monstera', 'philodendron-brasil'), or 'other-<group>' for a plant not in the catalogue. */
@@ -129,6 +180,8 @@ export interface Plant {
   soil: Soil;
   potMaterial: PotMaterial;
   potDiameterCm: number;
+  /** A soil pot with a water reservoir: kept filled all the time, or filled only before a trip. */
+  selfWatering?: 'always' | 'away';
   light: Light;
   placement: Placement;
   room?: string;
@@ -174,6 +227,8 @@ export type CareEventType =
   | 'stage'
   | 'regrow'
   | 'refresh'
+  /** Given a stake, cage or trellis. */
+  | 'staked'
   | 'archived';
 
 export interface CareEvent {

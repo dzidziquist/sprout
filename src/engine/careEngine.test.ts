@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   applyCheck,
   checkIntervalDays,
+  checksWaterLine,
   isDue,
   isFeedingPaused,
   isMixOld,
@@ -146,6 +147,7 @@ describe('due and mood', () => {
   it('is thirsty when due, snoozing right after a damp skip, happy otherwise', () => {
     expect(moodFor({ nextCheckAt: '2026-10-12T00:00:00' }, now)).toBe('thirsty');
     expect(moodFor({ nextCheckAt: '2026-10-15T00:00:00', lastResult: 'damp', lastCheckAt: '2026-10-12T09:00:00' }, now)).toBe('snoozing');
+    expect(moodFor({ nextCheckAt: '2026-10-12T00:00:00', rooting: { method: 'water', startedAt: '2026-10-01T00:00:00' } }, now)).toBe('happy');
     expect(moodFor({ nextCheckAt: '2026-10-20T00:00:00', lastResult: 'dry', lastCheckAt: '2026-10-12T09:00:00' }, now)).toBe('happy');
   });
 });
@@ -207,5 +209,18 @@ describe('garden beds', () => {
     const inPot = applyCheck({ group: 'edible', plant: { ...basePlant, placement: 'outdoor', soil: 'garden_soil' }, profile: 'seattle', at }, 'dry');
     expect(inBed.flags).not.toContain('garden_soil');
     expect(inPot.flags).toContain('garden_soil');
+  });
+});
+
+describe('self-watering pots', () => {
+  it('kept filled: checked about half as often, as a water-line peek', () => {
+    expect(interval({ selfWatering: 'always' })).toBeCloseTo(Math.min(interval() * 2, 30), 0);
+    expect(checksWaterLine({ soil: 'potting_mix', selfWatering: 'always' })).toBe(true);
+  });
+
+  it('filled only for trips: care stays the same day to day', () => {
+    expect(interval({ selfWatering: 'away' })).toBe(interval());
+    expect(checksWaterLine({ soil: 'potting_mix', selfWatering: 'away' })).toBe(false);
+    expect(checksWaterLine({ soil: 'leca' })).toBe(true);
   });
 });

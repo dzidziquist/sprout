@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { Trip } from '../engine/away';
 import { addDays, applyCheck, initialNextCheck, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
@@ -38,6 +39,8 @@ export interface Profile {
   units: 'auto' | 'imperial' | 'metric';
   /** Photo IDs used today on this phone (free, with a small daily allowance). */
   idUsage: { day: string; count: number };
+  /** Away-mode trips, past and planned. Past ones stay so the streak keeps forgiving them. */
+  trips?: Trip[];
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -56,7 +59,7 @@ export const DEFAULT_PROFILE: Profile = {
   idUsage: { day: '', count: 0 },
 };
 
-export type CareAction = 'water' | 'wet' | 'refresh' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo';
+export type CareAction = 'water' | 'wet' | 'refresh' | 'feed' | 'repot' | 'prune' | 'pest' | 'cutting' | 'photo' | 'stake';
 
 export type NewPlant =Omit<Plant, 'id' | 'k' | 'nextCheckAt' | 'createdAt' | 'lastCheckAt' | 'lastResult'>;
 
@@ -92,6 +95,8 @@ interface PlantState {
   updatePlant: (plantId: string, patch: Partial<NewPlant>, now?: Date) => void;
   /** Plants are never hard-deleted from lineage: archived plants leave the round but stay in Offshoots. */
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
+  /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
+  setArchivedAt: (plantId: string, at: Date) => void;
   /** Hard delete (mistakes only). Children keep their lineage by pointing to the grandparent. */
   deletePlant: (plantId: string) => void;
   /** A rooting cutting is ready: pot it up and start normal checks. */
@@ -101,6 +106,13 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** Plan a trip (replacing any that hasn't started), or end the current one now. */
+  planTrip: (trip: Trip) => void;
+  endTrip: (now?: Date) => void;
+  /** Tick (or untick) a before-you-go item on the trip that starts at `from`. */
+  setPrepDone: (from: string, itemId: string, done: boolean) => void;
+  /** Mark plants as staked (or trellised), or take the mark back off. */
+  setStaked: (plantIds: string[], on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
   removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
@@ -225,6 +237,7 @@ export const usePlantStore = create<PlantState>()(
           if (a === 'pest') extra.push({ id: uid(), plantId, type: 'pest', at });
           if (a === 'photo') extra.push({ id: uid(), plantId, type: 'photo', at });
           if (a === 'refresh') extra.push({ id: uid(), plantId, type: 'refresh', at });
+          if (a === 'stake') extra.push({ id: uid(), plantId, type: 'staked', at });
         }
         if (actions.includes('refresh')) {
           set((s) => ({ plants: s.plants.map((p) => (p.id === plantId ? { ...p, lastRefreshedAt: at } : p)) }));
@@ -274,7 +287,7 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => {
             if (p.id !== plantId) return p;
             const next = { ...p, ...patch };
-            const careChanged = (['soil', 'potMaterial', 'potDiameterCm', 'light', 'placement', 'speciesId'] as const).some((k) => k in patch && patch[k] !== p[k]);
+            const careChanged = (['soil', 'potMaterial', 'potDiameterCm', 'light', 'placement', 'speciesId', 'selfWatering'] as const).some((k) => k in patch && patch[k] !== p[k]);
             return careChanged && !next.rooting ? { ...next, nextCheckAt: schedule(next, climate, now) } : next;
           }),
         }));
@@ -286,6 +299,24 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: at, archivedReason: reason } : p)),
           events: [...s.events, { id: uid(), plantId, type: 'archived', note: reason, at }],
         }));
+      },
+
+      setArchivedAt: (plantId, at) => {
+        set((s) => {
+          const plant = s.plants.find((p) => p.id === plantId);
+          if (!plant?.archivedAt) return s;
+          // Never before it joined the fam.
+          const iso = new Date(Math.max(at.getTime(), new Date(plant.acquiredAt).getTime())).toISOString();
+          const entry = [...s.events].reverse().find((e) => e.plantId === plantId && e.type === 'archived');
+          let events = s.events;
+          if (entry) {
+            // Re-insert in date order so the diary still reads oldest to newest.
+            const rest = s.events.filter((e) => e !== entry);
+            const i = rest.findIndex((e) => e.at > iso);
+            events = i < 0 ? [...rest, { ...entry, at: iso }] : [...rest.slice(0, i), { ...entry, at: iso }, ...rest.slice(i)];
+          }
+          return { events, plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: iso } : p)) };
+        });
       },
 
       deletePlant: (plantId) => {
@@ -337,6 +368,46 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
           // Edibles remember their stage so the diary can show the grow, stage by stage.
           events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, stage: s.plants.find((p) => p.id === plantId)?.stage, note: note?.trim() || undefined, at: now.toISOString() }],
+        }));
+      },
+
+      planTrip: (trip) => {
+        set((s) => {
+          const now = Date.now();
+          const kept = (s.profile.trips ?? []).filter((t) => new Date(t.from).getTime() <= now && new Date(t.to).getTime() <= new Date(trip.from).getTime());
+          return { profile: { ...s.profile, trips: [...kept, trip].slice(-20) } };
+        });
+      },
+
+      endTrip: (now = new Date()) => {
+        set((s) => {
+          const t = now.getTime();
+          const trips = (s.profile.trips ?? [])
+            .filter((x) => new Date(x.from).getTime() <= t)
+            .map((x) => (new Date(x.to).getTime() > t ? { ...x, to: now.toISOString() } : x));
+          return { profile: { ...s.profile, trips } };
+        });
+      },
+
+      setPrepDone: (from, itemId, done) => {
+        set((s) => ({
+          profile: {
+            ...s.profile,
+            trips: (s.profile.trips ?? []).map((t) => {
+              if (t.from !== from) return t;
+              const rest = (t.done ?? []).filter((x) => x !== itemId);
+              return { ...t, done: done ? [...rest, itemId] : rest };
+            }),
+          },
+        }));
+      },
+
+      setStaked: (plantIds, on, now = new Date()) => {
+        const ids = new Set(plantIds);
+        set((s) => ({
+          events: on
+            ? [...s.events, ...plantIds.map((plantId) => ({ id: uid(), plantId, type: 'staked' as const, at: now.toISOString() }))]
+            : s.events.filter((e) => !(e.type === 'staked' && ids.has(e.plantId))),
         }));
       },
 

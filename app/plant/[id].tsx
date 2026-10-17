@@ -12,6 +12,9 @@ import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { edibleGuide } from '@/data/edibles';
 import { feedingAdvice } from '@/engine/growPatch';
 import { growDay, stageAtPhoto } from '@/engine/photoDiary';
+import { activeTrip } from '@/engine/away';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
+import { closestOption, daysAgo as daysBefore, GONE } from '@/lib/when';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles } from '@/components/GoldSparkles';
 import { usePlantActions } from '@/components/PlantMenu';
@@ -35,7 +38,8 @@ function daysAgo(iso: string | undefined, now: Date) {
   return d <= 0 ? 'Today' : d === 1 ? 'Yesterday' : `${d} days ago`;
 }
 
-const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const shortDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', ...(new Date(iso).getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) });
 
 function describe(e: CareEvent, plants: Plant[], reservoir: boolean): string {
   switch (e.type) {
@@ -54,6 +58,8 @@ function describe(e: CareEvent, plants: Plant[], reservoir: boolean): string {
       return 'Trimmed';
     case 'pest':
       return 'Bug patrol';
+    case 'staked':
+      return 'Staked';
     case 'cutting':
       {
         const baby = plants.find((p) => p.id === e.note);
@@ -81,7 +87,7 @@ export default function PlantDetail() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { plants, events, profile, addPhoto } = usePlantStore();
+  const { plants, events, profile, addPhoto, setArchivedAt } = usePlantStore();
   const plant = plants.find((p) => p.id === id);
   const actions = usePlantActions(plant);
   const [showPhoto, setShowPhoto] = useState(true);
@@ -154,7 +160,7 @@ export default function PlantDetail() {
           </View>
         ) : (
           <View style={[styles.heroArt, archived && { opacity: 0.6 }]}>
-            <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} mood={archived ? 'happy' : moodFor(plant, now)} size={220} bg={tint} faces={archived ? 'off' : profile.faces} />
+            <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} mood={archived ? 'happy' : moodFor(plant, now, !!activeTrip(profile.trips, now))} size={220} bg={tint} faces={archived ? 'off' : profile.faces} />
             {!archived && <GoldSparkles pot={plant.potColor} size={1.6} />}
             {plant.rooting && (
               <View style={[styles.heroChip, { backgroundColor: c.card, borderColor: c.line }]}>
@@ -186,6 +192,16 @@ export default function PlantDetail() {
                 ? `${plant.name} is growing somewhere new. Their story stays in your Offshoots.`
                 : `Thanks for the leaves, ${plant.name}. Every plant teaches us something, and their diary stays here.`}
             </Text>
+            <DropdownGroup>
+              <Dropdown
+                label={plant.archivedReason === 'gifted' ? 'Gifted' : 'Lost'}
+                value={closestOption(GONE, plant.archivedAt!)}
+                tint={plant.archivedReason === 'gifted' ? c.blush : c.cloud}
+                options={GONE}
+                onChange={(g) => setArchivedAt(plant.id, daysBefore(GONE.find((o) => o.id === g)?.days ?? 0))}
+                last
+              />
+            </DropdownGroup>
             <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
           </Sticker>
         )}
@@ -205,7 +221,7 @@ export default function PlantDetail() {
             ) : (
               <Sticker drop={0} bg={c.butter} style={styles.stat}>
                 <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
-                <Text style={[styles.statLabel, { color: c.ink }]}>last watered</Text>
+                <Text style={[styles.statLabel, { color: c.ink }]}>{plant.selfWatering === 'always' ? 'last topped up' : 'last watered'}</Text>
               </Sticker>
             )}
             <Sticker drop={0} bg={c.mint} style={styles.stat}>
@@ -300,8 +316,13 @@ export default function PlantDetail() {
                 ['Water', plant.soil === 'water' ? 'Top up as the level drops; keep the crown dry' : 'Keep the water line at the bottom third of the pot'],
                 ['Fresh water', plant.soil === 'water' ? 'Swap it all out every 2 weeks' : 'Flush with plain water monthly'],
               ]
-            : [['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
-          ]).concat([
+            : plant.selfWatering === 'always'
+              ? [['Water', 'Self-watering pot: keep the reservoir topped up. No need to water from the top.']]
+              : [
+                  ['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
+                  ...(plant.selfWatering === 'away' ? [['Reservoir', 'Fill it before a trip; Away mode reminds you']] : []),
+                ]
+          ).concat([
             ['Light', LIGHT_LABEL[plant.light]],
             [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
             ['Feed', feed],

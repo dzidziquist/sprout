@@ -1,7 +1,8 @@
 import { SupportCard } from '@/components/SupportCard';
+import { MeBuddy } from '@/components/MeBuddy';
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
 import { useTabPadding } from '@/hooks/useTabPadding';
@@ -9,8 +10,8 @@ import { usePlantStore } from '@/store/plantStore';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
 import { BadgeSticker } from '@/components/BadgeSticker';
-import { badgesFor, computeStreak, medalBadge } from '@/engine/streak';
-import { rewardsFor } from '@/engine/rewards';
+import { useBadges } from '@/hooks/useBadges';
+import { ART } from '@/data/art';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 
@@ -27,13 +28,7 @@ export default function MeScreen() {
   const checks = events.filter((e) => e.type === 'check' && livingIds.has(e.plantId));
   const skips = checks.filter((e) => e.result === 'damp').length;
 
-  const { streak, badges } = useMemo(() => {
-    const input = { plants, events, climate: profile.climate, now: new Date() };
-    const s = computeStreak(input);
-    const core = badgesFor(input, s);
-    const medal = medalBadge(rewardsFor(core, { supporter: profile.supporter, supporterSince: profile.supporterSince }).medal.at);
-    return { streak: s, badges: medal ? [medal, ...core] : core };
-  }, [plants, events, profile.climate, profile.supporter, profile.supporterSince]);
+  const { streak, badges } = useBadges();
   const earned = badges.filter((b) => b.earnedAt).length;
 
   // profile.streakFreezes mirrors what's left this month (the engine refills it to 2 every month).
@@ -59,6 +54,8 @@ export default function MeScreen() {
         </GlassButton>
       </View>
 
+      <MeBuddy />
+
       <StreakCard streak={streak} />
 
       <View style={styles.stats}>
@@ -81,9 +78,18 @@ export default function MeScreen() {
           <Label>Milestones</Label>
           <Label muted>{earned} of {badges.length}</Label>
         </View>
+        {earned === badges.length && (
+          <Sticker drop={0} bg={c.sun} style={styles.allDone}>
+            <Image source={ART.thanks} style={{ width: 64, height: 64 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={[styles.allDoneTitle, { color: c.onBright }]}>Every milestone. Legend!</Text>
+              <Text style={[styles.allDoneBody, { color: c.onBright }]}>You've earned them all, and every gift with them. Tap any badge to give it a spin.</Text>
+            </View>
+          </Sticker>
+        )}
         <View style={styles.badges}>
           {badges.map((b) => (
-            <BadgeSticker key={b.id} badge={b} />
+            <BadgeSticker key={b.id} badge={b} onPress={() => router.push(`/badge/${b.id}`)} />
           ))}
         </View>
       </View>
@@ -107,6 +113,9 @@ const styles = StyleSheet.create({
   statNum: { fontFamily: fonts.display, fontSize: 26 },
   statLabel: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  allDone: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 },
+  allDoneTitle: { fontFamily: fonts.display, fontSize: 18 },
+  allDoneBody: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 18 },
   badges: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 10, rowGap: 14 },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   settingsRow: { padding: 14, gap: 2 },
