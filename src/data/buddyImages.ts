@@ -239,6 +239,26 @@ export const BUDDY_IMAGES: Record<ArtId | 'cutting', Record<Mood, ImageSourcePro
     thirsty: require('../../assets/buddies/ayoyo-happy.png'),
     snoozing: require('../../assets/buddies/ayoyo-happy.png'),
   },
+  'rosemary': {
+    happy: require('../../assets/buddies/rosemary-happy.png'),
+    thirsty: require('../../assets/buddies/rosemary-happy.png'),
+    snoozing: require('../../assets/buddies/rosemary-happy.png'),
+  },
+  'thyme': {
+    happy: require('../../assets/buddies/thyme-happy.png'),
+    thirsty: require('../../assets/buddies/thyme-happy.png'),
+    snoozing: require('../../assets/buddies/thyme-happy.png'),
+  },
+  'scent-leaf': {
+    happy: require('../../assets/buddies/scent-leaf-happy.png'),
+    thirsty: require('../../assets/buddies/scent-leaf-happy.png'),
+    snoozing: require('../../assets/buddies/scent-leaf-happy.png'),
+  },
+  'roselle': {
+    happy: require('../../assets/buddies/roselle-happy.png'),
+    thirsty: require('../../assets/buddies/roselle-happy.png'),
+    snoozing: require('../../assets/buddies/roselle-happy.png'),
+  },
   'pink-princess': {
     happy: require('../../assets/buddies/pink-princess-happy.png'),
     thirsty: require('../../assets/buddies/pink-princess-thirsty.png'),
