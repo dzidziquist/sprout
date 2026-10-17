@@ -27,10 +27,12 @@ import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
 
 import { choosePhoto, photoSrc } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
-import { useColors } from '@/theme/theme';
+import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { CareEvent, Plant } from '@/types';
 
+/** Watering can, for Log care. */
+const LOG_ICON = 'M4 10h11v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7zM15 12l5-4M15 10V8a3 3 0 0 0-6 0v2';
 /** Stethoscope, for the plant doctor. */
 const DOCTOR_ICON = 'M6 3v6a4 4 0 0 0 8 0V3M10 13v3a4 4 0 0 0 8 0v-2M18 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z';
 
@@ -245,27 +247,11 @@ export default function PlantDetail() {
         )}
         {!archived && !plant.rooting && (
           <>
-            <Button title="Log care" raised onPress={actions.log} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`What's wrong with ${plant.name}?`}
-              onPress={() => router.push(`/doctor/${plant.id}`)}
-              style={({ pressed }) => [styles.cutBtn, { backgroundColor: c.peach, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 3}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 2 }] }]}
-            >
-              <Svg width={20} height={20} viewBox="0 0 24 24"><Path d={DOCTOR_ICON} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
-              <Text style={[styles.cutText, { color: c.ink }]}>Something wrong?</Text>
-            </Pressable>
-            {!guide?.regrows && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Take cuttings from ${plant.name}`}
-              onPress={() => router.push(`/cuttings/${plant.id}`)}
-              style={({ pressed }) => [styles.cutBtn, { backgroundColor: c.lavender, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 3}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 2 }] }]}
-            >
-              <Svg width={20} height={20} viewBox="0 0 24 24"><Path d={CUTTING_ICON} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
-              <Text style={[styles.cutText, { color: c.ink }]}>Take cuttings</Text>
-            </Pressable>
-            )}
+            <View style={styles.actions}>
+              <ActionTile label="Log care" icon={LOG_ICON} bg={c.leaf} big onPress={actions.log} />
+              {!guide?.regrows && <ActionTile label="Take cuttings" a11y={`Take cuttings from ${plant.name}`} icon={CUTTING_ICON} bg={c.lavender} onPress={() => router.push(`/cuttings/${plant.id}`)} />}
+              <ActionTile label="Something wrong?" a11y={`What's wrong with ${plant.name}?`} icon={DOCTOR_ICON} bg={c.peach} onPress={() => router.push(`/doctor/${plant.id}`)} />
+            </View>
           </>
         )}
         {!archived && !plant.rooting && guide && <StagePanel plant={plant} now={now} />}
@@ -374,14 +360,32 @@ export default function PlantDetail() {
   );
 }
 
+/** One of the three main actions under the stats: icon on top, short label underneath. */
+function ActionTile({ label, a11y, icon, bg, big, onPress }: { label: string; a11y?: string; icon: string; bg: string; big?: boolean; onPress: () => void }) {
+  const c = useColors();
+  const ink = textOn(bg, c);
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={a11y ?? label}
+      onPress={onPress}
+      style={({ pressed }) => [styles.actionTile, { backgroundColor: bg, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : big ? 4 : 3}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 2 }] }]}
+    >
+      <Svg width={24} height={24} viewBox="0 0 24 24"><Path d={icon} stroke={ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+      <Text style={[styles.actionText, { color: ink }, big && { fontFamily: fonts.display }]} numberOfLines={2}>{label}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   hero: { alignItems: 'center', borderBottomWidth: 2, paddingBottom: 4 },
   heroBar: { alignSelf: 'stretch', paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between' },
   heroArt: { width: 220, alignItems: 'center' },
   heroChip: { marginTop: -4, marginBottom: 8, borderWidth: 2, borderRadius: 14, paddingHorizontal: 10, height: 28, justifyContent: 'center' },
   heroChipText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  cutBtn: { minHeight: 50, borderWidth: 2, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  cutText: { fontFamily: fonts.displaySemi, fontSize: 16 },
+  actions: { flexDirection: 'row', gap: 10 },
+  actionTile: { flex: 1, minHeight: 84, borderWidth: 2, borderRadius: 18, alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 6, paddingVertical: 10 },
+  actionText: { fontFamily: fonts.displaySemi, fontSize: 14, lineHeight: 17, textAlign: 'center' },
   heroPhoto: { width: 210, height: 210, borderRadius: 28, borderWidth: 2, overflow: 'hidden', marginVertical: 10 },
   body: { padding: 20, gap: 16 },
   archived: { padding: 14, gap: 4 },
