@@ -10,6 +10,7 @@ import { OTHER, SPECIES, SPECIES_LIST, getSpecies, isOtherId, searchSpecies } fr
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
 import { defaultSpot, type Spot } from '@/lib/spots';
+import { daysAgo, JOINED, WATERED, type JoinedId, type WateredId } from '@/lib/when';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
@@ -164,6 +165,8 @@ export default function AddPlantScreen() {
   const [size, setSize] = useState(15);
   const [material, setMaterial] = useState<PotMaterial>('plastic');
   const [placement, setPlacement] = useState<Placement>(presetDefaults?.placement ?? 'indoor');
+  const [joined, setJoined] = useState<JoinedId>('today');
+  const [watered, setWatered] = useState<WateredId>('unsure');
   const [room, setRoom] = useState('');
   const [origin, setOrigin] = useState<Origin>('bought');
   const [parentId, setParentId] = useState<string | undefined>();
@@ -336,6 +339,7 @@ export default function AddPlantScreen() {
   const parents = plants.filter((p) => !p.archivedAt && (isOther ? !!p.custom && p.custom.commonName.toLowerCase() === customName.trim().toLowerCase() : p.speciesId === speciesId));
   const soilInfo = SOILS.find((s) => s.id === soil);
 
+  const lastWateredDays = WATERED.find((w) => w.id === watered)?.days ?? null;
   const save = () => {
     const plant = addPlant({
       name: name.trim() || suggestions[0],
@@ -350,8 +354,8 @@ export default function AddPlantScreen() {
       room: room.trim() || undefined,
       origin,
       parentId: origin === 'cutting' ? parentId : undefined,
-      acquiredAt: new Date().toISOString(),
-    });
+      acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString(),
+    }, new Date(), { lastWateredAt: lastWateredDays === null ? undefined : daysAgo(lastWateredDays) });
     haptics.success();
     router.replace(`/plant/${plant.id}`);
   };
@@ -459,6 +463,23 @@ export default function AddPlantScreen() {
         ))}
       </View>
       <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
+
+      <Label>When did it join the fam?</Label>
+      <View style={styles.wrap}>
+        {JOINED.map((j) => (
+          <Pill key={j.id} on={joined === j.id} bg={c.lavender} label={j.label} onPress={() => setJoined(j.id)} />
+        ))}
+      </View>
+
+      <Label>{isReservoir(soil) ? 'When was it last topped up?' : 'When was it last watered?'}</Label>
+      <View style={styles.wrap}>
+        {WATERED.map((w) => (
+          <Pill key={w.id} on={watered === w.id} bg={c.ice} label={w.label} onPress={() => setWatered(w.id)} />
+        ))}
+      </View>
+      <Text style={[styles.note, { color: c.inkMuted }]}>
+        {lastWateredDays === null ? 'Not sure? No problem: we’ll ask you to check its soil today.' : 'Its first check is planned from that watering.'}
+      </Text>
 
       {profile.grows.hydro && placement !== 'ground' && (
         <>

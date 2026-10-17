@@ -78,7 +78,9 @@ interface PlantState {
    * New plants get their first soil check today by default: we don't know when it was last watered,
    * and one real answer calibrates far better than a guess. Demo plants use the modelled schedule.
    */
-  addPlant: (p: NewPlant, now?: Date, opts?: { firstCheck?: 'today' | 'scheduled' }) => Plant;
+  addPlant: (p: NewPlant, now?: Date, opts?: { firstCheck?: 'today' | 'scheduled'; lastWateredAt?: Date }) => Plant;
+  /** "It was last watered on…": logs that watering and plans the next check from it. */
+  setLastWatered: (plantId: string, at: Date, now?: Date) => void;
   /** Records a soil check and reschedules. Returns the kind message to show. */
   logCheck: (plantId: string, result: CheckResult, now?: Date) => string;
   undoLastCheck: (plantId: string) => void;
@@ -148,10 +150,27 @@ export const usePlantStore = create<PlantState>()(
 
       addPlant: (input, now = new Date(), opts) => {
         const base = { ...input, id: uid(), k: 1, createdAt: now.toISOString() };
-        const today = (opts?.firstCheck ?? 'today') === 'today' && !input.rooting;
-        const plant: Plant = { ...base, nextCheckAt: today ? now.toISOString() : schedule(base, get().profile.climate, now) };
-        set((s) => ({ plants: [...s.plants, plant] }));
+        const climate = get().profile.climate;
+        // Knowing when it was last watered beats a same-day check: plan from that watering instead.
+        const watered = opts?.lastWateredAt && !input.rooting ? opts.lastWateredAt : undefined;
+        const today = !watered && (opts?.firstCheck ?? 'today') === 'today' && !input.rooting;
+        const nextCheckAt = watered ? schedule(base, climate, watered) : today ? now.toISOString() : schedule(base, climate, now);
+        const plant: Plant = { ...base, nextCheckAt };
+        set((s) => ({
+          plants: [...s.plants, plant],
+          events: watered ? [...s.events, { id: uid(), plantId: plant.id, type: 'water', at: watered.toISOString() }] : s.events,
+        }));
         return plant;
+      },
+
+      setLastWatered: (plantId, at, now = new Date()) => {
+        const plant = get().plants.find((p) => p.id === plantId);
+        if (!plant || plant.rooting) return;
+        const when = at.getTime() > now.getTime() ? now : at;
+        set((s) => ({
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, nextCheckAt: schedule(p, s.profile.climate, when) } : p)),
+          events: [...s.events, { id: uid(), plantId, type: 'water', at: when.toISOString() }],
+        }));
       },
 
       logCheck: (plantId, result, now = new Date()) => {

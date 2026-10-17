@@ -106,6 +106,28 @@ describe('plant store', () => {
   });
 });
 
+describe('past waterings', () => {
+  it('plans the first check from when it was last watered, and logs that watering', () => {
+    const s = usePlantStore.getState();
+    const watered = new Date('2026-10-12T09:00:00');
+    const p = s.addPlant({ ...base, name: 'Wet' }, now, { lastWateredAt: watered });
+    const scheduled = s.addPlant({ ...base, name: 'Ref' }, watered, { firstCheck: 'scheduled' });
+    expect(p.nextCheckAt).toBe(scheduled.nextCheckAt);
+    expect(usePlantStore.getState().events.filter((e) => e.plantId === p.id && e.type === 'water').map((e) => e.at)).toEqual([watered.toISOString()]);
+  });
+
+  it('lets an existing plant say when it was last watered', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Late' }, now);
+    expect(p.nextCheckAt).toBe(now.toISOString());
+    const yesterday = new Date('2026-10-13T09:00:00');
+    usePlantStore.getState().setLastWatered(p.id, yesterday, now);
+    const after = usePlantStore.getState().plants.find((x) => x.id === p.id)!;
+    expect(after.nextCheckAt > now.toISOString()).toBe(true);
+    expect(usePlantStore.getState().events.some((e) => e.plantId === p.id && e.type === 'water' && e.at === yesterday.toISOString())).toBe(true);
+  });
+});
+
 describe('supporter thank-you', () => {
   it('dates the first tip and keeps that date', () => {
     usePlantStore.getState().setProfile({ supporter: true }, now);
