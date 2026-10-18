@@ -133,7 +133,8 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
   const comeBack = (until: number) => {
     for (; si < spans.length && spans[si][1] <= until; si++) {
       push(due, spans[si][0]);
-      due = Math.max(due, spans[si][1]);
+      // restorePlant makes it due the moment it's back, whatever was booked before.
+      due = spans[si][1];
     }
   };
   for (const c of checks) {

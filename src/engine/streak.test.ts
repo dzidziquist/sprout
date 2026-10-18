@@ -212,6 +212,13 @@ describe('review fixes', () => {
     expect(lapsesFor({ ...p, nextCheckAt: '2026-09-09T09:00:00' }, [...events, check('m', '2026-09-02T09:00:00')], 'seattle', new Date('2026-09-03T12:00:00'))).toEqual([]);
   });
 
+  it('counts from the return, not the old booking, when a plant comes back early', () => {
+    // Checked Jun 8 (next due Jun 15), archived Jun 10, back Jun 11, then not checked until Jun 15.
+    const events = [check('e', '2026-06-08T09:00:00'), ev('e', 'archived', '2026-06-10T09:00:00'), ev('e', 'restored', '2026-06-11T09:00:00'), check('e', '2026-06-15T09:00:00')];
+    const lapses = lapsesFor(plant('e', { nextCheckAt: '2026-06-22T09:00:00' }), events, 'seattle', new Date('2026-06-16T12:00:00'));
+    expect(lapses).toEqual([[new Date('2026-06-13T09:00:00').getTime(), new Date('2026-06-15T09:00:00').getTime()]]);
+  });
+
   it('waits as long as the app does after "Plenty" on a LECA plant', () => {
     const p = plant('l', { soil: 'leca', light: 'low', placement: 'indoor' });
     const at = new Date('2026-06-05T09:00:00');
