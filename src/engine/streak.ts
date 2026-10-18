@@ -1,5 +1,5 @@
 import { awayRanges, subtractRanges, type Trip } from './away';
-import { RECHECK_DAYS, checkIntervalDays, isReservoir } from './careEngine';
+import { checkIntervalDays, recheckDays } from './careEngine';
 import { speciesOf } from '../data/species';
 import { localizeClimateText, modelOf, shiftOf } from '../lib/climate';
 import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
@@ -88,10 +88,8 @@ function addWeeks(d: Date, n: number): Date {
 
 function gapDays(plant: Plant, climate: ClimateProfile, result: CheckResult, at: Date): number {
   const full = checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at });
-  if (result === 'dry') return full;
-  // The same re-check gaps applyCheck books: LECA and water plants wait longer after "Plenty".
-  if (result === 'damp') return isReservoir(plant.soil) ? Math.min(full, Math.max(RECHECK_DAYS.damp, Math.round(full / 2))) : Math.min(RECHECK_DAYS.damp, full);
-  return RECHECK_DAYS.soggy;
+  // The same re-check gaps applyCheck books.
+  return result === 'dry' ? full : recheckDays(plant.soil, result, full);
 }
 
 /** [archived, brought back) for each time the plant spent In memory or gifted and then came back. */
@@ -128,7 +126,7 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
   };
   let due = start + checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at: new Date(start) }) * DAY_MS;
   // Time away from the fam never counts: lapses stop when it was archived, and it's due again from its return.
-  const spans = archivedSpans(mine);
+  const spans = archivedSpans(mine).filter(([, back]) => back > start);
   let si = 0;
   const comeBack = (until: number) => {
     for (; si < spans.length && spans[si][1] <= until; si++) {
@@ -146,7 +144,8 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
   comeBack(Infinity);
   // The open cycle: the stored schedule is the source of truth.
   push(new Date(plant.nextCheckAt).getTime(), end);
-  return out;
+  // Even checks logged inside a span (an archive date set back in time) don't make that time count.
+  return spans.length ? subtractRanges(out, spans) : out;
 }
 
 export function computeStreak({ plants, events, climate, now, trips }: StreakInput): StreakResult {

@@ -304,13 +304,17 @@ export const usePlantStore = create<PlantState>()(
         const at = now.toISOString();
         set((s) => ({
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: at, archivedReason: reason } : p)),
+          undo: Object.fromEntries(Object.entries(s.undo).filter(([id]) => id !== plantId)),
           events: [...s.events, { id: uid(), plantId, type: 'archived', note: reason, at }],
         }));
       },
 
       restorePlant: (plantId, now = new Date()) => {
+        if (!get().plants.find((p) => p.id === plantId)?.archivedAt) return;
         const at = now.toISOString();
         set((s) => ({
+          // A check undone after the plant came back would bring back its old schedule.
+          undo: Object.fromEntries(Object.entries(s.undo).filter(([id]) => id !== plantId)),
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: undefined, archivedReason: undefined, ...(p.rooting ? {} : { nextCheckAt: at }) } : p)),
           events: [...s.events, { id: uid(), plantId, type: 'restored', at }],
         }));

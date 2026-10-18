@@ -263,6 +263,17 @@ describe('review fixes', () => {
     }
   });
 
+  it('only restores archived plants, and drops a stale undo when it does', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Steady' }, now, { firstCheck: 'scheduled' });
+    s.restorePlant(p.id, new Date('2026-12-01T10:00:00'));
+    expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(p.nextCheckAt);
+    expect(usePlantStore.getState().events.some((e) => e.type === 'restored')).toBe(false);
+    s.logCheck(p.id, 'dry', now);
+    s.archivePlant(p.id, 'gifted', now);
+    expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
+  });
+
   it('forgets undo for a deleted plant', () => {
     const s = usePlantStore.getState();
     const p = s.addPlant({ ...base, name: 'Gone' }, now);

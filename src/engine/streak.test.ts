@@ -219,6 +219,17 @@ describe('review fixes', () => {
     expect(lapses).toEqual([[new Date('2026-06-13T09:00:00').getTime(), new Date('2026-06-15T09:00:00').getTime()]]);
   });
 
+  it('ignores an archive and return from before the cutting rooted', () => {
+    const events = [ev('k', 'archived', '2026-06-02T09:00:00'), ev('k', 'restored', '2026-06-03T09:00:00'), ev('k', 'rooted', '2026-07-01T09:00:00'), check('k', '2026-07-05T09:00:00')];
+    expect(lapsesFor(plant('k', { nextCheckAt: '2026-07-12T09:00:00' }), events, 'seattle', new Date('2026-07-06T12:00:00'))).toEqual([]);
+  });
+
+  it('never counts time inside an archive set back in time, even with checks in it', () => {
+    // Checked Jun 8, then archive back-dated to Jun 10 although a late check was logged Jun 25; back Jul 1.
+    const events = [check('b', '2026-06-08T09:00:00'), check('b', '2026-06-25T09:00:00'), ev('b', 'archived', '2026-06-10T09:00:00'), ev('b', 'restored', '2026-07-01T09:00:00')];
+    expect(lapsesFor(plant('b', { nextCheckAt: '2026-07-01T09:00:00' }), events, 'seattle', new Date('2026-07-02T12:00:00'))).toEqual([]);
+  });
+
   it('waits as long as the app does after "Plenty" on a LECA plant', () => {
     const p = plant('l', { soil: 'leca', light: 'low', placement: 'indoor' });
     const at = new Date('2026-06-05T09:00:00');

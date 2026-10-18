@@ -208,7 +208,7 @@ export function updateK(k: number, result: CheckResult): number {
 }
 
 /** After a damp or soggy answer we peek again soon rather than waiting a full interval. */
-export const RECHECK_DAYS: Record<Exclude<CheckResult, 'dry'>, number> = { damp: 2, soggy: 4 };
+const RECHECK_DAYS: Record<Exclude<CheckResult, 'dry'>, number> = { damp: 2, soggy: 4 };
 
 export interface CheckOutcome {
   k: number;
@@ -217,6 +217,12 @@ export interface CheckOutcome {
   /** Short, kind guidance shown right after the answer. */
   message: string;
   flags: Array<'possible_overwatering' | 'garden_soil' | 'old_mix'>;
+}
+
+/** Days until the next check after a "damp"/"soggy" answer (or "Plenty" for LECA/water), given the full interval. */
+export function recheckDays(soil: Soil, result: Exclude<CheckResult, 'dry'>, full: number): number {
+  if (isReservoir(soil)) return Math.min(full, Math.max(RECHECK_DAYS.damp, Math.round(full / 2)));
+  return result === 'damp' ? Math.min(RECHECK_DAYS.damp, full) : RECHECK_DAYS.soggy;
 }
 
 export function applyCheck(
@@ -239,7 +245,7 @@ export function applyCheck(
       days = full;
       message = `Topped up! Next peek in ~${Math.round(days)} days`;
     } else {
-      days = Math.min(full, Math.max(RECHECK_DAYS.damp, Math.round(full / 2)));
+      days = recheckDays(input.plant.soil, 'damp', full);
       message = 'Plenty left, skipping. +1 smart skip';
     }
     return { k, nextCheckAt: addDays(input.at, days).toISOString(), watered: result === 'dry', message, flags };
@@ -248,10 +254,10 @@ export function applyCheck(
     days = checkIntervalDays({ ...input, plant: updated });
     message = `Watered! Next check in ~${Math.round(days)} days`;
   } else if (result === 'damp') {
-    days = Math.min(RECHECK_DAYS.damp, checkIntervalDays({ ...input, plant: updated }));
+    days = recheckDays(input.plant.soil, 'damp', checkIntervalDays({ ...input, plant: updated }));
     message = 'Good call, skipping. +1 smart skip';
   } else {
-    days = RECHECK_DAYS.soggy;
+    days = recheckDays(input.plant.soil, 'soggy', 0);
     flags.push('possible_overwatering');
     message = 'Too wet. Letting it dry; watch for gnats';
   }

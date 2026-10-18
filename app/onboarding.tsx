@@ -1,6 +1,6 @@
 import { PlacePicker } from '@/components/PlacePicker';
-import { useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore, type FaceStyle } from '@/store/plantStore';
@@ -47,7 +47,11 @@ export default function Onboarding() {
   // The welcome screen is a bright brand moment in both themes.
   const w = useMemo(() => makeStyles(light), []);
 
+  const finishing = useRef(false);
   const finish = async (demo: boolean) => {
+    // Waiting on the permission prompt: a second tap (or the other button) mustn't run this twice.
+    if (finishing.current) return;
+    finishing.current = true;
     // The round is on by default, so this is where iOS asks to send it.
     const ok = await ensureRoundPermission().catch(() => false);
     setProfile({ round: { ...profile.round, enabled: ok } });
@@ -139,7 +143,7 @@ export default function Onboarding() {
         <Text style={styles.choiceTitle}>Plant round 🌱</Text>
         <Text style={styles.choiceSub}>Your plants would love a soil check. 2 mins, tops.</Text>
       </Sticker>
-      <Label muted>Just one reminder, only on days something needs you. Never "you forgot me". Your iPhone will ask if PlantFam can send it.</Label>
+      <Label muted>Just one reminder, only on days something needs you. Never "you forgot me".{Platform.OS === 'ios' ? ' Your iPhone will ask if PlantFam can send it.' : ''}</Label>
       <View style={styles.row3}>
         {TIMES.map((t) => {
           const on = profile.round.hour === t.hour && profile.round.minute === t.minute;
