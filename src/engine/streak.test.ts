@@ -230,6 +230,14 @@ describe('review fixes', () => {
     expect(lapsesFor(plant('b', { nextCheckAt: '2026-07-01T09:00:00' }), events, 'seattle', new Date('2026-07-02T12:00:00'))).toEqual([]);
   });
 
+  it('pairs a return with the latest archive, so older archives with no return hide nothing', () => {
+    // Archived in March and brought back the old way (no 'restored' event), overdue in April, then
+    // archived and restored again in June: April's slip still counts.
+    const events = [check('o', '2026-03-01T09:00:00'), ev('o', 'archived', '2026-03-05T09:00:00'), check('o', '2026-04-01T09:00:00'), check('o', '2026-04-20T09:00:00'), ev('o', 'archived', '2026-06-01T09:00:00'), ev('o', 'restored', '2026-06-02T09:00:00')];
+    const lapses = lapsesFor(plant('o', { createdAt: '2026-02-20T09:00:00', nextCheckAt: '2026-06-02T09:00:00' }), events, 'seattle', new Date('2026-06-03T12:00:00'));
+    expect(lapses.some(([a]) => a >= new Date('2026-04-01T09:00:00').getTime() && a < new Date('2026-04-20T09:00:00').getTime())).toBe(true);
+  });
+
   it('reads the booked date a check saved instead of working it out', () => {
     // Booked three weeks out (e.g. the plant doctor stretched it): checking on that day is on time.
     const events = [{ ...check('d', '2026-06-05T09:00:00'), nextAt: '2026-06-26T09:00:00' }, check('d', '2026-06-26T09:00:00')];

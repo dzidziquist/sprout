@@ -31,40 +31,42 @@ export default function BadgeScreen() {
   // and letting go folds the two together natively in one step: no frame where the badge jumps.
   const x = useRef(new Animated.Value(0)).current;
   const angle = useRef(Animated.multiply(x, TURN)).current;
-  /** Where the spin rests, in pixels (JS's copy; the native value is the source of truth). */
-  const rest = useRef(0);
   const onDrag = useRef(Animated.event([{ nativeEvent: { translationX: x } }], { useNativeDriver: true })).current;
   const FULL = 360 / TURN;
 
-  /** Spin to `to` (pixels), carrying the finger's speed in, and remember it as the resting spin. */
+  /** Spin to `to` (pixels), carrying the finger's speed in. */
   const spinTo = (to: number, velocity = 0) => {
-    rest.current = to;
     Animated.spring(x, { toValue: to, velocity, stiffness: 70, damping: 13, mass: 1, useNativeDriver: true }).start();
   };
 
   const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
     if (e.state === State.BEGAN) {
       // Catch it mid-spin where it is, and make the live drag start from there.
-      x.stopAnimation((v) => (rest.current = v));
+      x.stopAnimation();
       x.extractOffset();
       return;
     }
     if (e.state !== State.END && e.state !== State.CANCELLED && e.state !== State.FAILED) return;
+    // Fold the drag into the value natively, then read back exactly where it is (the native value
+    // arrives asynchronously, so everything after waits for it).
     x.flattenOffset();
-    const now = rest.current + e.translationX;
-    if (Math.abs(e.translationX) < 4 && Math.abs(e.velocityX) < 100) {
+    const { translationX, velocityX } = e;
+    x.stopAnimation((now) => release(now, translationX, velocityX));
+  };
+
+  const release = (now: number, dx: number, vx: number) => {
+    if (Math.abs(dx) < 4 && Math.abs(vx) < 100) {
       // A tap: one full twirl.
       haptics.tap();
-      rest.current = Math.round(now / FULL) * FULL + FULL;
-      Animated.timing(x, { toValue: rest.current, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start();
+      Animated.timing(x, { toValue: Math.round(now / FULL) * FULL + FULL, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start();
       return;
     }
-    if (Math.abs(e.velocityX) > 300) haptics.tap();
+    if (Math.abs(vx) > 300) haptics.tap();
     // A flick coasts on to the next face-forward turn in the direction it was spun (never swinging back
     // against it); a slow let-go settles on whichever front is nearest. Spring velocity is per second.
-    const coast = now + e.velocityX * 0.35;
-    const turns = Math.abs(e.velocityX) < 300 ? Math.round(now / FULL) : e.velocityX > 0 ? Math.ceil(coast / FULL) : Math.floor(coast / FULL);
-    spinTo(turns * FULL, e.velocityX);
+    const coast = now + vx * 0.35;
+    const turns = Math.abs(vx) < 300 ? Math.round(now / FULL) : vx > 0 ? Math.ceil(coast / FULL) : Math.floor(coast / FULL);
+    spinTo(turns * FULL, vx);
   };
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/me'));

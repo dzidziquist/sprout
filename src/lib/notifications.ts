@@ -61,9 +61,9 @@ export function rescheduleRounds(
       latest = null;
       await schedule(...args).catch(() => {});
     }
-  })().finally(() => {
+    // Cleared in the same step that saw nothing waiting, so a request can't slip in between.
     running = null;
-  });
+  })();
   return running;
 }
 

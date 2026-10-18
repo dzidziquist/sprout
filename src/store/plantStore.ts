@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Trip } from '../engine/away';
 import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
+import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
 import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent } from '../types';
@@ -148,9 +149,11 @@ function repace(plants: Plant[], from: ClimateProfile, to: ClimateProfile, now: 
 /**
  * The plant's latest check remembers when the next one was booked for, so the streak reads the real
  * schedule rather than re-working it out. Anything that moves the schedule before that next check
- * (a new watering date, a pot change, a new climate, the plant doctor) updates it here.
+ * (a new watering date, a pot change, a new climate, the plant doctor) updates it here, but only while
+ * the old booking is still within its grace days: time already spent overdue stays overdue, so editing
+ * a plant can never wipe a slip out of the streak.
  */
-function rebook(events: CareEvent[], moved: Map<string, string>): CareEvent[] {
+function rebook(events: CareEvent[], moved: Map<string, string>, now: Date): CareEvent[] {
   if (moved.size === 0) return events;
   const latest = new Map<string, number>();
   events.forEach((e, i) => {
@@ -158,9 +161,21 @@ function rebook(events: CareEvent[], moved: Map<string, string>): CareEvent[] {
     const j = latest.get(e.plantId);
     if (j === undefined || e.at >= events[j].at) latest.set(e.plantId, i);
   });
-  if (latest.size === 0) return events;
-  const at = new Set(latest.values());
+  const graceEnds = (e: CareEvent) => new Date(e.nextAt!).getTime() + GRACE_DAYS * 86400000;
+  const at = new Set([...latest.values()].filter((i) => events[i].nextAt && graceEnds(events[i]) > now.getTime()));
+  if (at.size === 0) return events;
   return events.map((e, i) => (at.has(i) ? { ...e, nextAt: moved.get(e.plantId) } : e));
+}
+
+/** `undo` without the given plants' entries: an undone check would bring back a schedule that has since moved. */
+function withoutUndo(undo: Record<string, CheckUndo>, ids: Iterable<string>): Record<string, CheckUndo> {
+  const drop = new Set(ids);
+  return drop.size ? Object.fromEntries(Object.entries(undo).filter(([id]) => !drop.has(id))) : undo;
+}
+
+/** The next check after a watering at `at`, but never before `now`: watered long ago means due now, not overdue. */
+function scheduleNotBefore(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimateProfile, at: Date, now: Date): string {
+  return new Date(Math.max(new Date(schedule(plant, climate, at)).getTime(), now.getTime())).toISOString();
 }
 
 /** Plants whose booked check changed between two lists, by id → new date. */
@@ -191,7 +206,8 @@ export const usePlantStore = create<PlantState>()(
           const moved = p.climate !== undefined && JSON.stringify(p.climate) !== JSON.stringify(s.profile.climate);
           if (!moved) return { profile };
           const plants = repace(s.plants, s.profile.climate, profile.climate, now);
-          return { profile, plants, events: rebook(s.events, movedChecks(s.plants, plants)) };
+          const shifted = movedChecks(s.plants, plants);
+          return { profile, plants, events: rebook(s.events, shifted, now), undo: withoutUndo(s.undo, shifted.keys()) };
         }),
       completeOnboarding: () => set({ onboarded: true }),
 
@@ -201,8 +217,7 @@ export const usePlantStore = create<PlantState>()(
         // Knowing when it was last watered beats a same-day check: plan from that watering instead.
         const watered = opts?.lastWateredAt && !input.rooting ? opts.lastWateredAt : undefined;
         const today = !watered && (opts?.firstCheck ?? 'today') === 'today' && !input.rooting;
-        const fromWatering = watered ? new Date(Math.max(new Date(schedule(base, climate, watered)).getTime(), now.getTime())).toISOString() : undefined;
-        const nextCheckAt = fromWatering ?? (today ? now.toISOString() : schedule(base, climate, now));
+        const nextCheckAt = watered ? scheduleNotBefore(base, climate, watered, now) : today ? now.toISOString() : schedule(base, climate, now);
         const plant: Plant = { ...base, nextCheckAt };
         set((s) => ({
           plants: [...s.plants, plant],
@@ -216,11 +231,11 @@ export const usePlantStore = create<PlantState>()(
         if (!plant || plant.rooting) return;
         const when = at.getTime() > now.getTime() ? now : at;
         set((s) => {
-          // Watered long ago means due now, not overdue since a date that's already passed.
-          const nextCheckAt = new Date(Math.max(new Date(schedule(plant, s.profile.climate, when)).getTime(), now.getTime())).toISOString();
+          const nextCheckAt = scheduleNotBefore(plant, s.profile.climate, when, now);
           return {
             plants: s.plants.map((p) => (p.id === plantId ? { ...p, nextCheckAt } : p)),
-            events: [...rebook(s.events, new Map([[plantId, nextCheckAt]])), { id: uid(), plantId, type: 'water', at: when.toISOString() }],
+            events: [...rebook(s.events, new Map([[plantId, nextCheckAt]]), now), { id: uid(), plantId, type: 'water', at: when.toISOString() }],
+            undo: withoutUndo(s.undo, [plantId]),
           };
         });
       },
@@ -328,7 +343,8 @@ export const usePlantStore = create<PlantState>()(
             const careChanged = (['soil', 'potMaterial', 'potDiameterCm', 'light', 'placement', 'speciesId', 'selfWatering'] as const).some((k) => k in patch && patch[k] !== p[k]);
             return careChanged && !next.rooting ? { ...next, nextCheckAt: schedule(next, climate, now) } : next;
           });
-          return { plants, events: rebook(s.events, movedChecks(s.plants, plants)) };
+          const moved = movedChecks(s.plants, plants);
+          return { plants, events: rebook(s.events, moved, now), undo: withoutUndo(s.undo, moved.keys()) };
         });
       },
 
@@ -336,7 +352,7 @@ export const usePlantStore = create<PlantState>()(
         const at = now.toISOString();
         set((s) => ({
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: at, archivedReason: reason } : p)),
-          undo: Object.fromEntries(Object.entries(s.undo).filter(([id]) => id !== plantId)),
+          undo: withoutUndo(s.undo, [plantId]),
           events: [...s.events, { id: uid(), plantId, type: 'archived', note: reason, at }],
         }));
       },
@@ -346,7 +362,7 @@ export const usePlantStore = create<PlantState>()(
         const at = now.toISOString();
         set((s) => ({
           // A check undone after the plant came back would bring back its old schedule.
-          undo: Object.fromEntries(Object.entries(s.undo).filter(([id]) => id !== plantId)),
+          undo: withoutUndo(s.undo, [plantId]),
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: undefined, archivedReason: undefined, ...(p.rooting ? {} : { nextCheckAt: at }) } : p)),
           events: [...s.events, { id: uid(), plantId, type: 'restored', at }],
         }));
@@ -376,7 +392,7 @@ export const usePlantStore = create<PlantState>()(
         set((s) => ({
           plants: s.plants.filter((p) => p.id !== plantId).map((p) => (p.parentId === plantId ? { ...p, parentId: gone.parentId } : p)),
           events: s.events.filter((e) => e.plantId !== plantId),
-          undo: Object.fromEntries(Object.entries(s.undo).filter(([id]) => id !== plantId)),
+          undo: withoutUndo(s.undo, [plantId]),
         }));
       },
 
@@ -471,7 +487,8 @@ export const usePlantStore = create<PlantState>()(
                     nextCheckAt: new Date(now.getTime() + left * factor).toISOString(),
                   };
                 });
-          return { plants, events: [...rebook(s.events, movedChecks(s.plants, plants)), { id: uid(), plantId, type: 'diagnosis', note, at: now.toISOString() }] };
+          const moved = movedChecks(s.plants, plants);
+          return { plants, undo: withoutUndo(s.undo, moved.keys()), events: [...rebook(s.events, moved, now), { id: uid(), plantId, type: 'diagnosis', note, at: now.toISOString() }] };
         });
       },
 

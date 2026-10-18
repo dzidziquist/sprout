@@ -286,6 +286,25 @@ describe('review fixes', () => {
     expect(check().nextAt).toBe(usePlantStore.getState().plants[0].nextCheckAt);
   });
 
+  it('never lets an edit wipe time already spent overdue out of the streak', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Late' }, now);
+    s.logCheck(p.id, 'dry', now);
+    const booked = usePlantStore.getState().events.find((e) => e.type === 'check')!.nextAt!;
+    // A month later, long overdue: a pot change books a new date but the old one stays on the check.
+    const later = new Date(new Date(booked).getTime() + 30 * 86400000);
+    s.updatePlant(p.id, { soil: 'gritty' }, later);
+    expect(usePlantStore.getState().events.find((e) => e.type === 'check')!.nextAt).toBe(booked);
+  });
+
+  it('drops the undo once the schedule moves after a check', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Moved' }, now);
+    s.logCheck(p.id, 'damp', now);
+    s.updatePlant(p.id, { potDiameterCm: 25 }, now);
+    expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
+  });
+
   it('treats a watering from long ago as due now, not overdue', () => {
     const s = usePlantStore.getState();
     const p = s.addPlant({ ...base, name: 'Parched' }, now, { lastWateredAt: new Date('2026-08-01T09:00:00') });

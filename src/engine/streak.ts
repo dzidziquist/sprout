@@ -13,14 +13,16 @@ import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
  * Definitions (all in the phone's local time):
  * - A week runs Monday 00:00 → Sunday 23:59.
  * - A plant's check CYCLE runs from the moment a soil check falls due to the moment it is next checked.
- *   Due dates are rebuilt from the plant's history: the first check falls due one full interval after
- *   the plant joined (or after its cutting rooted); after each check the next one falls due
- *   `interval` days later for "dry", min(2, interval) for "damp" and 4 for "soggy", mirroring
- *   `applyCheck`. The interval comes from `checkIntervalDays` with the plant's current pot, soil and k
- *   at the date of that check (so seasons are honoured; k is today's value, a small approximation).
+ *   The first check falls due one full interval after the plant joined (or after its cutting rooted).
+ *   After each check, the next falls due on the date that check booked (`nextAt`, kept up to date by
+ *   the store while the booking is still in its grace days). Checks saved before `nextAt` existed fall
+ *   back to rebuilding it: `interval` days for "dry", otherwise `recheckDays` (the same rule as
+ *   `applyCheck`), with the plant's current pot, soil and k at the date of that check.
  *   The open cycle uses the stored `plant.nextCheckAt`, which is authoritative.
  * - A LAPSE is the part of a cycle more than GRACE_DAYS (2) after the due date while still unchecked.
- *   Rooting cuttings have no checks, and archived plants stop counting at `archivedAt`.
+ *   Rooting cuttings have no checks, and archived plants stop counting at `archivedAt`. Time between
+ *   an 'archived' event and the 'restored' event after it never counts, and the plant is due again
+ *   from its return.
  * - A completed week is KEPT when no lapse touches it, otherwise MISSED.
  * - FREEZES: every calendar month brings FREEZES_PER_MONTH (2) free repairs. A missed week is counted in the
  *   month that holds most of its days (its Thursday, as in ISO weeks); if that month still has a
@@ -98,7 +100,8 @@ function archivedSpans(mine: CareEvent[]): Array<[number, number]> {
   let since: number | null = null;
   for (const e of mine.filter((x) => x.type === 'archived' || x.type === 'restored').sort((a, b) => a.at.localeCompare(b.at))) {
     const t = new Date(e.at).getTime();
-    if (e.type === 'archived') since ??= t;
+    // Pair each return with the latest archive before it (older data has archives with no return).
+    if (e.type === 'archived') since = t;
     else if (since !== null) {
       out.push([since, t]);
       since = null;
