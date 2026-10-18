@@ -145,6 +145,30 @@ function repace(plants: Plant[], from: ClimateProfile, to: ClimateProfile, now: 
   });
 }
 
+/**
+ * The plant's latest check remembers when the next one was booked for, so the streak reads the real
+ * schedule rather than re-working it out. Anything that moves the schedule before that next check
+ * (a new watering date, a pot change, a new climate, the plant doctor) updates it here.
+ */
+function rebook(events: CareEvent[], moved: Map<string, string>): CareEvent[] {
+  if (moved.size === 0) return events;
+  const latest = new Map<string, number>();
+  events.forEach((e, i) => {
+    if (e.type !== 'check' || !moved.has(e.plantId)) return;
+    const j = latest.get(e.plantId);
+    if (j === undefined || e.at >= events[j].at) latest.set(e.plantId, i);
+  });
+  if (latest.size === 0) return events;
+  const at = new Set(latest.values());
+  return events.map((e, i) => (at.has(i) ? { ...e, nextAt: moved.get(e.plantId) } : e));
+}
+
+/** Plants whose booked check changed between two lists, by id → new date. */
+function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
+  const old = new Map(before.map((p) => [p.id, p.nextCheckAt]));
+  return new Map(after.filter((p) => old.has(p.id) && old.get(p.id) !== p.nextCheckAt).map((p) => [p.id, p.nextCheckAt]));
+}
+
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
 function schedule(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimateProfile, at: Date): string {
@@ -165,7 +189,9 @@ export const usePlantStore = create<PlantState>()(
           const profile = { ...s.profile, ...p };
           if (profile.supporter && !profile.supporterSince) profile.supporterSince = now.toISOString();
           const moved = p.climate !== undefined && JSON.stringify(p.climate) !== JSON.stringify(s.profile.climate);
-          return moved ? { profile, plants: repace(s.plants, s.profile.climate, profile.climate, now) } : { profile };
+          if (!moved) return { profile };
+          const plants = repace(s.plants, s.profile.climate, profile.climate, now);
+          return { profile, plants, events: rebook(s.events, movedChecks(s.plants, plants)) };
         }),
       completeOnboarding: () => set({ onboarded: true }),
 
@@ -175,7 +201,8 @@ export const usePlantStore = create<PlantState>()(
         // Knowing when it was last watered beats a same-day check: plan from that watering instead.
         const watered = opts?.lastWateredAt && !input.rooting ? opts.lastWateredAt : undefined;
         const today = !watered && (opts?.firstCheck ?? 'today') === 'today' && !input.rooting;
-        const nextCheckAt = watered ? schedule(base, climate, watered) : today ? now.toISOString() : schedule(base, climate, now);
+        const fromWatering = watered ? new Date(Math.max(new Date(schedule(base, climate, watered)).getTime(), now.getTime())).toISOString() : undefined;
+        const nextCheckAt = fromWatering ?? (today ? now.toISOString() : schedule(base, climate, now));
         const plant: Plant = { ...base, nextCheckAt };
         set((s) => ({
           plants: [...s.plants, plant],
@@ -188,10 +215,14 @@ export const usePlantStore = create<PlantState>()(
         const plant = get().plants.find((p) => p.id === plantId);
         if (!plant || plant.rooting) return;
         const when = at.getTime() > now.getTime() ? now : at;
-        set((s) => ({
-          plants: s.plants.map((p) => (p.id === plantId ? { ...p, nextCheckAt: schedule(p, s.profile.climate, when) } : p)),
-          events: [...s.events, { id: uid(), plantId, type: 'water', at: when.toISOString() }],
-        }));
+        set((s) => {
+          // Watered long ago means due now, not overdue since a date that's already passed.
+          const nextCheckAt = new Date(Math.max(new Date(schedule(plant, s.profile.climate, when)).getTime(), now.getTime())).toISOString();
+          return {
+            plants: s.plants.map((p) => (p.id === plantId ? { ...p, nextCheckAt } : p)),
+            events: [...rebook(s.events, new Map([[plantId, nextCheckAt]])), { id: uid(), plantId, type: 'water', at: when.toISOString() }],
+          };
+        });
       },
 
       logCheck: (plantId, result, now = new Date()) => {
@@ -199,7 +230,7 @@ export const usePlantStore = create<PlantState>()(
         const plant = plants.find((p) => p.id === plantId);
         if (!plant) return '';
         const out = applyCheck({ group: speciesOf(plant).group, plant, profile: profile.climate, at: now }, result);
-        const events: CareEvent[] = [{ id: uid(), plantId, type: 'check', result, at: now.toISOString() }];
+        const events: CareEvent[] = [{ id: uid(), plantId, type: 'check', result, at: now.toISOString(), nextAt: out.nextCheckAt }];
         if (out.watered) events.push({ id: uid(), plantId, type: 'water', at: now.toISOString() });
         set((s) => ({
           plants: s.plants.map((p) =>
@@ -290,14 +321,15 @@ export const usePlantStore = create<PlantState>()(
 
       updatePlant: (plantId, patch, now = new Date()) => {
         const climate = get().profile.climate;
-        set((s) => ({
-          plants: s.plants.map((p) => {
+        set((s) => {
+          const plants = s.plants.map((p) => {
             if (p.id !== plantId) return p;
             const next = { ...p, ...patch };
             const careChanged = (['soil', 'potMaterial', 'potDiameterCm', 'light', 'placement', 'speciesId', 'selfWatering'] as const).some((k) => k in patch && patch[k] !== p[k]);
             return careChanged && !next.rooting ? { ...next, nextCheckAt: schedule(next, climate, now) } : next;
-          }),
-        }));
+          });
+          return { plants, events: rebook(s.events, movedChecks(s.plants, plants)) };
+        });
       },
 
       archivePlant: (plantId, reason, now = new Date()) => {
@@ -425,9 +457,8 @@ export const usePlantStore = create<PlantState>()(
 
       logDiagnosis: (plantId, note, tweak, now = new Date()) => {
         const factor = tweak === 'slow-water' ? 1.2 : tweak === 'more-water' ? 0.85 : 1;
-        set((s) => ({
-          events: [...s.events, { id: uid(), plantId, type: 'diagnosis', note, at: now.toISOString() }],
-          plants:
+        set((s) => {
+          const plants =
             factor === 1
               ? s.plants
               : s.plants.map((p) => {
@@ -439,8 +470,9 @@ export const usePlantStore = create<PlantState>()(
                     k: Math.round(Math.min(K_MAX, Math.max(K_MIN, p.k * factor)) * 100) / 100,
                     nextCheckAt: new Date(now.getTime() + left * factor).toISOString(),
                   };
-                }),
-        }));
+                });
+          return { plants, events: [...rebook(s.events, movedChecks(s.plants, plants)), { id: uid(), plantId, type: 'diagnosis', note, at: now.toISOString() }] };
+        });
       },
 
       setStaked: (plantIds, on, now = new Date()) => {

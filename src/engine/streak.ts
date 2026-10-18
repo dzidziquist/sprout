@@ -139,7 +139,8 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
     const t = new Date(c.at).getTime();
     comeBack(t);
     push(due, t);
-    due = t + gapDays(plant, climate, c.result!, new Date(c.at)) * DAY_MS;
+    // What was actually booked; checks from before the app kept that fall back to working it out.
+    due = c.nextAt ? new Date(c.nextAt).getTime() : t + gapDays(plant, climate, c.result!, new Date(c.at)) * DAY_MS;
   }
   comeBack(Infinity);
   // The open cycle: the stored schedule is the source of truth.

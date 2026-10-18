@@ -248,5 +248,7 @@ export interface CareEvent {
   /** Local image file for photo events. */
   photoUri?: string;
   note?: string;
+  /** For checks: when the next check was booked for (kept up to date if the schedule moves before it). */
+  nextAt?: string;
   at: string;
 }

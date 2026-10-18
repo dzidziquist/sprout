@@ -274,6 +274,26 @@ describe('review fixes', () => {
     expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
   });
 
+  it('remembers on each check when the next one was booked, and keeps it up to date', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Booked' }, now);
+    s.logCheck(p.id, 'dry', now);
+    const check = () => usePlantStore.getState().events.find((e) => e.type === 'check')!;
+    expect(check().nextAt).toBe(usePlantStore.getState().plants[0].nextCheckAt);
+    s.logDiagnosis(p.id, 'Drooping: thirsty', 'more-water', now);
+    expect(check().nextAt).toBe(usePlantStore.getState().plants[0].nextCheckAt);
+    s.updatePlant(p.id, { soil: 'gritty' }, now);
+    expect(check().nextAt).toBe(usePlantStore.getState().plants[0].nextCheckAt);
+  });
+
+  it('treats a watering from long ago as due now, not overdue', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Parched' }, now, { lastWateredAt: new Date('2026-08-01T09:00:00') });
+    expect(p.nextCheckAt).toBe(now.toISOString());
+    s.setLastWatered(p.id, new Date('2026-08-01T09:00:00'), now);
+    expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(now.toISOString());
+  });
+
   it('forgets undo for a deleted plant', () => {
     const s = usePlantStore.getState();
     const p = s.addPlant({ ...base, name: 'Gone' }, now);

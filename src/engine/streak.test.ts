@@ -230,6 +230,12 @@ describe('review fixes', () => {
     expect(lapsesFor(plant('b', { nextCheckAt: '2026-07-01T09:00:00' }), events, 'seattle', new Date('2026-07-02T12:00:00'))).toEqual([]);
   });
 
+  it('reads the booked date a check saved instead of working it out', () => {
+    // Booked three weeks out (e.g. the plant doctor stretched it): checking on that day is on time.
+    const events = [{ ...check('d', '2026-06-05T09:00:00'), nextAt: '2026-06-26T09:00:00' }, check('d', '2026-06-26T09:00:00')];
+    expect(lapsesFor(plant('d', { nextCheckAt: '2026-07-03T09:00:00' }), events, 'seattle', new Date('2026-06-27T12:00:00'))).toEqual([]);
+  });
+
   it('waits as long as the app does after "Plenty" on a LECA plant', () => {
     const p = plant('l', { soil: 'leca', light: 'low', placement: 'indoor' });
     const at = new Date('2026-06-05T09:00:00');
