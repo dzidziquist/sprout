@@ -25,7 +25,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     body: [
       'Your city: when you search for where you grow, the name you type goes to Open-Meteo’s free geocoder, and the city you pick has its past weather looked up once to learn its seasons. PlantFam never uses your location or GPS.',
       'Weather (grow patch): a 7-day forecast is fetched from Open-Meteo for your city’s coordinates. Like any website, Open-Meteo sees the request’s IP address.',
-      'Photo ID (only when you use it): the one photo you choose is sent to Pl@ntNet to suggest a species. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.',
+      'Photo ID and the plant doctor’s photo check (only when you use them): the one photo you choose is sent to Pl@ntNet to suggest a species, or possible pests and diseases. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.',
       ...(TIPS_ENABLED
         ? ['Tips (optional): Apple handles payment. RevenueCat records the tip with an anonymous app ID and your purchase receipt so the app can say thank you. Tips unlock no features. We never see your name, email or card.']
         : []),
@@ -43,7 +43,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
   {
     title: 'Permissions',
     body: [
-      'Camera and Photos: only when you add a diary photo or identify a plant, and only the photos you pick.',
+      'Camera and Photos: only when you add a diary photo, identify a plant or check a problem, and only the photos you pick.',
       'Notifications: one daily plant round, only if you turn it on. You can change this any time in Settings.',
     ],
   },

@@ -2,7 +2,7 @@
   "expo": {
     "name": "PlantFam",
     "slug": "plantfam",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -17,6 +17,24 @@
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "privacyManifests": {
+        "NSPrivacyTracking": false,
+        "NSPrivacyTrackingDomains": [],
+        "NSPrivacyCollectedDataTypes": [
+          {
+            "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePhotosorVideos",
+            "NSPrivacyCollectedDataTypeLinked": false,
+            "NSPrivacyCollectedDataTypeTracking": false,
+            "NSPrivacyCollectedDataTypePurposes": ["NSPrivacyCollectedDataTypePurposeAppFunctionality"]
+          }
+        ],
+        "NSPrivacyAccessedAPITypes": [
+          { "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults", "NSPrivacyAccessedAPITypeReasons": ["CA92.1"] },
+          { "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp", "NSPrivacyAccessedAPITypeReasons": ["C617.1", "0A2A.1", "3B52.1"] },
+          { "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime", "NSPrivacyAccessedAPITypeReasons": ["35F9.1"] },
+          { "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace", "NSPrivacyAccessedAPITypeReasons": ["E174.1", "85F4.1"] }
+        ]
       }
     },
     "android": {
@@ -47,8 +65,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "PlantFam opens your photos so you can add one to a plant's diary or identify a plant. Only the photos you choose are used.",
-          "cameraPermission": "PlantFam uses the camera so you can snap your plants for their photo diary or to identify them.",
+          "photosPermission": "PlantFam opens your photos so you can add one to a plant's diary, identify a plant or check a problem. Only the photos you choose are used.",
+          "cameraPermission": "PlantFam uses the camera so you can snap your plants for their photo diary, to identify them or to check a problem.",
           "microphonePermission": false
         }
       ],
