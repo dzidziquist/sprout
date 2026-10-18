@@ -3,6 +3,7 @@ import { GrowTodayCard } from '@/components/GrowTodayCard';
 import { useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useDay } from '@/hooks/useDay';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Path } from 'react-native-svg';
@@ -83,6 +84,8 @@ export default function TodayScreen() {
   const { plants, profile, events, logCheck, undoLastCheck, undo } = usePlantStore();
   const [messages, setMessages] = useState<Record<string, string>>({});
   const swipeRefs = useRef<Record<string, Swipeable | null>>({});
+  // Re-renders at midnight so plants that just came due join the round.
+  const day = useDay();
   const now = new Date();
   const OUTCOME = outcomeChip(c);
 
@@ -94,12 +97,12 @@ export default function TodayScreen() {
   const round = useMemo(
     () => (trip ? [] : living.filter((p) => !p.rooting && (isDue(p, now) || (p.lastCheckAt && sameDay(new Date(p.lastCheckAt), now) && undo[p.id])))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [living, undo, trip?.to],
+    [living, undo, trip?.to, day],
   );
   const upNext = useMemo(
     () => living.filter((p) => !p.rooting && !isDue(p, now)).sort((a, b) => a.nextCheckAt.localeCompare(b.nextCheckAt)).slice(0, 3),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [living],
+    [living, day],
   );
   const left = round.filter((p) => isDue(p, now)).length;
   const done = round.length - left;
