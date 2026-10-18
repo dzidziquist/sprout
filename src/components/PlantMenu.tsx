@@ -19,7 +19,7 @@ export const ARCHIVE_COPY: Record<'gifted' | 'died', { title: string; done: stri
 /** Everything you can do to a plant from a menu, shared by the iOS context menu, the fallback sheet and Edit. */
 export function usePlantActions(plant: Plant | undefined, opts: { onDeleted?: () => void } = {}) {
   const router = useRouter();
-  const { plants, takeCutting, archivePlant, deletePlant, updatePlant } = usePlantStore();
+  const { plants, takeCutting, archivePlant, deletePlant, restorePlant } = usePlantStore();
   if (!plant) return null;
   return {
     log: () => router.push(`/log/${plant.id}`),
@@ -36,7 +36,7 @@ export function usePlantActions(plant: Plant | undefined, opts: { onDeleted?: ()
       haptics.success();
     },
     restore: () => {
-      updatePlant(plant.id, { archivedAt: undefined, archivedReason: undefined });
+      restorePlant(plant.id);
       haptics.success();
     },
     /** Permanently removes the plant. Call after the user confirmed. */

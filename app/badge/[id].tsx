@@ -8,6 +8,7 @@ import { useBadges } from '@/hooks/useBadges';
 import { BADGE_ART } from '@/data/art';
 import { BADGE_ICON, badgeFill } from '@/components/BadgeSticker';
 import { GlassButton } from '@/components/GlassButton';
+import { Button } from '@/components/ui';
 import { Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
@@ -25,51 +26,58 @@ export default function BadgeScreen() {
   const insets = useSafeAreaInsets();
   const { badges } = useBadges();
   const badge = badges.find((b) => b.id === id);
-  // The spin is `base` (where it rests) plus the live drag. The drag is wired straight to the native
-  // driver, so following the finger never waits on JavaScript and doesn't stutter.
-  const base = useRef(new Animated.Value(0)).current;
-  const dragX = useRef(new Animated.Value(0)).current;
-  const angle = useRef(Animated.add(base, Animated.multiply(dragX, TURN))).current;
-  const rest = useRef(0);
-  const onDrag = useRef(Animated.event([{ nativeEvent: { translationX: dragX } }], { useNativeDriver: true })).current;
+  // One value, in pixels of drag, drives the spin. While a finger is down it follows translationX on the
+  // native driver (the resting spin sits in the value's offset), so dragging never waits on JavaScript,
+  // and letting go folds the two together natively in one step: no frame where the badge jumps.
+  const x = useRef(new Animated.Value(0)).current;
+  const angle = useRef(Animated.multiply(x, TURN)).current;
+  const onDrag = useRef(Animated.event([{ nativeEvent: { translationX: x } }], { useNativeDriver: true })).current;
+  const FULL = 360 / TURN;
 
-  // Settle on the nearest face-forward turn so it always comes to rest showing the front.
-  const settle = () => {
-    const target = Math.round(rest.current / 360) * 360;
-    Animated.spring(base, { toValue: target, useNativeDriver: true, friction: 6, tension: 40 }).start(() => {
-      rest.current = target;
-    });
+  /** Spin to `to` (pixels), carrying the finger's speed in. */
+  const spinTo = (to: number, velocity = 0) => {
+    Animated.spring(x, { toValue: to, velocity, stiffness: 70, damping: 13, mass: 1, useNativeDriver: true }).start();
   };
 
   const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
     if (e.state === State.BEGAN) {
-      base.stopAnimation((v) => (rest.current = v));
+      // Catch it mid-spin where it is, and make the live drag start from there.
+      x.stopAnimation();
+      x.extractOffset();
       return;
     }
     if (e.state !== State.END && e.state !== State.CANCELLED && e.state !== State.FAILED) return;
-    // Fold the drag into the resting angle in one go, then let go of the finger's value.
-    rest.current += e.translationX * TURN;
-    base.setValue(rest.current);
-    dragX.setValue(0);
-    if (Math.abs(e.translationX) < 4 && Math.abs(e.velocityX) < 100) {
-      // A tap: one full twirl.
-      haptics.tap();
-      const to = Math.round(rest.current / 360) * 360 + 360;
-      Animated.timing(base, { toValue: to, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start(() => {
-        rest.current = to;
-      });
-      return;
-    }
-    if (Math.abs(e.velocityX) > 300) haptics.tap();
-    Animated.decay(base, { velocity: (e.velocityX / 1000) * TURN, deceleration: 0.996, useNativeDriver: true }).start(({ finished }) => {
-      base.stopAnimation((v) => {
-        rest.current = v;
-        if (finished) settle();
-      });
-    });
+    // Fold the drag into the value natively, then read back exactly where it is (the native value
+    // arrives asynchronously, so everything after waits for it).
+    x.flattenOffset();
+    const { translationX, velocityX } = e;
+    x.stopAnimation((now) => release(now, translationX, velocityX));
   };
 
-  if (!badge) return null;
+  const release = (now: number, dx: number, vx: number) => {
+    if (Math.abs(dx) < 4 && Math.abs(vx) < 100) {
+      // A tap: one full twirl.
+      haptics.tap();
+      Animated.timing(x, { toValue: Math.round(now / FULL) * FULL + FULL, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start();
+      return;
+    }
+    if (Math.abs(vx) > 300) haptics.tap();
+    // A flick coasts on to the next face-forward turn in the direction it was spun (never swinging back
+    // against it); a slow let-go settles on whichever front is nearest. Spring velocity is per second.
+    const coast = now + vx * 0.35;
+    const turns = Math.abs(vx) < 300 ? Math.round(now / FULL) : vx > 0 ? Math.ceil(coast / FULL) : Math.floor(coast / FULL);
+    spinTo(turns * FULL, vx);
+  };
+
+  const close = () => (router.canGoBack() ? router.back() : router.replace('/me'));
+  // An old or unknown link: this modal can't be swiped away, so always leave a way out.
+  if (!badge)
+    return (
+      <View style={[styles.missing, { backgroundColor: c.bg }]}>
+        <Text style={[styles.missingText, { color: c.ink }]}>This badge isn’t here.</Text>
+        <Button title="Back" bg={c.leaf} onPress={close} />
+      </View>
+    );
   const earned = !!badge.earnedAt;
   const art = BADGE_ART[badge.art === undefined ? badge.id : (badge.art ?? '')];
   const fill = earned ? (badgeFill(c)[badge.id] ?? c.sun) : c.cloud;
@@ -77,7 +85,6 @@ export default function BadgeScreen() {
   const date = earned ? new Date(badge.earnedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
   const front = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-36000deg', '36000deg'] });
   const back = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-35820deg', '36180deg'] });
-  const close = () => (router.canGoBack() ? router.back() : router.replace('/me'));
 
   return (
     <View style={[styles.page, { backgroundColor: c.bg, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 24 }]}>
@@ -138,6 +145,8 @@ export default function BadgeScreen() {
 }
 
 const styles = StyleSheet.create({
+  missing: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
+  missingText: { fontFamily: fonts.displaySemi, fontSize: 18 },
   page: { flex: 1, paddingHorizontal: 20, gap: 20 },
   toolbar: { flexDirection: 'row' },
   stage: { height: SIZE + 40, alignItems: 'center', justifyContent: 'center' },

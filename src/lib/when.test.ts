@@ -32,6 +32,10 @@ describe('optionsSince', () => {
     expect(optionsSince(GONE, '2026-10-17T08:00:00', now).map((o) => o.id)).toEqual(['today']);
     expect(optionsSince(GONE, '2026-10-12T08:00:00', now).map((o) => o.id)).toEqual(['today', 'yesterday', 'few']);
     expect(optionsSince(GONE, '2024-01-01T00:00:00', now)).toHaveLength(GONE.length);
+    // Across a daylight-saving change, "Last week" still shows for a plant that joined exactly a week ago.
+    const afterSpring = new Date(2026, 2, 12, 12, 0, 0);
+    const joined = new Date(2026, 2, 5, 12, 0, 0).toISOString();
+    expect(optionsSince(GONE, joined, afterSpring).map((o) => o.id)).toContain('week');
   });
 });
 

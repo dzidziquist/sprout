@@ -13,12 +13,22 @@ if (supported) {
   });
 }
 
+/** Asks iOS to send notifications if it hasn't been asked yet. False means no (now or earlier). */
 export async function requestPermission(): Promise<boolean> {
   if (!supported) return false;
   const current = await Notifications.getPermissionsAsync();
   if (current.granted) return true;
+  if (!current.canAskAgain) return false;
   const asked = await Notifications.requestPermissionsAsync({ ios: { allowAlert: true, allowSound: true, allowBadge: false } });
   return asked.granted;
+}
+
+/**
+ * The plant round starts switched on, but iOS only delivers once the person has said yes. Ask if they
+ * never have been asked; false means they said no (then the round should show as off).
+ */
+export async function ensureRoundPermission(): Promise<boolean> {
+  return supported ? requestPermission() : true;
 }
 
 /**
@@ -31,13 +41,33 @@ const HORIZON_DAYS = 30;
  * One plant round a day, at the user's chosen time, only on days something new is due.
  * Rescheduled whenever plants change, so it always reflects the latest checks.
  */
-export async function rescheduleRounds(
+type RoundArgs = Parameters<typeof schedule>;
+let running: Promise<void> | null = null;
+let latest: RoundArgs | null = null;
+
+export function rescheduleRounds(
   plants: Plant[],
   events: CareEvent[],
   round: { enabled: boolean; hour: number; minute: number },
   photos: PhotoCadence,
   trips: Trip[] = [],
-) {
+): Promise<void> {
+  // One run at a time (a cancel during another run's scheduling would leave both sets, e.g. reminders
+  // naming a plant that was just deleted), and only the newest request waiting behind it.
+  latest = [plants, events, round, photos, trips];
+  running ??= (async () => {
+    while (latest) {
+      const args = latest;
+      latest = null;
+      await schedule(...args).catch(() => {});
+    }
+    // Cleared in the same step that saw nothing waiting, so a request can't slip in between.
+    running = null;
+  })();
+  return running;
+}
+
+async function schedule(plants: Plant[], events: CareEvent[], round: { enabled: boolean; hour: number; minute: number }, photos: PhotoCadence, trips: Trip[]) {
   const { enabled, hour, minute } = round;
   if (!supported) return;
   await Notifications.cancelAllScheduledNotificationsAsync();

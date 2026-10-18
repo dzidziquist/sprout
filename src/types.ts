@@ -230,7 +230,9 @@ export type CareEventType =
   | 'staked'
   /** A plant doctor result the person saved. `note` holds what they saw and the likely cause. */
   | 'diagnosis'
-  | 'archived';
+  | 'archived'
+  /** Brought back from In memory. */
+  | 'restored';
 
 export interface CareEvent {
   id: string;
@@ -246,5 +248,7 @@ export interface CareEvent {
   /** Local image file for photo events. */
   photoUri?: string;
   note?: string;
+  /** For checks: when the next check was booked for (kept up to date if the schedule moves before it). */
+  nextAt?: string;
   at: string;
 }

@@ -1,5 +1,5 @@
 import { awayRanges, subtractRanges, type Trip } from './away';
-import { checkIntervalDays } from './careEngine';
+import { checkIntervalDays, recheckDays } from './careEngine';
 import { speciesOf } from '../data/species';
 import { localizeClimateText, modelOf, shiftOf } from '../lib/climate';
 import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
@@ -13,14 +13,16 @@ import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
  * Definitions (all in the phone's local time):
  * - A week runs Monday 00:00 → Sunday 23:59.
  * - A plant's check CYCLE runs from the moment a soil check falls due to the moment it is next checked.
- *   Due dates are rebuilt from the plant's history: the first check falls due one full interval after
- *   the plant joined (or after its cutting rooted); after each check the next one falls due
- *   `interval` days later for "dry", min(2, interval) for "damp" and 4 for "soggy", mirroring
- *   `applyCheck`. The interval comes from `checkIntervalDays` with the plant's current pot, soil and k
- *   at the date of that check (so seasons are honoured; k is today's value, a small approximation).
+ *   The first check falls due one full interval after the plant joined (or after its cutting rooted).
+ *   After each check, the next falls due on the date that check booked (`nextAt`, kept up to date by
+ *   the store while the booking is still in its grace days). Checks saved before `nextAt` existed fall
+ *   back to rebuilding it: `interval` days for "dry", otherwise `recheckDays` (the same rule as
+ *   `applyCheck`), with the plant's current pot, soil and k at the date of that check.
  *   The open cycle uses the stored `plant.nextCheckAt`, which is authoritative.
  * - A LAPSE is the part of a cycle more than GRACE_DAYS (2) after the due date while still unchecked.
- *   Rooting cuttings have no checks, and archived plants stop counting at `archivedAt`.
+ *   Rooting cuttings have no checks, and archived plants stop counting at `archivedAt`. Time between
+ *   an 'archived' event and the 'restored' event after it never counts, and the plant is due again
+ *   from its return.
  * - A completed week is KEPT when no lapse touches it, otherwise MISSED.
  * - FREEZES: every calendar month brings FREEZES_PER_MONTH (2) free repairs. A missed week is counted in the
  *   month that holds most of its days (its Thursday, as in ISO weeks); if that month still has a
@@ -88,9 +90,24 @@ function addWeeks(d: Date, n: number): Date {
 
 function gapDays(plant: Plant, climate: ClimateProfile, result: CheckResult, at: Date): number {
   const full = checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at });
-  if (result === 'dry') return full;
-  if (result === 'damp') return Math.min(2, full);
-  return 4;
+  // The same re-check gaps applyCheck books.
+  return result === 'dry' ? full : recheckDays(plant.soil, result, full);
+}
+
+/** [archived, brought back) for each time the plant spent In memory or gifted and then came back. */
+function archivedSpans(mine: CareEvent[]): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  let since: number | null = null;
+  for (const e of mine.filter((x) => x.type === 'archived' || x.type === 'restored').sort((a, b) => a.at.localeCompare(b.at))) {
+    const t = new Date(e.at).getTime();
+    // Pair each return with the latest archive before it (older data has archives with no return).
+    if (e.type === 'archived') since = t;
+    else if (since !== null) {
+      out.push([since, t]);
+      since = null;
+    }
+  }
+  return out;
 }
 
 /** Time ranges [from, to) during which a plant was overdue by more than GRACE_DAYS. */
@@ -111,14 +128,28 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
     if (to > from) out.push([from, to]);
   };
   let due = start + checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at: new Date(start) }) * DAY_MS;
+  // Time away from the fam never counts: lapses stop when it was archived, and it's due again from its return.
+  const spans = archivedSpans(mine).filter(([, back]) => back > start);
+  let si = 0;
+  const comeBack = (until: number) => {
+    for (; si < spans.length && spans[si][1] <= until; si++) {
+      push(due, spans[si][0]);
+      // restorePlant makes it due the moment it's back, whatever was booked before.
+      due = spans[si][1];
+    }
+  };
   for (const c of checks) {
     const t = new Date(c.at).getTime();
+    comeBack(t);
     push(due, t);
-    due = t + gapDays(plant, climate, c.result!, new Date(c.at)) * DAY_MS;
+    // What was actually booked; checks from before the app kept that fall back to working it out.
+    due = c.nextAt ? new Date(c.nextAt).getTime() : t + gapDays(plant, climate, c.result!, new Date(c.at)) * DAY_MS;
   }
+  comeBack(Infinity);
   // The open cycle: the stored schedule is the source of truth.
   push(new Date(plant.nextCheckAt).getTime(), end);
-  return out;
+  // Even checks logged inside a span (an archive date set back in time) don't make that time count.
+  return spans.length ? subtractRanges(out, spans) : out;
 }
 
 export function computeStreak({ plants, events, climate, now, trips }: StreakInput): StreakResult {

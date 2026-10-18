@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { badgesFor, computeStreak, lapsesFor, startOfWeek } from './streak';
+import { applyCheck } from './careEngine';
+import { speciesOf } from '../data/species';
 import type { CareEvent, CheckResult, Climate, ClimateProfile, Plant } from '../types';
 
 // Pothos in standard mix under a grow light: a 7-day interval in May/June, which keeps the maths readable.
@@ -198,5 +200,56 @@ describe('badges', () => {
     const b = badgesFor({ plants: [p], events: [check('h', '2026-06-10T09:00:00', 'damp'), check('h', '2026-06-12T09:00:00', 'dry')], climate: 'seattle', now });
     expect(b.find((x) => x.id === 'first-check')?.earnedAt).toBe('2026-06-10T09:00:00');
     expect(b.find((x) => x.id === 'first-skip')?.earnedAt).toBe('2026-06-10T09:00:00');
+  });
+});
+
+describe('review fixes', () => {
+  it('never counts the time a plant spent In memory', () => {
+    const events = [check('m', '2026-06-08T09:00:00'), check('m', '2026-06-15T09:00:00'), ev('m', 'archived', '2026-06-20T09:00:00'), ev('m', 'restored', '2026-09-01T09:00:00')];
+    const p = plant('m', { nextCheckAt: '2026-09-01T09:00:00' });
+    expect(lapsesFor(p, events, 'seattle', new Date('2026-09-02T12:00:00'))).toEqual([]);
+    // Checked a day after coming back: still nothing missed.
+    expect(lapsesFor({ ...p, nextCheckAt: '2026-09-09T09:00:00' }, [...events, check('m', '2026-09-02T09:00:00')], 'seattle', new Date('2026-09-03T12:00:00'))).toEqual([]);
+  });
+
+  it('counts from the return, not the old booking, when a plant comes back early', () => {
+    // Checked Jun 8 (next due Jun 15), archived Jun 10, back Jun 11, then not checked until Jun 15.
+    const events = [check('e', '2026-06-08T09:00:00'), ev('e', 'archived', '2026-06-10T09:00:00'), ev('e', 'restored', '2026-06-11T09:00:00'), check('e', '2026-06-15T09:00:00')];
+    const lapses = lapsesFor(plant('e', { nextCheckAt: '2026-06-22T09:00:00' }), events, 'seattle', new Date('2026-06-16T12:00:00'));
+    expect(lapses).toEqual([[new Date('2026-06-13T09:00:00').getTime(), new Date('2026-06-15T09:00:00').getTime()]]);
+  });
+
+  it('ignores an archive and return from before the cutting rooted', () => {
+    const events = [ev('k', 'archived', '2026-06-02T09:00:00'), ev('k', 'restored', '2026-06-03T09:00:00'), ev('k', 'rooted', '2026-07-01T09:00:00'), check('k', '2026-07-05T09:00:00')];
+    expect(lapsesFor(plant('k', { nextCheckAt: '2026-07-12T09:00:00' }), events, 'seattle', new Date('2026-07-06T12:00:00'))).toEqual([]);
+  });
+
+  it('never counts time inside an archive set back in time, even with checks in it', () => {
+    // Checked Jun 8, then archive back-dated to Jun 10 although a late check was logged Jun 25; back Jul 1.
+    const events = [check('b', '2026-06-08T09:00:00'), check('b', '2026-06-25T09:00:00'), ev('b', 'archived', '2026-06-10T09:00:00'), ev('b', 'restored', '2026-07-01T09:00:00')];
+    expect(lapsesFor(plant('b', { nextCheckAt: '2026-07-01T09:00:00' }), events, 'seattle', new Date('2026-07-02T12:00:00'))).toEqual([]);
+  });
+
+  it('pairs a return with the latest archive, so older archives with no return hide nothing', () => {
+    // Archived in March and brought back the old way (no 'restored' event), overdue in April, then
+    // archived and restored again in June: April's slip still counts.
+    const events = [check('o', '2026-03-01T09:00:00'), ev('o', 'archived', '2026-03-05T09:00:00'), check('o', '2026-04-01T09:00:00'), check('o', '2026-04-20T09:00:00'), ev('o', 'archived', '2026-06-01T09:00:00'), ev('o', 'restored', '2026-06-02T09:00:00')];
+    const lapses = lapsesFor(plant('o', { createdAt: '2026-02-20T09:00:00', nextCheckAt: '2026-06-02T09:00:00' }), events, 'seattle', new Date('2026-06-03T12:00:00'));
+    expect(lapses.some(([a]) => a >= new Date('2026-04-01T09:00:00').getTime() && a < new Date('2026-04-20T09:00:00').getTime())).toBe(true);
+  });
+
+  it('reads the booked date a check saved instead of working it out', () => {
+    // Booked three weeks out (e.g. the plant doctor stretched it): checking on that day is on time.
+    const events = [{ ...check('d', '2026-06-05T09:00:00'), nextAt: '2026-06-26T09:00:00' }, check('d', '2026-06-26T09:00:00')];
+    expect(lapsesFor(plant('d', { nextCheckAt: '2026-07-03T09:00:00' }), events, 'seattle', new Date('2026-06-27T12:00:00'))).toEqual([]);
+  });
+
+  it('waits as long as the app does after "Plenty" on a LECA plant', () => {
+    const p = plant('l', { soil: 'leca', light: 'low', placement: 'indoor' });
+    const at = new Date('2026-06-05T09:00:00');
+    const next = new Date(applyCheck({ group: speciesOf(p).group, plant: p, profile: 'seattle', at }, 'damp').nextCheckAt);
+    expect((next.getTime() - at.getTime()) / 86400000).toBeGreaterThan(4);
+    const events = [check('l', at.toISOString(), 'damp'), check('l', next.toISOString())];
+    expect(lapsesFor({ ...p, nextCheckAt: '2026-08-01T09:00:00' }, events, 'seattle', new Date(next.getTime() + 3600000))).toEqual([]);
   });
 });

@@ -13,7 +13,7 @@ import { AppIconPicker } from '@/components/AppIconPicker';
 import { Label, Title } from '@/components/ui';
 import { useRewards } from '@/hooks/useRewards';
 import { SPOTS } from '@/lib/spots';
-import { requestPermission } from '@/lib/notifications';
+import { ensureRoundPermission } from '@/lib/notifications';
 import { activeTrip, upcomingTrip } from '@/engine/away';
 import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
@@ -160,7 +160,7 @@ export default function SettingsScreen() {
             onChange={async (v) => {
               if (v === 'Off') return setProfile({ round: { ...profile.round, enabled: false } });
               const t = TIMES.find((x) => x.label === v)!;
-              const ok = Platform.OS === 'web' ? true : await requestPermission();
+              const ok = await ensureRoundPermission();
               setProfile({ round: { enabled: ok, hour: t.hour, minute: t.minute } });
               if (!ok) Alert.alert('Notifications are off', 'Turn on notifications for PlantFam in your iPhone Settings to get the plant round.', [{ text: 'Not now' }, { text: 'Open Settings', onPress: () => Linking.openSettings() }]);
             }}

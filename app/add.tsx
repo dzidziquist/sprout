@@ -198,7 +198,7 @@ export default function AddPlantScreen() {
   const [joined, setJoined] = useState<JoinedId>('today');
   const [watered, setWatered] = useState<WateredId>('unsure');
   const [room, setRoom] = useState('');
-  const [origin, setOrigin] = useState<Origin>('bought');
+  const [originPick, setOrigin] = useState<Origin>('bought');
   // Edibles: null means "the usual stage for how it started".
   const [stage, setStage] = useState<EdibleStage | null>(null);
   const [parentId, setParentId] = useState<string | undefined>();
@@ -373,6 +373,9 @@ export default function AddPlantScreen() {
 
   const lastWateredDays = WATERED.find((w) => w.id === watered)?.days ?? null;
   const guide = sp.edible && !isOther ? edibleGuide(speciesId) : undefined;
+  // What was picked may not fit a plant chosen afterwards (scraps for a monstera, swap for an edible).
+  const originOptions = guide ? EDIBLE_ORIGINS.filter((o) => !o.regrowOnly || guide.regrows) : ORIGINS;
+  const origin: Origin = originOptions.some((o) => o.id === originPick) ? originPick : originPick === 'swap' ? 'gift' : 'bought';
   const nowStage = guide ? (stage && guide.stages.includes(stage) ? stage : startStage(guide, origin)) : undefined;
   const joinedLabel = origin === 'seed' ? 'Sown' : origin === 'scraps' ? 'Started' : 'Joined the fam';
   const save = () => {
@@ -389,7 +392,7 @@ export default function AddPlantScreen() {
       placement,
       room: room.trim() || undefined,
       origin,
-      parentId: origin === 'cutting' ? parentId : undefined,
+      parentId: origin === 'cutting' && parents.some((p) => p.id === parentId) ? parentId : undefined,
       acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString(),
       ...(nowStage ? { stage: nowStage, stageAt: new Date().toISOString() } : {}),
     }, new Date(), { lastWateredAt: lastWateredDays === null ? undefined : daysAgo(lastWateredDays) });
@@ -507,7 +510,7 @@ export default function AddPlantScreen() {
           label="How it started"
           value={origin}
           tint={c.mint}
-          options={guide ? EDIBLE_ORIGINS.filter((o) => !o.regrowOnly || guide.regrows) : ORIGINS}
+          options={originOptions}
           onChange={(o) => {
             setOrigin(o);
             setStage(null);
@@ -561,7 +564,7 @@ export default function AddPlantScreen() {
           {!showMore && (
             <Text style={[styles.careSub, { color: c.inkMuted }]} numberOfLines={2}>
               {SOIL_LABEL[soil].replace(' (not ideal in pots)', '')}
-              {placement === 'ground' ? '' : ` · ${POT_SIZES.find((x) => x.cm === size)?.label ?? 'Medium'} ${MATERIALS.find((m) => m.id === material)?.label.toLowerCase()} pot`} · {(guide ? EDIBLE_ORIGINS : ORIGINS).find((o) => o.id === origin)?.label}
+              {placement === 'ground' ? '' : ` · ${POT_SIZES.find((x) => x.cm === size)?.label ?? 'Medium'} ${MATERIALS.find((m) => m.id === material)?.label.toLowerCase()} pot`} · {originOptions.find((o) => o.id === origin)?.label}
             </Text>
           )}
         </View>

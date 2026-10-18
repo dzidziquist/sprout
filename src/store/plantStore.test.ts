@@ -231,3 +231,94 @@ describe('plant doctor', () => {
     expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(after.nextCheckAt);
   });
 });
+
+describe('review fixes', () => {
+  it('brings a plant back from In memory due now, with a diary entry', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Lazarus' }, now, { firstCheck: 'scheduled' });
+    s.archivePlant(p.id, 'died', now);
+    const back = new Date('2026-12-01T10:00:00');
+    s.restorePlant(p.id, back);
+    const plant = usePlantStore.getState().plants[0];
+    expect(plant.archivedAt).toBeUndefined();
+    expect(plant.nextCheckAt).toBe(back.toISOString());
+    expect(usePlantStore.getState().events.at(-1)).toMatchObject({ type: 'restored', plantId: p.id });
+  });
+
+  it('keeps a trip that just ended when the next one starts today', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-18T15:00:00'));
+    try {
+      const s = usePlantStore.getState();
+      s.planTrip({ from: '2026-10-10T00:00:00', to: '2026-10-20T00:00:00' });
+      s.endTrip(new Date());
+      s.planTrip({ from: '2026-10-18T00:00:00', to: '2026-10-25T00:00:00' });
+      expect(usePlantStore.getState().profile.trips?.map((t) => t.from)).toEqual(['2026-10-10T00:00:00', '2026-10-18T00:00:00']);
+      // A trip still under way is replaced, not doubled.
+      s.planTrip({ from: '2026-10-18T00:00:00', to: '2026-10-30T00:00:00' });
+      expect(usePlantStore.getState().profile.trips?.map((t) => t.to)).toEqual([expect.any(String), '2026-10-30T00:00:00']);
+      expect(usePlantStore.getState().profile.trips).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('only restores archived plants, and drops a stale undo when it does', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Steady' }, now, { firstCheck: 'scheduled' });
+    s.restorePlant(p.id, new Date('2026-12-01T10:00:00'));
+    expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(p.nextCheckAt);
+    expect(usePlantStore.getState().events.some((e) => e.type === 'restored')).toBe(false);
+    s.logCheck(p.id, 'dry', now);
+    s.archivePlant(p.id, 'gifted', now);
+    expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
+  });
+
+  it('remembers on each check when the next one was booked, and keeps it up to date', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Booked' }, now);
+    s.logCheck(p.id, 'dry', now);
+    const check = () => usePlantStore.getState().events.find((e) => e.type === 'check')!;
+    expect(check().nextAt).toBe(usePlantStore.getState().plants[0].nextCheckAt);
+    s.logDiagnosis(p.id, 'Drooping: thirsty', 'more-water', now);
+    expect(check().nextAt).toBe(usePlantStore.getState().plants[0].nextCheckAt);
+    s.updatePlant(p.id, { soil: 'gritty' }, now);
+    expect(check().nextAt).toBe(usePlantStore.getState().plants[0].nextCheckAt);
+  });
+
+  it('never lets an edit wipe time already spent overdue out of the streak', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Late' }, now);
+    s.logCheck(p.id, 'dry', now);
+    const booked = usePlantStore.getState().events.find((e) => e.type === 'check')!.nextAt!;
+    // A month later, long overdue: a pot change books a new date but the old one stays on the check.
+    const later = new Date(new Date(booked).getTime() + 30 * 86400000);
+    s.updatePlant(p.id, { soil: 'gritty' }, later);
+    expect(usePlantStore.getState().events.find((e) => e.type === 'check')!.nextAt).toBe(booked);
+  });
+
+  it('drops the undo once the schedule moves after a check', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Moved' }, now);
+    s.logCheck(p.id, 'damp', now);
+    s.updatePlant(p.id, { potDiameterCm: 25 }, now);
+    expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
+  });
+
+  it('treats a watering from long ago as due now, not overdue', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Parched' }, now, { lastWateredAt: new Date('2026-08-01T09:00:00') });
+    expect(p.nextCheckAt).toBe(now.toISOString());
+    s.setLastWatered(p.id, new Date('2026-08-01T09:00:00'), now);
+    expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(now.toISOString());
+  });
+
+  it('forgets undo for a deleted plant', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Gone' }, now);
+    s.logCheck(p.id, 'dry', now);
+    expect(usePlantStore.getState().undo[p.id]).toBeDefined();
+    s.deletePlant(p.id);
+    expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
+  });
+});

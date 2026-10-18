@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useDay } from '@/hooks/useDay';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
@@ -161,6 +162,8 @@ export default function JungleScreen() {
     sessionView = v;
     setViewState(v);
   };
+  // Re-renders at midnight so moods and "due" badges catch up.
+  useDay();
   const now = new Date();
   const potted = living.filter((p) => !p.rooting);
   const rooting = living.filter((p) => p.rooting);

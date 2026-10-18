@@ -1,5 +1,5 @@
 import { PlacePicker } from '@/components/PlacePicker';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,7 +7,7 @@ import { usePlantStore, type FaceStyle } from '@/store/plantStore';
 import { ART } from '@/data/art';
 import { SPOTS, type Spot } from '@/lib/spots';
 import { Button, Label, Sticker, Title } from '@/components/ui';
-import { requestPermission } from '@/lib/notifications';
+import { ensureRoundPermission } from '@/lib/notifications';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { light, textOn, useColors, type Palette } from '@/theme/theme';
@@ -47,7 +47,14 @@ export default function Onboarding() {
   // The welcome screen is a bright brand moment in both themes.
   const w = useMemo(() => makeStyles(light), []);
 
-  const finish = (demo: boolean) => {
+  const finishing = useRef(false);
+  const finish = async (demo: boolean) => {
+    // Waiting on the permission prompt: a second tap (or the other button) mustn't run this twice.
+    if (finishing.current) return;
+    finishing.current = true;
+    // The round is on by default, so this is where iOS asks to send it.
+    const ok = await ensureRoundPermission().catch(() => false);
+    setProfile({ round: { ...profile.round, enabled: ok } });
     if (demo) seedDemo();
     completeOnboarding();
     haptics.success();
@@ -136,7 +143,7 @@ export default function Onboarding() {
         <Text style={styles.choiceTitle}>Plant round 🌱</Text>
         <Text style={styles.choiceSub}>Your plants would love a soil check. 2 mins, tops.</Text>
       </Sticker>
-      <Label muted>Just one reminder, only on days something needs you. Never "you forgot me".</Label>
+      <Label muted>Just one reminder, only on days something needs you. Never "you forgot me".{Platform.OS === 'ios' ? ' Your iPhone will ask if PlantFam can send it.' : ''}</Label>
       <View style={styles.row3}>
         {TIMES.map((t) => {
           const on = profile.round.hour === t.hour && profile.round.minute === t.minute;
@@ -150,18 +157,6 @@ export default function Onboarding() {
           );
         })}
       </View>
-      {Platform.OS !== 'web' && (
-        <Button
-          title="Turn on the plant round"
-          raised
-          bg={c.sun}
-          onPress={async () => {
-            const ok = await requestPermission();
-            setProfile({ round: { ...profile.round, enabled: ok } });
-          }}
-          style={{ minHeight: 52 }}
-        />
-      )}
       <View style={{ gap: 10, marginTop: 8 }}>
         <Button title="Add my first plant" raised onPress={() => finish(false)} style={{ minHeight: 56 }} textStyle={{ fontSize: 18, fontFamily: fonts.display }} />
         <Button title="Look around with a demo fam" bg={c.white} onPress={() => finish(true)} style={{ minHeight: 48 }} />
