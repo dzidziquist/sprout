@@ -26,6 +26,8 @@ export interface Profile {
   theme: 'system' | 'light' | 'dark';
   /** Main colour; leaf green unless changed. */
   accent?: Accent;
+  /** Plants tab layout the person last picked. Unset: grid for a small fam, list from 16 plants. */
+  jungleView?: 'grid' | 'list';
   /** Has left a tip in the tip jar. Nothing is locked; it powers the thank-you gifts (badge, gold cards, party hat). */
   supporter: boolean;
   /** When the first tip was noticed on this phone: the supporter badge's date. */

@@ -115,9 +115,6 @@ function PlantRow({ plant, faded }: { plant: Plant; faded?: boolean }) {
   );
 }
 
-/** Remembered for the session (module state), so leaving the tab and coming back keeps the layout. */
-let sessionView: JungleView | undefined;
-
 const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
 /** Light-weight search: every word of the query must appear in the name, species (incl. Latin and aliases) or room. */
@@ -157,11 +154,11 @@ export default function JungleScreen() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const living = plants.filter((p) => !p.archivedAt);
-  const [view, setViewState] = useState<JungleView>(() => sessionView ?? (living.length >= 16 ? 'list' : 'grid'));
-  const setView = (v: JungleView) => {
-    sessionView = v;
-    setViewState(v);
-  };
+  // Saved with the other settings, so the layout survives closing the app.
+  const saved = usePlantStore((s) => s.profile.jungleView);
+  const setProfile = usePlantStore((s) => s.setProfile);
+  const view: JungleView = saved ?? (living.length >= 16 ? 'list' : 'grid');
+  const setView = (v: JungleView) => setProfile({ jungleView: v });
   // Re-renders at midnight so moods and "due" badges catch up.
   useDay();
   const now = new Date();

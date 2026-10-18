@@ -100,7 +100,7 @@ export default function TodayScreen() {
     [living, undo, trip?.to, day],
   );
   const upNext = useMemo(
-    () => living.filter((p) => !p.rooting && !isDue(p, now)).sort((a, b) => a.nextCheckAt.localeCompare(b.nextCheckAt)).slice(0, 3),
+    () => living.filter((p) => !p.rooting && !isDue(p, now)).sort((a, b) => a.nextCheckAt.localeCompare(b.nextCheckAt)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [living, day],
   );
@@ -265,9 +265,16 @@ export default function TodayScreen() {
 
       {calm && upNext.length > 0 && (
         <View style={{ gap: 8 }}>
-          <Label>Coming up</Label>
+          <View style={styles.upHeader}>
+            <Label>Coming up</Label>
+            {upNext.length > 3 && (
+              <Pressable accessibilityRole="button" hitSlop={10} onPress={() => router.push('/coming-up')}>
+                <Text style={[styles.upToggle, { color: c.leafDeep }]}>See all {upNext.length}</Text>
+              </Pressable>
+            )}
+          </View>
           <View style={styles.upNext}>
-            {upNext.map((p) => (
+            {upNext.slice(0, 3).map((p) => (
               <Pressable
                 key={p.id}
                 accessibilityRole="button"
@@ -314,6 +321,8 @@ const styles = StyleSheet.create({
   swipeAction: { width: 64, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', gap: 4 },
   swipeText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   upNext: { flexDirection: 'row', gap: 8 },
+  upHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  upToggle: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   upItem: { flex: 1, borderWidth: 2, borderRadius: 18, alignItems: 'center', paddingVertical: 8, paddingHorizontal: 4 },
   upName: { fontFamily: fonts.displaySemi, fontSize: 14, marginTop: 2 },
   upWhen: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
