@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { badgesFor, computeStreak, lapsesFor, startOfWeek } from './streak';
+import { applyCheck } from './careEngine';
+import { speciesOf } from '../data/species';
 import type { CareEvent, CheckResult, Climate, ClimateProfile, Plant } from '../types';
 
 // Pothos in standard mix under a grow light: a 7-day interval in May/June, which keeps the maths readable.
@@ -198,5 +200,24 @@ describe('badges', () => {
     const b = badgesFor({ plants: [p], events: [check('h', '2026-06-10T09:00:00', 'damp'), check('h', '2026-06-12T09:00:00', 'dry')], climate: 'seattle', now });
     expect(b.find((x) => x.id === 'first-check')?.earnedAt).toBe('2026-06-10T09:00:00');
     expect(b.find((x) => x.id === 'first-skip')?.earnedAt).toBe('2026-06-10T09:00:00');
+  });
+});
+
+describe('review fixes', () => {
+  it('never counts the time a plant spent In memory', () => {
+    const events = [check('m', '2026-06-08T09:00:00'), check('m', '2026-06-15T09:00:00'), ev('m', 'archived', '2026-06-20T09:00:00'), ev('m', 'restored', '2026-09-01T09:00:00')];
+    const p = plant('m', { nextCheckAt: '2026-09-01T09:00:00' });
+    expect(lapsesFor(p, events, 'seattle', new Date('2026-09-02T12:00:00'))).toEqual([]);
+    // Checked a day after coming back: still nothing missed.
+    expect(lapsesFor({ ...p, nextCheckAt: '2026-09-09T09:00:00' }, [...events, check('m', '2026-09-02T09:00:00')], 'seattle', new Date('2026-09-03T12:00:00'))).toEqual([]);
+  });
+
+  it('waits as long as the app does after "Plenty" on a LECA plant', () => {
+    const p = plant('l', { soil: 'leca', light: 'low', placement: 'indoor' });
+    const at = new Date('2026-06-05T09:00:00');
+    const next = new Date(applyCheck({ group: speciesOf(p).group, plant: p, profile: 'seattle', at }, 'damp').nextCheckAt);
+    expect((next.getTime() - at.getTime()) / 86400000).toBeGreaterThan(4);
+    const events = [check('l', at.toISOString(), 'damp'), check('l', next.toISOString())];
+    expect(lapsesFor({ ...p, nextCheckAt: '2026-08-01T09:00:00' }, events, 'seattle', new Date(next.getTime() + 3600000))).toEqual([]);
   });
 });

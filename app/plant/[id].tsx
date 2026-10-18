@@ -87,6 +87,8 @@ function describe(e: CareEvent, plants: Plant[], reservoir: boolean): string {
       return 'Cut and regrowing';
     case 'archived':
       return e.note === 'gifted' ? 'Gifted away' : 'Moved to In memory';
+    case 'restored':
+      return 'Back in the fam';
   }
 }
 
@@ -99,7 +101,14 @@ export default function PlantDetail() {
   const plant = plants.find((p) => p.id === id);
   const actions = usePlantActions(plant);
   const [showPhoto, setShowPhoto] = useState(true);
-  if (!plant || !actions) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
+  // Gone (deleted, or an old notification tapped): say so and offer the way back.
+  if (!plant || !actions)
+    return (
+      <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
+        <Title style={{ textAlign: 'center' }}>This plant isn’t in your fam</Title>
+        <Button title="Back to Today" bg={c.leaf} onPress={() => router.replace('/')} />
+      </View>
+    );
 
   const now = new Date();
   const species = speciesOf(plant);

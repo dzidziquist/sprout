@@ -97,6 +97,8 @@ interface PlantState {
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
   /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
   setArchivedAt: (plantId: string, at: Date) => void;
+  /** Back from In memory: due for a check now, and the time away doesn't count against the streak. */
+  restorePlant: (plantId: string, now?: Date) => void;
   /** Hard delete (mistakes only). Children keep their lineage by pointing to the grandparent. */
   deletePlant: (plantId: string) => void;
   /** A rooting cutting is ready: pot it up and start normal checks. */
@@ -306,6 +308,14 @@ export const usePlantStore = create<PlantState>()(
         }));
       },
 
+      restorePlant: (plantId, now = new Date()) => {
+        const at = now.toISOString();
+        set((s) => ({
+          plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: undefined, archivedReason: undefined, ...(p.rooting ? {} : { nextCheckAt: at }) } : p)),
+          events: [...s.events, { id: uid(), plantId, type: 'restored', at }],
+        }));
+      },
+
       setArchivedAt: (plantId, at) => {
         set((s) => {
           const plant = s.plants.find((p) => p.id === plantId);
@@ -330,6 +340,7 @@ export const usePlantStore = create<PlantState>()(
         set((s) => ({
           plants: s.plants.filter((p) => p.id !== plantId).map((p) => (p.parentId === plantId ? { ...p, parentId: gone.parentId } : p)),
           events: s.events.filter((e) => e.plantId !== plantId),
+          undo: Object.fromEntries(Object.entries(s.undo).filter(([id]) => id !== plantId)),
         }));
       },
 
@@ -379,7 +390,8 @@ export const usePlantStore = create<PlantState>()(
       planTrip: (trip) => {
         set((s) => {
           const now = Date.now();
-          const kept = (s.profile.trips ?? []).filter((t) => new Date(t.from).getTime() <= now && new Date(t.to).getTime() <= new Date(trip.from).getTime());
+          // Trips already under way or over stay on record (they excuse those days); only future plans are replaced.
+          const kept = (s.profile.trips ?? []).filter((t) => new Date(t.from).getTime() <= now && new Date(t.to).getTime() <= Math.max(now, new Date(trip.from).getTime()));
           return { profile: { ...s.profile, trips: [...kept, trip].slice(-20) } };
         });
       },

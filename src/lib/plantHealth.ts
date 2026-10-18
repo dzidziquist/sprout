@@ -53,7 +53,11 @@ let labels: Promise<Record<string, string>> | null = null;
 function diseaseNames(key: string, doFetch: typeof fetch): Promise<Record<string, string>> {
   if (!labels) {
     labels = doFetch(`${BASE}?api-key=${encodeURIComponent(key)}&lang=en`, { headers: { Accept: 'application/json' } })
-      .then((r) => (r.ok ? r.json() : []))
+      .then((r) => {
+        // A refused list (quota, server trouble) isn't kept: try again on the next check.
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((list: unknown) => {
         const out: Record<string, string> = {};
         if (Array.isArray(list)) for (const d of list as { name?: unknown; label?: unknown }[]) if (typeof d?.name === 'string' && typeof d?.label === 'string') out[d.name] = d.label;

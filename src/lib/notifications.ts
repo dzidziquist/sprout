@@ -31,13 +31,23 @@ const HORIZON_DAYS = 30;
  * One plant round a day, at the user's chosen time, only on days something new is due.
  * Rescheduled whenever plants change, so it always reflects the latest checks.
  */
-export async function rescheduleRounds(
+let queue: Promise<void> = Promise.resolve();
+
+export function rescheduleRounds(
   plants: Plant[],
   events: CareEvent[],
   round: { enabled: boolean; hour: number; minute: number },
   photos: PhotoCadence,
   trips: Trip[] = [],
-) {
+): Promise<void> {
+  // One at a time: a run that cancels while an older one is still scheduling would leave both sets
+  // (e.g. reminders naming a plant that was just deleted).
+  const run = queue.then(() => schedule(plants, events, round, photos, trips));
+  queue = run.catch(() => {});
+  return run;
+}
+
+async function schedule(plants: Plant[], events: CareEvent[], round: { enabled: boolean; hour: number; minute: number }, photos: PhotoCadence, trips: Trip[]) {
   const { enabled, hour, minute } = round;
   if (!supported) return;
   await Notifications.cancelAllScheduledNotificationsAsync();

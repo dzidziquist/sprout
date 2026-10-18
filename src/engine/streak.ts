@@ -1,5 +1,5 @@
 import { awayRanges, subtractRanges, type Trip } from './away';
-import { checkIntervalDays } from './careEngine';
+import { RECHECK_DAYS, checkIntervalDays, isReservoir } from './careEngine';
 import { speciesOf } from '../data/species';
 import { localizeClimateText, modelOf, shiftOf } from '../lib/climate';
 import type { CareEvent, CheckResult, ClimateProfile, Plant } from '../types';
@@ -89,8 +89,24 @@ function addWeeks(d: Date, n: number): Date {
 function gapDays(plant: Plant, climate: ClimateProfile, result: CheckResult, at: Date): number {
   const full = checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at });
   if (result === 'dry') return full;
-  if (result === 'damp') return Math.min(2, full);
-  return 4;
+  // The same re-check gaps applyCheck books: LECA and water plants wait longer after "Plenty".
+  if (result === 'damp') return isReservoir(plant.soil) ? Math.min(full, Math.max(RECHECK_DAYS.damp, Math.round(full / 2))) : Math.min(RECHECK_DAYS.damp, full);
+  return RECHECK_DAYS.soggy;
+}
+
+/** [archived, brought back) for each time the plant spent In memory or gifted and then came back. */
+function archivedSpans(mine: CareEvent[]): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  let since: number | null = null;
+  for (const e of mine.filter((x) => x.type === 'archived' || x.type === 'restored').sort((a, b) => a.at.localeCompare(b.at))) {
+    const t = new Date(e.at).getTime();
+    if (e.type === 'archived') since ??= t;
+    else if (since !== null) {
+      out.push([since, t]);
+      since = null;
+    }
+  }
+  return out;
 }
 
 /** Time ranges [from, to) during which a plant was overdue by more than GRACE_DAYS. */
@@ -111,11 +127,22 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
     if (to > from) out.push([from, to]);
   };
   let due = start + checkIntervalDays({ group: speciesOf(plant).group, plant, profile: climate, at: new Date(start) }) * DAY_MS;
+  // Time away from the fam never counts: lapses stop when it was archived, and it's due again from its return.
+  const spans = archivedSpans(mine);
+  let si = 0;
+  const comeBack = (until: number) => {
+    for (; si < spans.length && spans[si][1] <= until; si++) {
+      push(due, spans[si][0]);
+      due = Math.max(due, spans[si][1]);
+    }
+  };
   for (const c of checks) {
     const t = new Date(c.at).getTime();
+    comeBack(t);
     push(due, t);
     due = t + gapDays(plant, climate, c.result!, new Date(c.at)) * DAY_MS;
   }
+  comeBack(Infinity);
   // The open cycle: the stored schedule is the source of truth.
   push(new Date(plant.nextCheckAt).getTime(), end);
   return out;

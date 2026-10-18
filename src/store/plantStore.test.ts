@@ -231,3 +231,44 @@ describe('plant doctor', () => {
     expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(after.nextCheckAt);
   });
 });
+
+describe('review fixes', () => {
+  it('brings a plant back from In memory due now, with a diary entry', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Lazarus' }, now, { firstCheck: 'scheduled' });
+    s.archivePlant(p.id, 'died', now);
+    const back = new Date('2026-12-01T10:00:00');
+    s.restorePlant(p.id, back);
+    const plant = usePlantStore.getState().plants[0];
+    expect(plant.archivedAt).toBeUndefined();
+    expect(plant.nextCheckAt).toBe(back.toISOString());
+    expect(usePlantStore.getState().events.at(-1)).toMatchObject({ type: 'restored', plantId: p.id });
+  });
+
+  it('keeps a trip that just ended when the next one starts today', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-18T15:00:00'));
+    try {
+      const s = usePlantStore.getState();
+      s.planTrip({ from: '2026-10-10T00:00:00', to: '2026-10-20T00:00:00' });
+      s.endTrip(new Date());
+      s.planTrip({ from: '2026-10-18T00:00:00', to: '2026-10-25T00:00:00' });
+      expect(usePlantStore.getState().profile.trips?.map((t) => t.from)).toEqual(['2026-10-10T00:00:00', '2026-10-18T00:00:00']);
+      // A trip still under way is replaced, not doubled.
+      s.planTrip({ from: '2026-10-18T00:00:00', to: '2026-10-30T00:00:00' });
+      expect(usePlantStore.getState().profile.trips?.map((t) => t.to)).toEqual([expect.any(String), '2026-10-30T00:00:00']);
+      expect(usePlantStore.getState().profile.trips).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('forgets undo for a deleted plant', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Gone' }, now);
+    s.logCheck(p.id, 'dry', now);
+    expect(usePlantStore.getState().undo[p.id]).toBeDefined();
+    s.deletePlant(p.id);
+    expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
+  });
+});

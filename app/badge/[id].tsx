@@ -8,6 +8,7 @@ import { useBadges } from '@/hooks/useBadges';
 import { BADGE_ART } from '@/data/art';
 import { BADGE_ICON, badgeFill } from '@/components/BadgeSticker';
 import { GlassButton } from '@/components/GlassButton';
+import { Button } from '@/components/ui';
 import { Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
@@ -69,7 +70,15 @@ export default function BadgeScreen() {
     });
   };
 
-  if (!badge) return null;
+  const close = () => (router.canGoBack() ? router.back() : router.replace('/me'));
+  // An old or unknown link: this modal can't be swiped away, so always leave a way out.
+  if (!badge)
+    return (
+      <View style={[styles.missing, { backgroundColor: c.bg }]}>
+        <Text style={[styles.missingText, { color: c.ink }]}>This badge isn’t here.</Text>
+        <Button title="Back" bg={c.leaf} onPress={close} />
+      </View>
+    );
   const earned = !!badge.earnedAt;
   const art = BADGE_ART[badge.art === undefined ? badge.id : (badge.art ?? '')];
   const fill = earned ? (badgeFill(c)[badge.id] ?? c.sun) : c.cloud;
@@ -77,7 +86,6 @@ export default function BadgeScreen() {
   const date = earned ? new Date(badge.earnedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
   const front = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-36000deg', '36000deg'] });
   const back = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-35820deg', '36180deg'] });
-  const close = () => (router.canGoBack() ? router.back() : router.replace('/me'));
 
   return (
     <View style={[styles.page, { backgroundColor: c.bg, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 24 }]}>
@@ -138,6 +146,8 @@ export default function BadgeScreen() {
 }
 
 const styles = StyleSheet.create({
+  missing: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
+  missingText: { fontFamily: fonts.displaySemi, fontSize: 18 },
   page: { flex: 1, paddingHorizontal: 20, gap: 20 },
   toolbar: { flexDirection: 'row' },
   stage: { height: SIZE + 40, alignItems: 'center', justifyContent: 'center' },

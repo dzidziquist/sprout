@@ -208,7 +208,7 @@ export function updateK(k: number, result: CheckResult): number {
 }
 
 /** After a damp or soggy answer we peek again soon rather than waiting a full interval. */
-const RECHECK_DAYS: Record<Exclude<CheckResult, 'dry'>, number> = { damp: 2, soggy: 4 };
+export const RECHECK_DAYS: Record<Exclude<CheckResult, 'dry'>, number> = { damp: 2, soggy: 4 };
 
 export interface CheckOutcome {
   k: number;
