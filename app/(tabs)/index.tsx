@@ -100,10 +100,14 @@ export default function TodayScreen() {
     [living, undo, trip?.to, day],
   );
   const upNext = useMemo(
-    () => living.filter((p) => !p.rooting && !isDue(p, now)).sort((a, b) => a.nextCheckAt.localeCompare(b.nextCheckAt)).slice(0, 3),
+    () => living.filter((p) => !p.rooting && !isDue(p, now)).sort((a, b) => a.nextCheckAt.localeCompare(b.nextCheckAt)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [living, day],
   );
+  // The next three, or everyone in the fam by when they're next due.
+  const [allUp, setAllUp] = useState(false);
+  const shownUp = allUp ? upNext : upNext.slice(0, 3);
+  const upRows = Array.from({ length: Math.ceil(shownUp.length / 3) }, (_, i) => shownUp.slice(i * 3, i * 3 + 3));
   const left = round.filter((p) => isDue(p, now)).length;
   const done = round.length - left;
   const season = seasonBanner(profile.climate, now);
@@ -265,22 +269,35 @@ export default function TodayScreen() {
 
       {calm && upNext.length > 0 && (
         <View style={{ gap: 8 }}>
-          <Label>Coming up</Label>
-          <View style={styles.upNext}>
-            {upNext.map((p) => (
-              <Pressable
-                key={p.id}
-                accessibilityRole="button"
-                accessibilityLabel={`${p.name}, next check ${inDays(p.nextCheckAt, now)}`}
-                onPress={() => router.push(`/plant/${p.id}`)}
-                style={[styles.upItem, { backgroundColor: c.potTint[p.potColor], borderColor: c.line }]}
-              >
-                <PlantBuddy speciesId={p.speciesId} pot={p.potColor} mood="happy" size={56} bg={c.potTint[p.potColor]} faces={profile.faces} />
-                <Text style={[styles.upName, { color: c.ink }]} numberOfLines={1}>{p.name}</Text>
-                <Text style={[styles.upWhen, { color: c.inkMuted }]}>{inDays(p.nextCheckAt, now)}</Text>
+          <View style={styles.upHeader}>
+            <Label>Coming up</Label>
+            {upNext.length > 3 && (
+              <Pressable accessibilityRole="button" hitSlop={10} onPress={() => setAllUp((v) => !v)}>
+                <Text style={[styles.upToggle, { color: c.leafDeep }]}>{allUp ? 'Show less' : `See all ${upNext.length}`}</Text>
               </Pressable>
-            ))}
+            )}
           </View>
+          {upRows.map((row, i) => (
+            <View key={i} style={styles.upNext}>
+              {row.map((p) => (
+                <Pressable
+                  key={p.id}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${p.name}, next check ${inDays(p.nextCheckAt, now)}`}
+                  onPress={() => router.push(`/plant/${p.id}`)}
+                  style={[styles.upItem, { backgroundColor: c.potTint[p.potColor], borderColor: c.line }]}
+                >
+                  <PlantBuddy speciesId={p.speciesId} pot={p.potColor} mood="happy" size={56} bg={c.potTint[p.potColor]} faces={profile.faces} />
+                  <Text style={[styles.upName, { color: c.ink }]} numberOfLines={1}>{p.name}</Text>
+                  <Text style={[styles.upWhen, { color: c.inkMuted }]}>{inDays(p.nextCheckAt, now)}</Text>
+                </Pressable>
+              ))}
+              {/* Keep a short last row's tiles the same width as the rows above. */}
+              {Array.from({ length: 3 - row.length }, (_, k) => (
+                <View key={`pad${k}`} style={{ flex: 1 }} />
+              ))}
+            </View>
+          ))}
         </View>
       )}
 
@@ -314,6 +331,8 @@ const styles = StyleSheet.create({
   swipeAction: { width: 64, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', gap: 4 },
   swipeText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   upNext: { flexDirection: 'row', gap: 8 },
+  upHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  upToggle: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   upItem: { flex: 1, borderWidth: 2, borderRadius: 18, alignItems: 'center', paddingVertical: 8, paddingHorizontal: 4 },
   upName: { fontFamily: fonts.displaySemi, fontSize: 14, marginTop: 2 },
   upWhen: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
