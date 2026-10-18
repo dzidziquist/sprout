@@ -26,48 +26,45 @@ export default function BadgeScreen() {
   const insets = useSafeAreaInsets();
   const { badges } = useBadges();
   const badge = badges.find((b) => b.id === id);
-  // The spin is `base` (where it rests) plus the live drag. The drag is wired straight to the native
-  // driver, so following the finger never waits on JavaScript and doesn't stutter.
-  const base = useRef(new Animated.Value(0)).current;
-  const dragX = useRef(new Animated.Value(0)).current;
-  const angle = useRef(Animated.add(base, Animated.multiply(dragX, TURN))).current;
+  // One value, in pixels of drag, drives the spin. While a finger is down it follows translationX on the
+  // native driver (the resting spin sits in the value's offset), so dragging never waits on JavaScript,
+  // and letting go folds the two together natively in one step: no frame where the badge jumps.
+  const x = useRef(new Animated.Value(0)).current;
+  const angle = useRef(Animated.multiply(x, TURN)).current;
+  /** Where the spin rests, in pixels (JS's copy; the native value is the source of truth). */
   const rest = useRef(0);
-  const onDrag = useRef(Animated.event([{ nativeEvent: { translationX: dragX } }], { useNativeDriver: true })).current;
+  const onDrag = useRef(Animated.event([{ nativeEvent: { translationX: x } }], { useNativeDriver: true })).current;
+  const FULL = 360 / TURN;
 
-  // Settle on the nearest face-forward turn so it always comes to rest showing the front.
-  const settle = () => {
-    const target = Math.round(rest.current / 360) * 360;
-    Animated.spring(base, { toValue: target, useNativeDriver: true, friction: 6, tension: 40 }).start(() => {
-      rest.current = target;
-    });
+  /** Spin to `to` (pixels), carrying the finger's speed in, and remember it as the resting spin. */
+  const spinTo = (to: number, velocity = 0) => {
+    rest.current = to;
+    Animated.spring(x, { toValue: to, velocity, stiffness: 70, damping: 13, mass: 1, useNativeDriver: true }).start();
   };
 
   const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
     if (e.state === State.BEGAN) {
-      base.stopAnimation((v) => (rest.current = v));
+      // Catch it mid-spin where it is, and make the live drag start from there.
+      x.stopAnimation((v) => (rest.current = v));
+      x.extractOffset();
       return;
     }
     if (e.state !== State.END && e.state !== State.CANCELLED && e.state !== State.FAILED) return;
-    // Fold the drag into the resting angle in one go, then let go of the finger's value.
-    rest.current += e.translationX * TURN;
-    base.setValue(rest.current);
-    dragX.setValue(0);
+    x.flattenOffset();
+    const now = rest.current + e.translationX;
     if (Math.abs(e.translationX) < 4 && Math.abs(e.velocityX) < 100) {
       // A tap: one full twirl.
       haptics.tap();
-      const to = Math.round(rest.current / 360) * 360 + 360;
-      Animated.timing(base, { toValue: to, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start(() => {
-        rest.current = to;
-      });
+      rest.current = Math.round(now / FULL) * FULL + FULL;
+      Animated.timing(x, { toValue: rest.current, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start();
       return;
     }
     if (Math.abs(e.velocityX) > 300) haptics.tap();
-    Animated.decay(base, { velocity: (e.velocityX / 1000) * TURN, deceleration: 0.996, useNativeDriver: true }).start(({ finished }) => {
-      base.stopAnimation((v) => {
-        rest.current = v;
-        if (finished) settle();
-      });
-    });
+    // A flick coasts on to the next face-forward turn in the direction it was spun (never swinging back
+    // against it); a slow let-go settles on whichever front is nearest. Spring velocity is per second.
+    const coast = now + e.velocityX * 0.35;
+    const turns = Math.abs(e.velocityX) < 300 ? Math.round(now / FULL) : e.velocityX > 0 ? Math.ceil(coast / FULL) : Math.floor(coast / FULL);
+    spinTo(turns * FULL, e.velocityX);
   };
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/me'));
