@@ -22,6 +22,17 @@ export async function requestPermission(): Promise<boolean> {
 }
 
 /**
+ * The plant round starts switched on, but iOS only delivers once the person has said yes. Ask if they
+ * never have been asked; false means they said no (then the round should show as off).
+ */
+export async function ensureRoundPermission(): Promise<boolean> {
+  if (!supported) return true;
+  const current = await Notifications.getPermissionsAsync();
+  if (current.granted) return true;
+  return current.canAskAgain ? requestPermission() : false;
+}
+
+/**
  * How far ahead rounds are scheduled. Rescheduling only happens while the app runs, so this is how long
  * reminders keep coming if it's never opened. At most one a day keeps it well under iOS's 64 pending.
  */

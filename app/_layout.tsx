@@ -10,7 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePlantStore } from '@/store/plantStore';
 import { colors } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
-import { rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
+import { ensureRoundPermission, rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 
@@ -50,6 +50,12 @@ export default function RootLayout() {
       }, 400);
     };
     sync();
+    // Reminders shown as on but never allowed (set up before the app asked): ask once, or show them as off.
+    const { onboarded, profile, setProfile } = usePlantStore.getState();
+    if (onboarded && profile.round.enabled)
+      ensureRoundPermission()
+        .then((ok) => (ok ? sync() : setProfile({ round: { ...usePlantStore.getState().profile.round, enabled: false } })))
+        .catch(() => {});
     if (TIPS_ENABLED) configurePurchases();
     const unsub = usePlantStore.subscribe((s, prev) => {
       if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos || s.profile.trips !== prev.profile.trips) sync();
