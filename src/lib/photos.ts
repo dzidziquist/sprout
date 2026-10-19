@@ -1,6 +1,7 @@
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Directory, File, Paths } from 'expo-file-system';
+import { shrinkPhoto } from './shrinkPhoto';
 
 export type PhotoSource = 'library' | 'camera';
 
@@ -12,12 +13,19 @@ export function photoSrc(stored: string): string {
   return new File(Paths.document, stored).uri;
 }
 
+/*
+ * No crop step: on iOS it swaps the fast system photo picker for the old, slow one and adds a screen
+ * after every shot, and the diary shows photos cropped to fit anyway. Quality 1 skips a full-size
+ * re-encode; the photo is resized and compressed once afterwards (DIARY_SIDE).
+ */
 const PICKER_OPTIONS: ImagePicker.ImagePickerOptions = {
   mediaTypes: ['images'],
-  quality: 0.7,
-  allowsEditing: true,
-  aspect: [1, 1],
+  quality: 1,
+  exif: false,
 };
+
+/** Longest side of a saved diary photo: sharp full-screen on any iPhone, a fraction of the size. */
+const DIARY_SIDE = 1600;
 
 /** Copies a picked image into the app's documents (picker results live in a temp cache that iOS clears). */
 function keep(uri: string): string {
@@ -37,6 +45,17 @@ function keep(uri: string): string {
   }
 }
 
+/** Deletes a temporary file, quietly. */
+function discard(uri: string): void {
+  if (Platform.OS === 'web') return;
+  try {
+    const f = new File(uri);
+    if (f.exists) f.delete();
+  } catch {
+    // The OS clears its cache anyway.
+  }
+}
+
 /**
  * Lets the user take or choose a photo. Resolves to a persistent URI, or null if they cancelled
  * or said no to permissions (we explain once, gently).
@@ -52,7 +71,11 @@ export async function pickPhoto(source: PhotoSource): Promise<string | null> {
     }
     const res = source === 'camera' && Platform.OS !== 'web' ? await ImagePicker.launchCameraAsync(PICKER_OPTIONS) : await ImagePicker.launchImageLibraryAsync(PICKER_OPTIONS);
     if (res.canceled || !res.assets?.[0]) return null;
-    return keep(res.assets[0].uri);
+    const small = await shrinkPhoto(res.assets[0], DIARY_SIDE);
+    const kept = keep(small.uri);
+    // The resized copy was only a stepping stone into the diary folder.
+    if (small.uri !== res.assets[0].uri && kept !== small.uri) discard(small.uri);
+    return kept;
   } catch {
     return null;
   }
