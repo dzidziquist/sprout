@@ -3,6 +3,7 @@ import { ActivityIndicator, Image, Platform, Pressable, ScrollView, StyleSheet, 
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import { shrinkPhoto } from '@/lib/shrinkPhoto';
 import { usePlantStore } from '@/store/plantStore';
 import { AREAS, CAUSES, type Cause, type SymptomArea } from '@/data/diagnosis';
 import { AREA_ICON, SYMPTOM_ART } from '@/data/symptomArt';
@@ -103,13 +104,13 @@ export default function DoctorScreen() {
       }
       const opts: ImagePicker.ImagePickerOptions = {
         mediaTypes: ['images'],
-        quality: 0.6,
+        quality: 1,
         exif: false,
       };
       const res = source === 'camera' ? await ImagePicker.launchCameraAsync(opts) : await ImagePicker.launchImageLibraryAsync(opts);
       if (res.canceled || !res.assets?.[0]) return;
-      uri = res.assets[0].uri;
-      mimeType = res.assets[0].mimeType ?? undefined;
+      // Resized once before upload: a full-size shot is several MB and slow to send.
+      ({ uri, mimeType } = await shrinkPhoto(res.assets[0], 1280, 0.7));
     } catch {
       return setPhoto({ kind: 'error', message: PHOTO_ERRORS['bad-image'] });
     }

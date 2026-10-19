@@ -1,6 +1,7 @@
 import { ActionSheetIOS, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Directory, File, Paths } from 'expo-file-system';
+import { shrinkPhoto } from './shrinkPhoto';
 
 export type PhotoSource = 'library' | 'camera';
 
@@ -12,12 +13,19 @@ export function photoSrc(stored: string): string {
   return new File(Paths.document, stored).uri;
 }
 
+/*
+ * No crop step: on iOS it swaps the fast system photo picker for the old, slow one and adds a screen
+ * after every shot, and the diary shows photos cropped to fit anyway. Quality 1 skips a full-size
+ * re-encode; the photo is resized and compressed once afterwards (DIARY_SIDE).
+ */
 const PICKER_OPTIONS: ImagePicker.ImagePickerOptions = {
   mediaTypes: ['images'],
-  quality: 0.7,
-  allowsEditing: true,
-  aspect: [1, 1],
+  quality: 1,
+  exif: false,
 };
+
+/** Longest side of a saved diary photo: sharp full-screen on any iPhone, a fraction of the size. */
+const DIARY_SIDE = 1600;
 
 /** Copies a picked image into the app's documents (picker results live in a temp cache that iOS clears). */
 function keep(uri: string): string {
@@ -52,7 +60,7 @@ export async function pickPhoto(source: PhotoSource): Promise<string | null> {
     }
     const res = source === 'camera' && Platform.OS !== 'web' ? await ImagePicker.launchCameraAsync(PICKER_OPTIONS) : await ImagePicker.launchImageLibraryAsync(PICKER_OPTIONS);
     if (res.canceled || !res.assets?.[0]) return null;
-    return keep(res.assets[0].uri);
+    return keep((await shrinkPhoto(res.assets[0], DIARY_SIDE)).uri);
   } catch {
     return null;
   }

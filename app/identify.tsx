@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
+import { shrinkPhoto } from '@/lib/shrinkPhoto';
 import Svg, { Path } from 'react-native-svg';
 import { getSpecies } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -85,11 +86,12 @@ export default function IdentifyScreen() {
         const perm = await ImagePicker.requestCameraPermissionsAsync();
         if (!perm.granted) return setPhase({ kind: 'error', problem: 'camera-denied' });
       }
-      const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.6, exif: false };
+      const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 1, exif: false };
       const res = source === 'camera' ? await ImagePicker.launchCameraAsync(opts) : await ImagePicker.launchImageLibraryAsync(opts);
       if (res.canceled || !res.assets?.[0]) return;
-      const asset = res.assets[0];
-      run(asset.uri, asset.mimeType ?? undefined);
+      // Resized once before upload: a full-size shot is several MB and slow to send.
+      const small = await shrinkPhoto(res.assets[0], 1280, 0.7);
+      run(small.uri, small.mimeType);
     } catch {
       setPhase({ kind: 'error', problem: source === 'camera' ? 'camera-failed' : 'bad-image' });
     }
