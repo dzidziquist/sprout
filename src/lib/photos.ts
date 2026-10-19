@@ -45,6 +45,17 @@ function keep(uri: string): string {
   }
 }
 
+/** Deletes a temporary file, quietly. */
+function discard(uri: string): void {
+  if (Platform.OS === 'web') return;
+  try {
+    const f = new File(uri);
+    if (f.exists) f.delete();
+  } catch {
+    // The OS clears its cache anyway.
+  }
+}
+
 /**
  * Lets the user take or choose a photo. Resolves to a persistent URI, or null if they cancelled
  * or said no to permissions (we explain once, gently).
@@ -60,7 +71,11 @@ export async function pickPhoto(source: PhotoSource): Promise<string | null> {
     }
     const res = source === 'camera' && Platform.OS !== 'web' ? await ImagePicker.launchCameraAsync(PICKER_OPTIONS) : await ImagePicker.launchImageLibraryAsync(PICKER_OPTIONS);
     if (res.canceled || !res.assets?.[0]) return null;
-    return keep((await shrinkPhoto(res.assets[0], DIARY_SIDE)).uri);
+    const small = await shrinkPhoto(res.assets[0], DIARY_SIDE);
+    const kept = keep(small.uri);
+    // The resized copy was only a stepping stone into the diary folder.
+    if (small.uri !== res.assets[0].uri && kept !== small.uri) discard(small.uri);
+    return kept;
   } catch {
     return null;
   }
