@@ -22,6 +22,7 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { StagePanel } from '@/components/StagePanel';
 import { LightCard } from '@/components/LightCard';
+import { AboutCard } from '@/components/AboutCard';
 import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
 import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
 import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
@@ -365,6 +366,8 @@ export default function PlantDetail() {
             <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
           </Sticker>
         )}
+
+        <AboutCard plant={plant} />
 
         <PlantPageOffshoots parent={parent} babies={babies} />
 
