@@ -16,6 +16,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { useSheetTop } from '@/lib/sheetTop';
+import { addHref, displayName, speciesHref } from '@/lib/plantLinks';
 
 type Problem = PlantIdErrorKind | 'camera-denied' | 'camera-failed' | 'daily-limit';
 
@@ -105,8 +106,12 @@ export default function IdentifyScreen() {
   /** Plants Pl@ntNet knows but our list doesn't: add them as themselves, with the name filled in. */
   const addAsItself = (r: PlantNetResult) => {
     haptics.tap();
-    const common = r.commonNames[0] ? r.commonNames[0].replace(/^\w/, (ch) => ch.toUpperCase()) : r.latinName;
-    router.replace(`/add?other=1&name=${encodeURIComponent(common)}&latin=${encodeURIComponent(r.latinName)}`);
+    router.replace(addHref('other-tropical', { commonName: displayName(r.commonNames, r.latinName), latinName: r.latinName }) as never);
+  };
+  /** Read about an unlisted plant first: its species page, by the names Pl@ntNet gave. */
+  const readAbout = (r: PlantNetResult) => {
+    haptics.tap();
+    router.push(speciesHref('other-tropical', { commonName: displayName(r.commonNames, r.latinName), latinName: r.latinName }) as never);
   };
   const topUnlisted = phase.kind === 'results' ? phase.results.find((r) => !speciesFor(r.latinName, r.genus)?.exact) : undefined;
   const unlistedLeads = phase.kind === 'results' && !!topUnlisted && topUnlisted === phase.results[0];
@@ -239,7 +244,10 @@ export default function IdentifyScreen() {
               </View>
             </Sticker>
             {phase.results.length > 0 && (
-              <Button title={`Add ${phase.results[0].commonNames[0] ?? phase.results[0].latinName}`} raised onPress={() => addAsItself(phase.results[0])} style={styles.bigBtn} textStyle={styles.bigBtnText} />
+              <>
+                <Button title={`Add ${phase.results[0].commonNames[0] ?? phase.results[0].latinName}`} raised onPress={() => addAsItself(phase.results[0])} style={styles.bigBtn} textStyle={styles.bigBtnText} />
+                <Button title="Read about it or save for later" bg={c.butter} onPress={() => readAbout(phase.results[0])} style={{ minHeight: 50 }} />
+              </>
             )}
             <Button title="Try another photo" raised={phase.results.length === 0} bg={phase.results.length ? c.card : undefined} onPress={() => setPhase({ kind: 'empty' })} style={phase.results.length ? { minHeight: 50 } : styles.bigBtn} textStyle={phase.results.length ? undefined : styles.bigBtnText} />
             <Button title="Pick from the list" bg={c.card} onPress={toList} style={{ minHeight: 50 }} />
@@ -279,6 +287,17 @@ export default function IdentifyScreen() {
                 }}
                 style={styles.bigBtn}
                 textStyle={styles.bigBtnText}
+              />
+              <Button
+                title="Read about it or save for later"
+                bg={c.butter}
+                onPress={() => {
+                  haptics.tap();
+                  const id = confirm.speciesId;
+                  setConfirm(null);
+                  router.push(`/species/${id}`);
+                }}
+                style={{ minHeight: 48 }}
               />
               <Button title="Not quite" bg={c.card} onPress={() => setConfirm(null)} style={{ minHeight: 48 }} />
             </Sticker>

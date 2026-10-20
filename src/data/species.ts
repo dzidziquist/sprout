@@ -23,6 +23,8 @@ export const SPECIES: Record<SpeciesId, Species> = Object.fromEntries([...LIST, 
 export const SPECIES_LIST: Species[] = [...LIST].sort((a, b) => Number(!!b.popular) - Number(!!a.popular) || a.commonName.localeCompare(b.commonName));
 
 export const isOtherId = (id: SpeciesId) => id.startsWith('other-');
+/** Whether a value (a route param, say) names a species we know, catalogue or "other". */
+export const isSpeciesId = (v: unknown): v is SpeciesId => typeof v === 'string' && v in SPECIES;
 
 /** Catalogue entry for an id; unknown ids fall back to the generic tropical so nothing ever crashes. */
 export function getSpecies(id: SpeciesId): Species {

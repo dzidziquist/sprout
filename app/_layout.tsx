@@ -86,6 +86,8 @@ export default function RootLayout() {
         <Stack.Screen name="edit/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="support" options={{ presentation: 'modal' }} />
         <Stack.Screen name="identify" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="species/[id]" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="wishlist" options={{ presentation: 'modal' }} />
         <Stack.Screen name="photos/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="away" options={{ presentation: 'modal' }} />
         <Stack.Screen name="doctor/[id]" options={{ presentation: 'modal' }} />

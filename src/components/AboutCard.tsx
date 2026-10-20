@@ -1,28 +1,38 @@
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
 import { Image } from 'expo-image';
+import { PlantBuddy } from '@/components/PlantBuddy';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { isOtherId, speciesOf } from '@/data/species';
-import { useWiki } from '@/lib/wiki';
+import { getSpecies, isOtherId } from '@/data/species';
+import { usePhoto, useWiki } from '@/lib/wiki';
+import { PhotoCredit, PhotoToggle } from '@/components/PhotoCredit';
 import * as haptics from '@/lib/haptics';
 import { Sticker } from '@/components/ui';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
-import type { Plant } from '@/types';
+import type { SpeciesId } from '@/types';
 
 /**
- * "About <species>" on a plant's page: Wikipedia's intro and photo, folded to one row until tapped.
- * Whether it starts open is remembered for every plant. Hidden when Wikipedia has nothing.
+ * The names to look a plant up by. "Other" plants only use the names the person gave them, never the
+ * generic group name ("Leafy tropical").
  */
-export function AboutCard({ plant }: { plant: Plant }) {
+export function wikiNames(speciesId: SpeciesId, custom?: { commonName: string; latinName?: string }): { latin: string; common: string } {
+  if (isOtherId(speciesId)) return { latin: custom?.latinName ?? '', common: custom?.commonName ?? '' };
+  const sp = getSpecies(speciesId);
+  return { latin: sp.latinName, common: sp.commonName };
+}
+
+/**
+ * "About <species>": Wikipedia's intro next to the plant's own buddy art, folded to one row until tapped. Whether it starts open
+ * is remembered everywhere it shows. Hidden when Wikipedia has nothing.
+ */
+export function AboutCard({ speciesId, latin, common }: { speciesId: SpeciesId; latin: string; common: string }) {
   const c = useColors();
-  const species = speciesOf(plant);
-  // "Other" plants are only looked up by the names the person gave them, never the generic group name.
-  const other = isOtherId(plant.speciesId);
-  const latin = other ? plant.custom?.latinName ?? '' : species.latinName;
-  const common = other ? plant.custom?.commonName ?? '' : species.commonName;
   const wiki = useWiki(latin, common);
   const open = usePlantStore((s) => !!s.profile.aboutOpen);
+  const [showPhoto, setShowPhoto] = useState(false);
+  const real = usePhoto(wiki?.imageFile, showPhoto && open);
   const setProfile = usePlantStore((s) => s.setProfile);
   if (!wiki || (!latin && !common)) return null;
 
@@ -41,11 +51,9 @@ export function AboutCard({ plant }: { plant: Plant }) {
         onPress={toggle}
         style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}
       >
-        {wiki.photo ? (
-          <Image source={{ uri: wiki.photo }} style={[styles.thumb, { borderColor: c.line }]} contentFit="cover" accessibilityElementsHidden />
-        ) : (
-          <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.mint }]} />
-        )}
+        <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.potTint[getSpecies(speciesId).artPot] }]}>
+          <PlantBuddy speciesId={speciesId} size={36} bg={c.potTint[getSpecies(speciesId).artPot]} />
+        </View>
         <View style={{ flex: 1 }}>
           <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>About {common || wiki.title}</Text>
           <Text style={[styles.sub, { color: c.inkMuted }]} numberOfLines={1}>{subtitle}</Text>
@@ -56,10 +64,20 @@ export function AboutCard({ plant }: { plant: Plant }) {
       </Pressable>
       {open && (
         <View style={[styles.body, { borderColor: c.cloud }]}>
-          {wiki.photo && <Image source={{ uri: wiki.photo }} style={[styles.photo, { borderColor: c.line }]} contentFit="cover" accessibilityLabel={`Photo of ${wiki.title}`} />}
+          {showPhoto && real.photo && (
+            <View style={{ gap: 4 }}>
+              <Image source={{ uri: real.photo.src }} style={[styles.photo, { borderColor: c.line }]} contentFit="cover" accessibilityLabel={`Photo of ${common || wiki.title}`} />
+              <PhotoCredit photo={real.photo} />
+            </View>
+          )}
+          {showPhoto && real.loading && <ActivityIndicator color={c.ink} />}
+          {showPhoto && !real.loading && !real.photo && <Text style={[styles.sub, { color: c.inkMuted }]}>No photo we can credit for this plant.</Text>}
           <Text style={[styles.extract, { color: c.ink }]} numberOfLines={8}>{wiki.extract}</Text>
           <View style={styles.foot}>
-            <Text style={[styles.sub, { color: c.inkMuted }]}>From Wikipedia</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Text style={[styles.sub, { color: c.inkMuted }]}>From Wikipedia</Text>
+              {!!wiki.imageFile && <PhotoToggle on={showPhoto} onChange={setShowPhoto} />}
+            </View>
             <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.more, { color: c.leafDeep }]}>
               Read more ›
             </Text>
@@ -72,12 +90,12 @@ export function AboutCard({ plant }: { plant: Plant }) {
 
 const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 10, minHeight: 60 },
-  thumb: { width: 40, height: 40, borderRadius: 10, borderWidth: 2 },
+  thumb: { width: 40, height: 40, borderRadius: 10, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   title: { fontFamily: fonts.display, fontSize: 17 },
   sub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   body: { paddingHorizontal: 14, paddingBottom: 14, paddingTop: 12, gap: 10, borderTopWidth: 2 },
-  photo: { width: '100%', height: 170, borderRadius: 14, borderWidth: 2 },
   extract: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21 },
+  photo: { width: '100%', height: 180, borderRadius: 14, borderWidth: 2 },
   foot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   more: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
 });

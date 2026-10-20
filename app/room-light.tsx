@@ -46,7 +46,16 @@ export default function RoomLightSheet() {
     watch.current?.remove();
     watch.current = null;
   };
-  useEffect(() => stopCompass, []);
+  // The permission prompt and the watch start are async: if the sheet closes meanwhile, the watch that
+  // arrives afterwards is stopped at once instead of running on in the background.
+  const mounted = useRef(true);
+  useEffect(
+    () => () => {
+      mounted.current = false;
+      stopCompass();
+    },
+    [],
+  );
   const close = () => (router.canGoBack() ? router.back() : router.replace('/jungle'));
 
   const toggle = (f: Facing) => {
@@ -67,13 +76,16 @@ export default function RoomLightSheet() {
     setCompass('asking');
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
+      if (!mounted.current) return;
       if (status !== 'granted') return setCompass('denied');
       stopCompass();
-      watch.current = await Location.watchHeadingAsync((h) => {
+      const sub = await Location.watchHeadingAsync((h) => {
         setHeading(h.trueHeading >= 0 ? h.trueHeading : h.magHeading);
         // iOS reports 0–3: below 2 the compass is off by more than ~35°.
         setCalibrated(h.accuracy >= 2);
       });
+      if (!mounted.current) return sub.remove();
+      watch.current = sub;
       setCompass('on');
     } catch {
       setCompass('unavailable');

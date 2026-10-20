@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { FIT_LABEL, hasWindow, spotFits, windowsLine } from '@/engine/light';
+import { FIT_LABEL, hasWindow, shadeWords, spotFits, windowsLine } from '@/engine/light';
 import { coordsFor } from '@/lib/weather';
 import { LIGHT_ART } from '@/data/art';
 import { fitFill } from '@/components/LightRooms';
@@ -21,7 +21,7 @@ import type { WindowSpot } from '@/types';
 const SPOTS: { id: WindowSpot; title: string; sub: string }[] = [
   { id: 'sill', title: 'On the sill', sub: 'Right next to the glass.' },
   { id: 'below', title: 'Below the window', sub: 'On the floor or a stool under it.' },
-  { id: 'near', title: 'About 1 m away', sub: 'An arm’s length from the window.' },
+  { id: 'near', title: 'About 1 m away', sub: 'An arm’s length from the glass.' },
   { id: 'far', title: 'Across the room', sub: 'Far from the window.' },
 ];
 
@@ -74,7 +74,7 @@ export default function SpotSheet() {
         <View style={[styles.list, { borderColor: c.line }]}>
           <View style={[styles.band, { backgroundColor: c.ice, borderColor: c.line }]}>
             <LineIcon name="window" color={textOn(c.ice, c)} size={22} width={2.2} />
-            <Text style={[styles.bandText, { color: textOn(c.ice, c) }]}>{windowsLine(room)}</Text>
+            <Text style={[styles.bandText, { color: textOn(c.ice, c) }]}>{windowsLine(room)}{shadeWords(room)}</Text>
           </View>
           {SPOTS.map((s, i) => {
             const on = picked === s.id;

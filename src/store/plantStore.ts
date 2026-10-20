@@ -7,7 +7,7 @@ import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS,
 import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
-import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent } from '../types';
+import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent, WishItem } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
 
@@ -35,6 +35,8 @@ export interface Profile {
   lightTips?: 'important' | 'daily';
   /** Whether the About card (Wikipedia intro) on plant pages starts open. Folded by default. */
   aboutOpen?: boolean;
+  /** Plants to get one day. Not part of the jungle: no checks, no streak. */
+  wishlist?: WishItem[];
   /** Has left a tip in the tip jar. Nothing is locked; it powers the thank-you gifts (badge, gold cards, party hat). */
   supporter: boolean;
   /** When the first tip was noticed on this phone: the supporter badge's date. */
@@ -105,6 +107,10 @@ interface PlantState {
   updatePlant: (plantId: string, patch: Partial<NewPlant>, now?: Date) => void;
   /** Set a room's windows and shade for the light view. */
   setRoomLight: (room: string, light: RoomLight) => void;
+  /** Saves a plant for later; saving the same plant again just returns the existing entry. */
+  saveWish: (item: Omit<WishItem, 'id' | 'savedAt'>, now?: Date) => WishItem;
+  updateWish: (id: string, patch: Pick<WishItem, 'note'>) => void;
+  removeWish: (id: string) => void;
   /** Plants are never hard-deleted from lineage: archived plants leave the round but stay in Offshoots. */
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
   /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
@@ -200,6 +206,11 @@ function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
 }
 
 /** The earliest an In memory / gifted date can be: when it joined the fam, or when it last came back. */
+/** Which plant a wish is for: the species, plus the name for plants not in the catalogue. */
+export const wishKey = (w: Pick<WishItem, 'speciesId' | 'custom'>) => `${w.speciesId}|${(w.custom?.latinName || w.custom?.commonName || '').trim().toLowerCase()}`;
+/** The saved wish for this plant, if there is one. */
+export const findWish = (list: WishItem[] | undefined, w: Pick<WishItem, 'speciesId' | 'custom'>) => list?.find((x) => wishKey(x) === wishKey(w));
+
 export function archiveFloor(plant: Pick<Plant, 'id' | 'acquiredAt'>, events: CareEvent[]): string {
   let floor = plant.acquiredAt;
   for (const e of events) if (e.plantId === plant.id && e.type === 'restored' && e.at > floor) floor = e.at;
@@ -357,6 +368,19 @@ export const usePlantStore = create<PlantState>()(
       },
 
       setRoomLight: (room, light) => set((s) => ({ profile: { ...s.profile, rooms: { ...s.profile.rooms, [room]: light } } })),
+
+      saveWish: (item, now = new Date()) => {
+        const same = findWish(get().profile.wishlist, item);
+        if (same) return same;
+        const wish: WishItem = { ...item, note: item.note?.trim() || undefined, id: uid(), savedAt: now.toISOString() };
+        set((s) => ({ profile: { ...s.profile, wishlist: [...(s.profile.wishlist ?? []), wish] } }));
+        return wish;
+      },
+
+      updateWish: (id, patch) =>
+        set((s) => ({ profile: { ...s.profile, wishlist: (s.profile.wishlist ?? []).map((w) => (w.id === id ? { ...w, note: patch.note?.trim() || undefined } : w)) } })),
+
+      removeWish: (id) => set((s) => ({ profile: { ...s.profile, wishlist: (s.profile.wishlist ?? []).filter((w) => w.id !== id) } })),
 
       updatePlant: (plantId, patch, now = new Date()) => {
         const climate = get().profile.climate;
