@@ -458,7 +458,7 @@ export default function AddPlantScreen() {
       {!isOther && sp.tip && <Text style={[styles.note, { color: c.inkMuted }]}>{localizeTemps(sp.tip, units)}</Text>}
       {/* Unlisted plants: only while the names are still the ones photo ID gave, so editing them never shows
           another plant's intro, and typing doesn't send a lookup per keystroke. */}
-      {(!isOther || (typeof params.latin === 'string' && customLatin === params.latin)) && <AboutCard latin={isOther ? customLatin : sp.latinName} common={isOther ? String(params.name ?? '') : sp.commonName} />}
+      {(!isOther || (typeof params.latin === 'string' && customLatin === params.latin)) && <AboutCard speciesId={speciesId} latin={isOther ? customLatin : sp.latinName} common={isOther ? String(params.name ?? '') : sp.commonName} />}
 
       {isOther && (
         <View style={{ gap: 10 }}>

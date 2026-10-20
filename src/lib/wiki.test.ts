@@ -35,7 +35,13 @@ describe('Wikipedia lookups', () => {
   });
 
   it('skips disambiguation pages and stubs', () => {
-    expect(parseSummary(page('Goeppertia orbifolia'))?.photo).toContain('upload.wikimedia.org');
+    // Text only: Wikimedia photos carry their own licences, so they're never passed on.
+    expect(parseSummary(page('Goeppertia orbifolia'))).toEqual({
+      title: 'Goeppertia orbifolia',
+      extract: expect.stringContaining('arrowroot family'),
+      description: 'Species of flowering plant',
+      url: 'https://en.m.wikipedia.org/wiki/Goeppertia orbifolia',
+    });
     expect(parseSummary(page('Pothos', { type: 'disambiguation' }))).toBeNull();
     expect(parseSummary(page('Tiny', { extract: 'Too short.' }))).toBeNull();
   });

@@ -367,7 +367,7 @@ export default function PlantDetail() {
           </Sticker>
         )}
 
-        <AboutCard {...wikiNames(plant.speciesId, plant.custom)} />
+        <AboutCard speciesId={plant.speciesId} {...wikiNames(plant.speciesId, plant.custom)} />
 
         <PlantPageOffshoots parent={parent} babies={babies} />
 

@@ -1,5 +1,5 @@
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Image } from 'expo-image';
+import { PlantBuddy } from '@/components/PlantBuddy';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { getSpecies, isOtherId } from '@/data/species';
@@ -21,10 +21,10 @@ export function wikiNames(speciesId: SpeciesId, custom?: { commonName: string; l
 }
 
 /**
- * "About <species>": Wikipedia's intro and photo, folded to one row until tapped. Whether it starts open
+ * "About <species>": Wikipedia's intro next to the plant's own buddy art, folded to one row until tapped. Whether it starts open
  * is remembered everywhere it shows. Hidden when Wikipedia has nothing.
  */
-export function AboutCard({ latin, common }: { latin: string; common: string }) {
+export function AboutCard({ speciesId, latin, common }: { speciesId: SpeciesId; latin: string; common: string }) {
   const c = useColors();
   const wiki = useWiki(latin, common);
   const open = usePlantStore((s) => !!s.profile.aboutOpen);
@@ -46,11 +46,9 @@ export function AboutCard({ latin, common }: { latin: string; common: string }) 
         onPress={toggle}
         style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}
       >
-        {wiki.photo ? (
-          <Image source={{ uri: wiki.photo }} style={[styles.thumb, { borderColor: c.line }]} contentFit="cover" accessibilityElementsHidden />
-        ) : (
-          <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.mint }]} />
-        )}
+        <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.potTint[getSpecies(speciesId).artPot] }]}>
+          <PlantBuddy speciesId={speciesId} size={36} bg={c.potTint[getSpecies(speciesId).artPot]} />
+        </View>
         <View style={{ flex: 1 }}>
           <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>About {common || wiki.title}</Text>
           <Text style={[styles.sub, { color: c.inkMuted }]} numberOfLines={1}>{subtitle}</Text>
@@ -61,7 +59,6 @@ export function AboutCard({ latin, common }: { latin: string; common: string }) 
       </Pressable>
       {open && (
         <View style={[styles.body, { borderColor: c.cloud }]}>
-          {wiki.photo && <Image source={{ uri: wiki.photo }} style={[styles.photo, { borderColor: c.line }]} contentFit="cover" accessibilityLabel={`Photo of ${wiki.title}`} />}
           <Text style={[styles.extract, { color: c.ink }]} numberOfLines={8}>{wiki.extract}</Text>
           <View style={styles.foot}>
             <Text style={[styles.sub, { color: c.inkMuted }]}>From Wikipedia</Text>
@@ -77,11 +74,10 @@ export function AboutCard({ latin, common }: { latin: string; common: string }) 
 
 const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 10, minHeight: 60 },
-  thumb: { width: 40, height: 40, borderRadius: 10, borderWidth: 2 },
+  thumb: { width: 40, height: 40, borderRadius: 10, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   title: { fontFamily: fonts.display, fontSize: 17 },
   sub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   body: { paddingHorizontal: 14, paddingBottom: 14, paddingTop: 12, gap: 10, borderTopWidth: 2 },
-  photo: { width: '100%', height: 170, borderRadius: 14, borderWidth: 2 },
   extract: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21 },
   foot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   more: { fontFamily: fonts.bodyHeavy, fontSize: 14 },

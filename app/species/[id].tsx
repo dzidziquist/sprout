@@ -1,6 +1,5 @@
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
@@ -25,7 +24,7 @@ import type { SpeciesId } from '@/types';
 const ASPCA_URL = 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants';
 
 /**
- * A plant to read about before (or without) adding it: its photo and Wikipedia intro, what it needs,
+ * A plant to read about before (or without) adding it: its buddy art and Wikipedia intro, what it needs,
  * where it would suit this home, and Add to my fam or Save for later. Opened from the add list, photo ID
  * and the wishlist. Plants not in the catalogue come as /species/other?name=…&latin=….
  */
@@ -79,11 +78,7 @@ export default function SpeciesPage() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 150 }}>
         <View style={[styles.hero, { backgroundColor: tint, borderColor: c.line }]}>
-          {wiki?.photo ? (
-            <Image source={{ uri: wiki.photo }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel={`Photo of ${wiki.title}`} />
-          ) : (
-            <PlantBuddy speciesId={speciesId} size={170} bg={tint} />
-          )}
+          <PlantBuddy speciesId={speciesId} size={180} bg={tint} />
           <View style={[styles.toolbar, { top: 16 }]}>
             <GlassButton accessibilityLabel="Close" onPress={close}>
               <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /*
- * A species' short intro and photo from Wikipedia's free page-summary API, for the About card on a plant's
+ * A species' short intro from Wikipedia's free page-summary API, for the About card on a plant's
  * page. Only the name being looked up is sent. Results (and "nothing found") are kept on the phone for 30
  * days, so each species is fetched about once a month and the card works offline after that.
  */
@@ -13,8 +13,6 @@ export interface WikiSummary {
   extract: string;
   /** Wikipedia's one-line description, e.g. "Species of flowering plant". */
   description?: string;
-  /** A small photo (about 320 px). */
-  photo?: string;
   /** The article, for "Read more". */
   url: string;
 }
@@ -48,13 +46,13 @@ export function parseSummary(json: unknown): WikiSummary | null {
     title?: string;
     extract?: string;
     description?: string;
-    thumbnail?: { source?: string };
     content_urls?: { mobile?: { page?: string }; desktop?: { page?: string } };
   } | null;
   if (!d || d.type !== 'standard' || !d.extract || d.extract.length < 40 || !d.title) return null;
   const url = d.content_urls?.mobile?.page ?? d.content_urls?.desktop?.page;
   if (!url) return null;
-  return { title: d.title, extract: d.extract, description: d.description, photo: d.thumbnail?.source, url };
+  // Text only: photos on Wikimedia carry their own licences and authors, so the app shows its own art instead.
+  return { title: d.title, extract: d.extract, description: d.description, url };
 }
 
 async function fetchOne(title: string, doFetch: typeof fetch): Promise<WikiSummary | null | 'error'> {

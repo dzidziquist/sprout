@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
@@ -9,7 +8,6 @@ import { getSpecies, isOtherId } from '@/data/species';
 import { roomsInUse } from '@/engine/light';
 import { addHref, homeFor, speciesHref } from '@/lib/plantLinks';
 import { coordsFor } from '@/lib/weather';
-import { useWiki } from '@/lib/wiki';
 import { wikiNames } from '@/components/AboutCard';
 import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -80,7 +78,6 @@ function WishCard({ wish }: { wish: WishItem }) {
   const other = isOtherId(wish.speciesId);
   const sp = getSpecies(wish.speciesId);
   const names = wikiNames(wish.speciesId, wish.custom);
-  const wiki = useWiki(names.latin, names.common);
   const title = other ? names.common : sp.commonName;
   const home = homeFor(wish.speciesId, roomsInUse(rooms, plants), coordsFor(climate).lat, new Date());
   const homeLine = !home ? null : home.suits ? `Would suit your ${home.suits.toLowerCase()}` : 'No great spot in your rooms yet';
@@ -93,13 +90,9 @@ function WishCard({ wish }: { wish: WishItem }) {
   return (
     <View style={[styles.card, { borderColor: c.line, backgroundColor: c.card, boxShadow: `0px 4px 0px ${c.drop}` }]}>
       <Pressable accessibilityRole="button" accessibilityLabel={`Read about ${title}`} onPress={open} style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}>
-        {wiki?.photo ? (
-          <Image source={{ uri: wiki.photo }} style={[styles.thumb, { borderColor: c.line }]} contentFit="cover" accessibilityElementsHidden />
-        ) : (
-          <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.potTint[sp.artPot], alignItems: 'center', justifyContent: 'center' }]}>
-            <PlantBuddy speciesId={wish.speciesId} size={50} bg={c.potTint[sp.artPot]} />
-          </View>
-        )}
+        <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.potTint[sp.artPot], alignItems: 'center', justifyContent: 'center' }]}>
+          <PlantBuddy speciesId={wish.speciesId} size={50} bg={c.potTint[sp.artPot]} />
+        </View>
         <View style={{ flex: 1, gap: 2 }}>
           <Text style={[styles.name, { color: c.ink }]} numberOfLines={1}>{title}</Text>
           {!!(other ? names.latin : sp.latinName) && <Text style={[styles.small, { color: c.inkMuted }]} numberOfLines={1}>{other ? names.latin : sp.latinName}</Text>}
