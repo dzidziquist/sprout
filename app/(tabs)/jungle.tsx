@@ -173,10 +173,8 @@ export default function JungleScreen() {
   );
   const potRooms = new Set(potted.map((p) => p.room?.trim()).filter(Boolean));
 
-  // Search + filter chips, once the jungle is big enough to need them. The light view keeps search but not the
-  // chips: needs check, rooting and edibles don't mean anything there, and its rooms are already grouped.
-  const showSearch = living.length >= 6;
-  const showTools = showSearch && view !== 'light';
+  // Search + filter chips (only once the jungle is big enough to need them).
+  const showTools = living.length >= 6;
   const chips: JungleChip[] = [
     { key: 'all', label: 'All', count: living.length },
     { key: 'due', label: 'Needs check', count: potted.filter((p) => isDue(p, now)).length },
@@ -185,7 +183,7 @@ export default function JungleScreen() {
     ...roomList.map((r) => ({ key: `room:${r}`, label: r, count: living.filter((p) => p.room?.trim() === r).length })),
   ];
   const active = showTools && chips.some((ch) => ch.key === filter) ? filter : 'all';
-  const words = showSearch ? norm(query).split(/\s+/).filter(Boolean) : [];
+  const words = showTools ? norm(query).split(/\s+/).filter(Boolean) : [];
   const chipOk = (p: Plant) => {
     if (active === 'all') return true;
     if (active === 'due') return !p.rooting && !p.archivedAt && isDue(p, now);
@@ -234,8 +232,10 @@ export default function JungleScreen() {
 
       {living.length > 0 && (
         <View style={{ gap: 10 }}>
-          <JungleViewToggle value={view} onChange={setView} />
-          {showSearch && <JungleSearch value={query} onChange={setQuery} />}
+          <View style={styles.searchRow}>
+            {showTools ? <JungleSearch value={query} onChange={setQuery} /> : <View style={{ flex: 1 }} />}
+            <JungleViewToggle value={view} onChange={setView} />
+          </View>
           {showTools && <JungleChips chips={chips} value={active} onChange={setFilter} bleed={20} />}
         </View>
       )}
@@ -316,6 +316,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   card: { width: '47.5%', flexGrow: 0 },
   roomLine: { flexDirection: 'row', alignItems: 'flex-start', gap: 4, marginTop: 1 },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 64, borderWidth: 2, borderRadius: 18, paddingHorizontal: 8, paddingVertical: 6 },
   thumb: { width: 48, height: 48, borderRadius: 24, borderWidth: 2, alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' },
   rowName: { fontFamily: fonts.displaySemi, fontSize: 16 },

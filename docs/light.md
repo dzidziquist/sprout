@@ -21,7 +21,7 @@ The simple version of the light map: no floor plan, furniture or scanning.
 Each spot also gets one plain verdict: **Likely suitable**, **Likely too dark** or **Likely too sunny** (today's light against what the species wants).
 
 ## Where it shows
-- **Jungle, Light view** (Grid / List / Light): a "rooms left to set up" card with progress, then each set-up room with its windows and today's sun. Each plant shows where it sits and its verdict, with "Find a brighter spot" or "Find a shadier spot" when it doesn't suit, or "Set position" when its spot isn't known. Rooms not set up yet are dashed cards with a Set up button.
+- **Jungle, Light view** (the sun icon next to search): a "rooms left to set up" card with progress, then each set-up room with its windows and today's sun. Each plant shows where it sits and its verdict, with "Find a brighter spot" or "Find a shadier spot" when it doesn't suit, or "Set position" when its spot isn't known. Rooms not set up yet are dashed cards with a Set up button.
 - **Room sheet**: the window direction by phone compass (iOS asks for location access, which it uses for the compass; only the direction is kept) or by tapping North / East / South / West (any number), plus Not sure (an average window) or No windows, and what blocks the light: clear view, curtains, or trees and buildings.
 - **Where it sits sheet**: four pictured spots (on the sill, below the window, about 1 m away, across the room), each with its verdict, and Save position.
 - **Plant page**: a "Light at this spot" card with the verdict and what to do, or the over-the-year light when all is well, where it sits with Change, and Compare spots. Before setup it shows the one next step: choose a room, set up the room, or set the position.
