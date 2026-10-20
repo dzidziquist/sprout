@@ -5,7 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { usePlantStore } from '@/store/plantStore';
+import { usePlantStore, wishKey } from '@/store/plantStore';
 import { OTHER, SPECIES_LIST, getSpecies, isOtherId, isSpeciesId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
@@ -178,7 +178,7 @@ export default function AddPlantScreen() {
   const sheetTop = useSheetTop();
   const c = useColors();
   // /add?species=pothos (from photo ID) skips the picker; /add?other=1&name=…&latin=… starts an "other" plant.
-  const params = useLocalSearchParams<{ species?: string; other?: string; name?: string; latin?: string; wish?: string }>();
+  const params = useLocalSearchParams<{ species?: string; other?: string; name?: string; latin?: string; wish?: string; pick?: string }>();
   // Arriving from photo ID (/add?species=pothos) skips the picker.
   const otherPreset = params.other ? OTHER.tropical.id : null;
   const preset = isSpeciesId(params.species) ? params.species : otherPreset;
@@ -257,11 +257,12 @@ export default function AddPlantScreen() {
     setName(freeName(id, plants.map((p) => p.name)));
   };
 
-  // Back from a species page's "Add to my fam" (it returns here with ?species=…): pick that plant.
+  // Back from a species page's "Add to my fam" (?species=…&pick=<new each time>): pick that plant, even if
+  // it's the same one as last time.
   useEffect(() => {
-    if (isSpeciesId(params.species) && params.species !== speciesId) pick(params.species);
+    if (params.pick && isSpeciesId(params.species)) pick(params.species);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.species]);
+  }, [params.pick]);
 
   const inputStyle = [styles.search, { borderColor: c.line, color: c.ink, backgroundColor: c.card }];
 
@@ -416,8 +417,9 @@ export default function AddPlantScreen() {
       acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString(),
       ...(nowStage ? { stage: nowStage, stageAt: new Date().toISOString() } : {}),
     }, new Date(), { lastWateredAt: lastWateredDays === null ? undefined : daysAgo(lastWateredDays) });
-    // Bought one from the wishlist: it's in the jungle now.
-    if (typeof params.wish === 'string') removeWish(params.wish);
+    // Bought one from the wishlist: it's in the jungle now. Only if it's that plant being added, not one picked instead.
+    const wish = profile.wishlist?.find((w) => w.id === params.wish);
+    if (wish && (isOtherId(wish.speciesId) ? isOther && wishKey({ speciesId: wish.speciesId, custom: { commonName: customName, latinName: customLatin } }) === wishKey(wish) : wish.speciesId === speciesId)) removeWish(wish.id);
     haptics.success();
     router.replace(`/plant/${plant.id}`);
   };
@@ -442,8 +444,9 @@ export default function AddPlantScreen() {
         </View>
       </View>
       {!isOther && sp.tip && <Text style={[styles.note, { color: c.inkMuted }]}>{localizeTemps(sp.tip, units)}</Text>}
-      {/* Unlisted plants are only looked up by the names photo ID gave (not on every keystroke while typing). */}
-      {(!isOther || typeof params.latin === 'string') && <AboutCard latin={isOther ? String(params.latin) : sp.latinName} common={isOther ? String(params.name ?? '') : sp.commonName} />}
+      {/* Unlisted plants: only while the names are still the ones photo ID gave, so editing them never shows
+          another plant's intro, and typing doesn't send a lookup per keystroke. */}
+      {(!isOther || (typeof params.latin === 'string' && customLatin === params.latin)) && <AboutCard latin={isOther ? customLatin : sp.latinName} common={isOther ? String(params.name ?? '') : sp.commonName} />}
 
       {isOther && (
         <View style={{ gap: 10 }}>

@@ -16,6 +16,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { useSheetTop } from '@/lib/sheetTop';
+import { addHref, displayName, speciesHref } from '@/lib/plantLinks';
 
 type Problem = PlantIdErrorKind | 'camera-denied' | 'camera-failed' | 'daily-limit';
 
@@ -105,14 +106,12 @@ export default function IdentifyScreen() {
   /** Plants Pl@ntNet knows but our list doesn't: add them as themselves, with the name filled in. */
   const addAsItself = (r: PlantNetResult) => {
     haptics.tap();
-    const common = r.commonNames[0] ? r.commonNames[0].replace(/^\w/, (ch) => ch.toUpperCase()) : r.latinName;
-    router.replace(`/add?other=1&name=${encodeURIComponent(common)}&latin=${encodeURIComponent(r.latinName)}`);
+    router.replace(addHref('other-tropical', { commonName: displayName(r.commonNames, r.latinName), latinName: r.latinName }) as never);
   };
   /** Read about an unlisted plant first: its species page, by the names Pl@ntNet gave. */
   const readAbout = (r: PlantNetResult) => {
     haptics.tap();
-    const common = r.commonNames[0] ? r.commonNames[0].replace(/^\w/, (ch) => ch.toUpperCase()) : r.latinName;
-    router.push(`/species/other?name=${encodeURIComponent(common)}&latin=${encodeURIComponent(r.latinName)}`);
+    router.push(speciesHref('other-tropical', { commonName: displayName(r.commonNames, r.latinName), latinName: r.latinName }) as never);
   };
   const topUnlisted = phase.kind === 'results' ? phase.results.find((r) => !speciesFor(r.latinName, r.genus)?.exact) : undefined;
   const unlistedLeads = phase.kind === 'results' && !!topUnlisted && topUnlisted === phase.results[0];

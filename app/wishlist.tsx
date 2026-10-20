@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { getSpecies, isOtherId } from '@/data/species';
-import { bestHome, lightNeed, roomsInUse } from '@/engine/light';
+import { roomsInUse } from '@/engine/light';
+import { addHref, homeFor, speciesHref } from '@/lib/plantLinks';
 import { coordsFor } from '@/lib/weather';
 import { useWiki } from '@/lib/wiki';
 import { wikiNames } from '@/components/AboutCard';
@@ -61,7 +62,8 @@ function WishCard({ wish }: { wish: WishItem }) {
   const c = useColors();
   const router = useRouter();
   const plants = usePlantStore((s) => s.plants);
-  const profile = usePlantStore((s) => s.profile);
+  const rooms = usePlantStore((s) => s.profile.rooms);
+  const climate = usePlantStore((s) => s.profile.climate);
   const updateWish = usePlantStore((s) => s.updateWish);
   const removeWish = usePlantStore((s) => s.removeWish);
   const [note, setNote] = useState(wish.note ?? '');
@@ -70,14 +72,12 @@ function WishCard({ wish }: { wish: WishItem }) {
   const names = wikiNames(wish.speciesId, wish.custom);
   const wiki = useWiki(names.latin, names.common);
   const title = other ? names.common : sp.commonName;
-  const home = other ? null : bestHome(lightNeed({ speciesId: wish.speciesId }), roomsInUse(profile.rooms, plants), coordsFor(profile.climate).lat, new Date());
-  const homeLine = !home ? null : 'words' in home ? `Would suit your ${home.room.toLowerCase()}` : home.dim ? 'A bit dark for your rooms' : 'More sun than it likes in your rooms';
-  const open = () =>
-    router.push(other ? `/species/other?name=${encodeURIComponent(names.common)}&latin=${encodeURIComponent(names.latin)}` : `/species/${wish.speciesId}`);
+  const home = homeFor(wish.speciesId, roomsInUse(rooms, plants), coordsFor(climate).lat, new Date());
+  const homeLine = !home ? null : home.suits ? `Would suit your ${home.suits.toLowerCase()}` : 'No great spot in your rooms yet';
+  const open = () => router.push(speciesHref(wish.speciesId, wish.custom) as never);
   const add = () => {
     haptics.tap();
-    const href = other ? `/add?other=1&name=${encodeURIComponent(names.common)}&latin=${encodeURIComponent(names.latin)}&wish=${wish.id}` : `/add?species=${wish.speciesId}&wish=${wish.id}`;
-    router.replace(href as never);
+    router.replace(addHref(wish.speciesId, wish.custom, wish.id) as never);
   };
 
   return (
@@ -111,7 +111,6 @@ function WishCard({ wish }: { wish: WishItem }) {
       <TextInput
         value={note}
         onChangeText={setNote}
-        onEndEditing={() => updateWish(wish.id, { note })}
         onBlur={() => updateWish(wish.id, { note })}
         placeholder="Add a note: where, price…"
         placeholderTextColor={c.inkMuted}

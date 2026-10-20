@@ -171,7 +171,6 @@ export interface Species {
   popular?: boolean;
 }
 
-/** One individual plant the user owns. */
 /** A plant someone wants one day: on the wishlist, not in the jungle. */
 export interface WishItem {
   id: string;
@@ -183,6 +182,7 @@ export interface WishItem {
   savedAt: string;
 }
 
+/** One individual plant the user owns. */
 export interface Plant {
   id: string;
   name: string;

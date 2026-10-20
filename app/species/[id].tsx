@@ -6,7 +6,9 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { getSpecies, isOtherId, isSpeciesId } from '@/data/species';
 import { LIGHT_FACT, WATER_STYLE } from '@/data/labels';
-import { bestHome, lightNeed, roomsInUse } from '@/engine/light';
+import { roomsInUse } from '@/engine/light';
+import { findWish } from '@/store/plantStore';
+import { addHref, homeFor } from '@/lib/plantLinks';
 import { coordsFor } from '@/lib/weather';
 import { useWiki } from '@/lib/wiki';
 import { localizeTemps } from '@/lib/units';
@@ -43,19 +45,17 @@ export default function SpeciesPage() {
   const profile = usePlantStore((s) => s.profile);
   const saveWish = usePlantStore((s) => s.saveWish);
   const removeWish = usePlantStore((s) => s.removeWish);
-  const wishKey = `${speciesId}|${(custom?.latinName || custom?.commonName || '').toLowerCase()}`;
-  const saved = (profile.wishlist ?? []).find((w) => `${w.speciesId}|${(w.custom?.latinName || w.custom?.commonName || '').toLowerCase()}` === wishKey);
+  const saved = findWish(profile.wishlist, { speciesId, custom });
   const close = () => (router.canGoBack() ? router.back() : router.replace('/jungle'));
 
-  const home = known ? bestHome(lightNeed({ speciesId }), roomsInUse(profile.rooms, plants), coordsFor(profile.climate).lat, new Date()) : null;
-  const homeLine = !home ? null : 'words' in home ? `Your ${home.room.toLowerCase()} would suit it, ${home.words}.` : home.dim ? 'Your rooms are a bit dark for it. A grow light would help.' : 'Your rooms get more direct sun than it likes. A sheer curtain would help.';
+  const homeLine = homeFor(speciesId, roomsInUse(profile.rooms, plants), coordsFor(profile.climate).lat, new Date())?.line;
 
   const add = () => {
     haptics.tap();
-    const wish = saved ? `&wish=${saved.id}` : '';
-    const href = known ? `/add?species=${speciesId}${wish}` : `/add?other=1&name=${encodeURIComponent(names.common)}&latin=${encodeURIComponent(names.latin)}${wish}`;
+    const href = addHref(speciesId, custom, saved?.id);
     // From the add list, go back to it with this plant picked rather than stacking a second add screen.
-    if (params.from === 'add') return router.dismissTo(href as never);
+    // `pick` changes every time, so picking the same plant twice still registers.
+    if (params.from === 'add') return router.dismissTo(`${href}&pick=${Date.now()}` as never);
     // From photo ID or the wishlist: close those first so adding lands on one clean add screen.
     if (router.canDismiss()) router.dismissAll();
     router.push(href as never);

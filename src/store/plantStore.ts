@@ -206,6 +206,11 @@ function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
 }
 
 /** The earliest an In memory / gifted date can be: when it joined the fam, or when it last came back. */
+/** Which plant a wish is for: the species, plus the name for plants not in the catalogue. */
+export const wishKey = (w: Pick<WishItem, 'speciesId' | 'custom'>) => `${w.speciesId}|${(w.custom?.latinName || w.custom?.commonName || '').trim().toLowerCase()}`;
+/** The saved wish for this plant, if there is one. */
+export const findWish = (list: WishItem[] | undefined, w: Pick<WishItem, 'speciesId' | 'custom'>) => list?.find((x) => wishKey(x) === wishKey(w));
+
 export function archiveFloor(plant: Pick<Plant, 'id' | 'acquiredAt'>, events: CareEvent[]): string {
   let floor = plant.acquiredAt;
   for (const e of events) if (e.plantId === plant.id && e.type === 'restored' && e.at > floor) floor = e.at;
@@ -365,9 +370,7 @@ export const usePlantStore = create<PlantState>()(
       setRoomLight: (room, light) => set((s) => ({ profile: { ...s.profile, rooms: { ...s.profile.rooms, [room]: light } } })),
 
       saveWish: (item, now = new Date()) => {
-        const list = get().profile.wishlist ?? [];
-        const key = (w: Pick<WishItem, 'speciesId' | 'custom'>) => `${w.speciesId}|${(w.custom?.latinName || w.custom?.commonName || '').toLowerCase()}`;
-        const same = list.find((w) => key(w) === key(item));
+        const same = findWish(get().profile.wishlist, item);
         if (same) return same;
         const wish: WishItem = { ...item, note: item.note?.trim() || undefined, id: uid(), savedAt: now.toISOString() };
         set((s) => ({ profile: { ...s.profile, wishlist: [...(s.profile.wishlist ?? []), wish] } }));
