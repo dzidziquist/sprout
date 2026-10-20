@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePlantStore } from '@/store/plantStore';
-import { FACING_LABEL, hasWindow, lightNeed, lightTip, roomsInUse, spotLight, suits, yearLight } from '@/engine/light';
+import { FACING_LABEL, SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearLight } from '@/engine/light';
 import { coordsFor, useForecast } from '@/lib/weather';
 import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
@@ -10,7 +10,6 @@ import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { Plant, WindowSpot } from '@/types';
 
-const SITS: Record<WindowSpot, string> = { sill: 'On the sill', below: 'Below the window', near: 'About 1 m from the window', far: 'Across the room' };
 
 /**
  * "Light at this spot" on a plant's page: how its spot suits it (with what to do when it doesn't),
@@ -25,8 +24,8 @@ export function LightCard({ plant }: { plant: Plant }) {
   const rooms = roomsInUse(usePlantStore((s) => s.profile.rooms), plants);
   const roomName = plant.room?.trim();
   const room = roomName ? rooms[roomName] : undefined;
-  const placed = !!room && !!plant.windowSpot;
-  const forecast = useForecast(climate, placed);
+  const place = placeOf(plant, rooms);
+  const forecast = useForecast(climate, !!place);
   if (plant.placement !== 'indoor' || plant.rooting || plant.archivedAt) return null;
 
   const spot = () => router.push(`/spot/${plant.id}`);
@@ -41,7 +40,7 @@ export function LightCard({ plant }: { plant: Plant }) {
   );
 
   // Not set up yet: one clear next step.
-  if (!placed) {
+  if (!place || !room) {
     const [text, action, go] = !roomName
       ? [`Give ${plant.name} a room to see how its light suits it.`, 'Choose a room', () => router.push(`/edit/${plant.id}`)]
       : !room
@@ -58,12 +57,13 @@ export function LightCard({ plant }: { plant: Plant }) {
 
   const lat = coordsFor(climate).lat;
   const now = new Date();
-  const here = spotLight(room, plant.windowSpot!, lat, now);
+  const windowless = !hasWindow(room);
+  const here = spotLight(room, place.spot, lat, now);
   const fit = suits(here.level, lightNeed(plant));
   const tip = lightTip(plant, { lat, now, rooms, forecast });
   const headline =
     tip?.kind === 'heat' ? 'Hot day ahead' : tip?.kind === 'grey' ? 'Grey days ahead' : fit === 'dim' ? 'May need a brighter spot' : fit === 'harsh' ? 'May get too much sun' : 'Good spot';
-  const detail = tip?.text ?? (hasWindow(room) ? yearLight(room, plant.windowSpot!, lat, now.getFullYear()) : 'No window here, so low light all year.');
+  const detail = tip?.text ?? (windowless ? 'No window here, so low light all year.' : yearLight(room, place.spot, lat, now.getFullYear()));
   const fill = fit === 'ok' && !tip ? c.mint : c.butter;
   const ink = textOn(fill, c);
   const window = room.windows.length === 1 ? `${FACING_LABEL[room.windows[0]][0].toUpperCase()}${FACING_LABEL[room.windows[0]].slice(1)} window` : roomName;
@@ -80,23 +80,21 @@ export function LightCard({ plant }: { plant: Plant }) {
       </View>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Sits ${SITS[plant.windowSpot!].toLowerCase()}, ${window}. Change`}
-        onPress={spot}
+        accessibilityLabel={windowless ? `In the ${roomName}, which has no window. Edit room` : `Sits ${SPOT_LABEL[place.spot].toLowerCase()}, ${window}. Change`}
+        onPress={windowless ? () => router.push({ pathname: '/room-light', params: { room: place.name } }) : spot}
         style={({ pressed }) => [styles.sits, { borderColor: c.cloud }, pressed && { opacity: 0.7 }]}
       >
-        <LineIcon name="window" color={c.ink} size={24} width={2} />
+        <LineIcon name={windowless ? 'no-window' : 'window'} color={c.ink} size={24} width={2} />
         <View style={{ flex: 1 }}>
-          <Text style={[styles.small, { color: c.inkMuted }]}>Sits at</Text>
-          <Text style={[styles.body, { color: c.ink }]}>
-            {SITS[plant.windowSpot!]} · {window}
-          </Text>
+          <Text style={[styles.small, { color: c.inkMuted }]}>{windowless ? 'In' : 'Sits at'}</Text>
+          <Text style={[styles.body, { color: c.ink }]}>{windowless ? `${place.name} · no window` : `${SPOT_LABEL[place.spot]} · ${window}`}</Text>
         </View>
         <View style={[styles.change, { borderColor: c.line }]}>
-          <Text style={[styles.changeText, { color: c.ink }]}>Change</Text>
+          <Text style={[styles.changeText, { color: c.ink }]}>{windowless ? 'Edit room' : 'Change'}</Text>
         </View>
       </Pressable>
       <View style={{ paddingHorizontal: 14, paddingBottom: 14, gap: 8 }}>
-        <Button title="Compare spots" raised bg={c.leaf} onPress={spot} style={{ minHeight: 50 }} />
+        {!windowless && <Button title="Compare spots" raised bg={c.leaf} onPress={spot} style={{ minHeight: 50 }} />}
         <Text style={[styles.small, { color: c.inkMuted, textAlign: 'center' }]}>Based on your windows and where {plant.name} sits.</Text>
       </View>
     </Sticker>

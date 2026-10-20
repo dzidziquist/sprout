@@ -32,7 +32,8 @@ export const hasWindow = (room: RoomLight) => room.windows.length > 0 || !!room.
 const FACINGS: Facing[] = ['N', 'E', 'S', 'W'];
 
 export const FACING_LABEL: Record<Facing, string> = { N: 'north', E: 'east', S: 'south', W: 'west' };
-export const SPOT_LABEL: Record<WindowSpot, string> = { sill: 'On the sill', below: 'Below the window', near: 'About 1 m away', far: 'Across the room' };
+/** Where a plant sits, as the app says it everywhere (rows, cards, sheets). */
+export const SPOT_LABEL: Record<WindowSpot, string> = { sill: 'On the sill', below: 'Below the window', near: 'About 1 m from the window', far: 'Across the room' };
 export const SHADE_LABEL: Record<Shade, string> = { none: 'Nothing', sheer: 'Sheer curtain', outside: 'Tree or building' };
 
 const AZIMUTH: Record<Facing, number> = { N: 0, E: 90, S: 180, W: 270 };
@@ -204,9 +205,12 @@ export function roomsInUse(rooms: Record<string, RoomLight> | undefined, plants:
 /** The plant's room light and spot, when both are set and it lives indoors in a room. */
 export function placeOf(plant: Plant, rooms: Record<string, RoomLight>): { name: string; room: RoomLight; spot: WindowSpot } | null {
   const name = plant.room?.trim();
-  if (!name || !plant.windowSpot || plant.placement !== 'indoor' || plant.archivedAt || plant.rooting) return null;
+  if (!name || plant.placement !== 'indoor' || plant.archivedAt || plant.rooting) return null;
   const room = rooms[name];
-  return room ? { name, room, spot: plant.windowSpot } : null;
+  if (!room) return null;
+  // With no window every spot is the same, so there's no position to ask for.
+  const spot = plant.windowSpot ?? (hasWindow(room) ? undefined : 'far');
+  return spot ? { name, room, spot } : null;
 }
 
 const shiftDays = (d: Date, n: number) => new Date(d.getTime() + n * DAY_MS);
@@ -296,6 +300,11 @@ export function roomToday(room: RoomLight, lat: number, now: Date, today?: Daily
 /** How well a spot suits a plant, as the app says it. */
 export const FIT_LABEL: Record<'ok' | 'dim' | 'harsh', string> = { ok: 'Likely suitable', dim: 'Likely too dark', harsh: 'Likely too sunny' };
 
+/** What's in the way of a room's light, as a short suffix ("" when nothing is). */
+export function shadeWords(room: RoomLight): string {
+  return room.shade === 'sheer' ? ' · curtains' : room.shade === 'outside' ? ' · trees or buildings' : '';
+}
+
 /** "West-facing window", "West and south windows", "Window, direction not sure", "No window". */
 export function windowsLine(room: RoomLight): string {
   if (!room.windows.length) return room.unsure ? 'Window, direction not sure' : 'No window';
@@ -323,8 +332,10 @@ export const facingOf = (heading: number): Facing => FACINGS[Math.round((((headi
  * (or none is set up); `dim` says whether every room is too dark for it rather than too sunny.
  */
 export function bestHome(need: Light, rooms: Record<string, RoomLight>, lat: number, now: Date): { room: string; words: string } | { room: null; dim: boolean } | null {
+  if (!Object.keys(rooms).length) return null;
   const lit = Object.entries(rooms).filter(([, r]) => hasWindow(r));
-  if (!lit.length) return null;
+  // Rooms set up, all without windows: too dark for anything that wants light.
+  if (!lit.length) return need === 'low' ? { room: Object.keys(rooms).sort()[0], words: 'anywhere in it' } : { room: null, dim: true };
   let dim = true;
   for (const [name, room] of lit.sort(([a], [b]) => a.localeCompare(b))) {
     for (const spot of ['near', 'below', 'sill', 'far'] as WindowSpot[]) {

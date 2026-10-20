@@ -37,7 +37,8 @@ export default function SpeciesPage() {
   const units = useUnits();
   const known = isSpeciesId(params.id) && !isOtherId(params.id);
   const speciesId: SpeciesId = known ? (params.id as SpeciesId) : 'other-tropical';
-  const custom = known ? undefined : { commonName: (typeof params.name === 'string' && params.name) || 'This plant', latinName: typeof params.latin === 'string' && params.latin ? params.latin : undefined };
+  const given = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+  const custom = known ? undefined : { commonName: given(params.name) ?? given(params.latin) ?? '', latinName: given(params.latin) };
   const sp = getSpecies(speciesId);
   const names = wikiNames(speciesId, custom);
   const wiki = useWiki(names.latin, names.common);
@@ -70,7 +71,7 @@ export default function SpeciesPage() {
     }
   };
 
-  const title = known ? sp.commonName : names.common;
+  const title = known ? sp.commonName : names.common || 'This plant';
   const latinLine = [known ? sp.latinName : names.latin || wiki?.title, wiki?.description].filter(Boolean).join(' · ');
   const tint = c.potTint[sp.artPot];
 

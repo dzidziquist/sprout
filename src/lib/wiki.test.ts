@@ -24,9 +24,13 @@ const reply = (status: number, body?: object) => ({ ok: status < 400, status, js
 beforeEach(() => store.clear());
 
 describe('Wikipedia lookups', () => {
-  it('tries the Latin name without its cultivar, then the genus, then the common name', () => {
-    expect(wikiTitles("Philodendron erubescens 'Pink Princess'", 'Pink Princess')).toEqual(['Philodendron erubescens', 'Philodendron', 'Pink Princess']);
+  it('tries the species, then the common name, and the genus only last', () => {
+    expect(wikiTitles('Hoya carnosa', 'Hoya')).toEqual(['Hoya carnosa', 'Hoya']);
     expect(wikiTitles('Aloe vera', 'Aloe vera')).toEqual(['Aloe vera', 'Aloe']);
+    // A variety, cultivar or group: the common name is the better article ("Beta" alone is a Greek letter).
+    expect(wikiTitles('Beta vulgaris subsp. vulgaris (Cicla group)', 'Swiss chard')).toEqual(['Swiss chard', 'Beta vulgaris', 'Beta']);
+    expect(wikiTitles('Brassica oleracea var. sabellica', 'Kale')).toEqual(['Kale', 'Brassica oleracea', 'Brassica']);
+    expect(wikiTitles("Philodendron erubescens 'Pink Princess'", 'Pink Princess')).toEqual(['Pink Princess', 'Philodendron erubescens', 'Philodendron']);
     expect(wikiTitles('', 'Bird of paradise')).toEqual(['Bird of paradise']);
   });
 
@@ -42,7 +46,7 @@ describe('Wikipedia lookups', () => {
       calls.push(decodeURIComponent(url));
       return url.includes('Goeppertia_orbifolia') ? reply(404) : reply(200, page('Goeppertia'));
     }) as unknown as typeof fetch;
-    const titles = wikiTitles('Goeppertia orbifolia', 'Calathea');
+    const titles = ['Goeppertia orbifolia', 'Goeppertia'];
     expect((await fetchWiki(titles, { fetchImpl, now: 1 }))?.title).toBe('Goeppertia');
     expect(calls).toHaveLength(2);
     // A second look, even after a restart, comes from the phone.
@@ -55,5 +59,19 @@ describe('Wikipedia lookups', () => {
     expect(await fetchWiki(['Hoya carnosa'], { fetchImpl: down, now: 1 })).toBeNull();
     const up = (async () => reply(200, page('Hoya carnosa'))) as unknown as typeof fetch;
     expect((await fetchWiki(['Hoya carnosa'], { fetchImpl: up, now: 2 }))?.title).toBe('Hoya carnosa');
+  });
+});
+
+describe('sharing lookups', () => {
+  it('sends one set of requests when two screens ask for the same plant at once', async () => {
+    let calls = 0;
+    const fetchImpl = (async () => {
+      calls += 1;
+      return reply(200, page('Zamioculcas zamiifolia'));
+    }) as unknown as typeof fetch;
+    const [a, b] = await Promise.all([fetchWiki(['Zamioculcas zamiifolia'], { fetchImpl, now: 1 }), fetchWiki(['Zamioculcas zamiifolia'], { fetchImpl, now: 1 })]);
+    expect(a?.title).toBe('Zamioculcas zamiifolia');
+    expect(b).toEqual(a);
+    expect(calls).toBe(1);
   });
 });

@@ -24,12 +24,21 @@ const KEY = 'wiki:v1:';
 const FRESH_MS = 30 * 86400000;
 const TIMEOUT_MS = 8000;
 const memory = new Map<string, { at: number; hit: WikiSummary | null }>();
+/** Lookups under way, so several screens asking for the same plant share one set of requests. */
+const pending = new Map<string, Promise<WikiSummary | null>>();
 
-/** Names to try, most specific first: the Latin name without its cultivar, its genus, then the common name. */
+/**
+ * Names to try, best first. A plain species name ("Hoya carnosa") goes first. When the catalogue names a
+ * variety, cultivar or group ("Brassica oleracea var. sabellica"), the common name ("Kale") is the better
+ * article, so it goes first. The genus comes last: on its own it can be another thing entirely ("Beta").
+ */
 export function wikiTitles(latinName: string, commonName: string): string[] {
-  const latin = latinName.replace(/'[^']*'|"[^"]*"|\bspp?\.|\bvar\..*$|\bcv\..*$/g, '').replace(/\s+/g, ' ').trim();
-  const genus = latin.split(' ')[0];
-  return [...new Set([latin, genus, commonName.trim()].filter((t) => t.length > 1))];
+  const narrower = /\b(subsp|ssp|var|cv|f)\.|['"(]|\bgroup\b/i.test(latinName);
+  const binomial = latinName.replace(/\(.*?\)|'[^']*'|"[^"]*"/g, ' ').replace(/\b(subsp|ssp|var|cv|f|spp?)\..*$/i, '').replace(/\s+/g, ' ').trim().split(' ').slice(0, 2).join(' ');
+  const genus = binomial.split(' ')[0];
+  const common = commonName.trim();
+  const order = narrower ? [common, binomial, genus] : [binomial, common, genus];
+  return [...new Set(order.filter((t) => t.length > 1))];
 }
 
 /** Turns an API response into a summary, or null for disambiguation pages, missing pages and stubs. */
@@ -67,9 +76,17 @@ async function fetchOne(title: string, doFetch: typeof fetch): Promise<WikiSumma
 }
 
 /** The best summary for these names: the first that Wikipedia has a real article for. Null when none do. */
-export async function fetchWiki(titles: string[], opts: { now?: number; fetchImpl?: typeof fetch } = {}): Promise<WikiSummary | null> {
-  const now = opts.now ?? Date.now();
+export function fetchWiki(titles: string[], opts: { now?: number; fetchImpl?: typeof fetch } = {}): Promise<WikiSummary | null> {
   const key = KEY + titles.join('|');
+  const running = pending.get(key);
+  if (running) return running;
+  const job = lookUp(key, titles, opts).finally(() => pending.delete(key));
+  pending.set(key, job);
+  return job;
+}
+
+async function lookUp(key: string, titles: string[], opts: { now?: number; fetchImpl?: typeof fetch }): Promise<WikiSummary | null> {
+  const now = opts.now ?? Date.now();
   const mem = memory.get(key);
   if (mem && now - mem.at < FRESH_MS) return mem.hit;
   let stored: { at: number; hit: WikiSummary | null } | null = null;

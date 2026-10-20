@@ -5,7 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { usePlantStore, wishKey } from '@/store/plantStore';
+import { usePlantStore } from '@/store/plantStore';
 import { OTHER, SPECIES_LIST, getSpecies, isOtherId, isSpeciesId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
@@ -210,6 +210,8 @@ export default function AddPlantScreen() {
   const [customName, setCustomName] = useState(typeof params.name === 'string' ? params.name : '');
   const [customLatin, setCustomLatin] = useState(typeof params.latin === 'string' ? params.latin : '');
   const [pets, setPets] = useState<'toxic' | 'safe' | 'unsure'>('unsure');
+  // The wishlist entry this screen was opened for, until the person goes back and picks another plant.
+  const [fromWish, setFromWish] = useState<string | undefined>(typeof params.wish === 'string' ? params.wish : undefined);
   // Hydro growers: new plants follow the medium of the last plant added in LECA or water.
   const lastHydro = profile.grows.hydro ? [...plants].reverse().find((p) => !p.archivedAt && isReservoir(p.soil))?.soil : undefined;
   const mediumFor = (speciesSoil: Soil) => lastHydro ?? speciesSoil;
@@ -260,7 +262,10 @@ export default function AddPlantScreen() {
   // Back from a species page's "Add to my fam" (?species=…&pick=<new each time>): pick that plant, even if
   // it's the same one as last time.
   useEffect(() => {
-    if (params.pick && isSpeciesId(params.species)) pick(params.species);
+    if (params.pick && isSpeciesId(params.species)) {
+      pick(params.species);
+      setFromWish(typeof params.wish === 'string' ? params.wish : undefined);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.pick]);
 
@@ -418,8 +423,8 @@ export default function AddPlantScreen() {
       ...(nowStage ? { stage: nowStage, stageAt: new Date().toISOString() } : {}),
     }, new Date(), { lastWateredAt: lastWateredDays === null ? undefined : daysAgo(lastWateredDays) });
     // Bought one from the wishlist: it's in the jungle now. Only if it's that plant being added, not one picked instead.
-    const wish = profile.wishlist?.find((w) => w.id === params.wish);
-    if (wish && (isOtherId(wish.speciesId) ? isOther && wishKey({ speciesId: wish.speciesId, custom: { commonName: customName, latinName: customLatin } }) === wishKey(wish) : wish.speciesId === speciesId)) removeWish(wish.id);
+    // (Editing an unlisted plant's names doesn't change which plant it is.)
+    if (fromWish) removeWish(fromWish);
     haptics.success();
     router.replace(`/plant/${plant.id}`);
   };
@@ -427,7 +432,14 @@ export default function AddPlantScreen() {
   return (
     <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <GlassButton accessibilityLabel="Back to plant list" onPress={() => setSpeciesId(null)}>
+        <GlassButton
+          accessibilityLabel="Back to plant list"
+          onPress={() => {
+            setSpeciesId(null);
+            // Picking something else now: the wishlist plant this screen opened with isn't the one being added.
+            setFromWish(undefined);
+          }}
+        >
           <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
         </GlassButton>
         {close}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -67,6 +67,16 @@ function WishCard({ wish }: { wish: WishItem }) {
   const updateWish = usePlantStore((s) => s.updateWish);
   const removeWish = usePlantStore((s) => s.removeWish);
   const [note, setNote] = useState(wish.note ?? '');
+  // Closing the list (or tapping Add) mid-edit unmounts the card without a blur: save what was typed then too.
+  const typed = useRef(note);
+  typed.current = note;
+  useEffect(
+    () => () => {
+      if (typed.current !== (wish.note ?? '')) updateWish(wish.id, { note: typed.current });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
   const other = isOtherId(wish.speciesId);
   const sp = getSpecies(wish.speciesId);
   const names = wikiNames(wish.speciesId, wish.custom);

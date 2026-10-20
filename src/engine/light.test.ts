@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bestHome, facingOf, lightTip, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearLight, type RoomLight } from './light';
+import { bestHome, facingOf, lightTip, placeOf, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearLight, type RoomLight } from './light';
 import type { Plant } from '../types';
 
 const SEATTLE = 47.6;
@@ -160,5 +160,20 @@ describe('in your home', () => {
     expect(bestHome('medium', rooms, SEATTLE, june)).toEqual({ room: 'Living room', words: 'about 1 m from the west window' });
     expect(bestHome('direct', { Hallway: rooms.Hallway, North: { windows: ['N'], shade: 'outside' } }, SEATTLE, dec)).toEqual({ room: null, dim: true });
     expect(bestHome('medium', {}, SEATTLE, june)).toBeNull();
+  });
+});
+
+describe('rooms without a window', () => {
+  const dark: RoomLight = { windows: [], shade: 'none' };
+  it('places a plant there without asking where it sits, and says why it is dim', () => {
+    expect(placeOf(plant({ room: 'Bathroom', windowSpot: undefined }), { Bathroom: dark })?.spot).toBe('far');
+    // With a window, the spot still has to be known.
+    expect(placeOf(plant({ windowSpot: undefined }), { 'Living room': west })).toBeNull();
+    expect(lightTip(plant({ room: 'Bathroom', windowSpot: undefined }), { lat: SEATTLE, now: june, rooms: { Bathroom: dark } })?.kind).toBe('dim');
+  });
+
+  it('tells a new plant the home is too dark when no set-up room has a window', () => {
+    expect(bestHome('bright', { Bathroom: dark }, SEATTLE, june)).toEqual({ room: null, dim: true });
+    expect(bestHome('low', { Bathroom: dark }, SEATTLE, june)).toEqual({ room: 'Bathroom', words: 'anywhere in it' });
   });
 });
