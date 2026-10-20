@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lightTip, roomToday, roomsInUse, spotLight, suits, sunDay, yearLight, type RoomLight } from './light';
+import { facingOf, lightTip, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearLight, type RoomLight } from './light';
 import type { Plant } from '../types';
 
 const SEATTLE = 47.6;
@@ -119,5 +119,37 @@ describe('review fixes', () => {
 
   it('forgets rooms nobody lives in any more', () => {
     expect(Object.keys(roomsInUse({ 'Living room': west, Office: west }, [plant()]))).toEqual(['Living room']);
+  });
+});
+
+describe('room setup', () => {
+  it('works out an unsure window as an average one, between the darkest and sunniest guesses', () => {
+    const unsure: RoomLight = { windows: [], shade: 'none', unsure: true };
+    const avg = spotLight(unsure, 'sill', SEATTLE, dec).score;
+    expect(avg).toBeGreaterThan(spotLight({ windows: ['N'], shade: 'none' }, 'sill', SEATTLE, dec).score);
+    expect(avg).toBeLessThan(spotLight({ windows: ['S'], shade: 'none' }, 'sill', SEATTLE, dec).score);
+    expect(spotLight({ windows: [], shade: 'none' }, 'sill', SEATTLE, dec).level).toBe('low');
+    expect(roomToday(unsure, SEATTLE, dec)).not.toBe('No window · low light');
+  });
+
+  it('describes windows the way a person would', () => {
+    expect(windowsLine(west)).toBe('West-facing window');
+    expect(windowsLine({ windows: ['E', 'S', 'W'], shade: 'none' })).toBe('East, south and west windows');
+    expect(windowsLine({ windows: [], shade: 'none', unsure: true })).toBe('Window, direction not sure');
+    expect(windowsLine({ windows: [], shade: 'none' })).toBe('No window');
+  });
+
+  it('rounds a compass heading to the nearest direction', () => {
+    expect(facingOf(268)).toBe('W');
+    expect(facingOf(359)).toBe('N');
+    expect(facingOf(44)).toBe('N');
+    expect(facingOf(46)).toBe('E');
+    expect(facingOf(-90)).toBe('W');
+  });
+
+  it('rates every spot for a plant, darkest away from the window', () => {
+    const fits = spotFits(plant(), west, SEATTLE, dec);
+    expect(fits.far).toBe('dim');
+    expect(fits.near).toBe('ok');
   });
 });

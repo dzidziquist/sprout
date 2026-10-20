@@ -173,8 +173,8 @@ export default function JungleScreen() {
   );
   const potRooms = new Set(potted.map((p) => p.room?.trim()).filter(Boolean));
 
-  // Search + filter chips (only once the jungle is big enough to need them).
-  const showTools = living.length >= 6;
+  // Search + filter chips (only once the jungle is big enough to need them, and not in the light view).
+  const showTools = living.length >= 6 && view !== 'light';
   const chips: JungleChip[] = [
     { key: 'all', label: 'All', count: living.length },
     { key: 'due', label: 'Needs check', count: potted.filter((p) => isDue(p, now)).length },
@@ -232,10 +232,8 @@ export default function JungleScreen() {
 
       {living.length > 0 && (
         <View style={{ gap: 10 }}>
-          <View style={styles.searchRow}>
-            {showTools ? <JungleSearch value={query} onChange={setQuery} /> : <View style={{ flex: 1 }} />}
-            <JungleViewToggle value={view} onChange={setView} />
-          </View>
+          <JungleViewToggle value={view} onChange={setView} />
+          {showTools && <JungleSearch value={query} onChange={setQuery} />}
           {showTools && <JungleChips chips={chips} value={active} onChange={setFilter} bleed={20} />}
         </View>
       )}
@@ -316,7 +314,6 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   card: { width: '47.5%', flexGrow: 0 },
   roomLine: { flexDirection: 'row', alignItems: 'flex-start', gap: 4, marginTop: 1 },
-  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 64, borderWidth: 2, borderRadius: 18, paddingHorizontal: 8, paddingVertical: 6 },
   thumb: { width: 48, height: 48, borderRadius: 24, borderWidth: 2, alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' },
   rowName: { fontFamily: fonts.displaySemi, fontSize: 16 },

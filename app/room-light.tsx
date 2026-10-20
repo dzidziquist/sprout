@@ -1,27 +1,31 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Image } from 'expo-image';
+import * as Location from 'expo-location';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { SHADE_LABEL, type Facing, type RoomLight, type Shade, type WindowSpot } from '@/engine/light';
-import { PlantBuddy } from '@/components/PlantBuddy';
+import { FACING_LABEL, facingOf, type Facing, type Shade } from '@/engine/light';
+import { LIGHT_ART } from '@/data/art';
 import { GlassButton } from '@/components/GlassButton';
 import { Icon } from '@/components/GrowTodayCard';
-import { Segmented } from '@/components/Segmented';
-import { Title } from '@/components/ui';
+import { DirectionArrow, LineIcon } from '@/components/LineIcon';
+import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { useSheetTop } from '@/lib/sheetTop';
 import { fonts } from '@/theme/tokens';
-import { useColors } from '@/theme/theme';
+import { textOn, useColors } from '@/theme/theme';
 
 const FACINGS: Facing[] = ['N', 'E', 'S', 'W'];
-const SPOTS: { id: WindowSpot; label: string }[] = [
-  { id: 'sill', label: 'Sill' },
-  { id: 'below', label: 'Below' },
-  { id: 'near', label: '1 m' },
-  { id: 'far', label: 'Far' },
+const SHADES: { id: Shade; label: string }[] = [
+  { id: 'none', label: 'Clear view' },
+  { id: 'sheer', label: 'Curtains' },
+  { id: 'outside', label: 'Trees / buildings' },
 ];
+type Kind = 'dirs' | 'unsure' | 'none';
+type Compass = 'off' | 'asking' | 'on' | 'denied' | 'unavailable';
 
-/** One room's light: which way its windows face, what's in the way, and where each plant sits. */
+/** One room's windows: which way they face (by compass or by hand) and what's in the way. */
 export default function RoomLightSheet() {
   const { room: param } = useLocalSearchParams<{ room: string }>();
   const name = typeof param === 'string' ? param : '';
@@ -31,17 +35,66 @@ export default function RoomLightSheet() {
   const sheetTop = useSheetTop();
   const saved = usePlantStore((s) => s.profile.rooms?.[name]);
   const setRoomLight = usePlantStore((s) => s.setRoomLight);
-  const updatePlant = usePlantStore((s) => s.updatePlant);
-  const plants = usePlantStore((s) => s.plants).filter((p) => !p.archivedAt && !p.rooting && p.placement === 'indoor' && p.room?.trim() === name);
-  const room: RoomLight = saved ?? { windows: [], shade: 'none' };
-  const close = () => (router.canGoBack() ? router.back() : router.replace('/jungle'));
-  const save = (patch: Partial<RoomLight>) => setRoomLight(name, { ...room, ...patch });
-
-  const toggleWindow = (f: Facing) => {
-    haptics.tap();
-    save({ windows: room.windows.includes(f) ? room.windows.filter((w) => w !== f) : FACINGS.filter((w) => w === f || room.windows.includes(w)) });
+  const [windows, setWindows] = useState<Facing[]>(saved?.windows ?? []);
+  const [kind, setKind] = useState<Kind | null>(saved ? (saved.windows.length ? 'dirs' : saved.unsure ? 'unsure' : 'none') : null);
+  const [shade, setShade] = useState<Shade>(saved?.shade ?? 'none');
+  const [compass, setCompass] = useState<Compass>('off');
+  const [heading, setHeading] = useState<number | null>(null);
+  const [calibrated, setCalibrated] = useState(true);
+  const watch = useRef<Location.LocationSubscription | null>(null);
+  const stopCompass = () => {
+    watch.current?.remove();
+    watch.current = null;
   };
-  const noWindow = saved !== undefined && room.windows.length === 0;
+  useEffect(() => stopCompass, []);
+  const close = () => (router.canGoBack() ? router.back() : router.replace('/jungle'));
+
+  const toggle = (f: Facing) => {
+    haptics.tap();
+    const next = windows.includes(f) ? windows.filter((w) => w !== f) : FACINGS.filter((w) => w === f || windows.includes(w));
+    setWindows(next);
+    setKind(next.length ? 'dirs' : null);
+  };
+  const choose = (k: 'unsure' | 'none') => {
+    haptics.tap();
+    setWindows([]);
+    setKind(k);
+  };
+
+  const startCompass = async () => {
+    haptics.tap();
+    if (Platform.OS === 'web') return setCompass('unavailable');
+    setCompass('asking');
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return setCompass('denied');
+      stopCompass();
+      watch.current = await Location.watchHeadingAsync((h) => {
+        setHeading(h.trueHeading >= 0 ? h.trueHeading : h.magHeading);
+        // iOS reports 0–3: below 2 the compass is off by more than ~35°.
+        setCalibrated(h.accuracy >= 2);
+      });
+      setCompass('on');
+    } catch {
+      setCompass('unavailable');
+    }
+  };
+  const pointed = heading === null ? null : facingOf(heading);
+  const usePointed = () => {
+    if (!pointed) return;
+    haptics.success();
+    if (!windows.includes(pointed)) toggle(pointed);
+    stopCompass();
+    setCompass('off');
+    setHeading(null);
+  };
+
+  const save = () => {
+    if (!kind) return;
+    setRoomLight(name, { windows, shade, ...(kind === 'unsure' ? { unsure: true } : {}) });
+    haptics.success();
+    close();
+  };
 
   return (
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
@@ -50,94 +103,154 @@ export default function RoomLightSheet() {
           <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
         </GlassButton>
       </View>
-      <Title>{name} light</Title>
-
-      <View style={{ gap: 8 }}>
-        <Text style={[styles.label, { color: c.ink }]}>Windows face</Text>
-        <View style={[styles.segment, { borderColor: c.line, backgroundColor: c.card }]}>
-          {FACINGS.map((f) => {
-            const on = room.windows.includes(f);
-            return (
-              <Pressable key={f} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={`${f} window`} onPress={() => toggleWindow(f)} style={[styles.segBtn, on && { backgroundColor: c.ink }]}>
-                <Text style={[styles.segText, { color: on ? c.bg : c.ink }]}>{f}</Text>
-              </Pressable>
-            );
-          })}
-          <Pressable
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: noWindow }}
-            accessibilityLabel="No window"
-            onPress={() => {
-              haptics.tap();
-              save({ windows: [] });
-            }}
-            style={[styles.segBtn, { flex: 1.4 }, noWindow && { backgroundColor: c.ink }]}
-          >
-            <Text style={[styles.segText, { color: noWindow ? c.bg : c.ink, fontSize: 13 }]}>None</Text>
-          </Pressable>
-        </View>
-        <Text style={[styles.note, { color: c.inkMuted }]}>Pick every way the room’s windows face. Not sure? Your phone’s Compass app tells you, standing at the window. Open-plan spaces count as one room.</Text>
+      <View style={{ gap: 4 }}>
+        <Title>{name} windows</Title>
+        <Text style={[styles.sub, { color: c.inkMuted }]}>Which way do your windows face? Open-plan spaces count as one room.</Text>
       </View>
 
-      {room.windows.length > 0 && (
+      {compass === 'on' ? (
+        <View style={[styles.compass, { borderColor: c.line, backgroundColor: c.ice }]}>
+          <Text style={[styles.compassHint, { color: textOn(c.ice, c) }]}>Stand at the window and point the top of your phone out of it.</Text>
+          <Text style={[styles.compassRead, { color: textOn(c.ice, c) }]} accessibilityLiveRegion="polite">
+            {pointed ? `${FACING_LABEL[pointed][0].toUpperCase()}${FACING_LABEL[pointed].slice(1)}` : 'Finding north…'}
+            {heading !== null && <Text style={styles.compassDeg}> {Math.round(heading)}°</Text>}
+          </Text>
+          {!calibrated && <Text style={[styles.compassHint, { color: textOn(c.ice, c) }]}>Compass unsure: move your phone in a figure 8, then try again.</Text>}
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Button
+              title="Cancel"
+              bg={c.card}
+              onPress={() => {
+                stopCompass();
+                setCompass('off');
+              }}
+              style={{ flex: 1 }}
+            />
+            <Button title={pointed ? `Add ${FACING_LABEL[pointed]} window` : 'Waiting…'} raised bg={c.leaf} disabled={!pointed} onPress={usePointed} style={[{ flex: 2 }, !pointed && { opacity: 0.5 }]} />
+          </View>
+        </View>
+      ) : (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Use phone compass. Point your phone out of the window."
+          onPress={startCompass}
+          disabled={compass === 'asking'}
+          style={({ pressed }) => [styles.compassCard, { borderColor: c.line, backgroundColor: c.ice }, pressed && { transform: [{ translateY: 2 }] }]}
+        >
+          <LineIcon name="compass" color={textOn(c.ice, c)} size={36} width={2} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={[styles.cardTitle, { color: textOn(c.ice, c) }]}>Use phone compass</Text>
+            <Text style={[styles.cardSub, { color: textOn(c.ice, c) }]}>
+              {compass === 'denied'
+                ? 'Needs location access, which iOS uses for the compass. Pick below instead, or allow it in Settings.'
+                : compass === 'unavailable'
+                  ? 'The compass isn’t available here. Pick the direction below.'
+                  : 'Point your phone out of the window.'}
+            </Text>
+          </View>
+          <LineIcon name="chevron-right" color={textOn(c.ice, c)} size={18} width={2.4} />
+        </Pressable>
+      )}
+      {compass === 'denied' && (
+        <Text accessibilityRole="link" onPress={() => Linking.openSettings()} style={[styles.link, { color: c.ink }]}>
+          Open Settings
+        </Text>
+      )}
+
+      <Text style={[styles.or, { color: c.inkMuted }]}>or choose directions</Text>
+      <View style={styles.dirs} accessibilityRole="none">
+        {FACINGS.map((f) => {
+          const on = windows.includes(f);
+          return (
+            <Pressable
+              key={f}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: on }}
+              accessibilityLabel={`${FACING_LABEL[f]} window`}
+              onPress={() => toggle(f)}
+              style={[styles.dir, { borderColor: c.line, backgroundColor: on ? c.ink : c.card }]}
+            >
+              <DirectionArrow to={f} color={on ? c.bg : c.ink} />
+              <Text style={[styles.dirText, { color: on ? c.bg : c.ink }]}>{FACING_LABEL[f][0].toUpperCase() + FACING_LABEL[f].slice(1)}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Text style={[styles.or, { color: c.inkMuted }]}>Choose all that apply.</Text>
+      <View style={styles.dirs}>
+        {(['unsure', 'none'] as const).map((k) => {
+          const on = kind === k;
+          return (
+            <Pressable
+              key={k}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: on }}
+              onPress={() => choose(k)}
+              style={[styles.dir, styles.dashed, { borderColor: c.line, backgroundColor: on ? c.ink : c.card }]}
+            >
+              <LineIcon name={k === 'unsure' ? 'help' : 'no-window'} color={on ? c.bg : c.ink} size={20} width={2} />
+              <Text style={[styles.dirText, { color: on ? c.bg : c.ink, fontSize: 15 }]}>{k === 'unsure' ? 'Not sure' : 'No windows'}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {kind !== 'none' && (
         <View style={{ gap: 8 }}>
-          <Text style={[styles.label, { color: c.ink }]}>In the way</Text>
-          <Segmented<Shade>
-            label="In the way"
-            value={room.shade}
-            options={(['none', 'sheer', 'outside'] as Shade[]).map((s) => ({ id: s, label: SHADE_LABEL[s] }))}
-            onChange={(shade) => save({ shade })}
-          />
+          <View style={{ gap: 2 }}>
+            <Text style={[styles.label, { color: c.ink }]}>What blocks the light?</Text>
+            <Text style={[styles.cardSub, { color: c.inkMuted }]}>Choose the biggest thing.</Text>
+          </View>
+          <View style={styles.shades}>
+            {SHADES.map((s) => {
+              const on = shade === s.id;
+              return (
+                <Pressable
+                  key={s.id}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={s.label}
+                  onPress={() => {
+                    haptics.tap();
+                    setShade(s.id);
+                  }}
+                  style={[styles.shade, { borderColor: c.line, backgroundColor: on ? c.ice : c.card, borderWidth: on ? 3 : 2 }]}
+                >
+                  <Image source={LIGHT_ART[s.id]} style={styles.shadeArt} contentFit="contain" accessibilityElementsHidden />
+                  <Text style={[styles.shadeText, { color: on ? textOn(c.ice, c) : c.ink }]}>{s.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       )}
 
-      {plants.length > 0 && room.windows.length > 0 && (
-        <View style={{ gap: 4 }}>
-          <Text style={[styles.label, { color: c.ink, marginBottom: 4 }]}>Where each plant sits</Text>
-          {plants.map((p, i) => (
-            <View key={p.id} style={[styles.plantRow, i < plants.length - 1 && { borderBottomWidth: 1.5, borderColor: c.cloud }]}>
-              <PlantBuddy speciesId={p.speciesId} pot={p.potColor} mood="happy" size={36} bg={c.bg} />
-              <Text style={[styles.plantName, { color: c.ink }]} numberOfLines={1}>{p.name}</Text>
-              <View style={styles.spots} accessibilityRole="radiogroup" accessibilityLabel={`Where ${p.name} sits`}>
-                {SPOTS.map((s) => {
-                  const on = p.windowSpot === s.id;
-                  return (
-                    <Pressable
-                      key={s.id}
-                      accessibilityRole="radio"
-                      accessibilityState={{ selected: on }}
-                      accessibilityLabel={s.label}
-                      onPress={() => {
-                        haptics.tap();
-                        updatePlant(p.id, { windowSpot: s.id });
-                      }}
-                      style={[styles.spot, { borderColor: on ? c.line : c.cloud, backgroundColor: on ? c.butter : c.card }]}
-                    >
-                      <Text style={[styles.spotText, { color: on ? c.onBright : c.inkMuted }]}>{s.label}</Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-          ))}
-          <Text style={[styles.note, { color: c.inkMuted, marginTop: 6 }]}>Below means on the floor or a stool under the window: bright, but little direct sun.</Text>
-        </View>
-      )}
+      <Text style={[styles.or, { color: c.inkMuted }]}>You can update this anytime.</Text>
+      <Button title="Save room" raised bg={c.leaf} disabled={!kind} onPress={save} style={[{ minHeight: 56 }, !kind && { opacity: 0.45 }]} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 18 },
+  page: { paddingHorizontal: 20, gap: 14 },
   toolbar: { flexDirection: 'row' },
-  label: { fontFamily: fonts.displaySemi, fontSize: 16 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17 },
-  segment: { flexDirection: 'row', gap: 4, padding: 4, borderWidth: 2, borderRadius: 16 },
-  segBtn: { flex: 1, minHeight: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  segText: { fontFamily: fonts.displaySemi, fontSize: 15 },
-  plantRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 },
-  plantName: { flex: 1, fontFamily: fonts.displaySemi, fontSize: 15 },
-  spots: { flexDirection: 'row', gap: 4 },
-  spot: { borderWidth: 2, borderRadius: 10, minWidth: 44, minHeight: 34, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center' },
-  spotText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  sub: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  compassCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 20, padding: 14 },
+  compass: { borderWidth: 2, borderRadius: 20, padding: 14, gap: 10 },
+  compassHint: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  compassRead: { fontFamily: fonts.display, fontSize: 34, textAlign: 'center' },
+  compassDeg: { fontFamily: fonts.bodyHeavy, fontSize: 18 },
+  cardTitle: { fontFamily: fonts.display, fontSize: 18 },
+  cardSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  link: { fontFamily: fonts.bodyHeavy, fontSize: 15, textDecorationLine: 'underline', marginTop: -6 },
+  or: { fontFamily: fonts.bodyHeavy, fontSize: 14, textAlign: 'center' },
+  dirs: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  dir: { flexGrow: 1, flexBasis: '45%', minHeight: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, borderWidth: 2, borderRadius: 16 },
+  dashed: { borderStyle: 'dashed', minHeight: 48 },
+  dirText: { fontFamily: fonts.bodyHeavy, fontSize: 17 },
+  label: { fontFamily: fonts.display, fontSize: 19 },
+  shades: { flexDirection: 'row', gap: 8 },
+  shade: { flex: 1, alignItems: 'center', gap: 6, borderRadius: 18, padding: 8, paddingBottom: 10 },
+  shadeArt: { width: '100%', height: 80 },
+  shadeText: { fontFamily: fonts.bodyHeavy, fontSize: 13, textAlign: 'center' },
 });

@@ -23,7 +23,13 @@ export interface RoomLight {
   /** The room's windows by the way they face. Empty: no window (hallway, bathroom). */
   windows: Facing[];
   shade: Shade;
+  /** Has windows, but which way they face isn't known: worked out as an average window. */
+  unsure?: boolean;
 }
+
+/** Whether a room lets daylight in at all (known windows, or windows of unknown direction). */
+export const hasWindow = (room: RoomLight) => room.windows.length > 0 || !!room.unsure;
+const FACINGS: Facing[] = ['N', 'E', 'S', 'W'];
 
 export const FACING_LABEL: Record<Facing, string> = { N: 'north', E: 'east', S: 'south', W: 'west' };
 export const SPOT_LABEL: Record<WindowSpot, string> = { sill: 'On the sill', below: 'Below the window', near: 'About 1 m away', far: 'Across the room' };
@@ -131,9 +137,15 @@ export interface SpotLight {
 
 /** The light at a spot in a room on a date, with `sky` the share of direct sun the weather lets through. */
 export function spotLight(room: RoomLight, spot: WindowSpot, lat: number, date: Date, sky = TYPICAL_SKY): SpotLight {
-  if (!room.windows.length) return { level: 'low', score: 0, direct: 0 };
+  if (!hasWindow(room)) return { level: 'low', score: 0, direct: 0 };
   const sun = sunDay(lat, date);
   const f = SPOT_FACTOR[spot];
+  if (!room.windows.length) {
+    // Direction unknown: an average window, neither the sunniest nor the darkest guess.
+    const direct = (FACINGS.reduce((sum, w) => sum + sun.direct[w], 0) / 4) * f.direct * SHADE_FACTOR[room.shade] * sky;
+    const score = direct + sun.daylight * SKY_WEIGHT * f.sky;
+    return { level: levelOf(score, direct), score, direct };
+  }
   let best: SpotLight | undefined;
   for (const w of room.windows) {
     const direct = sun.direct[w] * f.direct * SHADE_FACTOR[room.shade] * sky;
@@ -253,7 +265,7 @@ function brighterSpot(plant: Plant, roomName: string, room: RoomLight, spot: Win
     if (ok(room, s)) return spotWords(s, spotLight(room, s, ctx.lat, ctx.now).window);
   }
   for (const [name, other] of Object.entries(ctx.rooms)) {
-    if (name === roomName || !other.windows.length) continue;
+    if (name === roomName || !hasWindow(other)) continue;
     for (const s of ['near', 'below', 'sill'] as WindowSpot[]) {
       if (ok(other, s)) return `${spotWords(s, spotLight(other, s, ctx.lat, ctx.now).window)} in the ${name.toLowerCase()}`;
     }
@@ -272,11 +284,32 @@ export function yearLight(room: RoomLight, spot: WindowSpot, lat: number, year: 
 
 /** A room's light today in a few words: "About 3 h of sun today · cloudy". */
 export function roomToday(room: RoomLight, lat: number, now: Date, today?: DailyForecast): string {
-  if (!room.windows.length) return 'No window · low light';
+  if (!hasWindow(room)) return 'No window · low light';
   const sun = sunDay(lat, now);
-  const hours = Math.max(...room.windows.map((w) => sun.sunHours[w]));
+  const hours = room.windows.length ? Math.max(...room.windows.map((w) => sun.sunHours[w])) : FACINGS.reduce((sum, w) => sum + sun.sunHours[w], 0) / 4;
   const sky = today ? skyOf(today) : undefined;
   const weather = sky === 'sun' ? ' · clear' : sky === 'partly' ? ' · some cloud' : sky ? ' · cloudy' : '';
   if (hours < 0.5) return `Indirect light only today${weather}`;
   return `About ${Math.round(hours)} h of sun today${weather}`;
 }
+
+/** How well a spot suits a plant, as the app says it. */
+export const FIT_LABEL: Record<'ok' | 'dim' | 'harsh', string> = { ok: 'Likely suitable', dim: 'Likely too dark', harsh: 'Likely too sunny' };
+
+/** "West-facing window", "West and south windows", "Window, direction not sure", "No window". */
+export function windowsLine(room: RoomLight): string {
+  if (!room.windows.length) return room.unsure ? 'Window, direction not sure' : 'No window';
+  const dirs = room.windows.map((w) => FACING_LABEL[w]);
+  if (dirs.length === 1) return `${dirs[0][0].toUpperCase()}${dirs[0].slice(1)}-facing window`;
+  const list = `${dirs.slice(0, -1).join(', ')} and ${dirs[dirs.length - 1]}`;
+  return `${list[0].toUpperCase()}${list.slice(1)} windows`;
+}
+
+/** How each spot by this room's window would suit the plant today. */
+export function spotFits(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, lat: number, now: Date): Record<WindowSpot, 'ok' | 'dim' | 'harsh'> {
+  const need = lightNeed(plant);
+  return Object.fromEntries(SPOTS.map((s) => [s, suits(spotLight(room, s, lat, now).level, need)])) as Record<WindowSpot, 'ok' | 'dim' | 'harsh'>;
+}
+
+/** A compass heading (degrees from north) rounded to the nearest of north, east, south and west. */
+export const facingOf = (heading: number): Facing => FACINGS[Math.round((((heading % 360) + 360) % 360) / 90) % 4];

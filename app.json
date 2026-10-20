@@ -48,6 +48,12 @@
       "expo-router",
       "expo-font",
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "PlantFam uses your phone’s compass to tell which way a window faces. Your location isn’t saved or shared."
+        }
+      ],
+      [
         "expo-notifications",
         {
           "color": "#3DDC84"

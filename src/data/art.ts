@@ -58,3 +58,14 @@ export const BADGE_ART: Partial<Record<string, { earned: ImageSourcePropType; lo
   medal: { earned: require('../../assets/art/badge-medal.png'), locked: require('../../assets/art/badge-medal.png') },
   'survived-winter': { earned: require('../../assets/art/badge-survived-winter.png'), locked: require('../../assets/art/badge-survived-winter-locked.png') },
 };
+
+/** Light setup pictures: where a plant sits by the window, and what's in the way of the light. */
+export const LIGHT_ART = {
+  sill: require('../../assets/art/light-spot-sill.png'),
+  below: require('../../assets/art/light-spot-below.png'),
+  near: require('../../assets/art/light-spot-near.png'),
+  far: require('../../assets/art/light-spot-far.png'),
+  none: require('../../assets/art/light-shade-none.png'),
+  sheer: require('../../assets/art/light-shade-sheer.png'),
+  outside: require('../../assets/art/light-shade-outside.png'),
+} satisfies Record<string, ImageSourcePropType>;

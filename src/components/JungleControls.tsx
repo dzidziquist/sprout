@@ -39,7 +39,9 @@ export function JungleSearch({ value, onChange }: { value: string; onChange: (q:
   );
 }
 
-/** Grid / list / light switch. */
+const VIEW_LABEL: Record<JungleView, string> = { grid: 'Grid', list: 'List', light: 'Light' };
+
+/** Grid / list / light switch, full width with words so "Light" says what it is. */
 export function JungleViewToggle({ value, onChange }: { value: JungleView; onChange: (v: JungleView) => void }) {
   const c = useColors();
   const icon = (v: JungleView, on: boolean) => {
@@ -70,7 +72,7 @@ export function JungleViewToggle({ value, onChange }: { value: JungleView; onCha
           <Pressable
             key={v}
             accessibilityRole="radio"
-            accessibilityLabel={v === 'grid' ? 'Grid view' : v === 'list' ? 'List view' : 'Light by room'}
+            accessibilityLabel={v === 'light' ? 'Light by room' : `${VIEW_LABEL[v]} view`}
             accessibilityState={{ selected: on }}
             onPress={() => {
               if (on) return;
@@ -80,6 +82,7 @@ export function JungleViewToggle({ value, onChange }: { value: JungleView; onCha
             style={[styles.segBtn, on && { backgroundColor: c.lavender }]}
           >
             {icon(v, on)}
+            <Text style={[styles.segText, { color: on ? textOn(c.lavender, c) : c.inkMuted }]}>{VIEW_LABEL[v]}</Text>
           </Pressable>
         );
       })}
@@ -130,7 +133,8 @@ const styles = StyleSheet.create({
   input: { flex: 1, minWidth: 0, fontFamily: fonts.bodyHeavy, fontSize: 15, height: 40, paddingVertical: 0, outlineWidth: 0 },
   clear: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   segment: { flexDirection: 'row', borderWidth: 2, borderRadius: 16, padding: 2, height: 44, gap: 2 },
-  segBtn: { width: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  segBtn: { flex: 1, flexDirection: 'row', gap: 6, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  segText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 2, borderRadius: 17, height: 36, paddingHorizontal: 12 },
   chipText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   chipCount: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
