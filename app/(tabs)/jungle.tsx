@@ -173,8 +173,10 @@ export default function JungleScreen() {
   );
   const potRooms = new Set(potted.map((p) => p.room?.trim()).filter(Boolean));
 
-  // Search + filter chips (only once the jungle is big enough to need them, and not in the light view).
-  const showTools = living.length >= 6 && view !== 'light';
+  // Search + filter chips, once the jungle is big enough to need them. The light view keeps search but not the
+  // chips: needs check, rooting and edibles don't mean anything there, and its rooms are already grouped.
+  const showSearch = living.length >= 6;
+  const showTools = showSearch && view !== 'light';
   const chips: JungleChip[] = [
     { key: 'all', label: 'All', count: living.length },
     { key: 'due', label: 'Needs check', count: potted.filter((p) => isDue(p, now)).length },
@@ -183,7 +185,7 @@ export default function JungleScreen() {
     ...roomList.map((r) => ({ key: `room:${r}`, label: r, count: living.filter((p) => p.room?.trim() === r).length })),
   ];
   const active = showTools && chips.some((ch) => ch.key === filter) ? filter : 'all';
-  const words = showTools ? norm(query).split(/\s+/).filter(Boolean) : [];
+  const words = showSearch ? norm(query).split(/\s+/).filter(Boolean) : [];
   const chipOk = (p: Plant) => {
     if (active === 'all') return true;
     if (active === 'due') return !p.rooting && !p.archivedAt && isDue(p, now);
@@ -233,7 +235,7 @@ export default function JungleScreen() {
       {living.length > 0 && (
         <View style={{ gap: 10 }}>
           <JungleViewToggle value={view} onChange={setView} />
-          {showTools && <JungleSearch value={query} onChange={setQuery} />}
+          {showSearch && <JungleSearch value={query} onChange={setQuery} />}
           {showTools && <JungleChips chips={chips} value={active} onChange={setFilter} bleed={20} />}
         </View>
       )}
