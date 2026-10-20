@@ -186,6 +186,13 @@ function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
   return new Map(after.filter((p) => old.has(p.id) && old.get(p.id) !== p.nextCheckAt).map((p) => [p.id, p.nextCheckAt]));
 }
 
+/** The earliest an In memory / gifted date can be: when it joined the fam, or when it last came back. */
+export function archiveFloor(plant: Pick<Plant, 'id' | 'acquiredAt'>, events: CareEvent[]): string {
+  let floor = plant.acquiredAt;
+  for (const e of events) if (e.plantId === plant.id && e.type === 'restored' && e.at > floor) floor = e.at;
+  return floor;
+}
+
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
 function schedule(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimateProfile, at: Date): string {
@@ -374,8 +381,8 @@ export const usePlantStore = create<PlantState>()(
         set((s) => {
           const plant = s.plants.find((p) => p.id === plantId);
           if (!plant?.archivedAt) return s;
-          // Never before it joined the fam.
-          const iso = new Date(Math.max(at.getTime(), new Date(plant.acquiredAt).getTime())).toISOString();
+          // Never before it joined the fam, or before it last came back.
+          const iso = new Date(Math.max(at.getTime(), new Date(archiveFloor(plant, s.events)).getTime())).toISOString();
           const entry = [...s.events].reverse().find((e) => e.plantId === plantId && e.type === 'archived');
           let events = s.events;
           if (entry) {

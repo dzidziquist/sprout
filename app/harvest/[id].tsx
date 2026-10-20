@@ -14,6 +14,7 @@ import { GROW_ICON, Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
+import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
 
 const UNIT_LABEL: Record<HarvestUnit, string> = { fruit: 'Fruit', handful: 'Handful', bunch: 'Bunch', bulb: 'Bulb', grams: 'Grams' };
@@ -58,7 +59,7 @@ export default function HarvestSheet() {
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState<{ first: boolean } | null>(null);
 
-  if (!plant) return null;
+  if (!plant) return <PlantGone />;
   const tint = c.potTint[plant.potColor];
 
   const pickUnit = (u: HarvestUnit) => {

@@ -1,5 +1,5 @@
 import { ART } from '@/data/art';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -8,7 +8,7 @@ import { usePlantStore, type CareAction } from '@/store/plantStore';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
-import { choosePhoto, photoSrc } from '@/lib/photos';
+import { choosePhoto, deletePhoto, photoSrc } from '@/lib/photos';
 import { checksWaterLine, isReservoir } from '@/engine/careEngine';
 import { supportFor } from '@/data/edibles';
 import * as haptics from '@/lib/haptics';
@@ -46,6 +46,14 @@ export default function LogCareSheet() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState(0);
+  // A picked photo is already copied into the diary folder; if it's dropped or never saved, remove it.
+  const unsaved = useRef<string | null>(null);
+  useEffect(
+    () => () => {
+      if (unsaved.current) deletePhoto(unsaved.current);
+    },
+    [],
+  );
 
   if (!plant) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
   const hydro = isReservoir(plant.soil);
@@ -63,6 +71,8 @@ export default function LogCareSheet() {
     }
     if (a === 'photo') {
       if (sel.has('photo')) {
+        if (photoUri) deletePhoto(photoUri);
+        unsaved.current = null;
         setPhotoUri(null);
         setSel((prev) => {
           const next = new Set(prev);
@@ -73,6 +83,7 @@ export default function LogCareSheet() {
       }
       const uri = await choosePhoto();
       if (!uri) return;
+      unsaved.current = uri;
       setPhotoUri(uri);
       setSel((prev) => new Set(prev).add('photo'));
       return;
@@ -99,6 +110,7 @@ export default function LogCareSheet() {
     let count = 0;
     if (rest.length) count += logCare(plant.id, rest, note);
     if (photoUri) {
+      unsaved.current = null;
       // The note rides along with the photo when it's the only thing logged.
       addPhoto(plant.id, photoUri, rest.length ? undefined : note);
       count += 1;

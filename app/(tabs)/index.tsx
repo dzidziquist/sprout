@@ -114,7 +114,7 @@ export default function TodayScreen() {
   const answer = (id: string, r: CheckResult) => {
     swipeRefs.current[id]?.close();
     const p = plants.find((x) => x.id === id);
-    const fresh = p && r === 'dry' && isRefreshDue(p, now) ? ' Time for fresh water + nutrients: log it in Care.' : '';
+    const fresh = p && r === 'dry' && isRefreshDue(p, now) ? ' Time for fresh water + nutrients: tap Log care.' : '';
     setMessages((m) => ({ ...m, [id]: logCheck(id, r) + fresh }));
     if (left === 1) haptics.success();
     else haptics.answer();

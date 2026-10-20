@@ -18,6 +18,7 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { useColors, type Palette } from '@/theme/theme';
+import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
 
 const canUseCamera = Platform.OS === 'ios' || Platform.OS === 'android';
@@ -57,7 +58,7 @@ export default function DoctorScreen() {
   const abort = useRef<AbortController | null>(null);
   useEffect(() => () => abort.current?.abort(), []);
 
-  if (!plant) return null;
+  if (!plant) return <PlantGone />;
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const symptoms = symptomsFor(plant);
   const water = isReservoir(plant.soil);
@@ -320,7 +321,7 @@ export default function DoctorScreen() {
                         },
                       ]}
                     >
-                      <Text style={[styles.pillText, { color: c.onBright }]}>{r.confidence}</Text>
+                      <Text style={[styles.pillText, { color: r.confidence === 'Long shot' ? c.ink : c.onBright }]}>{r.confidence}</Text>
                     </View>
                     <Text style={[styles.cardTitle, { color: c.ink, flex: 1, fontSize: 16 }]}>{r.name ?? r.code}</Text>
                   </View>

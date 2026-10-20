@@ -13,7 +13,7 @@ const FREEZE = 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5
 
 function copyFor(s: StreakResult): string {
   if (s.thisWeek === 'covered') return 'A week saver has this week covered. No stress.';
-  if (s.thisWeek === 'open') return 'New week, fresh sprout. Check in whenever you can.';
+  if (s.thisWeek === 'open') return 'Someone’s overdue and this month’s savers are used. Check them to grow a new streak.';
   return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next check adds this week.';
 }
 
@@ -32,6 +32,8 @@ export function StreakCard({ streak, onHelp }: { streak: StreakResult; onHelp?: 
   const refill = new Date(next.getFullYear(), next.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const weeks = streak.current === 1 ? 'week' : 'weeks';
   const thisMonday = startOfWeek(next);
+  // This week so far: blue once a saver has it, peach when it has slipped with none left, light green once checked.
+  const nowFill = streak.thisWeek === 'covered' ? c.sky : streak.thisWeek === 'open' ? c.peach : streak.checkedThisWeek ? c.leafLight : undefined;
   const aheadOf = (i: number) => {
     const d = new Date(thisMonday);
     d.setDate(d.getDate() + 7 * (i + 1));
@@ -68,8 +70,8 @@ export function StreakCard({ streak, onHelp }: { streak: StreakResult; onHelp?: 
           );
         })}
         <View style={[styles.col, styles.nowCol]}>
-          <View style={[styles.week, { borderColor: c.line, backgroundColor: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.card : streak.thisWeek === 'covered' ? c.sky : c.leafLight }]}>
-            <Text style={[styles.nowText, { color: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.ink : c.onBright }]}>now</Text>
+          <View style={[styles.week, { borderColor: c.line, backgroundColor: nowFill ?? c.card }]}>
+            <Text style={[styles.nowText, { color: nowFill === c.peach || !nowFill ? c.ink : c.onBright }]}>now</Text>
           </View>
           <Text style={[styles.date, { color: c.ink, opacity: 1 }]} numberOfLines={1}>This week</Text>
         </View>

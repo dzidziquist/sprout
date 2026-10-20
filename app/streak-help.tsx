@@ -1,5 +1,8 @@
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { GlassButton } from '@/components/GlassButton';
+import { Icon } from '@/components/GrowTodayCard';
 import { ART } from '@/data/art';
 import { FREEZES_PER_MONTH, GRACE_DAYS } from '@/engine/streak';
 import { BACK_GRACE_DAYS } from '@/engine/away';
@@ -13,6 +16,7 @@ export default function StreakHelp() {
   const c = useColors();
   const insets = useSafeAreaInsets();
   const sheetTop = useSheetTop();
+  const router = useRouter();
   const Pill = ({ bg, dashed, label }: { bg?: string; dashed?: boolean; label?: string }) => (
     <View style={[styles.pill, { backgroundColor: bg ?? 'transparent', borderColor: dashed ? c.inkMuted : c.line }, dashed && styles.dashed]}>
       {label && <Text style={[styles.pillText, { color: c.ink }]}>{label}</Text>}
@@ -26,7 +30,12 @@ export default function StreakHelp() {
   );
 
   return (
-    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 28, paddingBottom: insets.bottom + 32 }]}>
+    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
+      <View style={{ flexDirection: 'row' }}>
+        <GlassButton accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/me'))}>
+          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+        </GlassButton>
+      </View>
       <Title>How your streak works</Title>
       <Text style={[styles.lead, { color: c.ink }]}>
         Your streak counts weeks in a row where nobody in the fam was left waiting. It never counts waterings, so it never nudges you to overwater.

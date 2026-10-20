@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
-import { usePlantStore } from '@/store/plantStore';
+import { archiveFloor, usePlantStore } from '@/store/plantStore';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
@@ -115,7 +115,8 @@ export default function PlantDetail() {
   const pets = petToxicKnown(plant);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
-  const goneOptions = optionsSince(GONE, plant.acquiredAt, now);
+  const goneFloor = archiveFloor(plant, events);
+  const goneOptions = optionsSince(GONE, goneFloor, now);
   const rhythm = Math.round(checkIntervalDays({ group: species.group, plant, profile: profile.climate, at: now }));
   const mine = events.filter((e) => e.plantId === plant.id);
   const lastWater = [...mine].reverse().find((e) => e.type === 'water');
@@ -223,7 +224,9 @@ export default function PlantDetail() {
             </DropdownGroup>
             {goneOptions.length < GONE.length && (
               <Text style={[styles.archivedNote, { color: c.ink }]}>
-                {plant.name} joined on {shortDate(plant.acquiredAt)}, so it can’t have left before that. To go further back, change that date in Edit.
+                {goneFloor === plant.acquiredAt
+                  ? `${plant.name} joined on ${shortDate(plant.acquiredAt)}, so it can’t have left before that. To go further back, change that date in Edit.`
+                  : `${plant.name} came back on ${shortDate(goneFloor)}, so it can’t have left again before that.`}
               </Text>
             )}
             <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
