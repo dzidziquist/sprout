@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Trip } from '../engine/away';
+import type { RoomLight } from '../engine/light';
 import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
@@ -27,7 +28,11 @@ export interface Profile {
   /** Main colour; leaf green unless changed. */
   accent?: Accent;
   /** Plants tab layout the person last picked. Unset: grid for a small fam, list from 16 plants. */
-  jungleView?: 'grid' | 'list';
+  jungleView?: 'grid' | 'list' | 'light';
+  /** Each room's windows and shade, by room name, for the light view. */
+  rooms?: Record<string, RoomLight>;
+  /** Light tips on plant pages: only when something matters (default), or a line every day. */
+  lightTips?: 'important' | 'daily';
   /** Has left a tip in the tip jar. Nothing is locked; it powers the thank-you gifts (badge, gold cards, party hat). */
   supporter: boolean;
   /** When the first tip was noticed on this phone: the supporter badge's date. */
@@ -96,6 +101,8 @@ interface PlantState {
   seedDemo: (now?: Date) => void;
   /** Edit a plant's details. Changing soil, pot or light reschedules the next check. */
   updatePlant: (plantId: string, patch: Partial<NewPlant>, now?: Date) => void;
+  /** Set a room's windows and shade for the light view. */
+  setRoomLight: (room: string, light: RoomLight) => void;
   /** Plants are never hard-deleted from lineage: archived plants leave the round but stay in Offshoots. */
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
   /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
@@ -342,6 +349,8 @@ export const usePlantStore = create<PlantState>()(
         set((s) => ({ events: [...s.events, { id: uid(), plantId: parentId, type: 'cutting', at: now.toISOString(), note: child.id }] }));
         return child;
       },
+
+      setRoomLight: (room, light) => set((s) => ({ profile: { ...s.profile, rooms: { ...s.profile.rooms, [room]: light } } })),
 
       updatePlant: (plantId, patch, now = new Date()) => {
         const climate = get().profile.climate;

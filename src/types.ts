@@ -184,6 +184,8 @@ export interface Plant {
   light: Light;
   placement: Placement;
   room?: string;
+  /** Where it sits relative to its room's window, for the light view (sill, below, about 1 m, across the room). */
+  windowSpot?: 'sill' | 'below' | 'near' | 'far';
   origin: Origin;
   /** Set when the plant was propagated from another plant in the fam. */
   parentId?: string;

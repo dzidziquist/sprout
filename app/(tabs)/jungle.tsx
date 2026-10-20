@@ -15,6 +15,7 @@ import { ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
+import { LightRooms } from '@/components/LightRooms';
 import { JungleChips, JungleSearch, JungleViewToggle, type JungleChip, type JungleView } from '@/components/JungleControls';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
@@ -268,18 +269,18 @@ export default function JungleScreen() {
               Showing {shownPotted.length + shownRooting.length} of {living.length}
             </Label>
           )}
-          {shownPotted.length > 0 && <PlantCollection plants={shownPotted} view={view} />}
-          {shownRooting.length > 0 && (
+          {shownPotted.length > 0 && (view === 'light' ? <LightRooms plants={shownPotted} /> : <PlantCollection plants={shownPotted} view={view} />)}
+          {view !== 'light' && shownRooting.length > 0 && (
             <View style={{ gap: 10 }}>
               <Label>Rooting babies</Label>
               <PlantCollection plants={shownRooting} view={view} />
             </View>
           )}
-          {!filtering && <Label muted style={{ textAlign: 'center' }}>Tip: press and hold a plant for quick actions.</Label>}
+          {!filtering && view !== 'light' && <Label muted style={{ textAlign: 'center' }}>Tip: press and hold a plant for quick actions.</Label>}
         </>
       )}
 
-      {shownMemory.length > 0 && (
+      {view !== 'light' && shownMemory.length > 0 && (
         <View style={{ gap: 10 }}>
           <Pressable
             accessibilityRole="button"
