@@ -20,6 +20,8 @@ import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 
+const ASPCA_URL = 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants';
+
 /**
  * A plant to read about before (or without) adding it: its photo and Wikipedia intro, what it needs,
  * where it would suit this home, and Add to my fam or Save for later. Opened from the add list, photo ID
@@ -94,13 +96,22 @@ export default function SpeciesPage() {
             {!!latinLine && <Text style={[styles.latin, { color: c.inkMuted }]}>{latinLine}</Text>}
           </View>
 
-          {known ? (
+          {known && (
             <View style={styles.facts}>
               <Fact top={LIGHT_FACT[sp.defaultLight].short} bottom={LIGHT_FACT[sp.defaultLight].long} bg={c.butter} />
               <Fact top={WATER_STYLE[sp.group].short} bottom={WATER_STYLE[sp.group].long} bg={c.ice} />
               <Fact top={sp.petToxic ? 'Not pet-safe' : 'Pet-safe'} bottom={sp.petToxic ? 'toxic to cats and dogs' : 'cats and dogs'} bg={sp.petToxic ? c.peach : c.mint} />
             </View>
-          ) : (
+          )}
+          {known && (
+            <Text style={[styles.small, { color: c.inkMuted }]}>
+              Pet safety is our reading of the ASPCA list.{' '}
+              <Text accessibilityRole="link" onPress={() => Linking.openURL(ASPCA_URL)} style={{ color: c.leafDeep, textDecorationLine: 'underline' }}>
+                Check ASPCA ›
+              </Text>
+            </Text>
+          )}
+          {!known && (
             <Text style={[styles.text, { color: c.inkMuted }]}>Not in our plant list yet. When you add it, you’ll pick how it likes its water and it gets the same checks and reminders.</Text>
           )}
 
