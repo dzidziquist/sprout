@@ -1,10 +1,10 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Sticker } from '@/components/ui';
 import { ART } from '@/data/art';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import { FREEZES_PER_MONTH, type StreakResult } from '@/engine/streak';
+import { FREEZES_PER_MONTH, startOfWeek, type StreakResult } from '@/engine/streak';
 
 const SPROUT = 'M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z';
 /** Week boxes in the row, including "now". */
@@ -17,8 +17,11 @@ function copyFor(s: StreakResult): string {
   return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next check adds this week.';
 }
 
-/** Weekly streak, drawn as a growing sprout. No flames, no guilt. */
-export function StreakCard({ streak }: { streak: StreakResult }) {
+/** "Oct 13": the Monday a week box stands for, so nobody reads the boxes as days. */
+const weekOf = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+/** Weekly streak, drawn as a growing sprout. No flames, no guilt. `onHelp` opens the explainer. */
+export function StreakCard({ streak, onHelp }: { streak: StreakResult; onHelp?: () => void }) {
   const c = useColors();
   // The row fills left to right: weeks since care began, then "now", then empty boxes for the weeks ahead.
   // Quiet weeks from before the first real week are left out, so a new streak starts at the left.
@@ -28,6 +31,12 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
   const next = new Date();
   const refill = new Date(next.getFullYear(), next.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const weeks = streak.current === 1 ? 'week' : 'weeks';
+  const thisMonday = startOfWeek(next);
+  const aheadOf = (i: number) => {
+    const d = new Date(thisMonday);
+    d.setDate(d.getDate() + 7 * (i + 1));
+    return d;
+  };
   return (
     <Sticker bg={c.mint} drop={5} style={styles.card}>
       <View style={styles.top}>
@@ -48,26 +57,42 @@ export function StreakCard({ streak }: { streak: StreakResult }) {
         {recent.map((w) => {
           const bg = w.status === 'kept' ? c.leaf : w.status === 'repaired' ? c.sky : w.status === 'quiet' ? c.cloud : c.card;
           return (
-            <View key={w.start} style={[styles.week, { backgroundColor: bg, borderColor: c.line }]}>
-              {w.status === 'repaired' && (
-                <Svg width={14} height={14} viewBox="0 0 24 24"><Path d={FREEZE} stroke={c.onBright} strokeWidth={2.4} strokeLinecap="round" fill="none" /></Svg>
-              )}
+            <View key={w.start} style={styles.col}>
+              <View style={[styles.week, { backgroundColor: bg, borderColor: c.line }]}>
+                {w.status === 'repaired' && (
+                  <Svg width={14} height={14} viewBox="0 0 24 24"><Path d={FREEZE} stroke={c.onBright} strokeWidth={2.4} strokeLinecap="round" fill="none" /></Svg>
+                )}
+              </View>
+              <Text style={[styles.date, { color: c.ink }]} numberOfLines={1}>{weekOf(new Date(w.start))}</Text>
             </View>
           );
         })}
-        <View style={[styles.week, styles.now, { borderColor: c.line, backgroundColor: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.card : streak.thisWeek === 'covered' ? c.sky : c.leafLight }]}>
-          <Text style={[styles.nowText, { color: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.ink : c.onBright }]}>now</Text>
+        <View style={[styles.col, styles.nowCol]}>
+          <View style={[styles.week, { borderColor: c.line, backgroundColor: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.card : streak.thisWeek === 'covered' ? c.sky : c.leafLight }]}>
+            <Text style={[styles.nowText, { color: streak.thisWeek === 'open' || !streak.checkedThisWeek ? c.ink : c.onBright }]}>now</Text>
+          </View>
+          <Text style={[styles.date, { color: c.ink, opacity: 1 }]} numberOfLines={1}>This week</Text>
         </View>
         {Array.from({ length: ahead }, (_, i) => (
-          <View key={`ahead-${i}`} style={[styles.week, styles.ahead, { borderColor: c.inkMuted }]} />
+          <View key={`ahead-${i}`} style={styles.col}>
+            <View style={[styles.week, styles.ahead, { borderColor: c.inkMuted }]} />
+            <Text style={[styles.date, { color: c.inkMuted }]} numberOfLines={1}>{weekOf(aheadOf(i))}</Text>
+          </View>
         ))}
       </View>
 
-      <View style={styles.legend} accessible accessibilityLabel="Each box is a week. Green: everyone checked on time. Blue: a week saver covered it.">
-        <View style={[styles.dot, { backgroundColor: c.leaf, borderColor: c.line }]} />
-        <Text style={[styles.how, { color: c.ink }]}>All checked</Text>
-        <View style={[styles.dot, { backgroundColor: c.sky, borderColor: c.line, marginLeft: 8 }]} />
-        <Text style={[styles.how, { color: c.ink }]}>Saved</Text>
+      <View style={styles.legend}>
+        <View style={styles.key} accessible accessibilityLabel="Each box is a week. Green: everyone checked on time. Blue: a week saver covered it.">
+          <View style={[styles.dot, { backgroundColor: c.leaf, borderColor: c.line }]} />
+          <Text style={[styles.how, { color: c.ink }]}>All checked</Text>
+          <View style={[styles.dot, { backgroundColor: c.sky, borderColor: c.line, marginLeft: 8 }]} />
+          <Text style={[styles.how, { color: c.ink }]}>Saved</Text>
+        </View>
+        {onHelp && (
+          <Pressable accessibilityRole="button" accessibilityLabel="How your streak works" hitSlop={10} onPress={onHelp} style={styles.help}>
+            <Text style={[styles.helpText, { color: c.leafDeep }]}>How it works</Text>
+          </Pressable>
+        )}
       </View>
 
       <View style={styles.footer}>
@@ -109,8 +134,12 @@ const styles = StyleSheet.create({
   big: { fontFamily: fonts.display, fontSize: 24, lineHeight: 28 },
   sub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   weeks: { flexDirection: 'row', gap: 6 },
-  week: { flex: 1, height: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center', maxWidth: 44 },
-  now: { maxWidth: 56, flexGrow: 1.3 },
+  col: { flex: 1, maxWidth: 44, alignItems: 'center', gap: 3 },
+  nowCol: { maxWidth: 56, flexGrow: 1.3 },
+  week: { alignSelf: 'stretch', height: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  date: { fontFamily: fonts.bodyHeavy, fontSize: 9, opacity: 0.75 },
+  help: { marginLeft: 'auto' },
+  helpText: { fontFamily: fonts.bodyHeavy, fontSize: 12, textDecorationLine: 'underline' },
   ahead: { borderStyle: 'dashed', opacity: 0.45 },
   nowText: { fontFamily: fonts.bodyHeavy, fontSize: 10 },
   footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
@@ -121,6 +150,7 @@ const styles = StyleSheet.create({
   saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 10, lineHeight: 12 },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   how: { fontFamily: fonts.bodyHeavy, fontSize: 11, opacity: 0.8 },
-  legend: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: -4 },
+  legend: { flexDirection: 'row', alignItems: 'center', marginTop: -2 },
+  key: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   dot: { width: 10, height: 10, borderRadius: 3, borderWidth: 1.5 },
 });
