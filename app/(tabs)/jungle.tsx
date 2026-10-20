@@ -197,7 +197,8 @@ export default function JungleScreen() {
   // Memories follow the search and room chips; status chips (needs check, rooting, edibles) are about living plants.
   const shownMemory = memory.filter((p) => (active === 'all' || active.startsWith('room:') ? chipOk(p) : false) && matches(p, words));
   const filtering = active !== 'all' || words.length > 0;
-  const nothing = filtering && shownPotted.length + shownRooting.length === 0;
+  // The light view shows potted plants only, so rooting matches alone are still "nothing" there.
+  const nothing = filtering && shownPotted.length + (view === 'light' ? 0 : shownRooting.length) === 0;
   const activeLabel = chips.find((ch) => ch.key === active)?.label;
 
   return (

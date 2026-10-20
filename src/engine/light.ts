@@ -1,6 +1,8 @@
 import { speciesOf } from '../data/species';
 import { skyOf, type DailyForecast } from './growPatch';
-import type { Light, Plant } from '../types';
+import type { Light, Plant, WindowSpot } from '../types';
+
+export type { WindowSpot };
 
 /*
  * How much light a plant gets, from where it sits: which way its room's windows face, what's in the
@@ -16,8 +18,6 @@ import type { Light, Plant } from '../types';
 
 export type Facing = 'N' | 'E' | 'S' | 'W';
 export type Shade = 'none' | 'sheer' | 'outside';
-/** Where a plant sits relative to its room's nearest window. */
-export type WindowSpot = 'sill' | 'below' | 'near' | 'far';
 
 export interface RoomLight {
   /** The room's windows by the way they face. Empty: no window (hallway, bathroom). */
@@ -59,8 +59,20 @@ export interface SunDay {
   sunHours: Record<Facing, number>;
 }
 
-/** The sun's day at a latitude: daylight, and how much direct sun each window direction catches. */
+const sunCache = new Map<string, SunDay>();
+
+/** The sun's day at a latitude: daylight, and how much direct sun each window direction catches. Cached per place and day. */
 export function sunDay(lat: number, date: Date): SunDay {
+  const key = `${lat.toFixed(2)}|${date.getFullYear()}-${dayOfYear(date)}`;
+  const hit = sunCache.get(key);
+  if (hit) return hit;
+  if (sunCache.size > 400) sunCache.clear();
+  const day = computeSunDay(lat, date);
+  sunCache.set(key, day);
+  return day;
+}
+
+function computeSunDay(lat: number, date: Date): SunDay {
   const decl = 23.44 * Math.sin(((2 * Math.PI) / 365) * (284 + dayOfYear(date))) * RAD;
   const phi = lat * RAD;
   const direct: Record<Facing, number> = { N: 0, E: 0, S: 0, W: 0 };
@@ -83,6 +95,19 @@ export function sunDay(lat: number, date: Date): SunDay {
     }
   }
   return { daylight, direct, sunHours };
+}
+
+const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/** Forecast days from today on (a cached forecast can still hold yesterday). */
+export function daysAhead(forecast: DailyForecast[] | null | undefined, now: Date): DailyForecast[] {
+  const today = ymd(now);
+  return (forecast ?? []).filter((d) => d.date >= today);
+}
+
+/** Today's forecast, if the forecast has it. */
+export function forecastToday(forecast: DailyForecast[] | null | undefined, now: Date): DailyForecast | undefined {
+  return (forecast ?? []).find((d) => d.date === ymd(now));
 }
 
 /** Share of direct sun that gets through a day's weather. */
@@ -158,6 +183,12 @@ export interface LightContext {
   forecast?: DailyForecast[] | null;
 }
 
+/** Room setups for rooms that still have indoor plants: a renamed or emptied room isn't suggested any more. */
+export function roomsInUse(rooms: Record<string, RoomLight> | undefined, plants: Plant[]): Record<string, RoomLight> {
+  const used = new Set(plants.filter((p) => !p.archivedAt && p.placement === 'indoor').map((p) => p.room?.trim()));
+  return Object.fromEntries(Object.entries(rooms ?? {}).filter(([name]) => used.has(name)));
+}
+
 /** The plant's room light and spot, when both are set and it lives indoors in a room. */
 export function placeOf(plant: Plant, rooms: Record<string, RoomLight>): { name: string; room: RoomLight; spot: WindowSpot } | null {
   const name = plant.room?.trim();
@@ -181,7 +212,9 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   const here = spotLight(room, spot, ctx.lat, ctx.now);
   const halfYear = spotLight(room, spot, ctx.lat, shiftDays(ctx.now, 182));
   const name = plant.name;
-  const days = (ctx.forecast ?? []).slice(0, 5);
+  const days = daysAhead(ctx.forecast, ctx.now).slice(0, 5);
+  // Which half of the year it is here: a tip only calls something seasonal when the season it names is now.
+  const longDays = sunDay(ctx.lat, ctx.now).daylight >= sunDay(ctx.lat, shiftDays(ctx.now, 182)).daylight;
 
   // A hot day on a sill that takes strong sun: worth pulling back for the afternoon.
   const hot = days.slice(0, 3).find((d) => d.maxC >= 30);
@@ -192,13 +225,13 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
 
   const fit = suits(here.level, need);
   if (fit === 'harsh') {
-    const seasonal = suits(halfYear.level, need) === 'ok';
+    const seasonal = longDays && suits(halfYear.level, need) === 'ok';
     return { kind: 'harsh', text: seasonal ? `Summer sun is strong here: try ${spotWords('near', here.window)} till autumn.` : `Strong sun here. Try ${spotWords('near', here.window)}.` };
   }
 
   if (fit === 'dim') {
     const better = brighterSpot(plant, place.name, room, spot, need, ctx);
-    const seasonal = suits(halfYear.level, need) === 'ok';
+    const seasonal = !longDays && suits(halfYear.level, need) === 'ok';
     if (!better) return seasonal ? { kind: 'dim', text: 'Short days, so a bit dim here. It’ll pick up in spring.' } : { kind: 'dim', text: `A bit dim for a ${speciesOf(plant).commonName.toLowerCase()}. It needs a brighter room.` };
     return { kind: 'dim', text: seasonal ? `Short days: try ${better} till spring.` : `A bit dim here. Try ${better}.` };
   }

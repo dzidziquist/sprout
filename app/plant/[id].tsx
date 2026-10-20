@@ -350,7 +350,8 @@ export default function PlantDetail() {
                   ...(plant.selfWatering === 'away' ? [['Reservoir', 'Fill it before a trip; Away mode reminds you']] : []),
                 ]
           ).concat([
-            ['Light', lightPlace ? `${yearLight(lightPlace.room, lightPlace.spot, coordsFor(profile.climate).lat, now.getFullYear())} · ${SPOT_LABEL[lightPlace.spot].toLowerCase()}` : LIGHT_LABEL[plant.light]],
+            ['Light', LIGHT_LABEL[plant.light]],
+            ...(lightPlace ? [['Sun here', `${yearLight(lightPlace.room, lightPlace.spot, coordsFor(profile.climate).lat, now.getFullYear())} · ${SPOT_LABEL[lightPlace.spot].toLowerCase()}`]] : []),
             [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
             ['Feed', feed],
             ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],

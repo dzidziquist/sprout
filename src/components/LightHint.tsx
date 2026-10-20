@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { lightTip, placeOf, roomToday, spotLight } from '@/engine/light';
+import { forecastToday, lightTip, placeOf, roomToday, roomsInUse, spotLight } from '@/engine/light';
 import { coordsFor, useForecast } from '@/lib/weather';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
@@ -16,7 +16,8 @@ export function LightHint({ plant }: { plant: Plant }) {
   const c = useColors();
   const router = useRouter();
   const climate = usePlantStore((s) => s.profile.climate);
-  const rooms = usePlantStore((s) => s.profile.rooms) ?? {};
+  const plants = usePlantStore((s) => s.plants);
+  const rooms = roomsInUse(usePlantStore((s) => s.profile.rooms), plants);
   const daily = usePlantStore((s) => s.profile.lightTips === 'daily');
   const place = placeOf(plant, rooms);
   const forecast = useForecast(climate, !!place);
@@ -25,7 +26,12 @@ export function LightHint({ plant }: { plant: Plant }) {
   const now = new Date();
   const tip = lightTip(plant, { lat, now, rooms, forecast });
   if (!tip && !daily) return null;
-  const text = tip ? tip.text : `${spotLight(place.room, place.spot, lat, now).level === 'low' ? 'Low light here' : 'Good light here'} · ${roomToday(place.room, lat, now, forecast?.[0]).replace(/^A/, 'a')}`;
+  const today = roomToday(place.room, lat, now, forecastToday(forecast, now));
+  const text = tip
+    ? tip.text
+    : !place.room.windows.length
+      ? 'No window here, so low light all year.'
+      : `${spotLight(place.room, place.spot, lat, now).level === 'low' ? 'Low light here today' : 'Good light here today'}: ${today.replace(/ today/, '').replace(/^./, (ch) => ch.toLowerCase())}`;
   return (
     <Pressable
       accessibilityRole="button"

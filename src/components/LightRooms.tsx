@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { FACING_LABEL, SHADE_LABEL, SPOT_LABEL, lightNeed, lightTip, placeOf, roomToday, spotLight, suits, type RoomLight } from '@/engine/light';
+import { FACING_LABEL, SHADE_LABEL, SPOT_LABEL, forecastToday, lightNeed, lightTip, placeOf, roomToday, roomsInUse, spotLight, suits, type RoomLight } from '@/engine/light';
 import { coordsFor, useForecast } from '@/lib/weather';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker } from '@/components/ui';
@@ -28,11 +28,12 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
   const c = useColors();
   const router = useRouter();
   const climate = usePlantStore((s) => s.profile.climate);
-  const rooms = usePlantStore((s) => s.profile.rooms) ?? {};
+  const allPlants = usePlantStore((s) => s.plants);
+  const rooms = roomsInUse(usePlantStore((s) => s.profile.rooms), allPlants);
   const forecast = useForecast(climate, true);
   const lat = coordsFor(climate).lat;
   const now = new Date();
-  const today = forecast?.[0];
+  const today = forecastToday(forecast, now);
 
   const indoor = plants.filter((p) => p.placement === 'indoor');
   const elsewhere = plants.filter((p) => p.placement !== 'indoor');

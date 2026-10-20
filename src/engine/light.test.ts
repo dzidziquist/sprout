@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lightTip, roomToday, spotLight, suits, sunDay, yearLight, type RoomLight } from './light';
+import { lightTip, roomToday, roomsInUse, spotLight, suits, sunDay, yearLight, type RoomLight } from './light';
 import type { Plant } from '../types';
 
 const SEATTLE = 47.6;
@@ -102,5 +102,22 @@ describe('light tips', () => {
   it('nudges a borderline plant closer for a grey week', () => {
     const grey = [0, 1, 2, 3, 4].map((i) => ({ date: `2026-12-2${i + 1}`, minC: 3, maxC: 7, precipMm: 5, code: 61 }));
     expect(lightTip(plant({ speciesId: 'pothos', name: 'Goldie', windowSpot: 'near' }), ctx(dec, grey))?.kind).toBe('grey');
+  });
+});
+
+describe('review fixes', () => {
+  it('only calls a tip seasonal when that season is now', () => {
+    // Low winter sun pours through a south sill: harsh now, and not a summer thing.
+    const south = { 'Living room': { windows: ['S'], shade: 'none' } as RoomLight };
+    expect(lightTip(plant({ windowSpot: 'sill' }), { lat: SEATTLE, now: dec, rooms: south })?.text).toBe('Strong sun here. Try about 1 m from the south window.');
+  });
+
+  it('ignores forecast days that have already passed', () => {
+    const yesterday = [{ date: '2026-06-20', minC: 20, maxC: 35, precipMm: 0, code: 0 }];
+    expect(lightTip(plant({ speciesId: 'monstera', windowSpot: 'sill' }), { lat: SEATTLE, now: june, rooms: { 'Living room': west }, forecast: yesterday })).toBeNull();
+  });
+
+  it('forgets rooms nobody lives in any more', () => {
+    expect(Object.keys(roomsInUse({ 'Living room': west, Office: west }, [plant()]))).toEqual(['Living room']);
   });
 });
