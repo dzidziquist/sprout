@@ -132,7 +132,9 @@ export default function TodayScreen() {
       : round.length === 0
         ? 'Nobody needs a check today. Enjoy the green.'
         : allDone
-          ? 'Everyone in the fam is happy. Nice judgement!'
+          ? round.some((p) => p.lastResult === 'soggy')
+            ? 'All checked. Anyone too wet just needs time to dry out.'
+            : 'Everyone in the fam is happy. Nice judgement!'
           : firstEver
             ? `Say hi to the fam: ${how.toLowerCase()}, then tap what you found.`
             : `${how}, then tap what you found.`;

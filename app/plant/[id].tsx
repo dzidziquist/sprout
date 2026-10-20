@@ -139,7 +139,9 @@ export default function PlantDetail() {
   const refresh = refreshDays <= 0 ? 'Due now' : refreshDays === 1 ? 'Tomorrow' : `In ${refreshDays} days`;
   const nextDays = Math.round((new Date(new Date(plant.nextCheckAt).toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000);
   const nextCheck = nextDays <= 0 ? 'Today' : nextDays === 1 ? 'Tomorrow' : nextDays < 7 ? `In ${nextDays} days` : new Date(plant.nextCheckAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-  const history = mine.slice(-6).reverse();
+  // A dry check already says "watered", so the watering it logged alongside isn't listed twice.
+  const checkedAt = new Set(mine.filter((e) => e.type === 'check' && e.result === 'dry').map((e) => e.at));
+  const history = mine.filter((e) => !(e.type === 'water' && checkedAt.has(e.at))).slice(-6).reverse();
   const photos = mine.filter((e) => e.type === 'photo' && e.photoUri).reverse();
   const heroPhoto = showPhoto && plant.photoUri;
 
