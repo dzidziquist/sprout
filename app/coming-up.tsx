@@ -10,16 +10,11 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { Title } from '@/components/ui';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
+import { calendarDays } from '@/lib/when';
 import type { Plant } from '@/types';
 
-const DAY = 86400000;
-
 /** Whole calendar days from today to `iso` (local time). */
-function daysUntil(iso: string, now: Date): number {
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  return Math.round((new Date(iso).setHours(0, 0, 0, 0) - start.getTime()) / DAY);
-}
+const daysUntil = (iso: string, now: Date) => calendarDays(now, new Date(iso));
 
 /** Tomorrow, then each day of the coming week by name, then next week and later. */
 function groupLabel(days: number, iso: string): string {

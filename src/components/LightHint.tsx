@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
+import { SunIcon } from '@/components/SunIcon';
 import { usePlantStore } from '@/store/plantStore';
 import { forecastToday, lightTip, placeOf, roomToday, roomsInUse, spotLight } from '@/engine/light';
 import { coordsFor, useForecast } from '@/lib/weather';
@@ -39,10 +40,7 @@ export function LightHint({ plant }: { plant: Plant }) {
       onPress={() => router.push({ pathname: '/room-light', params: { room: place.name } })}
       style={({ pressed }) => [styles.line, { borderColor: c.line, backgroundColor: tip ? c.butter : c.card }, pressed && { opacity: 0.8 }]}
     >
-      <Svg width={20} height={20} viewBox="0 0 24 24">
-        <Circle cx={12} cy={12} r={4} stroke={c.ink} strokeWidth={2.2} fill="none" />
-        <Path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" />
-      </Svg>
+      <SunIcon color={c.ink} />
       <Text style={[styles.text, { color: c.ink }]}>{text}</Text>
       <Svg width={14} height={14} viewBox="0 0 24 24">
         <Path d="m9 6 6 6-6 6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />

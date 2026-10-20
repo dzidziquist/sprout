@@ -1,5 +1,6 @@
 import { climateDate, climateMonth, modelOf } from '../lib/climate';
 import type { CheckResult, ClimateModel, ClimateProfile, Light, Placement, Plant, PotMaterial, Soil, SpeciesGroup } from '../types';
+import { calendarDays } from '../lib/when';
 
 /*
  * PlantFam schedules soil CHECKS, not waterings.
@@ -243,7 +244,7 @@ export function applyCheck(
     const full = checkIntervalDays({ ...input, plant: updated });
     if (result === 'dry') {
       days = full;
-      message = `Topped up! Next peek in ~${calendarDays(input.at, days)} days`;
+      message = `Topped up! Next peek in ~${calendarDays(input.at, addDays(input.at, days))} days`;
     } else {
       days = recheckDays(input.plant.soil, 'damp', full);
       message = 'Plenty left, skipping. +1 smart skip';
@@ -252,7 +253,7 @@ export function applyCheck(
   }
   if (result === 'dry') {
     days = checkIntervalDays({ ...input, plant: updated });
-    message = `Watered! Next check in ~${calendarDays(input.at, days)} days`;
+    message = `Watered! Next check in ~${calendarDays(input.at, addDays(input.at, days))} days`;
   } else if (result === 'damp') {
     days = recheckDays(input.plant.soil, 'damp', checkIntervalDays({ ...input, plant: updated }));
     message = 'Good call, skipping. +1 smart skip';
@@ -302,15 +303,6 @@ export function moodFor(plant: Pick<Plant, 'nextCheckAt' | 'lastResult' | 'lastC
     if (since < 3) return 'snoozing';
   }
   return 'happy';
-}
-
-/** Calendar days from `at` to `days` later, the way the Coming up list counts them. */
-function calendarDays(at: Date, days: number): number {
-  const from = new Date(at);
-  from.setHours(0, 0, 0, 0);
-  const to = addDays(at, days);
-  to.setHours(0, 0, 0, 0);
-  return Math.round((to.getTime() - from.getTime()) / DAY_MS);
 }
 
 export function addDays(date: Date, days: number): Date {

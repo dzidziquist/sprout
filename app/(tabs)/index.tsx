@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDay } from '@/hooks/useDay';
+import { calendarDays } from '@/lib/when';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Path } from 'react-native-svg';
@@ -58,9 +59,7 @@ function checkWord(plants: Plant[]): '' | 'soil ' | 'water ' {
 }
 
 function inDays(iso: string, now: Date): string {
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  const d = Math.round((new Date(iso).setHours(0, 0, 0, 0) - start.getTime()) / DAY);
+  const d = calendarDays(now, new Date(iso));
   return d <= 1 ? 'tomorrow' : `in ${d} days`;
 }
 

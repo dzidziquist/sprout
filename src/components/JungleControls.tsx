@@ -3,6 +3,7 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { textOn, useColors } from '../theme/theme';
 import { fonts } from '../theme/tokens';
 import * as haptics from '../lib/haptics';
+import { SunIcon } from './SunIcon';
 
 export type JungleView = 'grid' | 'list' | 'light';
 
@@ -51,10 +52,7 @@ export function JungleViewToggle({ value, onChange }: { value: JungleView; onCha
         <Rect x={13} y={13} width={7} height={7} rx={2} stroke={stroke} strokeWidth={2.4} fill="none" />
       </Svg>
     ) : v === 'light' ? (
-      <Svg width={19} height={19} viewBox="0 0 24 24">
-        <Circle cx={12} cy={12} r={4} stroke={stroke} strokeWidth={2.4} fill="none" />
-        <Path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" stroke={stroke} strokeWidth={2.4} strokeLinecap="round" />
-      </Svg>
+      <SunIcon color={stroke} size={19} width={2.4} />
     ) : (
       <Svg width={18} height={18} viewBox="0 0 24 24">
         <Path d="M9 6h11M9 12h11M9 18h11" stroke={stroke} strokeWidth={2.4} strokeLinecap="round" />

@@ -87,3 +87,12 @@ export function optionsSince<Id extends string>(options: WhenOption<Id>[], since
   const since = new Date(sinceIso).getTime();
   return options.filter((o) => o.days === 0 || (o.days !== null && daysAgo(o.days, now).getTime() >= since));
 }
+
+/** Whole local calendar days from `from` to `to` (tomorrow is 1, whatever the hour). The one way the app counts "in N days". */
+export function calendarDays(from: Date, to: Date): number {
+  const a = new Date(from);
+  a.setHours(0, 0, 0, 0);
+  const b = new Date(to);
+  b.setHours(0, 0, 0, 0);
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
