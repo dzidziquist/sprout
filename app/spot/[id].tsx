@@ -105,7 +105,7 @@ export default function SpotSheet() {
         </View>
         <View style={styles.footnote}>
           <LineIcon name="info" color={c.inkMuted} size={16} width={2.2} />
-          <Text style={[styles.footText, { color: c.inkMuted }]}>Estimates for today. They change with the seasons, weather and shade.</Text>
+          <Text style={[styles.footText, { color: c.inkMuted }]}>Estimates for this time of year on a typical day. Hot or grey spells get their own tips.</Text>
         </View>
         <Button
           title="Save position"

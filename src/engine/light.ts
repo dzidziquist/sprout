@@ -305,7 +305,10 @@ export function windowsLine(room: RoomLight): string {
   return `${list[0].toUpperCase()}${list.slice(1)} windows`;
 }
 
-/** How each spot by this room's window would suit the plant today. */
+/**
+ * How each spot by this room's window would suit the plant at this time of year, on a typical day. Weather is
+ * left out on purpose so verdicts don't flip with each cloudy day; hot and grey spells come through lightTip.
+ */
 export function spotFits(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, lat: number, now: Date): Record<WindowSpot, 'ok' | 'dim' | 'harsh'> {
   const need = lightNeed(plant);
   return Object.fromEntries(SPOTS.map((s) => [s, suits(spotLight(room, s, lat, now).level, need)])) as Record<WindowSpot, 'ok' | 'dim' | 'harsh'>;
