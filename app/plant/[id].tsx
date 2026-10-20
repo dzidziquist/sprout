@@ -21,9 +21,8 @@ import { usePlantActions } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { StagePanel } from '@/components/StagePanel';
-import { LightHint } from '@/components/LightHint';
-import { SPOT_LABEL, placeOf, yearLight } from '@/engine/light';
-import { coordsFor } from '@/lib/weather';
+import { LightCard } from '@/components/LightCard';
+import { AboutCard } from '@/components/AboutCard';
 import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
 import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
 import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
@@ -118,7 +117,6 @@ export default function PlantDetail() {
   const pets = petToxicKnown(plant);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
-  const lightPlace = placeOf(plant, profile.rooms ?? {});
   const goneFloor = archiveFloor(plant, events);
   const goneOptions = optionsSince(GONE, goneFloor, now);
   const rhythm = Math.round(checkIntervalDays({ group: species.group, plant, profile: profile.climate, at: now }));
@@ -270,7 +268,6 @@ export default function PlantDetail() {
             <Button title="Log care" bg={c.card} onPress={actions.log} style={{ minHeight: 48 }} />
           </>
         )}
-        {!archived && <LightHint plant={plant} />}
         {!archived && !plant.rooting && (
           <>
             <View style={styles.actions}>
@@ -287,6 +284,8 @@ export default function PlantDetail() {
             <Button title="Grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={{ flex: 1, minHeight: 48 }} />
           </View>
         )}
+
+        {!archived && <LightCard plant={plant} />}
 
         {(photos.length > 0 || !archived) && (
           <View style={{ gap: 8 }}>
@@ -351,7 +350,6 @@ export default function PlantDetail() {
                 ]
           ).concat([
             ['Light', LIGHT_LABEL[plant.light]],
-            ...(lightPlace ? [['Sun here', `${yearLight(lightPlace.room, lightPlace.spot, coordsFor(profile.climate).lat, now.getFullYear())} · ${SPOT_LABEL[lightPlace.spot].toLowerCase()}`]] : []),
             [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
             ['Feed', feed],
             ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
@@ -368,6 +366,8 @@ export default function PlantDetail() {
             <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
           </Sticker>
         )}
+
+        <AboutCard plant={plant} />
 
         <PlantPageOffshoots parent={parent} babies={babies} />
 

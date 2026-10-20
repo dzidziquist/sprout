@@ -178,17 +178,6 @@ export default function SettingsScreen() {
             onChange={(v) => setProfile({ photos: v })}
           />
         </Field>
-        <Field label="Light tips" note={profile.lightTips === 'daily' ? 'A line on each plant’s page with its light today, plus tips.' : 'Only when something matters: too dim, harsh sun, a hot day or a grey week.'}>
-          <Segmented
-            label="Light tips"
-            value={profile.lightTips ?? 'important'}
-            options={[
-              { id: 'important' as const, label: 'Only important' },
-              { id: 'daily' as const, label: 'Every day' },
-            ]}
-            onChange={(v) => setProfile({ lightTips: v })}
-          />
-        </Field>
         <Row label="Away mode" value={awayValue} onPress={() => router.push('/away')} last />
       </Section>
 

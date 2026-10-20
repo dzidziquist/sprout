@@ -31,8 +31,10 @@ export interface Profile {
   jungleView?: 'grid' | 'list' | 'light';
   /** Each room's windows and shade, by room name, for the light view. */
   rooms?: Record<string, RoomLight>;
-  /** Light tips on plant pages: only when something matters (default), or a line every day. */
+  /** No longer used: plant pages always show their light card. Kept so old backups still load. */
   lightTips?: 'important' | 'daily';
+  /** Whether the About card (Wikipedia intro) on plant pages starts open. Folded by default. */
+  aboutOpen?: boolean;
   /** Has left a tip in the tip jar. Nothing is locked; it powers the thank-you gifts (badge, gold cards, party hat). */
   supporter: boolean;
   /** When the first tip was noticed on this phone: the supporter badge's date. */

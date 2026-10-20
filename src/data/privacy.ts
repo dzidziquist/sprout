@@ -23,12 +23,13 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
   {
     title: 'What leaves your phone, and why',
     body: [
-      'Your city: when you search for where you grow, the name you type goes to Open-Meteo’s free geocoder, and the city you pick has its past weather looked up once to learn its seasons. PlantFam never uses your location or GPS.',
+      'Your city: when you search for where you grow, the name you type goes to Open-Meteo’s free geocoder, and the city you pick has its past weather looked up once to learn its seasons. PlantFam never tracks your location or GPS position.',
       'Weather (grow patch): a 7-day forecast is fetched from Open-Meteo for your city’s coordinates. Like any website, Open-Meteo sees the request’s IP address.',
       'Photo ID and the plant doctor’s photo check (only when you use them): the one photo you choose is sent to Pl@ntNet to suggest a species, or possible pests and diseases. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.',
       ...(TIPS_ENABLED
         ? ['Tips (optional): Apple handles payment. RevenueCat records the tip with an anonymous app ID and your purchase receipt so the app can say thank you. Tips unlock no features. We never see your name, email or card.']
         : []),
+      'Plant info: to show the About card on a plant’s page, the species name (for example “Goeppertia orbifolia”) is sent to Wikipedia to fetch its summary and photo. Nothing about you or your plants goes with it, and the result is kept on your phone.',
       'Reminders are scheduled on your phone. No notification server is involved.',
     ],
   },
@@ -37,7 +38,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     body: [
       'No analytics, ads or tracking SDKs, and no tracking across other apps or websites.',
       'We don’t sell, rent or share your data.',
-      'We don’t use your location. Climate comes from a city you type.',
+      'We don’t track or store your location. Climate comes from a city you type.',
     ],
   },
   {
@@ -45,6 +46,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     body: [
       'Camera and Photos: only when you add a diary photo, identify a plant or check a problem, and only the photos you pick.',
       'Notifications: one daily plant round, only if you turn it on. You can change this any time in Settings.',
+      'Location (compass only): if you tap “Use phone compass” while setting up a room, iOS asks for location access because that’s how it shares the compass. PlantFam reads only which way the phone points, never where you are, and keeps nothing but the window direction you choose.',
     ],
   },
   {
