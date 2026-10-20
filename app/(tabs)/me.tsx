@@ -56,7 +56,7 @@ export default function MeScreen() {
 
       <MeBuddy />
 
-      <StreakCard streak={streak} />
+      <StreakCard streak={streak} onHelp={() => router.push('/streak-help')} />
 
       <View style={styles.stats}>
         <Sticker drop={0} bg={c.ice} style={styles.stat}>

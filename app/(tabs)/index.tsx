@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDay } from '@/hooks/useDay';
+import { calendarDays } from '@/lib/when';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Path } from 'react-native-svg';
@@ -58,9 +59,7 @@ function checkWord(plants: Plant[]): '' | 'soil ' | 'water ' {
 }
 
 function inDays(iso: string, now: Date): string {
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  const d = Math.round((new Date(iso).setHours(0, 0, 0, 0) - start.getTime()) / DAY);
+  const d = calendarDays(now, new Date(iso));
   return d <= 1 ? 'tomorrow' : `in ${d} days`;
 }
 
@@ -114,7 +113,7 @@ export default function TodayScreen() {
   const answer = (id: string, r: CheckResult) => {
     swipeRefs.current[id]?.close();
     const p = plants.find((x) => x.id === id);
-    const fresh = p && r === 'dry' && isRefreshDue(p, now) ? ' Time for fresh water + nutrients: log it in Care.' : '';
+    const fresh = p && r === 'dry' && isRefreshDue(p, now) ? ' Time for fresh water + nutrients: tap Log care.' : '';
     setMessages((m) => ({ ...m, [id]: logCheck(id, r) + fresh }));
     if (left === 1) haptics.success();
     else haptics.answer();
@@ -132,7 +131,9 @@ export default function TodayScreen() {
       : round.length === 0
         ? 'Nobody needs a check today. Enjoy the green.'
         : allDone
-          ? 'Everyone in the fam is happy. Nice judgement!'
+          ? round.some((p) => p.lastResult === 'soggy')
+            ? 'All checked. Anyone too wet just needs time to dry out.'
+            : 'Everyone in the fam is happy. Nice judgement!'
           : firstEver
             ? `Say hi to the fam: ${how.toLowerCase()}, then tap what you found.`
             : `${how}, then tap what you found.`;

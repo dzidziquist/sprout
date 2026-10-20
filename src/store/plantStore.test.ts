@@ -322,3 +322,64 @@ describe('review fixes', () => {
     expect(usePlantStore.getState().undo[p.id]).toBeUndefined();
   });
 });
+
+describe('second review fixes', () => {
+  it('keeps an overdue slip in the streak when the schedule moves before the next check', async () => {
+    const { lapsesFor } = await import('../engine/streak');
+    const s = usePlantStore.getState();
+    const start = new Date('2026-09-01T09:00:00');
+    const p = s.addPlant({ ...base, name: 'Late', acquiredAt: start.toISOString() }, start);
+    s.logCheck(p.id, 'dry', start);
+    const later = new Date('2026-10-14T09:00:00');
+    const before = lapsesFor(usePlantStore.getState().plants[0], usePlantStore.getState().events, 'seattle', later);
+    expect(before.length).toBeGreaterThan(0);
+    s.updatePlant(p.id, { potDiameterCm: 20 }, later);
+    expect(lapsesFor(usePlantStore.getState().plants[0], usePlantStore.getState().events, 'seattle', later)).toEqual(before);
+  });
+});
+
+describe('archive dates after a return', () => {
+  it('never moves a second goodbye before the plant came back', () => {
+    const s = usePlantStore.getState();
+    const day = (n: number) => new Date(new Date('2026-09-01T09:00:00').getTime() + n * 86400000);
+    const p = s.addPlant({ ...base, name: 'Boomerang', acquiredAt: day(0).toISOString() }, day(0));
+    s.archivePlant(p.id, 'gifted', day(3));
+    s.restorePlant(p.id, day(30));
+    s.archivePlant(p.id, 'gifted', day(31));
+    s.setArchivedAt(p.id, day(10));
+    expect(usePlantStore.getState().plants[0].archivedAt).toBe(day(30).toISOString());
+  });
+});
+
+describe('notes', () => {
+  it('saves a note on its own, and edits or deletes it later', () => {
+    const s = usePlantStore.getState();
+    s.addNote('pepper', '  Aphids. Sprayed with lukewarm water.  ');
+    s.addNote('pepper', '   ');
+    let notes = usePlantStore.getState().events.filter((e) => e.type === 'note');
+    expect(notes.map((e) => e.note)).toEqual(['Aphids. Sprayed with lukewarm water.']);
+
+    s.editNote(notes[0].id, 'Aphids. Lukewarm water, then warm water with apple cider vinegar.');
+    notes = usePlantStore.getState().events.filter((e) => e.type === 'note');
+    expect(notes[0].note).toBe('Aphids. Lukewarm water, then warm water with apple cider vinegar.');
+
+    s.editNote(notes[0].id, '');
+    expect(usePlantStore.getState().events).toHaveLength(0);
+  });
+
+  it('clears a photo caption without losing the photo, and leaves other events alone', () => {
+    usePlantStore.setState({
+      events: [
+        { id: 'ph', plantId: 'p', type: 'photo', photoUri: 'a.jpg', note: 'New leaf', at: '2026-10-01T09:00:00Z' },
+        { id: 'dx', plantId: 'p', type: 'diagnosis', note: 'Overwatered', at: '2026-10-01T09:00:00Z' },
+      ],
+    });
+    const s = usePlantStore.getState();
+    s.editNote('ph', '');
+    s.editNote('dx', '');
+    const [photo, dx] = usePlantStore.getState().events;
+    expect(photo).toMatchObject({ type: 'photo', photoUri: 'a.jpg' });
+    expect(photo.note).toBeUndefined();
+    expect(dx.note).toBe('Overwatered');
+  });
+});

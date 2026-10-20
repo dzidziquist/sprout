@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
-import { usePlantStore } from '@/store/plantStore';
+import { archiveFloor, usePlantStore } from '@/store/plantStore';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
@@ -21,6 +21,9 @@ import { usePlantActions } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { StagePanel } from '@/components/StagePanel';
+import { LightHint } from '@/components/LightHint';
+import { SPOT_LABEL, placeOf, yearLight } from '@/engine/light';
+import { coordsFor } from '@/lib/weather';
 import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
 import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
 import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
@@ -115,7 +118,9 @@ export default function PlantDetail() {
   const pets = petToxicKnown(plant);
   const tint = c.potTint[plant.potColor];
   const archived = !!plant.archivedAt;
-  const goneOptions = optionsSince(GONE, plant.acquiredAt, now);
+  const lightPlace = placeOf(plant, profile.rooms ?? {});
+  const goneFloor = archiveFloor(plant, events);
+  const goneOptions = optionsSince(GONE, goneFloor, now);
   const rhythm = Math.round(checkIntervalDays({ group: species.group, plant, profile: profile.climate, at: now }));
   const mine = events.filter((e) => e.plantId === plant.id);
   const lastWater = [...mine].reverse().find((e) => e.type === 'water');
@@ -138,7 +143,9 @@ export default function PlantDetail() {
   const refresh = refreshDays <= 0 ? 'Due now' : refreshDays === 1 ? 'Tomorrow' : `In ${refreshDays} days`;
   const nextDays = Math.round((new Date(new Date(plant.nextCheckAt).toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000);
   const nextCheck = nextDays <= 0 ? 'Today' : nextDays === 1 ? 'Tomorrow' : nextDays < 7 ? `In ${nextDays} days` : new Date(plant.nextCheckAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-  const history = mine.slice(-6).reverse();
+  // A dry check already says "watered", so the watering it logged alongside isn't listed twice.
+  const checkedAt = new Set(mine.filter((e) => e.type === 'check' && e.result === 'dry').map((e) => e.at));
+  const history = mine.filter((e) => !(e.type === 'water' && checkedAt.has(e.at))).slice(-6).reverse();
   const photos = mine.filter((e) => e.type === 'photo' && e.photoUri).reverse();
   const heroPhoto = showPhoto && plant.photoUri;
 
@@ -223,7 +230,9 @@ export default function PlantDetail() {
             </DropdownGroup>
             {goneOptions.length < GONE.length && (
               <Text style={[styles.archivedNote, { color: c.ink }]}>
-                {plant.name} joined on {shortDate(plant.acquiredAt)}, so it can’t have left before that. To go further back, change that date in Edit.
+                {goneFloor === plant.acquiredAt
+                  ? `${plant.name} joined on ${shortDate(plant.acquiredAt)}, so it can’t have left before that. To go further back, change that date in Edit.`
+                  : `${plant.name} came back on ${shortDate(goneFloor)}, so it can’t have left again before that.`}
               </Text>
             )}
             <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
@@ -261,6 +270,7 @@ export default function PlantDetail() {
             <Button title="Log care" bg={c.card} onPress={actions.log} style={{ minHeight: 48 }} />
           </>
         )}
+        {!archived && <LightHint plant={plant} />}
         {!archived && !plant.rooting && (
           <>
             <View style={styles.actions}>
@@ -341,6 +351,7 @@ export default function PlantDetail() {
                 ]
           ).concat([
             ['Light', LIGHT_LABEL[plant.light]],
+            ...(lightPlace ? [['Sun here', `${yearLight(lightPlace.room, lightPlace.spot, coordsFor(profile.climate).lat, now.getFullYear())} · ${SPOT_LABEL[lightPlace.spot].toLowerCase()}`]] : []),
             [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
             ['Feed', feed],
             ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
@@ -363,12 +374,30 @@ export default function PlantDetail() {
         {history.length > 0 && (
           <View style={{ gap: 8 }}>
             <Label>Recent care</Label>
-            {history.map((e) => (
-              <View key={e.id} style={styles.diaryRow}>
-                <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={1}>{describe(e, plants, hydro)}</Text>
-                <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
-              </View>
-            ))}
+            {history.map((e) => {
+              const row = (
+                <>
+                  <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={e.note && e.type !== 'cutting' ? 4 : 1}>{describe(e, plants, hydro)}</Text>
+                  <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
+                </>
+              );
+              // Notes and photo captions open to be changed.
+              return e.type === 'note' || e.type === 'photo' ? (
+                <Pressable
+                  key={e.id}
+                  accessibilityRole="button"
+                  accessibilityHint={e.type === 'note' ? 'Edit note' : 'Edit caption'}
+                  onPress={() => router.push(`/note/${e.id}`)}
+                  style={({ pressed }) => [styles.diaryRow, pressed && { opacity: 0.6 }]}
+                >
+                  {row}
+                </Pressable>
+              ) : (
+                <View key={e.id} style={styles.diaryRow}>
+                  {row}
+                </View>
+              );
+            })}
           </View>
         )}
       </View>

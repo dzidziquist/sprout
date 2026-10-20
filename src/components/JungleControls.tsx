@@ -3,8 +3,9 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { textOn, useColors } from '../theme/theme';
 import { fonts } from '../theme/tokens';
 import * as haptics from '../lib/haptics';
+import { SunIcon } from './SunIcon';
 
-export type JungleView = 'grid' | 'list';
+export type JungleView = 'grid' | 'list' | 'light';
 
 /** Search box for the jungle: matches name, species and room. */
 export function JungleSearch({ value, onChange }: { value: string; onChange: (q: string) => void }) {
@@ -18,7 +19,7 @@ export function JungleSearch({ value, onChange }: { value: string; onChange: (q:
       <TextInput
         value={value}
         onChangeText={onChange}
-        placeholder="Search name, kind or room"
+        placeholder="Search plants or rooms"
         placeholderTextColor={c.inkMuted}
         accessibilityLabel="Search your jungle"
         autoCorrect={false}
@@ -38,7 +39,7 @@ export function JungleSearch({ value, onChange }: { value: string; onChange: (q:
   );
 }
 
-/** Two-button grid/list switch. */
+/** Grid / list / light switch. */
 export function JungleViewToggle({ value, onChange }: { value: JungleView; onChange: (v: JungleView) => void }) {
   const c = useColors();
   const icon = (v: JungleView, on: boolean) => {
@@ -50,6 +51,8 @@ export function JungleViewToggle({ value, onChange }: { value: JungleView; onCha
         <Rect x={4} y={13} width={7} height={7} rx={2} stroke={stroke} strokeWidth={2.4} fill="none" />
         <Rect x={13} y={13} width={7} height={7} rx={2} stroke={stroke} strokeWidth={2.4} fill="none" />
       </Svg>
+    ) : v === 'light' ? (
+      <SunIcon color={stroke} size={19} width={2.4} />
     ) : (
       <Svg width={18} height={18} viewBox="0 0 24 24">
         <Path d="M9 6h11M9 12h11M9 18h11" stroke={stroke} strokeWidth={2.4} strokeLinecap="round" />
@@ -61,13 +64,13 @@ export function JungleViewToggle({ value, onChange }: { value: JungleView; onCha
   };
   return (
     <View style={[styles.segment, { borderColor: c.line, backgroundColor: c.card }]} accessibilityRole="radiogroup" accessibilityLabel="Layout">
-      {(['grid', 'list'] as const).map((v) => {
+      {(['grid', 'list', 'light'] as const).map((v) => {
         const on = value === v;
         return (
           <Pressable
             key={v}
             accessibilityRole="radio"
-            accessibilityLabel={v === 'grid' ? 'Grid view' : 'List view'}
+            accessibilityLabel={v === 'grid' ? 'Grid view' : v === 'list' ? 'List view' : 'Light by room'}
             accessibilityState={{ selected: on }}
             onPress={() => {
               if (on) return;

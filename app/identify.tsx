@@ -34,7 +34,7 @@ const PROBLEMS: Record<Problem, { title: string; body: string; retry?: boolean }
   'bad-key': { title: 'Photo ID is having a moment', body: "Our plant-ID service didn't accept this app's key. We're on it! Pick from the list for now." },
   offline: { title: 'You seem to be offline', body: 'Photo ID needs the internet. Try again once you’re back online, or pick from the list.', retry: true },
   quota: { title: 'Photo ID is all booked up today', body: "Everyone's free identifications for today are used up. Try again tomorrow, or use Look Up in your iPhone's Photos app, then search the name here." },
-  'daily-limit': { title: `That's ${DAILY_IDS} plant IDs today`, body: "Photo ID is free, with a few looks a day. More tomorrow! Meanwhile, Look Up in your iPhone's Photos app can name plants too; then search the name here." },
+  'daily-limit': { title: `That's ${DAILY_IDS} photo looks today`, body: "Photo ID and the plant doctor's photo check share a few free looks a day. More tomorrow! Meanwhile, Look Up in your iPhone's Photos app can name plants too; then search the name here." },
   'bad-image': { title: "That photo didn't work", body: 'Try another one: a single leaf or flower, in focus, in good light.' },
   server: { title: "Pl@ntNet didn't answer", body: 'Their service had a hiccup. Give it another go in a moment.', retry: true },
   'camera-denied': { title: 'The camera is switched off', body: 'Allow camera access for PlantFam in Settings, or choose a photo from your library instead.' },
@@ -132,7 +132,7 @@ export default function IdentifyScreen() {
       <ScrollView contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 28 }]}>
         <View style={styles.header}>
           <Title style={{ flex: 1 }}>Who's this plant?</Title>
-          <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>
+          <GlassButton accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
             <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
           </GlassButton>
         </View>

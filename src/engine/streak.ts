@@ -131,11 +131,14 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
   // Time away from the fam never counts: lapses stop when it was archived, and it's due again from its return.
   const spans = archivedSpans(mine).filter(([, back]) => back > start);
   let si = 0;
+  /** The date the latest check booked, while nothing (a return) has replaced it. */
+  let booked: number | undefined;
   const comeBack = (until: number) => {
     for (; si < spans.length && spans[si][1] <= until; si++) {
       push(due, spans[si][0]);
       // restorePlant makes it due the moment it's back, whatever was booked before.
       due = spans[si][1];
+      booked = undefined;
     }
   };
   for (const c of checks) {
@@ -144,10 +147,13 @@ export function lapsesFor(plant: Plant, events: CareEvent[], climate: ClimatePro
     push(due, t);
     // What was actually booked; checks from before the app kept that fall back to working it out.
     due = c.nextAt ? new Date(c.nextAt).getTime() : t + gapDays(plant, climate, c.result!, new Date(c.at)) * DAY_MS;
+    booked = c.nextAt ? due : undefined;
   }
   comeBack(Infinity);
-  // The open cycle: the stored schedule is the source of truth.
-  push(new Date(plant.nextCheckAt).getTime(), end);
+  // The open cycle: the stored schedule is the source of truth, except that a booking the store left
+  // alone (it was already overdue when the schedule moved) still counts from its own date.
+  const scheduled = new Date(plant.nextCheckAt).getTime();
+  push(booked === undefined ? scheduled : Math.min(booked, scheduled), end);
   // Even checks logged inside a span (an archive date set back in time) don't make that time count.
   return spans.length ? subtractRanges(out, spans) : out;
 }

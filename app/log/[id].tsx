@@ -1,5 +1,5 @@
 import { ART } from '@/data/art';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -8,7 +8,7 @@ import { usePlantStore, type CareAction } from '@/store/plantStore';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
-import { choosePhoto, photoSrc } from '@/lib/photos';
+import { choosePhoto, deletePhoto, photoSrc } from '@/lib/photos';
 import { checksWaterLine, isReservoir } from '@/engine/careEngine';
 import { supportFor } from '@/data/edibles';
 import * as haptics from '@/lib/haptics';
@@ -41,11 +41,20 @@ export default function LogCareSheet() {
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
   const logCare = usePlantStore((s) => s.logCare);
   const addPhoto = usePlantStore((s) => s.addPhoto);
+  const addNote = usePlantStore((s) => s.addNote);
   const faces = usePlantStore((s) => s.profile.faces);
   const [sel, setSel] = useState<Set<CareAction>>(new Set());
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState(0);
+  // A picked photo is already copied into the diary folder; if it's dropped or never saved, remove it.
+  const unsaved = useRef<string | null>(null);
+  useEffect(
+    () => () => {
+      if (unsaved.current) deletePhoto(unsaved.current);
+    },
+    [],
+  );
 
   if (!plant) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
   const hydro = isReservoir(plant.soil);
@@ -63,6 +72,8 @@ export default function LogCareSheet() {
     }
     if (a === 'photo') {
       if (sel.has('photo')) {
+        if (photoUri) deletePhoto(photoUri);
+        unsaved.current = null;
         setPhotoUri(null);
         setSel((prev) => {
           const next = new Set(prev);
@@ -73,6 +84,7 @@ export default function LogCareSheet() {
       }
       const uri = await choosePhoto();
       if (!uri) return;
+      unsaved.current = uri;
       setPhotoUri(uri);
       setSel((prev) => new Set(prev).add('photo'));
       return;
@@ -93,12 +105,19 @@ export default function LogCareSheet() {
     });
   };
 
+  // A note alone is worth saving too, like what you did about the bugs.
+  const empty = sel.size === 0 && !note.trim();
   const save = () => {
-    if (sel.size === 0) return;
+    if (empty) return;
     const rest = [...sel].filter((a) => a !== 'photo');
     let count = 0;
     if (rest.length) count += logCare(plant.id, rest, note);
+    else if (!photoUri) {
+      addNote(plant.id, note);
+      count += 1;
+    }
     if (photoUri) {
+      unsaved.current = null;
       // The note rides along with the photo when it's the only thing logged.
       addPhoto(plant.id, photoUri, rest.length ? undefined : note);
       count += 1;
@@ -119,7 +138,7 @@ export default function LogCareSheet() {
         </View>
         <Title style={{ textAlign: 'center', color: textOn(c.leaf, c) }}>{plant.name} says thanks!</Title>
         <Text style={[styles.savedSub, { color: textOn(c.leaf, c) }]}>
-          {saved} {saved === 1 ? 'thing' : 'things'} logged. {sel.has('water') || sel.has('wet') || sel.has('refresh') ? 'The rhythm just got smarter.' : photoUri ? 'Added to the photo diary.' : ''}
+          {saved} {saved === 1 ? 'thing' : 'things'} logged. {sel.has('water') || sel.has('wet') || sel.has('refresh') ? 'The rhythm just got smarter.' : photoUri ? 'Added to the photo diary.' : sel.size === 0 ? 'Your note is in Recent care.' : ''}
         </Text>
         <Button title={`Back to ${plant.name}`} raised bg={c.card} onPress={() => router.back()} style={{ alignSelf: 'stretch', minHeight: 56 }} />
       </View>
@@ -136,9 +155,9 @@ export default function LogCareSheet() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Save"
-          accessibilityState={{ disabled: sel.size === 0 }}
+          accessibilityState={{ disabled: empty }}
           onPress={save}
-          style={[styles.save, { backgroundColor: c.leafDeep, borderColor: c.line }, sel.size === 0 && { opacity: 0.35 }]}
+          style={[styles.save, { backgroundColor: c.leafDeep, borderColor: c.line }, empty && { opacity: 0.35 }]}
         >
           <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m5 12 5 5 9-10" stroke={textOn(c.leafDeep, c)} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
         </Pressable>
@@ -179,6 +198,8 @@ export default function LogCareSheet() {
         value={note}
         onChangeText={setNote}
         placeholder="Add a note…"
+        multiline
+        maxLength={500}
         placeholderTextColor={c.inkMuted}
         style={[styles.note, { backgroundColor: c.cloud, color: c.ink }]}
         accessibilityLabel="Note"
@@ -197,7 +218,7 @@ const styles = StyleSheet.create({
   thumb: { width: 30, height: 30, borderRadius: 8, borderWidth: 2 },
   tileText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   hint: { fontFamily: fonts.bodyHeavy, fontSize: 14, borderWidth: 2, borderRadius: 14, padding: 10 },
-  note: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  note: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, paddingTop: 13, paddingBottom: 13, textAlignVertical: 'top', fontFamily: fonts.bodyHeavy, fontSize: 15 },
   saved: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   circle: { width: 180, height: 180, borderRadius: 90, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   savedSub: { fontFamily: fonts.bodyHeavy, fontSize: 16, textAlign: 'center' },

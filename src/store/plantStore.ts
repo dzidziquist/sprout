@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Trip } from '../engine/away';
+import type { RoomLight } from '../engine/light';
 import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
@@ -27,7 +28,11 @@ export interface Profile {
   /** Main colour; leaf green unless changed. */
   accent?: Accent;
   /** Plants tab layout the person last picked. Unset: grid for a small fam, list from 16 plants. */
-  jungleView?: 'grid' | 'list';
+  jungleView?: 'grid' | 'list' | 'light';
+  /** Each room's windows and shade, by room name, for the light view. */
+  rooms?: Record<string, RoomLight>;
+  /** Light tips on plant pages: only when something matters (default), or a line every day. */
+  lightTips?: 'important' | 'daily';
   /** Has left a tip in the tip jar. Nothing is locked; it powers the thank-you gifts (badge, gold cards, party hat). */
   supporter: boolean;
   /** When the first tip was noticed on this phone: the supporter badge's date. */
@@ -96,6 +101,8 @@ interface PlantState {
   seedDemo: (now?: Date) => void;
   /** Edit a plant's details. Changing soil, pot or light reschedules the next check. */
   updatePlant: (plantId: string, patch: Partial<NewPlant>, now?: Date) => void;
+  /** Set a room's windows and shade for the light view. */
+  setRoomLight: (room: string, light: RoomLight) => void;
   /** Plants are never hard-deleted from lineage: archived plants leave the round but stay in Offshoots. */
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
   /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
@@ -111,6 +118,10 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** A note on its own, like what you did about bugs. */
+  addNote: (plantId: string, note: string, now?: Date) => void;
+  /** Rewrite a note (or a photo's caption). Emptying a plain note removes it. */
+  editNote: (eventId: string, note: string) => void;
   /** Plan a trip (replacing any that hasn't started), or end the current one now. */
   planTrip: (trip: Trip) => void;
   endTrip: (now?: Date) => void;
@@ -184,6 +195,13 @@ function scheduleNotBefore(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimatePr
 function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
   const old = new Map(before.map((p) => [p.id, p.nextCheckAt]));
   return new Map(after.filter((p) => old.has(p.id) && old.get(p.id) !== p.nextCheckAt).map((p) => [p.id, p.nextCheckAt]));
+}
+
+/** The earliest an In memory / gifted date can be: when it joined the fam, or when it last came back. */
+export function archiveFloor(plant: Pick<Plant, 'id' | 'acquiredAt'>, events: CareEvent[]): string {
+  let floor = plant.acquiredAt;
+  for (const e of events) if (e.plantId === plant.id && e.type === 'restored' && e.at > floor) floor = e.at;
+  return floor;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
@@ -336,6 +354,8 @@ export const usePlantStore = create<PlantState>()(
         return child;
       },
 
+      setRoomLight: (room, light) => set((s) => ({ profile: { ...s.profile, rooms: { ...s.profile.rooms, [room]: light } } })),
+
       updatePlant: (plantId, patch, now = new Date()) => {
         const climate = get().profile.climate;
         set((s) => {
@@ -374,8 +394,8 @@ export const usePlantStore = create<PlantState>()(
         set((s) => {
           const plant = s.plants.find((p) => p.id === plantId);
           if (!plant?.archivedAt) return s;
-          // Never before it joined the fam.
-          const iso = new Date(Math.max(at.getTime(), new Date(plant.acquiredAt).getTime())).toISOString();
+          // Never before it joined the fam, or before it last came back.
+          const iso = new Date(Math.max(at.getTime(), new Date(archiveFloor(plant, s.events)).getTime())).toISOString();
           const entry = [...s.events].reverse().find((e) => e.plantId === plantId && e.type === 'archived');
           let events = s.events;
           if (entry) {
@@ -438,6 +458,23 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
           // Edibles remember their stage so the diary can show the grow, stage by stage.
           events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, stage: s.plants.find((p) => p.id === plantId)?.stage, note: note?.trim() || undefined, at: now.toISOString() }],
+        }));
+      },
+
+      addNote: (plantId, note, now = new Date()) => {
+        const text = note.trim();
+        if (!text) return;
+        set((s) => ({ events: [...s.events, { id: uid(), plantId, type: 'note', note: text, at: now.toISOString() }] }));
+      },
+
+      editNote: (eventId, note) => {
+        const text = note.trim();
+        set((s) => ({
+          events: s.events.flatMap((e) => {
+            if (e.id !== eventId || (e.type !== 'note' && e.type !== 'photo')) return [e];
+            if (e.type === 'note' && !text) return [];
+            return [{ ...e, note: text || undefined }];
+          }),
         }));
       },
 

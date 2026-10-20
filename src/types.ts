@@ -21,6 +21,9 @@ export type Soil =
   | 'water'
   | 'unsure';
 
+/** Where a plant sits relative to its room's nearest window. */
+export type WindowSpot = 'sill' | 'below' | 'near' | 'far';
+
 export type Light = 'low' | 'medium' | 'bright' | 'direct';
 
 export type PotMaterial = 'plastic' | 'glazed' | 'terracotta' | 'fabric';
@@ -184,6 +187,8 @@ export interface Plant {
   light: Light;
   placement: Placement;
   room?: string;
+  /** Where it sits relative to its room's window, for the light view (sill, below, about 1 m, across the room). */
+  windowSpot?: WindowSpot;
   origin: Origin;
   /** Set when the plant was propagated from another plant in the fam. */
   parentId?: string;
