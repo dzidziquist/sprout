@@ -2,25 +2,30 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { isOtherId, speciesOf } from '@/data/species';
+import { getSpecies, isOtherId } from '@/data/species';
 import { useWiki } from '@/lib/wiki';
 import * as haptics from '@/lib/haptics';
 import { Sticker } from '@/components/ui';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
-import type { Plant } from '@/types';
+import type { SpeciesId } from '@/types';
 
 /**
- * "About <species>" on a plant's page: Wikipedia's intro and photo, folded to one row until tapped.
- * Whether it starts open is remembered for every plant. Hidden when Wikipedia has nothing.
+ * The names to look a plant up by. "Other" plants only use the names the person gave them, never the
+ * generic group name ("Leafy tropical").
  */
-export function AboutCard({ plant }: { plant: Plant }) {
+export function wikiNames(speciesId: SpeciesId, custom?: { commonName: string; latinName?: string }): { latin: string; common: string } {
+  if (isOtherId(speciesId)) return { latin: custom?.latinName ?? '', common: custom?.commonName ?? '' };
+  const sp = getSpecies(speciesId);
+  return { latin: sp.latinName, common: sp.commonName };
+}
+
+/**
+ * "About <species>": Wikipedia's intro and photo, folded to one row until tapped. Whether it starts open
+ * is remembered everywhere it shows. Hidden when Wikipedia has nothing.
+ */
+export function AboutCard({ latin, common }: { latin: string; common: string }) {
   const c = useColors();
-  const species = speciesOf(plant);
-  // "Other" plants are only looked up by the names the person gave them, never the generic group name.
-  const other = isOtherId(plant.speciesId);
-  const latin = other ? plant.custom?.latinName ?? '' : species.latinName;
-  const common = other ? plant.custom?.commonName ?? '' : species.commonName;
   const wiki = useWiki(latin, common);
   const open = usePlantStore((s) => !!s.profile.aboutOpen);
   const setProfile = usePlantStore((s) => s.setProfile);

@@ -22,7 +22,7 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { StagePanel } from '@/components/StagePanel';
 import { LightCard } from '@/components/LightCard';
-import { AboutCard } from '@/components/AboutCard';
+import { AboutCard, wikiNames } from '@/components/AboutCard';
 import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
 import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
 import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
@@ -367,7 +367,7 @@ export default function PlantDetail() {
           </Sticker>
         )}
 
-        <AboutCard plant={plant} />
+        <AboutCard {...wikiNames(plant.speciesId, plant.custom)} />
 
         <PlantPageOffshoots parent={parent} babies={babies} />
 

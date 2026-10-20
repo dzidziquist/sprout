@@ -20,7 +20,10 @@ import { JungleChips, JungleSearch, JungleViewToggle, type JungleChip, type Jung
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
-import type { Mood, Plant } from '@/types';
+import type { Mood, Plant, WishItem } from '@/types';
+
+/** One shared empty list, so the store selector doesn't hand back a new array every render. */
+const NO_WISHES: WishItem[] = [];
 
 const moodBadge = (c: Palette): Record<Mood, { text: string; bg: string }> => ({
   thirsty: { text: 'Check me', bg: c.peach },
@@ -158,6 +161,7 @@ export default function JungleScreen() {
   // Saved with the other settings, so the layout survives closing the app.
   const saved = usePlantStore((s) => s.profile.jungleView);
   const setProfile = usePlantStore((s) => s.setProfile);
+  const wishlist = usePlantStore((s) => s.profile.wishlist ?? NO_WISHES);
   const view: JungleView = saved ?? (living.length >= 16 ? 'list' : 'grid');
   const setView = (v: JungleView) => setProfile({ jungleView: v });
   // Re-renders at midnight so moods and "due" badges catch up.
@@ -226,6 +230,19 @@ export default function JungleScreen() {
               <Text style={[styles.growSub, { color: c.ink }]}>{edibles.length} {edibles.length === 1 ? 'crop' : 'crops'} · stages, weather and harvests</Text>
             </View>
             <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m9 6 6 6-6 6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+          </Sticker>
+        </Pressable>
+      )}
+
+      {wishlist.length > 0 && (
+        <Pressable accessibilityRole="button" accessibilityLabel={`Open wishlist, ${wishlist.length} ${wishlist.length === 1 ? 'plant' : 'plants'}`} onPress={() => router.push('/wishlist')}>
+          <Sticker bg={c.lavender} style={styles.growLink}>
+            <PlantBuddy speciesId={wishlist[wishlist.length - 1].speciesId} mood="happy" size={52} bg={c.lavender} />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.growTitle, { color: textOn(c.lavender, c) }]}>Wishlist</Text>
+              <Text style={[styles.growSub, { color: textOn(c.lavender, c) }]}>{wishlist.length} {wishlist.length === 1 ? 'plant' : 'plants'} to get one day</Text>
+            </View>
+            <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m9 6 6 6-6 6" stroke={textOn(c.lavender, c)} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
           </Sticker>
         </Pressable>
       )}

@@ -1,12 +1,12 @@
 import { useUnits } from '@/hooks/useUnits';
 import { localizeTemps } from '@/lib/units';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { OTHER, SPECIES, SPECIES_LIST, getSpecies, isOtherId, searchSpecies } from '@/data/species';
+import { OTHER, SPECIES_LIST, getSpecies, isOtherId, isSpeciesId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
 import { Dropdown, DropdownGroup } from '@/components/Dropdown';
@@ -14,6 +14,7 @@ import { defaultSpot, type Spot } from '@/lib/spots';
 import { daysAgo, JOINED, WATERED, type JoinedId, type WateredId } from '@/lib/when';
 import { edibleGuide, type EdibleGuide } from '@/data/edibles';
 import { PlantBuddy } from '@/components/PlantBuddy';
+import { AboutCard } from '@/components/AboutCard';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
@@ -22,7 +23,6 @@ import { textOn, useColors } from '@/theme/theme';
 import type { EdibleStage, Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
 
-const isSpeciesId = (v: unknown): v is SpeciesId => typeof v === 'string' && v in SPECIES;
 
 const NAMES: Partial<Record<SpeciesId, string[]>> = {
   monstera: ['Monty', 'Swiss Cheese', 'Big Leaf'],
@@ -178,11 +178,11 @@ export default function AddPlantScreen() {
   const sheetTop = useSheetTop();
   const c = useColors();
   // /add?species=pothos (from photo ID) skips the picker; /add?other=1&name=…&latin=… starts an "other" plant.
-  const params = useLocalSearchParams<{ species?: string; other?: string; name?: string; latin?: string }>();
+  const params = useLocalSearchParams<{ species?: string; other?: string; name?: string; latin?: string; wish?: string }>();
   // Arriving from photo ID (/add?species=pothos) skips the picker.
   const otherPreset = params.other ? OTHER.tropical.id : null;
   const preset = isSpeciesId(params.species) ? params.species : otherPreset;
-  const { plants, addPlant, profile } = usePlantStore();
+  const { plants, addPlant, profile, removeWish } = usePlantStore();
   const presetDefaults = preset ? defaultsFor(preset, profile.spots) : null;
   const units = useUnits();
   const [speciesId, setSpeciesId] = useState<SpeciesId | null>(preset);
@@ -256,6 +256,12 @@ export default function AddPlantScreen() {
     setNameIdx(0);
     setName(freeName(id, plants.map((p) => p.name)));
   };
+
+  // Back from a species page's "Add to my fam" (it returns here with ?species=…): pick that plant.
+  useEffect(() => {
+    if (isSpeciesId(params.species) && params.species !== speciesId) pick(params.species);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.species]);
 
   const inputStyle = [styles.search, { borderColor: c.line, color: c.ink, backgroundColor: c.card }];
 
@@ -337,6 +343,20 @@ export default function AddPlantScreen() {
             <Pressable key={s.id} accessibilityRole="button" accessibilityLabel={s.commonName} onPress={() => pick(s.id)} style={[styles.speciesTile, { backgroundColor: c.potTint[s.artPot], borderColor: c.line }]}>
               <PlantBuddy speciesId={s.id} size={84} />
               <Text style={[styles.speciesName, { color: c.ink }]} numberOfLines={1}>{s.commonName}</Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`About ${s.commonName}`}
+                hitSlop={8}
+                onPress={() => {
+                  haptics.tap();
+                  router.push(`/species/${s.id}?from=add`);
+                }}
+                style={[styles.info, { borderColor: c.line, backgroundColor: c.card }]}
+              >
+                <Svg width={14} height={14} viewBox="0 0 24 24">
+                  <Path d="M12 11v6M12 7h.01" stroke={c.ink} strokeWidth={3} strokeLinecap="round" />
+                </Svg>
+              </Pressable>
             </Pressable>
           ))}
         </View>
@@ -396,6 +416,8 @@ export default function AddPlantScreen() {
       acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString(),
       ...(nowStage ? { stage: nowStage, stageAt: new Date().toISOString() } : {}),
     }, new Date(), { lastWateredAt: lastWateredDays === null ? undefined : daysAgo(lastWateredDays) });
+    // Bought one from the wishlist: it's in the jungle now.
+    if (typeof params.wish === 'string') removeWish(params.wish);
     haptics.success();
     router.replace(`/plant/${plant.id}`);
   };
@@ -420,6 +442,8 @@ export default function AddPlantScreen() {
         </View>
       </View>
       {!isOther && sp.tip && <Text style={[styles.note, { color: c.inkMuted }]}>{localizeTemps(sp.tip, units)}</Text>}
+      {/* Unlisted plants are only looked up by the names photo ID gave (not on every keystroke while typing). */}
+      {(!isOther || typeof params.latin === 'string') && <AboutCard latin={isOther ? String(params.latin) : sp.latinName} common={isOther ? String(params.name ?? '') : sp.commonName} />}
 
       {isOther && (
         <View style={{ gap: 10 }}>
@@ -647,6 +671,7 @@ const styles = StyleSheet.create({
   careTitle: { fontFamily: fonts.displaySemi, fontSize: 16 },
   careSub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   speciesTile: { width: '31%', flexGrow: 1, borderRadius: 18, borderWidth: 2, alignItems: 'center', paddingVertical: 8, gap: 2 },
+  info: { position: 'absolute', top: 6, right: 6, width: 26, height: 26, borderRadius: 13, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   speciesName: { fontFamily: fonts.bodyHeavy, fontSize: 12, paddingHorizontal: 4 },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 22, borderWidth: 2 },
   heroKicker: { fontFamily: fonts.bodyHeavy, fontSize: 12 },

@@ -172,6 +172,17 @@ export interface Species {
 }
 
 /** One individual plant the user owns. */
+/** A plant someone wants one day: on the wishlist, not in the jungle. */
+export interface WishItem {
+  id: string;
+  speciesId: SpeciesId;
+  /** For plants not in the catalogue (from photo ID): the names to show and look up. */
+  custom?: { commonName: string; latinName?: string };
+  /** Where they saw it, the price, anything. */
+  note?: string;
+  savedAt: string;
+}
+
 export interface Plant {
   id: string;
   name: string;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { facingOf, lightTip, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearLight, type RoomLight } from './light';
+import { bestHome, facingOf, lightTip, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearLight, type RoomLight } from './light';
 import type { Plant } from '../types';
 
 const SEATTLE = 47.6;
@@ -151,5 +151,14 @@ describe('room setup', () => {
     const fits = spotFits(plant(), west, SEATTLE, dec);
     expect(fits.far).toBe('dim');
     expect(fits.near).toBe('ok');
+  });
+});
+
+describe('in your home', () => {
+  it('names a room and spot that would suit a new plant, or says why none does', () => {
+    const rooms = { 'Living room': west, Hallway: { windows: [], shade: 'none' } as RoomLight };
+    expect(bestHome('medium', rooms, SEATTLE, june)).toEqual({ room: 'Living room', words: 'about 1 m from the west window' });
+    expect(bestHome('direct', { Hallway: rooms.Hallway, North: { windows: ['N'], shade: 'outside' } }, SEATTLE, dec)).toEqual({ room: null, dim: true });
+    expect(bestHome('medium', {}, SEATTLE, june)).toBeNull();
   });
 });

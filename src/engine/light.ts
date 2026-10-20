@@ -316,3 +316,23 @@ export function spotFits(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomL
 
 /** A compass heading (degrees from north) rounded to the nearest of north, east, south and west. */
 export const facingOf = (heading: number): Facing => FACINGS[Math.round((((heading % 360) + 360) % 360) / 90) % 4];
+
+/**
+ * Where a plant that wants `need` light would do best in this home today: the first set-up room and spot
+ * that suits it, trying a comfortable distance from the window before the sill. Null when no room suits
+ * (or none is set up); `dim` says whether every room is too dark for it rather than too sunny.
+ */
+export function bestHome(need: Light, rooms: Record<string, RoomLight>, lat: number, now: Date): { room: string; words: string } | { room: null; dim: boolean } | null {
+  const lit = Object.entries(rooms).filter(([, r]) => hasWindow(r));
+  if (!lit.length) return null;
+  let dim = true;
+  for (const [name, room] of lit.sort(([a], [b]) => a.localeCompare(b))) {
+    for (const spot of ['near', 'below', 'sill', 'far'] as WindowSpot[]) {
+      const here = spotLight(room, spot, lat, now);
+      const fit = suits(here.level, need);
+      if (fit === 'ok') return { room: name, words: spotWords(spot, here.window) };
+      if (fit === 'harsh') dim = false;
+    }
+  }
+  return { room: null, dim };
+}

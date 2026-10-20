@@ -383,3 +383,25 @@ describe('notes', () => {
     expect(dx.note).toBe('Overwatered');
   });
 });
+
+describe('wishlist', () => {
+  it('saves a plant once, keeps a note, and removes it', () => {
+    const s = usePlantStore.getState();
+    const first = s.saveWish({ speciesId: 'calathea', note: '  Swansons, $25 ' });
+    const again = s.saveWish({ speciesId: 'calathea' });
+    expect(again.id).toBe(first.id);
+    expect(usePlantStore.getState().profile.wishlist).toHaveLength(1);
+    expect(first.note).toBe('Swansons, $25');
+
+    s.updateWish(first.id, { note: '   ' });
+    expect(usePlantStore.getState().profile.wishlist?.[0].note).toBeUndefined();
+
+    // Two different unlisted plants are two wishes, even though both use the generic "other" id.
+    s.saveWish({ speciesId: 'other-tropical', custom: { commonName: 'Hindu rope', latinName: 'Hoya compacta' } });
+    s.saveWish({ speciesId: 'other-tropical', custom: { commonName: 'Rex begonia', latinName: 'Begonia rex' } });
+    expect(usePlantStore.getState().profile.wishlist).toHaveLength(3);
+
+    s.removeWish(first.id);
+    expect(usePlantStore.getState().profile.wishlist?.map((w) => w.custom?.commonName)).toEqual(['Hindu rope', 'Rex begonia']);
+  });
+});
