@@ -1,4 +1,6 @@
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -9,7 +11,8 @@ import { roomsInUse } from '@/engine/light';
 import { findWish } from '@/store/plantStore';
 import { addHref, homeFor } from '@/lib/plantLinks';
 import { coordsFor } from '@/lib/weather';
-import { useWiki } from '@/lib/wiki';
+import { usePhoto, useWiki } from '@/lib/wiki';
+import { PhotoCredit, PhotoToggle } from '@/components/PhotoCredit';
 import { localizeTemps } from '@/lib/units';
 import { useUnits } from '@/hooks/useUnits';
 import { wikiNames } from '@/components/AboutCard';
@@ -41,6 +44,9 @@ export default function SpeciesPage() {
   const sp = getSpecies(speciesId);
   const names = wikiNames(speciesId, custom);
   const wiki = useWiki(names.latin, names.common);
+  // Our art by default; a credited Wikimedia photo only when asked for (that's when it's fetched).
+  const [showPhoto, setShowPhoto] = useState(false);
+  const real = usePhoto(wiki?.imageFile, showPhoto);
   const plants = usePlantStore((s) => s.plants);
   const profile = usePlantStore((s) => s.profile);
   const saveWish = usePlantStore((s) => s.saveWish);
@@ -78,7 +84,17 @@ export default function SpeciesPage() {
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 150 }}>
         <View style={[styles.hero, { backgroundColor: tint, borderColor: c.line }]}>
-          <PlantBuddy speciesId={speciesId} size={180} bg={tint} />
+          {real.photo ? (
+            <Image source={{ uri: real.photo.src }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel={`Photo of ${title}`} />
+          ) : (
+            <PlantBuddy speciesId={speciesId} size={180} bg={tint} />
+          )}
+          {real.loading && <ActivityIndicator style={StyleSheet.absoluteFill} color={c.ink} />}
+          {!!wiki?.imageFile && (
+            <View style={styles.photoToggle}>
+              <PhotoToggle on={showPhoto} onChange={setShowPhoto} />
+            </View>
+          )}
           <View style={[styles.toolbar, { top: 16 }]}>
             <GlassButton accessibilityLabel="Close" onPress={close}>
               <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
@@ -86,6 +102,14 @@ export default function SpeciesPage() {
           </View>
         </View>
 
+        {real.photo && (
+          <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
+            <PhotoCredit photo={real.photo} />
+          </View>
+        )}
+        {showPhoto && !real.loading && !real.photo && (
+          <Text style={[styles.small, { color: c.inkMuted, paddingHorizontal: 20, paddingTop: 8 }]}>No photo we can credit for this plant, so here’s our art.</Text>
+        )}
         <View style={styles.body}>
           <View style={{ gap: 2 }}>
             <Text style={[styles.title, { color: c.ink }]} accessibilityRole="header">{title}</Text>
@@ -168,6 +192,7 @@ function Fact({ top, bottom, bg }: { top: string; bottom: string; bg: string }) 
 
 const styles = StyleSheet.create({
   hero: { height: 260, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2.5, overflow: 'hidden' },
+  photoToggle: { position: 'absolute', right: 14, bottom: 12 },
   toolbar: { position: 'absolute', left: 16 },
   body: { padding: 20, gap: 14 },
   title: { fontFamily: fonts.display, fontSize: 30, lineHeight: 34 },

@@ -1,9 +1,12 @@
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Image } from 'expo-image';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { getSpecies, isOtherId } from '@/data/species';
-import { useWiki } from '@/lib/wiki';
+import { usePhoto, useWiki } from '@/lib/wiki';
+import { PhotoCredit, PhotoToggle } from '@/components/PhotoCredit';
 import * as haptics from '@/lib/haptics';
 import { Sticker } from '@/components/ui';
 import { fonts } from '@/theme/tokens';
@@ -28,6 +31,8 @@ export function AboutCard({ speciesId, latin, common }: { speciesId: SpeciesId; 
   const c = useColors();
   const wiki = useWiki(latin, common);
   const open = usePlantStore((s) => !!s.profile.aboutOpen);
+  const [showPhoto, setShowPhoto] = useState(false);
+  const real = usePhoto(wiki?.imageFile, showPhoto && open);
   const setProfile = usePlantStore((s) => s.setProfile);
   if (!wiki || (!latin && !common)) return null;
 
@@ -59,9 +64,20 @@ export function AboutCard({ speciesId, latin, common }: { speciesId: SpeciesId; 
       </Pressable>
       {open && (
         <View style={[styles.body, { borderColor: c.cloud }]}>
+          {showPhoto && real.photo && (
+            <View style={{ gap: 4 }}>
+              <Image source={{ uri: real.photo.src }} style={[styles.photo, { borderColor: c.line }]} contentFit="cover" accessibilityLabel={`Photo of ${common || wiki.title}`} />
+              <PhotoCredit photo={real.photo} />
+            </View>
+          )}
+          {showPhoto && real.loading && <ActivityIndicator color={c.ink} />}
+          {showPhoto && !real.loading && !real.photo && <Text style={[styles.sub, { color: c.inkMuted }]}>No photo we can credit for this plant.</Text>}
           <Text style={[styles.extract, { color: c.ink }]} numberOfLines={8}>{wiki.extract}</Text>
           <View style={styles.foot}>
-            <Text style={[styles.sub, { color: c.inkMuted }]}>From Wikipedia</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Text style={[styles.sub, { color: c.inkMuted }]}>From Wikipedia</Text>
+              {!!wiki.imageFile && <PhotoToggle on={showPhoto} onChange={setShowPhoto} />}
+            </View>
             <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.more, { color: c.leafDeep }]}>
               Read more ›
             </Text>
@@ -79,6 +95,7 @@ const styles = StyleSheet.create({
   sub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   body: { paddingHorizontal: 14, paddingBottom: 14, paddingTop: 12, gap: 10, borderTopWidth: 2 },
   extract: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21 },
+  photo: { width: '100%', height: 180, borderRadius: 14, borderWidth: 2 },
   foot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   more: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
 });

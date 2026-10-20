@@ -17,7 +17,7 @@ PlantFam is a plant-care app made by an independent developer. This policy is th
 - Your city: when you search for where you grow, the name you type goes to Open-Meteo’s free geocoder, and the city you pick has its past weather looked up once to learn its seasons. PlantFam never tracks your location or GPS position.
 - Weather (grow patch): a 7-day forecast is fetched from Open-Meteo for your city’s coordinates. Like any website, Open-Meteo sees the request’s IP address.
 - Photo ID and the plant doctor’s photo check (only when you use them): the one photo you choose is sent to Pl@ntNet to suggest a species, or possible pests and diseases. Nothing else about you or your plants is sent with it. Pl@ntNet’s own policy applies to how they handle that image.
-- Plant info: to show the About card on a plant’s page, the species name (for example “Goeppertia orbifolia”) is sent to Wikipedia to fetch its short summary. Nothing about you or your plants goes with it, and the result is kept on your phone.
+- Plant info: to show the About card on a plant’s page, the species name (for example “Goeppertia orbifolia”) is sent to Wikipedia to fetch its short summary. If you tap “Real photo”, the name of that photo’s file is sent to Wikimedia Commons to fetch the photo and its credit (who took it and its licence). Nothing about you or your plants goes with either, and the results are kept on your phone.
 - Reminders are scheduled on your phone. No notification server is involved.
 
 ## What we never do
