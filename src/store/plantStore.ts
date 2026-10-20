@@ -118,6 +118,10 @@ interface PlantState {
   /** Spring onions: cut and let it regrow. */
   logRegrow: (plantId: string, now?: Date) => void;
   addPhoto: (plantId: string, uri: string, note?: string, now?: Date) => void;
+  /** A note on its own, like what you did about bugs. */
+  addNote: (plantId: string, note: string, now?: Date) => void;
+  /** Rewrite a note (or a photo's caption). Emptying a plain note removes it. */
+  editNote: (eventId: string, note: string) => void;
   /** Plan a trip (replacing any that hasn't started), or end the current one now. */
   planTrip: (trip: Trip) => void;
   endTrip: (now?: Date) => void;
@@ -454,6 +458,23 @@ export const usePlantStore = create<PlantState>()(
           plants: s.plants.map((p) => (p.id === plantId ? { ...p, photoUri: uri } : p)),
           // Edibles remember their stage so the diary can show the grow, stage by stage.
           events: [...s.events, { id: uid(), plantId, type: 'photo', photoUri: uri, stage: s.plants.find((p) => p.id === plantId)?.stage, note: note?.trim() || undefined, at: now.toISOString() }],
+        }));
+      },
+
+      addNote: (plantId, note, now = new Date()) => {
+        const text = note.trim();
+        if (!text) return;
+        set((s) => ({ events: [...s.events, { id: uid(), plantId, type: 'note', note: text, at: now.toISOString() }] }));
+      },
+
+      editNote: (eventId, note) => {
+        const text = note.trim();
+        set((s) => ({
+          events: s.events.flatMap((e) => {
+            if (e.id !== eventId || (e.type !== 'note' && e.type !== 'photo')) return [e];
+            if (e.type === 'note' && !text) return [];
+            return [{ ...e, note: text || undefined }];
+          }),
         }));
       },
 

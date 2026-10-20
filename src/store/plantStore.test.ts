@@ -350,3 +350,36 @@ describe('archive dates after a return', () => {
     expect(usePlantStore.getState().plants[0].archivedAt).toBe(day(30).toISOString());
   });
 });
+
+describe('notes', () => {
+  it('saves a note on its own, and edits or deletes it later', () => {
+    const s = usePlantStore.getState();
+    s.addNote('pepper', '  Aphids. Sprayed with lukewarm water.  ');
+    s.addNote('pepper', '   ');
+    let notes = usePlantStore.getState().events.filter((e) => e.type === 'note');
+    expect(notes.map((e) => e.note)).toEqual(['Aphids. Sprayed with lukewarm water.']);
+
+    s.editNote(notes[0].id, 'Aphids. Lukewarm water, then warm water with apple cider vinegar.');
+    notes = usePlantStore.getState().events.filter((e) => e.type === 'note');
+    expect(notes[0].note).toBe('Aphids. Lukewarm water, then warm water with apple cider vinegar.');
+
+    s.editNote(notes[0].id, '');
+    expect(usePlantStore.getState().events).toHaveLength(0);
+  });
+
+  it('clears a photo caption without losing the photo, and leaves other events alone', () => {
+    usePlantStore.setState({
+      events: [
+        { id: 'ph', plantId: 'p', type: 'photo', photoUri: 'a.jpg', note: 'New leaf', at: '2026-10-01T09:00:00Z' },
+        { id: 'dx', plantId: 'p', type: 'diagnosis', note: 'Overwatered', at: '2026-10-01T09:00:00Z' },
+      ],
+    });
+    const s = usePlantStore.getState();
+    s.editNote('ph', '');
+    s.editNote('dx', '');
+    const [photo, dx] = usePlantStore.getState().events;
+    expect(photo).toMatchObject({ type: 'photo', photoUri: 'a.jpg' });
+    expect(photo.note).toBeUndefined();
+    expect(dx.note).toBe('Overwatered');
+  });
+});

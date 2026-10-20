@@ -374,12 +374,30 @@ export default function PlantDetail() {
         {history.length > 0 && (
           <View style={{ gap: 8 }}>
             <Label>Recent care</Label>
-            {history.map((e) => (
-              <View key={e.id} style={styles.diaryRow}>
-                <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={1}>{describe(e, plants, hydro)}</Text>
-                <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
-              </View>
-            ))}
+            {history.map((e) => {
+              const row = (
+                <>
+                  <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={e.note && e.type !== 'cutting' ? 4 : 1}>{describe(e, plants, hydro)}</Text>
+                  <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
+                </>
+              );
+              // Notes and photo captions open to be changed.
+              return e.type === 'note' || e.type === 'photo' ? (
+                <Pressable
+                  key={e.id}
+                  accessibilityRole="button"
+                  accessibilityHint={e.type === 'note' ? 'Edit note' : 'Edit caption'}
+                  onPress={() => router.push(`/note/${e.id}`)}
+                  style={({ pressed }) => [styles.diaryRow, pressed && { opacity: 0.6 }]}
+                >
+                  {row}
+                </Pressable>
+              ) : (
+                <View key={e.id} style={styles.diaryRow}>
+                  {row}
+                </View>
+              );
+            })}
           </View>
         )}
       </View>
