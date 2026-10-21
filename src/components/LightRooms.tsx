@@ -49,7 +49,7 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
     const windowless = !!place && !hasWindow(place.room);
     const sub = !p.room?.trim() ? 'No room yet' : windowless ? weather ?? 'No window in this room' : !p.windowSpot ? 'Location not added' : weather ?? SPOT_LABEL[p.windowSpot];
     // In a room with no window, moving within it won't help, so there's no spot to find or set.
-    const action = !p.room?.trim() || windowless ? null : !p.windowSpot ? 'Set position' : fit === 'dim' ? 'Find a brighter spot' : fit === 'harsh' ? 'Find a shadier spot' : null;
+    const action = !p.room?.trim() || windowless ? null : !p.windowSpot ? 'Set position' : fit === 'dim' ? (tip?.growLight ? null : 'Find a brighter spot') : fit === 'harsh' ? 'Find a shadier spot' : null;
     return (
       <View key={p.id} style={[styles.row, !last && { borderBottomWidth: 1.5, borderColor: c.cloud }]}>
         <Pressable

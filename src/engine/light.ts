@@ -186,6 +186,8 @@ export function spotWords(spot: WindowSpot, w: Facing | undefined): string {
 export interface LightTip {
   kind: 'heat' | 'harsh' | 'dim' | 'grey';
   text: string;
+  /** Too dim, and no spot in the home has enough light: moving won't help, a grow light would. */
+  growLight?: boolean;
 }
 
 export interface LightContext {
@@ -248,15 +250,23 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   if (fit === 'dim') {
     const better = brighterSpot(plant, place.name, room, spot, need, ctx);
     const seasonal = !longDays && suits(halfYear.level, need) === 'ok';
-    if (!better) return seasonal ? { kind: 'dim', text: 'Short days, so a bit dim here. It’ll pick up in spring.' } : { kind: 'dim', text: `A bit dim for a ${speciesOf(plant).commonName.toLowerCase()}. It needs a brighter room.` };
+    const kind = speciesOf(plant).commonName.toLowerCase();
+    if (!better)
+      return seasonal
+        ? { kind: 'dim', growLight: true, text: `No spot in your home gets enough light for a ${kind} at this time of year. A grow light would help till spring.` }
+        : { kind: 'dim', growLight: true, text: `No spot in your home gets enough light for a ${kind}. A grow light would help.` };
     return { kind: 'dim', text: seasonal ? `Short days: try ${better} till spring.` : `A bit dim here. Try ${better}.` };
   }
 
-  // Only just enough light, and a grey stretch coming: closer to the glass for now.
+  // Only just enough light, and a grey stretch coming: a clearly brighter spot by the same window for now
+  // (one that gets only a little more, like below the window against 1 m away, isn't worth the move).
   const grey = days.filter((d) => skyFactor(d) <= 0.3).length >= 4;
-  if (grey && here.level === need && need !== 'low' && spot !== 'sill') {
-    const closer = SPOTS[SPOTS.indexOf(spot) - 1];
-    return { kind: 'grey', text: `Grey days ahead: try ${spotWords(closer, here.window)} for now.` };
+  if (grey && here.level === need && need !== 'low') {
+    const closer = SPOTS.slice(0, SPOTS.indexOf(spot)).find((s) => {
+      const there = spotLight(room, s, ctx.lat, ctx.now);
+      return there.score >= here.score * 1.3 && suits(there.level, need) === 'ok';
+    });
+    if (closer) return { kind: 'grey', text: `Grey days ahead: ${name} would get more light ${spotWords(closer, here.window)} for now.` };
   }
   return null;
 }
@@ -275,6 +285,20 @@ function brighterSpot(plant: Plant, roomName: string, room: RoomLight, spot: Win
     }
   }
   return null;
+}
+
+/**
+ * How a spot will suit the plant through the year, for a spot that suits it now: a warning when summer sun
+ * or winter gloom would be too much for it here, else the spot's light over the year.
+ */
+export function yearFit(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, spot: WindowSpot, lat: number, now: Date): string {
+  const need = lightNeed(plant);
+  const year = now.getFullYear();
+  const [winter, summer] = (lat >= 0 ? [new Date(year, 11, 21), new Date(year, 5, 21)] : [new Date(year, 5, 21), new Date(year, 11, 21)]).map((d) => suits(spotLight(room, spot, lat, d).level, need));
+  const longDays = sunDay(lat, now).daylight >= sunDay(lat, shiftDays(now, 182)).daylight;
+  if (summer === 'harsh' && !longDays) return 'Good for now. Summer sun gets too strong here, so move it back from the glass in late spring.';
+  if (winter === 'dim' && longDays) return 'Good for now. Too dim here in winter, so move it closer to the glass in autumn.';
+  return yearLight(room, spot, lat, year);
 }
 
 /** How a spot's light changes over the year: "Medium all year" or "Low in winter · bright in summer". */

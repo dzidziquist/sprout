@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bestHome, facingOf, lightTip, placeOf, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearLight, type RoomLight } from './light';
+import { bestHome, facingOf, lightTip, placeOf, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearFit, yearLight, type RoomLight } from './light';
 import type { Plant } from '../types';
 
 const SEATTLE = 47.6;
@@ -175,5 +175,29 @@ describe('rooms without a window', () => {
   it('tells a new plant the home is too dark when no set-up room has a window', () => {
     expect(bestHome('bright', { Bathroom: dark }, SEATTLE, june)).toEqual({ room: null, dim: true });
     expect(bestHome('low', { Bathroom: dark }, SEATTLE, june)).toEqual({ room: 'Bathroom', words: 'anywhere in it' });
+  });
+});
+
+describe('light at a west window in a Seattle autumn', () => {
+  const west: RoomLight = { windows: ['W'], shade: 'none' };
+  const rooms = { 'Living room': west };
+  const oct = new Date(2026, 9, 21, 12);
+  const grey = [0, 1, 2, 3, 4].map((i) => ({ date: `2026-10-${21 + i}`, minC: 8, maxC: 12, precipMm: 6, code: 61 }));
+
+  it('sends a grey-week plant to a spot that is clearly brighter, not one that is barely so', () => {
+    // 1 m away and below the window get much the same light; the sill gets nearly twice it.
+    const tip = lightTip(plant({ speciesId: 'heart-fern', name: 'Hearty', windowSpot: 'near' }), { lat: 47.6, now: oct, rooms, forecast: grey });
+    expect(tip).toEqual({ kind: 'grey', text: 'Grey days ahead: Hearty would get more light on the west sill for now.' });
+  });
+
+  it('says when no spot in the home has enough light, instead of asking for a brighter one', () => {
+    const tip = lightTip(plant({ speciesId: 'tomato', name: 'Tommy', windowSpot: 'sill' }), { lat: 47.6, now: oct, rooms });
+    expect(tip?.growLight).toBe(true);
+    expect(tip?.text).toBe('No spot in your home gets enough light for a cherry tomato at this time of year. A grow light would help till spring.');
+  });
+
+  it('warns about summer sun on a sill that only suits a fern for now', () => {
+    expect(yearFit({ speciesId: 'heart-fern' }, west, 'sill', 47.6, oct)).toBe('Good for now. Summer sun gets too strong here, so move it back from the glass in late spring.');
+    expect(yearFit({ speciesId: 'heart-fern' }, west, 'near', 47.6, oct)).toBe('Medium in winter · bright in summer');
   });
 });
