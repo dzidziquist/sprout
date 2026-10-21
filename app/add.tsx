@@ -89,9 +89,9 @@ const MATERIALS: { id: PotMaterial; label: string }[] = [
   { id: 'glazed', label: 'Glazed' },
   { id: 'fabric', label: 'Grow bag' },
 ];
+/** Where it lives. A grow light is a switch under Indoors (placement 'growlight'), so it keeps its room and spot. */
 const PLACES: { id: Placement; label: string }[] = [
   { id: 'indoor', label: 'Indoors' },
-  { id: 'growlight', label: 'Grow light' },
   { id: 'covered_outdoor', label: 'Balcony, covered' },
   { id: 'outdoor', label: 'Outside, in a pot' },
   { id: 'ground', label: 'Garden bed' },
@@ -195,6 +195,7 @@ export default function AddPlantScreen() {
   const [selfWatering, setSelfWatering] = useState<'always' | 'away' | undefined>(undefined);
   const [material, setMaterial] = useState<PotMaterial>('plastic');
   const [placement, setPlacement] = useState<Placement>(presetDefaults?.placement ?? 'indoor');
+  const indoors = placement === 'indoor' || placement === 'growlight';
   const [joined, setJoined] = useState<JoinedId>('today');
   const [watered, setWatered] = useState<WateredId>('unsure');
   const [room, setRoom] = useState('');
@@ -529,11 +530,11 @@ export default function AddPlantScreen() {
         {PLACES.map((p) => (
           <Pill
             key={p.id}
-            on={placement === p.id}
+            on={p.id === 'indoor' ? indoors : placement === p.id}
             bg={c.ice}
             label={p.label}
             onPress={() => {
-              setPlacement(p.id);
+              setPlacement(p.id === 'indoor' && indoors ? placement : p.id);
               // Beds are made of garden soil; moving out of one goes back to a potting mix.
               if (p.id === 'ground' && !isReservoir(soil)) setSoil('garden_soil');
               else if (p.id !== 'ground' && soil === 'garden_soil') setSoil(soilBase);
@@ -541,7 +542,16 @@ export default function AddPlantScreen() {
           />
         ))}
       </View>
-      <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
+      {indoors && (
+        <View style={styles.wrap}>
+          <Pill on={placement === 'growlight'} bg={c.butter} label="💡 Under a grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')} />
+        </View>
+      )}
+      <Text style={[styles.note, { color: c.inkMuted }]}>
+        {placement === 'growlight'
+          ? 'Its light comes from the lamp, so it isn’t in the Light view.'
+          : 'Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.'}
+      </Text>
 
       <Label>A little history</Label>
       <DropdownGroup>
