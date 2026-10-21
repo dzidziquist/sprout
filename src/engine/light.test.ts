@@ -36,10 +36,11 @@ describe('the sun', () => {
     expect(sunDay(SEATTLE, june).daylight).toBeGreaterThan(15.5);
     expect(sunDay(SEATTLE, dec).daylight).toBeLessThan(8.6);
     // North of the equator a south window gets the winter sun and a north one none.
-    expect(sunDay(SEATTLE, dec).direct.S).toBeGreaterThan(5);
+    // (Low winter sun is weak through all that air, so it's well under its hours.)
+    expect(sunDay(SEATTLE, dec).direct.S).toBeGreaterThan(2.5);
     expect(sunDay(SEATTLE, dec).direct.N).toBe(0);
     // South of it, the other way round.
-    expect(sunDay(SYDNEY, june).direct.N).toBeGreaterThan(sunDay(SYDNEY, june).direct.S + 5);
+    expect(sunDay(SYDNEY, june).direct.N).toBeGreaterThan(sunDay(SYDNEY, june).direct.S + 3);
     // Near the equator the high sun barely favours north or south across the year.
     expect(sunDay(ACCRA, june).direct.N).toBeLessThan(5);
   });
@@ -107,9 +108,11 @@ describe('light tips', () => {
 
 describe('review fixes', () => {
   it('only calls a tip seasonal when that season is now', () => {
-    // Low winter sun pours through a south sill: harsh now, and not a summer thing.
+    // Accra's dry-season sun pours through a south sill in December: harsh now, and not a summer thing.
     const south = { 'Living room': { windows: ['S'], shade: 'none' } as RoomLight };
-    expect(lightTip(plant({ windowSpot: 'sill' }), { lat: SEATTLE, now: dec, rooms: south })?.text).toBe('Strong sun here. Try about 1 m from the south window.');
+    expect(lightTip(plant({ windowSpot: 'sill' }), { lat: ACCRA, now: dec, rooms: south })?.text).toBe('Strong sun here. Try about 1 m from the south window.');
+    // Seattle's grey December doesn't make the same sill too sunny.
+    expect(lightTip(plant({ windowSpot: 'sill' }), { lat: SEATTLE, now: dec, rooms: south })).toBeNull();
   });
 
   it('ignores forecast days that have already passed', () => {
