@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
-import { archiveFloor, usePlantStore } from '@/store/plantStore';
+import { archiveFloor, canDeleteEvent, usePlantStore } from '@/store/plantStore';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
@@ -23,6 +23,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { StagePanel } from '@/components/StagePanel';
 import { LightCard } from '@/components/LightCard';
 import { AboutCard, wikiNames } from '@/components/AboutCard';
+import { CareRow } from '@/components/CareRow';
 import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
 import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
 import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
@@ -99,7 +100,7 @@ export default function PlantDetail() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { plants, events, profile, addPhoto, setArchivedAt } = usePlantStore();
+  const { plants, events, profile, addPhoto, setArchivedAt, deleteEvent } = usePlantStore();
   const plant = plants.find((p) => p.id === id);
   const actions = usePlantActions(plant);
   const [showPhoto, setShowPhoto] = useState(true);
@@ -374,27 +375,17 @@ export default function PlantDetail() {
         {history.length > 0 && (
           <View style={{ gap: 8 }}>
             <Label>Recent care</Label>
-            {history.map((e) => {
-              const row = (
-                <>
-                  <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={e.note && e.type !== 'cutting' ? 4 : 1}>{describe(e, plants, hydro)}</Text>
-                  <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
-                </>
-              );
-              // Every entry opens: notes and photo captions to edit, the rest to see or delete.
-              const text = e.type === 'note' || e.type === 'photo';
-              return (
-                <Pressable
-                  key={e.id}
-                  accessibilityRole="button"
-                  accessibilityHint={e.type === 'note' ? 'Edit or delete note' : e.type === 'photo' ? 'Edit caption' : 'Open entry'}
-                  onPress={() => router.push(text ? `/note/${e.id}` : `/entry/${e.id}`)}
-                  style={({ pressed }) => [styles.diaryRow, pressed && { opacity: 0.6 }]}
-                >
-                  {row}
-                </Pressable>
-              );
-            })}
+            {history.map((e) => (
+              // Notes and captions open to edit; entries logged by mistake get a trash can right on the row.
+              <CareRow
+                key={e.id}
+                label={describe(e, plants, hydro)}
+                when={daysAgo(e.at, now)}
+                lines={e.note && e.type !== 'cutting' ? 4 : 1}
+                onOpen={e.type === 'note' || e.type === 'photo' ? () => router.push(`/note/${e.id}`) : undefined}
+                onDelete={canDeleteEvent(e) ? () => deleteEvent(e.id) : undefined}
+              />
+            ))}
           </View>
         )}
       </View>
@@ -451,7 +442,4 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingHorizontal: 14, paddingVertical: 11 },
   rowKey: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   rowVal: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1, textAlign: 'right' },
-  diaryRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
-  diaryText: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1 },
-  diaryDate: { fontFamily: fonts.body, fontSize: 13 },
 });
