@@ -19,22 +19,52 @@ export type { WindowSpot };
 export type Facing = 'N' | 'E' | 'S' | 'W';
 export type Shade = 'none' | 'sheer' | 'outside';
 
+/** One window: which way it faces (none when not sure: worked out as an average window) and what's in the way. */
+export interface WindowLight {
+  id: string;
+  facing?: Facing;
+  shade: Shade;
+}
+
+/** A room's windows, each with its own view. Empty: no window (hallway, bathroom). */
 export interface RoomLight {
-  /** The room's windows by the way they face. Empty: no window (hallway, bathroom). */
+  windows: WindowLight[];
+}
+
+/** How rooms were saved before each window had its own view: directions and one shade for the room. */
+export interface LegacyRoomLight {
   windows: Facing[];
   shade: Shade;
-  /** Has windows, but which way they face isn't known: worked out as an average window. */
   unsure?: boolean;
 }
 
-/** Whether a room lets daylight in at all (known windows, or windows of unknown direction). */
-export const hasWindow = (room: RoomLight) => room.windows.length > 0 || !!room.unsure;
+export type AnyRoomLight = RoomLight | LegacyRoomLight;
+
+/** A room's windows, reading either shape. An older room's windows each get its one shade; ids are their directions. */
+export function windowsOf(room: AnyRoomLight): WindowLight[] {
+  const list = room.windows as unknown[];
+  if (list.length && typeof list[0] === 'object') return room.windows as WindowLight[];
+  const old = room as LegacyRoomLight;
+  const shade = old.shade ?? 'none';
+  if (!old.windows?.length) return old.unsure ? [{ id: 'unsure', shade }] : [];
+  return old.windows.map((f) => ({ id: f, facing: f, shade }));
+}
+
+/** A room in today's shape. */
+export const roomLight = (room: AnyRoomLight): RoomLight => ({ windows: windowsOf(room) });
+
+/** Whether a room lets daylight in at all. */
+export const hasWindow = (room: AnyRoomLight) => windowsOf(room).length > 0;
 const FACINGS: Facing[] = ['N', 'E', 'S', 'W'];
 
 export const FACING_LABEL: Record<Facing, string> = { N: 'north', E: 'east', S: 'south', W: 'west' };
 /** Where a plant sits, as the app says it everywhere (rows, cards, sheets). */
 export const SPOT_LABEL: Record<WindowSpot, string> = { sill: 'On the sill', below: 'Below the window', near: 'About 1 m from the window', far: 'Across the room' };
-export const SHADE_LABEL: Record<Shade, string> = { none: 'Nothing', sheer: 'Sheer curtain', outside: 'Tree or building' };
+/** The same, after a window's name in a room with several: "West · 1 m". */
+export const SPOT_SHORT: Record<WindowSpot, string> = { sill: 'sill', below: 'below', near: '1 m', far: 'across the room' };
+export const SHADE_LABEL: Record<Shade, string> = { none: 'Nothing in the way', sheer: 'Curtain or frosted glass', outside: 'Tree or building' };
+/** A window's view in a word or two, for lists: "West · tree or building". */
+export const SHADE_SHORT: Record<Shade, string> = { none: 'clear', sheer: 'curtain or frosted', outside: 'tree or building' };
 
 const AZIMUTH: Record<Facing, number> = { N: 0, E: 90, S: 180, W: 270 };
 const RAD = Math.PI / 180;
@@ -199,26 +229,30 @@ export interface SpotLight {
   score: number;
   /** The direct-sun part of it. */
   direct: number;
-  /** The window this spot leans on (the brightest), if the room has one. */
+  /** Which way the window this spot is by faces, when known. */
   window?: Facing;
+  /** The window this spot is by. */
+  windowId?: string;
 }
 
-/** The light at a spot in a room on a date, with `sky` the share of direct sun the weather lets through. */
-export function spotLight(room: RoomLight, spot: WindowSpot, site: Site, date: Date, sky = typicalSky(site, date)): SpotLight {
-  if (!hasWindow(room)) return { level: 'low', score: 0, direct: 0 };
+/**
+ * The light at a spot in a room on a date: by the window `windowId` when it's given and still there, else
+ * by the room's brightest window. `sky` is the share of direct sun the weather lets through.
+ */
+export function spotLight(room: AnyRoomLight, spot: WindowSpot, site: Site, date: Date, opts: { sky?: number; windowId?: string } = {}): SpotLight {
+  const all = windowsOf(room);
+  if (!all.length) return { level: 'low', score: 0, direct: 0 };
+  const chosen = all.find((w) => w.id === opts.windowId);
   const sun = sunDay(site.lat, date);
+  const sky = opts.sky ?? typicalSky(site, date);
   const f = SPOT_FACTOR[spot];
-  if (!room.windows.length) {
-    // Direction unknown: an average window, neither the sunniest nor the darkest guess.
-    const direct = (FACINGS.reduce((sum, w) => sum + sun.direct[w], 0) / 4) * f.direct * SHADE_FACTOR[room.shade] * sky;
-    const score = direct + sun.daylight * SKY_WEIGHT * f.sky;
-    return { level: levelOf(score, direct), score, direct };
-  }
   let best: SpotLight | undefined;
-  for (const w of room.windows) {
-    const direct = sun.direct[w] * f.direct * SHADE_FACTOR[room.shade] * sky;
+  for (const w of chosen ? [chosen] : all) {
+    // Direction unknown: an average window, neither the sunniest nor the darkest guess.
+    const beam = w.facing ? sun.direct[w.facing] : FACINGS.reduce((sum, d) => sum + sun.direct[d], 0) / 4;
+    const direct = beam * f.direct * SHADE_FACTOR[w.shade] * sky;
     const score = direct + sun.daylight * SKY_WEIGHT * f.sky;
-    if (!best || score > best.score) best = { level: levelOf(score, direct), score, direct, window: w };
+    if (!best || score > best.score) best = { level: levelOf(score, direct), score, direct, window: w.facing, windowId: w.id };
   }
   return best!;
 }
@@ -266,25 +300,30 @@ export interface LightContext {
   site: Site;
   now: Date;
   /** Every room's light setup by name, to look for a better room when this one can't do. */
-  rooms: Record<string, RoomLight>;
+  rooms: Record<string, AnyRoomLight>;
   forecast?: DailyForecast[] | null;
 }
 
 /** Room setups for rooms that still have indoor plants: a renamed or emptied room isn't suggested any more. */
-export function roomsInUse(rooms: Record<string, RoomLight> | undefined, plants: Plant[]): Record<string, RoomLight> {
+export function roomsInUse(rooms: Record<string, AnyRoomLight> | undefined, plants: Plant[]): Record<string, RoomLight> {
   const used = new Set(plants.filter((p) => !p.archivedAt && p.placement === 'indoor').map((p) => p.room?.trim()));
-  return Object.fromEntries(Object.entries(rooms ?? {}).filter(([name]) => used.has(name)));
+  return Object.fromEntries(Object.entries(rooms ?? {}).filter(([name]) => used.has(name)).map(([name, r]) => [name, roomLight(r)]));
 }
 
-/** The plant's room light and spot, when both are set and it lives indoors in a room. */
-export function placeOf(plant: Plant, rooms: Record<string, RoomLight>): { name: string; room: RoomLight; spot: WindowSpot } | null {
+/**
+ * The plant's room light, spot and window, when the spot is set and it lives indoors in a room. `windowId` is
+ * the window it's by, when the room has more than one and it was picked (else the brightest counts).
+ */
+export function placeOf(plant: Plant, rooms: Record<string, AnyRoomLight>): { name: string; room: RoomLight; spot: WindowSpot; windowId?: string } | null {
   const name = plant.room?.trim();
   if (!name || plant.placement !== 'indoor' || plant.archivedAt || plant.rooting) return null;
-  const room = rooms[name];
-  if (!room) return null;
+  const saved = rooms[name];
+  if (!saved) return null;
+  const room = roomLight(saved);
   // With no window every spot is the same, so there's no position to ask for.
   const spot = plant.windowSpot ?? (hasWindow(room) ? undefined : 'far');
-  return spot ? { name, room, spot } : null;
+  const windowId = room.windows.some((w) => w.id === plant.windowId) ? plant.windowId : undefined;
+  return spot ? { name, room, spot, windowId } : null;
 }
 
 const shiftDays = (d: Date, n: number) => new Date(d.getTime() + n * DAY_MS);
@@ -297,16 +336,16 @@ const shiftDays = (d: Date, n: number) => new Date(d.getTime() + n * DAY_MS);
 export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   const place = placeOf(plant, ctx.rooms);
   if (!place) return null;
-  const { room, spot } = place;
+  const { room, spot, windowId } = place;
   const need = lightNeed(plant);
-  const here = spotLight(room, spot, ctx.site, ctx.now);
+  const here = spotLight(room, spot, ctx.site, ctx.now, { windowId });
   // The other season at its height (midsummer in winter, midwinter in summer), to tell a seasonal problem from a lasting one.
   const name = plant.name;
   const days = daysAhead(ctx.forecast, ctx.now).slice(0, 5);
   // Which half of the year it is here: a tip only calls something seasonal when the season it names is now.
   const longDays = sunDay(ctx.site.lat, ctx.now).daylight >= sunDay(ctx.site.lat, shiftDays(ctx.now, 182)).daylight;
   const peak = new Date(ctx.now.getFullYear(), (longDays ? 0 : 6) + (ctx.site.lat < 0 ? 6 : 0), 15);
-  const halfYear = spotLight(room, spot, ctx.site, peak);
+  const halfYear = spotLight(room, spot, ctx.site, peak, { windowId });
 
   // A hot day on a sill that takes strong sun: worth pulling back for the afternoon.
   const hot = days.slice(0, 3).find((d) => d.maxC >= 30);
@@ -322,7 +361,7 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   }
 
   if (fit === 'dim') {
-    const better = brighterSpot(plant, place.name, room, spot, need, ctx);
+    const better = brighterSpot(place.name, room, spot, here, need, ctx);
     const seasonal = !longDays && suits(halfYear.level, need) === 'ok';
     const sp = speciesOf(plant);
     const kind = sp.commonName.toLowerCase();
@@ -341,7 +380,7 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   const grey = days.filter((d) => skyFactor(d) <= 0.3).length >= 4;
   if (grey && here.level === need && need !== 'low') {
     const closer = SPOTS.find((s) => {
-      const there = spotLight(room, s, ctx.site, ctx.now);
+      const there = spotLight(room, s, ctx.site, ctx.now, { windowId: here.windowId });
       return there.score >= here.score * 1.3 && suits(there.level, need) === 'ok';
     });
     if (closer) return { kind: 'grey', text: `Grey days ahead: ${name} would get more light ${spotWords(closer, here.window)} for now.` };
@@ -349,18 +388,25 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   return null;
 }
 
-/** The smallest move that would suit the plant: a brighter spot by this room's window, else another room. */
-function brighterSpot(plant: Plant, roomName: string, room: RoomLight, spot: WindowSpot, need: Light, ctx: LightContext): string | null {
-  const ok = (r: RoomLight, s: WindowSpot) => suits(spotLight(r, s, ctx.site, ctx.now).level, need) === 'ok';
-  const here = spotLight(room, spot, ctx.site, ctx.now).score;
-  const brighter = SPOTS.map((s) => ({ s, light: spotLight(room, s, ctx.site, ctx.now) }))
-    .filter(({ light }) => light.score > here)
-    .sort((a, b) => a.light.score - b.light.score);
-  for (const { s, light } of brighter) if (ok(room, s)) return spotWords(s, light.window);
+/**
+ * The smallest move that would suit the plant: a brighter spot in this room (by its own window first, then
+ * by another window), else another room.
+ */
+function brighterSpot(roomName: string, room: RoomLight, spot: WindowSpot, here: SpotLight, need: Light, ctx: LightContext): string | null {
+  const ok = (l: SpotLight) => suits(l.level, need) === 'ok';
+  const options = (ids: (string | undefined)[]) =>
+    ids
+      .flatMap((windowId) => SPOTS.map((s) => ({ s, light: spotLight(room, s, ctx.site, ctx.now, { windowId }) })))
+      .filter(({ light }) => light.score > here.score && ok(light))
+      .sort((a, b) => a.light.score - b.light.score);
+  const others = room.windows.map((w) => w.id).filter((id) => id !== here.windowId);
+  const move = options([here.windowId])[0] ?? options(others)[0];
+  if (move) return spotWords(move.s, move.light.window);
   for (const [name, other] of Object.entries(ctx.rooms)) {
     if (name === roomName || !hasWindow(other)) continue;
     for (const s of ['near', 'below', 'sill'] as WindowSpot[]) {
-      if (ok(other, s)) return `${spotWords(s, spotLight(other, s, ctx.site, ctx.now).window)} in the ${name.toLowerCase()}`;
+      const there = spotLight(other, s, ctx.site, ctx.now);
+      if (ok(there)) return `${spotWords(s, there.window)} in the ${name.toLowerCase()}`;
     }
   }
   return null;
@@ -370,30 +416,31 @@ function brighterSpot(plant: Plant, roomName: string, room: RoomLight, spot: Win
  * How a spot will suit the plant through the year, for a spot that suits it now: a warning when summer sun
  * or winter gloom would be too much for it here, else the spot's light over the year.
  */
-export function yearFit(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, spot: WindowSpot, site: Site, now: Date): string {
+export function yearFit(plant: Pick<Plant, 'speciesId' | 'custom'>, room: AnyRoomLight, spot: WindowSpot, site: Site, now: Date, windowId?: string): string {
   const need = lightNeed(plant);
   const year = now.getFullYear();
-  const [winter, summer] = (site.lat >= 0 ? [new Date(year, 11, 21), new Date(year, 5, 21)] : [new Date(year, 5, 21), new Date(year, 11, 21)]).map((d) => suits(spotLight(room, spot, site, d).level, need));
+  const [winter, summer] = (site.lat >= 0 ? [new Date(year, 11, 21), new Date(year, 5, 21)] : [new Date(year, 5, 21), new Date(year, 11, 21)]).map((d) => suits(spotLight(room, spot, site, d, { windowId }).level, need));
   const longDays = sunDay(site.lat, now).daylight >= sunDay(site.lat, shiftDays(now, 182)).daylight;
   if (summer === 'harsh' && !longDays) return 'Good for now. Summer sun gets too strong here, so move it back from the glass in late spring.';
   if (winter === 'dim' && longDays) return 'Good for now. Too dim here in winter, so move it closer to the glass in autumn.';
-  return yearLight(room, spot, site, year);
+  return yearLight(room, spot, site, year, windowId);
 }
 
 /** How a spot's light changes over the year: "Medium all year" or "Low in winter · bright in summer". */
-export function yearLight(room: RoomLight, spot: WindowSpot, site: Site, year: number): string {
-  const june = spotLight(room, spot, site, new Date(year, 5, 21)).level;
-  const dec = spotLight(room, spot, site, new Date(year, 11, 21)).level;
+export function yearLight(room: AnyRoomLight, spot: WindowSpot, site: Site, year: number, windowId?: string): string {
+  const june = spotLight(room, spot, site, new Date(year, 5, 21), { windowId }).level;
+  const dec = spotLight(room, spot, site, new Date(year, 11, 21), { windowId }).level;
   const [winter, summer] = site.lat >= 0 ? [dec, june] : [june, dec];
   const word = (l: Light) => (l === 'direct' ? 'sunny' : l);
   return winter === summer ? `${word(winter)[0].toUpperCase()}${word(winter).slice(1)} all year` : `${word(winter)[0].toUpperCase()}${word(winter).slice(1)} in winter · ${word(summer)} in summer`;
 }
 
 /** A room's light today in a few words: "About 3 h of sun today · cloudy". */
-export function roomToday(room: RoomLight, lat: number, now: Date, today?: DailyForecast): string {
-  if (!hasWindow(room)) return 'No window · low light';
+export function roomToday(room: AnyRoomLight, lat: number, now: Date, today?: DailyForecast): string {
+  const windows = windowsOf(room);
+  if (!windows.length) return 'No window · low light';
   const sun = sunDay(lat, now);
-  const hours = room.windows.length ? Math.max(...room.windows.map((w) => sun.sunHours[w])) : FACINGS.reduce((sum, w) => sum + sun.sunHours[w], 0) / 4;
+  const hours = Math.max(...windows.map((w) => (w.facing ? sun.sunHours[w.facing] : FACINGS.reduce((sum, d) => sum + sun.sunHours[d], 0) / 4)));
   const sky = today ? skyOf(today) : undefined;
   const weather = sky === 'sun' ? ' · clear' : sky === 'partly' ? ' · some cloud' : sky ? ' · cloudy' : '';
   if (hours < 0.5) return `Indirect light only today${weather}`;
@@ -403,27 +450,30 @@ export function roomToday(room: RoomLight, lat: number, now: Date, today?: Daily
 /** How well a spot suits a plant, as the app says it. */
 export const FIT_LABEL: Record<'ok' | 'dim' | 'harsh', string> = { ok: 'Likely suitable', dim: 'Likely too dark', harsh: 'Likely too sunny' };
 
-/** What's in the way of a room's light, as a short suffix ("" when nothing is). */
-export function shadeWords(room: RoomLight): string {
-  return room.shade === 'sheer' ? ' · curtains' : room.shade === 'outside' ? ' · trees or buildings' : '';
-}
+const cap = (t: string) => `${t[0].toUpperCase()}${t.slice(1)}`;
 
-/** "West-facing window", "West and south windows", "Window, direction not sure", "No window". */
-export function windowsLine(room: RoomLight): string {
-  if (!room.windows.length) return room.unsure ? 'Window, direction not sure' : 'No window';
-  const dirs = room.windows.map((w) => FACING_LABEL[w]);
-  if (dirs.length === 1) return `${dirs[0][0].toUpperCase()}${dirs[0].slice(1)}-facing window`;
-  const list = `${dirs.slice(0, -1).join(', ')} and ${dirs[dirs.length - 1]}`;
-  return `${list[0].toUpperCase()}${list.slice(1)} windows`;
+/** A window's name: "West window", or "Window" when which way it faces isn't known. */
+export const windowName = (w: Pick<WindowLight, 'facing'>) => (w.facing ? `${cap(FACING_LABEL[w.facing])} window` : 'Window');
+
+/** Which way a window faces, in a word: "West", or "Not sure which way". */
+export const windowDir = (w: Pick<WindowLight, 'facing'>) => (w.facing ? cap(FACING_LABEL[w.facing]) : 'Not sure which way');
+
+/** A window in a few words, for lists: "West · tree or building", "Not sure which way · clear". */
+export const windowShort = (w: Pick<WindowLight, 'facing' | 'shade'>) => `${windowDir(w)} · ${SHADE_SHORT[w.shade]}`;
+
+/** A room's windows in a line: "South · clear, West · tree or building", or "No window". */
+export function windowsLine(room: AnyRoomLight): string {
+  const windows = windowsOf(room);
+  return windows.length ? windows.map(windowShort).join(', ') : 'No window';
 }
 
 /**
  * How each spot by this room's window would suit the plant at this time of year, on a typical day. Weather is
  * left out on purpose so verdicts don't flip with each cloudy day; hot and grey spells come through lightTip.
  */
-export function spotFits(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, site: Site, now: Date): Record<WindowSpot, 'ok' | 'dim' | 'harsh'> {
+export function spotFits(plant: Pick<Plant, 'speciesId' | 'custom'>, room: AnyRoomLight, site: Site, now: Date, windowId?: string): Record<WindowSpot, 'ok' | 'dim' | 'harsh'> {
   const need = lightNeed(plant);
-  return Object.fromEntries(SPOTS.map((s) => [s, suits(spotLight(room, s, site, now).level, need)])) as Record<WindowSpot, 'ok' | 'dim' | 'harsh'>;
+  return Object.fromEntries(SPOTS.map((s) => [s, suits(spotLight(room, s, site, now, { windowId }).level, need)])) as Record<WindowSpot, 'ok' | 'dim' | 'harsh'>;
 }
 
 /** A compass heading (degrees from north) rounded to the nearest of north, east, south and west. */
@@ -434,7 +484,7 @@ export const facingOf = (heading: number): Facing => FACINGS[Math.round((((headi
  * that suits it, trying a comfortable distance from the window before the sill. Null when no room suits
  * (or none is set up); `dim` says whether every room is too dark for it rather than too sunny.
  */
-export function bestHome(need: Light, rooms: Record<string, RoomLight>, site: Site, now: Date): { room: string; words: string } | { room: null; dim: boolean } | null {
+export function bestHome(need: Light, rooms: Record<string, AnyRoomLight>, site: Site, now: Date): { room: string; words: string } | { room: null; dim: boolean } | null {
   if (!Object.keys(rooms).length) return null;
   const lit = Object.entries(rooms).filter(([, r]) => hasWindow(r));
   // Rooms set up, all without windows: too dark for anything that wants light.
@@ -442,10 +492,12 @@ export function bestHome(need: Light, rooms: Record<string, RoomLight>, site: Si
   let dim = true;
   for (const [name, room] of lit.sort(([a], [b]) => a.localeCompare(b))) {
     for (const spot of ['near', 'below', 'sill', 'far'] as WindowSpot[]) {
-      const here = spotLight(room, spot, site, now);
-      const fit = suits(here.level, need);
-      if (fit === 'ok') return { room: name, words: spotWords(spot, here.window) };
-      if (fit === 'harsh') dim = false;
+      for (const w of windowsOf(room)) {
+        const here = spotLight(room, spot, site, now, { windowId: w.id });
+        const fit = suits(here.level, need);
+        if (fit === 'ok') return { room: name, words: spotWords(spot, here.window) };
+        if (fit === 'harsh') dim = false;
+      }
     }
   }
   return { room: null, dim };

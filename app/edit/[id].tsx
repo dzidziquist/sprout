@@ -65,9 +65,9 @@ const MATERIALS: { id: PotMaterial; label: string }[] = [
   { id: 'glazed', label: 'Glazed' },
   { id: 'fabric', label: 'Grow bag' },
 ];
+/** Where it lives. A grow light is a switch under Indoors (placement 'growlight'), so it keeps its room and spot. */
 const PLACES: { id: Placement; label: string }[] = [
   { id: 'indoor', label: 'Indoors' },
-  { id: 'growlight', label: 'Grow light' },
   { id: 'covered_outdoor', label: 'Balcony, covered' },
   { id: 'outdoor', label: 'Outside, in a pot' },
   { id: 'ground', label: 'Garden bed' },
@@ -142,6 +142,7 @@ export default function EditPlantScreen() {
   const [material, setMaterial] = useState<PotMaterial>(plant?.potMaterial ?? 'plastic');
   const [placement, setPlacement] = useState<Placement>(plant?.placement ?? 'indoor');
   const [room, setRoom] = useState(plant?.room ?? '');
+  const indoors = placement === 'indoor' || placement === 'growlight';
   const [potColor, setPotColor] = useState<PotColor>(plant?.potColor ?? 'yellow');
   const initialJoined = plant ? closestJoined(plant.acquiredAt) : 'today';
   const [joined, setJoined] = useState<JoinedId>(initialJoined);
@@ -348,10 +349,19 @@ export default function EditPlantScreen() {
       <Label>Where does it live?</Label>
       <View style={styles.wrap}>
         {PLACES.map((p) => (
-          <Pill key={p.id} on={placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id)} />
+          <Pill key={p.id} on={p.id === 'indoor' ? indoors : placement === p.id} bg={c.ice} label={p.label} onPress={() => setPlacement(p.id === 'indoor' && indoors ? placement : p.id)} />
         ))}
       </View>
-      <Text style={[styles.note, { color: c.inkMuted }]}>Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.</Text>
+      {indoors && (
+        <View style={styles.wrap}>
+          <Pill on={placement === 'growlight'} bg={c.butter} label="💡 Under a grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')} />
+        </View>
+      )}
+      <Text style={[styles.note, { color: c.inkMuted }]}>
+        {placement === 'growlight'
+          ? 'Its light comes from the lamp, so it isn’t in the Light view.'
+          : 'Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.'}
+      </Text>
       <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" />
       <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next check.</Text>
 

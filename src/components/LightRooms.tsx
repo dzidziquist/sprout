@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
-import { FIT_LABEL, SPOT_LABEL, forecastToday, hasWindow, lightNeed, lightTip, placeOf, roomToday, roomsInUse, shadeWords, spotLight, suits, windowsLine } from '@/engine/light';
+import { FIT_LABEL, SPOT_LABEL, forecastToday, hasWindow, lightNeed, lightTip, placeOf, roomToday, roomsInUse, SPOT_SHORT, spotLight, suits, windowDir, windowsLine } from '@/engine/light';
 import { useForecast } from '@/lib/weather';
 import { useSite } from '@/hooks/useSite';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -43,13 +43,16 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
 
   const row = (p: Plant, last: boolean) => {
     const place = placeOf(p, rooms);
-    const here = place ? spotLight(place.room, place.spot, site, now) : null;
+    const here = place ? spotLight(place.room, place.spot, site, now, { windowId: place.windowId }) : null;
     const fit = here ? suits(here.level, lightNeed(p)) : null;
     const tip = place ? lightTip(p, { site, now, rooms, forecast }) : null;
     // Weather tips (a hot day, a grey week) say what to do; the fit says the rest.
     const weather = tip && (tip.kind === 'heat' || tip.kind === 'grey') ? tip.text : null;
     const windowless = !!place && !hasWindow(place.room);
-    const sub = !p.room?.trim() ? 'No room yet' : windowless ? weather ?? 'No window in this room' : !p.windowSpot ? 'Location not added' : weather ?? SPOT_LABEL[p.windowSpot];
+    // In a room with several windows, say which one it's by: "West · 1 m".
+    const by = place && place.room.windows.length > 1 ? place.room.windows.find((w) => w.id === here?.windowId) : undefined;
+    const spotText = p.windowSpot ? (by ? `${windowDir(by)} · ${SPOT_SHORT[p.windowSpot]}` : SPOT_LABEL[p.windowSpot]) : '';
+    const sub = !p.room?.trim() ? 'No room yet' : windowless ? weather ?? 'No window in this room' : !p.windowSpot ? 'Location not added' : weather ?? spotText;
     // In a room with no window, moving within it won't help, so there's no spot to find or set.
     const action = !p.room?.trim() || windowless ? null : !p.windowSpot ? 'Set position' : fit === 'dim' ? (tip?.growLight ? null : 'Find a brighter spot') : fit === 'harsh' ? 'Find a shadier spot' : null;
     return (
@@ -137,8 +140,8 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
               <LineIcon name={hasWindow(room) ? 'window' : 'no-window'} color={c.ink} size={28} width={2} />
               <View style={{ flex: 1, gap: 1 }}>
                 <Text style={[styles.roomName, { color: c.ink }]} accessibilityRole="header">{name}</Text>
-                <Text style={[styles.headSub, { color: c.ink }]}>{windowsLine(room)}{shadeWords(room)}</Text>
-                <Text style={[styles.today, { color: c.ink }]}>{roomToday(room, lat, now, today)}</Text>
+                <Text style={[styles.headSub, { color: c.ink }]}>{hasWindow(room) ? windowsLine(room) : 'No window · low light all year'}</Text>
+                {hasWindow(room) && <Text style={[styles.today, { color: c.ink }]}>{roomToday(room, lat, now, today)}</Text>}
               </View>
               <View style={[styles.edit, { borderColor: c.line, backgroundColor: c.card }]}>
                 <Text style={[styles.editText, { color: c.ink }]}>Edit</Text>

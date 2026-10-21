@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { addHref, displayName, homeFor, speciesHref } from './plantLinks';
 import { siteOf } from './site';
-import type { RoomLight } from '../engine/light';
+import type { AnyRoomLight } from '../engine/light';
 
-const west: RoomLight = { windows: ['W'], shade: 'none' };
+const west: AnyRoomLight = { windows: ['W'], shade: 'none' };
 const june = new Date(2026, 5, 21, 12);
 
 describe('plant links', () => {

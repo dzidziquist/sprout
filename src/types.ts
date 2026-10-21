@@ -200,6 +200,8 @@ export interface Plant {
   room?: string;
   /** Where it sits relative to its room's window, for the light view (sill, below, about 1 m, across the room). */
   windowSpot?: WindowSpot;
+  /** Which of its room's windows it's by, when the room has more than one (else the brightest counts). */
+  windowId?: string;
   origin: Origin;
   /** Set when the plant was propagated from another plant in the fam. */
   parentId?: string;
@@ -266,5 +268,7 @@ export interface CareEvent {
   note?: string;
   /** For checks: when the next check was booked for (kept up to date if the schedule moves before it). */
   nextAt?: string;
+  /** For checks: the plant's schedule and learned rhythm just before, so deleting the latest check can put them back. */
+  before?: { k: number; nextCheckAt: string; lastCheckAt?: string; lastResult?: CheckResult };
   at: string;
 }
