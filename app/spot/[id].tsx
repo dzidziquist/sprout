@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
 import { FIT_LABEL, hasWindow, shadeWords, spotFits, windowsLine } from '@/engine/light';
-import { coordsFor } from '@/lib/weather';
+import { useSite } from '@/hooks/useSite';
 import { LIGHT_ART } from '@/data/art';
 import { fitFill } from '@/components/LightRooms';
 import { GlassButton } from '@/components/GlassButton';
@@ -33,7 +33,7 @@ export default function SpotSheet() {
   const insets = useSafeAreaInsets();
   const sheetTop = useSheetTop();
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
-  const climate = usePlantStore((s) => s.profile.climate);
+  const site = useSite();
   const updatePlant = usePlantStore((s) => s.updatePlant);
   const roomName = plant?.room?.trim() ?? '';
   const room = usePlantStore((s) => (roomName ? s.profile.rooms?.[roomName] : undefined));
@@ -68,7 +68,10 @@ export default function SpotSheet() {
         </>
       );
     }
-    const fits = spotFits(plant, room, coordsFor(climate).lat, new Date());
+    const fits = spotFits(plant, room, site, new Date());
+    // Too dark everywhere by this window: point out the sill as the best there is rather than four dead ends.
+    const allDim = Object.values(fits).every((f) => f === 'dim');
+    const label = (id: WindowSpot) => (allDim && id === 'sill' ? 'Brightest spot here' : FIT_LABEL[fits[id]]);
     return (
       <>
         <View style={[styles.list, { borderColor: c.line }]}>
@@ -83,7 +86,7 @@ export default function SpotSheet() {
                 key={s.id}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: on }}
-                accessibilityLabel={`${s.title}. ${s.sub} ${FIT_LABEL[fits[s.id]]}`}
+                accessibilityLabel={`${s.title}. ${s.sub} ${label(s.id)}`}
                 onPress={() => {
                   haptics.tap();
                   setPicked(s.id);
@@ -96,7 +99,7 @@ export default function SpotSheet() {
                   <Text style={[styles.spotTitle, { color: on ? textOn(c.lavender, c) : c.ink }]}>{s.title}</Text>
                   <Text style={[styles.spotSub, { color: on ? textOn(c.lavender, c) : c.inkMuted }]}>{s.sub}</Text>
                   <View style={[styles.pill, { backgroundColor: fitFill(fits[s.id], c), borderColor: c.line }]}>
-                    <Text style={[styles.pillText, { color: textOn(fitFill(fits[s.id], c), c) }]}>{FIT_LABEL[fits[s.id]]}</Text>
+                    <Text style={[styles.pillText, { color: textOn(fitFill(fits[s.id], c), c) }]}>{label(s.id)}</Text>
                   </View>
                 </View>
               </Pressable>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { addHref, displayName, homeFor, speciesHref } from './plantLinks';
+import { siteOf } from './site';
 import type { RoomLight } from '../engine/light';
 
 const west: RoomLight = { windows: ['W'], shade: 'none' };
@@ -19,9 +20,9 @@ describe('plant links', () => {
   });
 
   it('says where a houseplant would suit, but not for edibles or unlisted plants', () => {
-    expect(homeFor('calathea', { 'Living room': west }, 47.6, june)?.suits).toBe('Living room');
-    expect(homeFor('tomato', { 'Living room': west }, 47.6, june)).toBeNull();
-    expect(homeFor('other-tropical', { 'Living room': west }, 47.6, june)).toBeNull();
-    expect(homeFor('calathea', {}, 47.6, june)).toBeNull();
+    expect(homeFor('calathea', { 'Living room': west }, siteOf('seattle'), june)?.suits).toBe('Living room');
+    expect(homeFor('tomato', { 'Living room': west }, siteOf('seattle'), june)).toBeNull();
+    expect(homeFor('other-tropical', { 'Living room': west }, siteOf('seattle'), june)).toBeNull();
+    expect(homeFor('calathea', {}, siteOf('seattle'), june)).toBeNull();
   });
 });

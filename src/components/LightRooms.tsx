@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { FIT_LABEL, SPOT_LABEL, forecastToday, hasWindow, lightNeed, lightTip, placeOf, roomToday, roomsInUse, shadeWords, spotLight, suits, windowsLine } from '@/engine/light';
-import { coordsFor, useForecast } from '@/lib/weather';
+import { useForecast } from '@/lib/weather';
+import { useSite } from '@/hooks/useSite';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { LineIcon } from '@/components/LineIcon';
 import { Sticker } from '@/components/ui';
@@ -24,7 +25,8 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
   const allPlants = usePlantStore((s) => s.plants);
   const rooms = roomsInUse(usePlantStore((s) => s.profile.rooms), allPlants);
   const forecast = useForecast(climate, true);
-  const lat = coordsFor(climate).lat;
+  const site = useSite();
+  const lat = site.lat;
   const now = new Date();
   const today = forecastToday(forecast, now);
 
@@ -41,15 +43,15 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
 
   const row = (p: Plant, last: boolean) => {
     const place = placeOf(p, rooms);
-    const here = place ? spotLight(place.room, place.spot, lat, now) : null;
+    const here = place ? spotLight(place.room, place.spot, site, now) : null;
     const fit = here ? suits(here.level, lightNeed(p)) : null;
-    const tip = place ? lightTip(p, { lat, now, rooms, forecast }) : null;
+    const tip = place ? lightTip(p, { site, now, rooms, forecast }) : null;
     // Weather tips (a hot day, a grey week) say what to do; the fit says the rest.
     const weather = tip && (tip.kind === 'heat' || tip.kind === 'grey') ? tip.text : null;
     const windowless = !!place && !hasWindow(place.room);
     const sub = !p.room?.trim() ? 'No room yet' : windowless ? weather ?? 'No window in this room' : !p.windowSpot ? 'Location not added' : weather ?? SPOT_LABEL[p.windowSpot];
     // In a room with no window, moving within it won't help, so there's no spot to find or set.
-    const action = !p.room?.trim() || windowless ? null : !p.windowSpot ? 'Set position' : fit === 'dim' ? 'Find a brighter spot' : fit === 'harsh' ? 'Find a shadier spot' : null;
+    const action = !p.room?.trim() || windowless ? null : !p.windowSpot ? 'Set position' : fit === 'dim' ? (tip?.growLight ? null : 'Find a brighter spot') : fit === 'harsh' ? 'Find a shadier spot' : null;
     return (
       <View key={p.id} style={[styles.row, !last && { borderBottomWidth: 1.5, borderColor: c.cloud }]}>
         <Pressable

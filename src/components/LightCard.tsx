@@ -1,8 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePlantStore } from '@/store/plantStore';
-import { FACING_LABEL, SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearLight } from '@/engine/light';
-import { coordsFor, useForecast } from '@/lib/weather';
+import { FACING_LABEL, SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearFit } from '@/engine/light';
+import { useForecast } from '@/lib/weather';
+import { useSite } from '@/hooks/useSite';
 import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
 import { Button, Sticker } from '@/components/ui';
@@ -26,17 +27,12 @@ export function LightCard({ plant }: { plant: Plant }) {
   const room = roomName ? rooms[roomName] : undefined;
   const place = placeOf(plant, rooms);
   const forecast = useForecast(climate, !!place);
+  const site = useSite();
   if (plant.placement !== 'indoor' || plant.rooting || plant.archivedAt) return null;
 
   const spot = () => router.push(`/spot/${plant.id}`);
   const head = (
-    <View style={styles.headRow}>
-      <Text style={[styles.title, { color: c.ink }]} accessibilityRole="header">Light at this spot</Text>
-      <View style={[styles.badge, { borderColor: c.line, backgroundColor: c.cloud }]}>
-        <Text style={[styles.badgeText, { color: c.ink }]}>Estimated</Text>
-        <SunIcon color={c.ink} size={14} width={2.4} />
-      </View>
-    </View>
+    <Text style={[styles.title, { color: c.ink }]} accessibilityRole="header">Light at this spot</Text>
   );
 
   // Not set up yet: one clear next step.
@@ -55,16 +51,18 @@ export function LightCard({ plant }: { plant: Plant }) {
     );
   }
 
-  const lat = coordsFor(climate).lat;
   const now = new Date();
   const windowless = !hasWindow(room);
-  const here = spotLight(room, place.spot, lat, now);
+  const here = spotLight(room, place.spot, site, now);
   const fit = suits(here.level, lightNeed(plant));
-  const tip = lightTip(plant, { lat, now, rooms, forecast });
-  const headline =
-    tip?.kind === 'heat' ? 'Hot day ahead' : tip?.kind === 'grey' ? 'Grey days ahead' : fit === 'dim' ? 'May need a brighter spot' : fit === 'harsh' ? 'May get too much sun' : 'Good spot';
-  const detail = tip?.text ?? (windowless ? 'No window here, so low light all year.' : yearLight(room, place.spot, lat, now.getFullYear()));
-  const fill = fit === 'ok' && !tip ? c.mint : c.butter;
+  const tip = lightTip(plant, { site, now, rooms, forecast });
+  // The verdict is the spot on a typical day, the same as the spot sheet says. A hot day or a grey week only
+  // adds a note under it, so a good spot doesn't turn into a warning with the weather.
+  const weather = tip?.kind === 'heat' || tip?.kind === 'grey' ? tip.text : null;
+  const advice = weather ? null : tip?.text;
+  const headline = fit === 'dim' ? (tip?.growLight ? 'Short on light' : 'May need a brighter spot') : fit === 'harsh' ? 'May get too much sun' : 'Good spot';
+  const detail = advice ?? (windowless ? 'No window here, so low light all year.' : yearFit(plant, room, place.spot, site, now));
+  const fill = fit === 'ok' ? c.mint : c.butter;
   const ink = textOn(fill, c);
   const window = room.windows.length === 1 ? `${FACING_LABEL[room.windows[0]][0].toUpperCase()}${FACING_LABEL[room.windows[0]].slice(1)} window` : roomName;
 
@@ -76,6 +74,7 @@ export function LightCard({ plant }: { plant: Plant }) {
         <View style={{ flex: 1, gap: 2 }}>
           <Text style={[styles.headline, { color: ink }]}>{headline}</Text>
           <Text style={[styles.detail, { color: ink }]}>{detail}</Text>
+          {!!weather && <Text style={[styles.detail, { color: ink, marginTop: 6 }]}>{weather}</Text>}
         </View>
       </View>
       <Pressable
@@ -95,7 +94,7 @@ export function LightCard({ plant }: { plant: Plant }) {
       </Pressable>
       <View style={{ paddingHorizontal: 14, paddingBottom: 14, gap: 8 }}>
         {!windowless && <Button title="Compare spots" raised bg={c.leaf} onPress={spot} style={{ minHeight: 50 }} />}
-        <Text style={[styles.small, { color: c.inkMuted, textAlign: 'center' }]}>Based on your windows and where {plant.name} sits.</Text>
+        <Text style={[styles.small, { color: c.inkMuted, textAlign: 'center' }]}>Estimated from your windows, where {plant.name} sits and the sun at this time of year.</Text>
       </View>
     </Sticker>
   );
@@ -103,10 +102,7 @@ export function LightCard({ plant }: { plant: Plant }) {
 
 const styles = StyleSheet.create({
   card: { gap: 12 },
-  headRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   title: { fontFamily: fonts.display, fontSize: 19 },
-  badge: { flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2 },
-  badgeText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   verdict: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 14, borderTopWidth: 2, borderBottomWidth: 2 },
   headline: { fontFamily: fonts.display, fontSize: 18 },
   detail: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },

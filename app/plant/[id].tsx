@@ -1,11 +1,11 @@
 import { ART } from '@/data/art';
-import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
-import { archiveFloor, usePlantStore } from '@/store/plantStore';
+import { archiveFloor, canDeleteEvent, usePlantStore } from '@/store/plantStore';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
@@ -23,6 +23,8 @@ import { GlassButton } from '@/components/GlassButton';
 import { StagePanel } from '@/components/StagePanel';
 import { LightCard } from '@/components/LightCard';
 import { AboutCard, wikiNames } from '@/components/AboutCard';
+import { CareRow } from '@/components/CareRow';
+import { StatusScrim } from '@/components/StatusScrim';
 import { RootingCare, RootingStats } from '@/components/PlantPageRooting';
 import { PlantPageOffshoots } from '@/components/PlantPageOffshoots';
 import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
@@ -99,10 +101,11 @@ export default function PlantDetail() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { plants, events, profile, addPhoto, setArchivedAt } = usePlantStore();
+  const { plants, events, profile, addPhoto, setArchivedAt, deleteEvent } = usePlantStore();
   const plant = plants.find((p) => p.id === id);
   const actions = usePlantActions(plant);
   const [showPhoto, setShowPhoto] = useState(true);
+  const scrollY = useRef(new Animated.Value(0)).current;
   // Gone (deleted, or an old notification tapped): say so and offer the way back.
   if (!plant || !actions)
     return (
@@ -160,248 +163,244 @@ export default function PlantDetail() {
   );
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}>
-      <View style={[styles.hero, { backgroundColor: tint, paddingTop: insets.top + 8, borderColor: c.line }]}>
-        <View style={styles.heroBar}>
-          <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-            {toolbarIcon('m15 18-6-6 6-6')}
-          </GlassButton>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            {plant.photoUri && (
-              <GlassButton accessibilityLabel={heroPhoto ? 'Show illustration' : 'Show photo'} onPress={() => { haptics.tap(); setShowPhoto((v) => !v); }}>
-                {heroPhoto ? toolbarIcon('M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z') : toolbarIcon(CAMERA)}
-              </GlassButton>
-            )}
-            <GlassButton accessibilityLabel={`Edit ${plant.name}`} onPress={actions.edit}>
-              {toolbarIcon('M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4')}
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <Animated.ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+        scrollEventThrottle={16}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+      >
+        <View style={[styles.hero, { backgroundColor: tint, paddingTop: insets.top + 8, borderColor: c.line }]}>
+          <View style={styles.heroBar}>
+            <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
+              {toolbarIcon('m15 18-6-6 6-6')}
             </GlassButton>
-          </View>
-        </View>
-        {heroPhoto ? (
-          <View style={[styles.heroPhoto, { borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
-            <Image source={{ uri: photoSrc(plant.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={200} accessibilityLabel={`Photo of ${plant.name}`} />
-          </View>
-        ) : (
-          <View style={[styles.heroArt, archived && { opacity: 0.6 }]}>
-            <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} mood={archived ? 'happy' : moodFor(plant, now, !!activeTrip(profile.trips, now))} size={220} bg={tint} faces={archived ? 'off' : profile.faces} />
-            {!archived && <GoldSparkles pot={plant.potColor} size={1.6} />}
-            {plant.rooting && (
-              <View style={[styles.heroChip, { backgroundColor: c.card, borderColor: c.line }]}>
-                <Text style={[styles.heroChipText, { color: c.ink }]}>Rooting {METHOD_WORD[plant.rooting.method]}</Text>
-              </View>
-            )}
-          </View>
-        )}
-      </View>
-
-      <View style={styles.body}>
-        <View>
-          <Title>{plant.name}</Title>
-          <Label muted>
-            {species.commonName}
-            {plant.room ? ` · ${plant.room}` : ''}
-            {plant.rooting ? ` · rooting in ${plant.rooting.method}` : ''}
-          </Label>
-        </View>
-
-        {archived && (
-          <Sticker drop={0} bg={plant.archivedReason === 'gifted' ? c.blush : c.cloud} style={styles.archived}>
-            {plant.archivedReason !== 'gifted' && <Image source={ART.memorial} style={{ width: 96, height: 96, alignSelf: 'center' }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
-            <Text style={[styles.archivedTitle, { color: c.ink }]}>
-              {plant.archivedReason === 'gifted' ? `Gifted away on ${shortDate(plant.archivedAt!)}` : `In memory since ${shortDate(plant.archivedAt!)}`}
-            </Text>
-            <Text style={[styles.archivedBody, { color: c.ink }]}>
-              {plant.archivedReason === 'gifted'
-                ? `${plant.name} is growing somewhere new. Their story stays in your Offshoots.`
-                : `Thanks for the leaves, ${plant.name}. Every plant teaches us something, and their diary stays here.`}
-            </Text>
-            {/* Sits on the card's own tint, with the chosen answer picked out in the card colour. */}
-            <DropdownGroup bg="transparent">
-              <Dropdown
-                label={plant.archivedReason === 'gifted' ? 'Gifted' : 'Lost'}
-                value={closestOption(goneOptions, plant.archivedAt!)}
-                tint={c.card}
-                options={goneOptions}
-                onChange={(g) => setArchivedAt(plant.id, daysBefore(GONE.find((o) => o.id === g)?.days ?? 0))}
-                last
-              />
-            </DropdownGroup>
-            {goneOptions.length < GONE.length && (
-              <Text style={[styles.archivedNote, { color: c.ink }]}>
-                {goneFloor === plant.acquiredAt
-                  ? `${plant.name} joined on ${shortDate(plant.acquiredAt)}, so it can’t have left before that. To go further back, change that date in Edit.`
-                  : `${plant.name} came back on ${shortDate(goneFloor)}, so it can’t have left again before that.`}
-              </Text>
-            )}
-            <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
-          </Sticker>
-        )}
-
-        {!archived && plant.rooting && <RootingStats rooting={plant.rooting} now={now} />}
-        {!archived && !plant.rooting && (
-          <View style={styles.stats}>
-            <Sticker drop={0} bg={c.ice} style={styles.stat}>
-              <Text style={[styles.statNum, { color: c.ink }]}>~{rhythm} days</Text>
-              <Text style={[styles.statLabel, { color: c.ink }]}>check rhythm</Text>
-            </Sticker>
-            {hydro ? (
-              <Sticker drop={0} bg={refreshDays <= 0 ? c.peach : c.butter} style={styles.stat}>
-                <Text style={[styles.statNum, { color: c.ink }]}>{refresh}</Text>
-                <Text style={[styles.statLabel, { color: c.ink }]}>{plant.soil === 'water' ? 'fresh water' : 'flush'}</Text>
-              </Sticker>
-            ) : (
-              <Sticker drop={0} bg={c.butter} style={styles.stat}>
-                <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
-                <Text style={[styles.statLabel, { color: c.ink }]}>{plant.selfWatering === 'always' ? 'last topped up' : 'last watered'}</Text>
-              </Sticker>
-            )}
-            <Sticker drop={0} bg={c.mint} style={styles.stat}>
-              <Text style={[styles.statNum, { color: c.ink }]}>{nextCheck}</Text>
-              <Text style={[styles.statLabel, { color: c.ink }]}>next check</Text>
-            </Sticker>
-          </View>
-        )}
-
-        {!archived && plant.rooting && (
-          <>
-            <Button title="Roots showing? Pot it up" raised onPress={() => router.push(`/pot-up/${plant.id}`)} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
-            <Button title="Log care" bg={c.card} onPress={actions.log} style={{ minHeight: 48 }} />
-          </>
-        )}
-        {!archived && !plant.rooting && (
-          <>
-            <View style={styles.actions}>
-              <ActionTile label="Log care" icon={LOG_ICON} bg={c.leaf} big onPress={actions.log} />
-              {!guide?.regrows && <ActionTile label="Take cuttings" a11y={`Take cuttings from ${plant.name}`} icon={CUTTING_ICON} bg={c.lavender} onPress={() => router.push(`/cuttings/${plant.id}`)} />}
-              <ActionTile label="Something wrong?" a11y={`What's wrong with ${plant.name}?`} icon={DOCTOR_ICON} bg={c.peach} onPress={() => router.push(`/doctor/${plant.id}`)} />
-            </View>
-          </>
-        )}
-        {!archived && !plant.rooting && guide && <StagePanel plant={plant} now={now} />}
-        {!archived && !plant.rooting && species.edible && !guide && (
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Button title="Log harvest" bg={c.peach} onPress={() => router.push(`/harvest/${plant.id}`)} style={{ flex: 1, minHeight: 48 }} />
-            <Button title="Grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={{ flex: 1, minHeight: 48 }} />
-          </View>
-        )}
-
-        {!archived && <LightCard plant={plant} />}
-
-        {(photos.length > 0 || !archived) && (
-          <View style={{ gap: 8 }}>
-            <View style={styles.rowBetween}>
-              <Label>Photo diary</Label>
-              {photos.length > 0 && <Label muted>{photos.length} {photos.length === 1 ? 'photo' : 'photos'}</Label>}
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.strip} style={styles.stripWrap}>
-              {!archived && (
-                <Pressable accessibilityRole="button" accessibilityLabel="Add photo" onPress={addNewPhoto} style={[styles.addPhoto, { borderColor: c.line, backgroundColor: c.butter }]}>
-                  <Svg width={26} height={26} viewBox="0 0 24 24"><Path d={CAMERA} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
-                  <Text style={[styles.addPhotoText, { color: c.ink }]}>Add photo</Text>
-                </Pressable>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {plant.photoUri && (
+                <GlassButton accessibilityLabel={heroPhoto ? 'Show illustration' : 'Show photo'} onPress={() => { haptics.tap(); setShowPhoto((v) => !v); }}>
+                  {heroPhoto ? toolbarIcon('M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z') : toolbarIcon(CAMERA)}
+                </GlassButton>
               )}
-              {photos.map((e) => {
-                const stage = guide ? stageAtPhoto(plant, events, e) : undefined;
-                return (
-                  <Pressable
-                    key={e.id}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${plant.name} on ${shortDate(e.at)}. Open the photo diary`}
-                    onPress={() => router.push(`/photos/${plant.id}?photo=${e.id}`)}
-                    style={styles.photoItem}
-                  >
-                    <View style={[styles.photo, { borderColor: c.line }]}>
-                      <Image source={{ uri: photoSrc(e.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
-                    </View>
-                    {guide ? (
-                      <>
-                        <Text style={[styles.photoDate, { color: c.ink }]}>Day {growDay(plant, e)}</Text>
-                        <Text style={[styles.photoStage, { color: c.inkMuted }]}>{(stage && guide.info[stage]?.label) ?? shortDate(e.at)}</Text>
-                      </>
-                    ) : (
-                      <Text style={[styles.photoDate, { color: c.inkMuted }]}>{shortDate(e.at)}</Text>
-                    )}
-                  </Pressable>
-                );
-              })}
-              {photos.length === 0 && !archived && (
-                <Text style={[styles.stripHint, { color: c.inkMuted }]}>
-                  {guide ? `Snap ${plant.name} every week or so. Each photo is marked with the grow day and stage, so you can watch it go from ${guide.stages[0] === 'seed' ? 'seed' : 'sprout'} to harvest.` : `Snap ${plant.name} now and then to watch them grow.`}
+              <GlassButton accessibilityLabel={`Edit ${plant.name}`} onPress={actions.edit}>
+                {toolbarIcon('M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4')}
+              </GlassButton>
+            </View>
+          </View>
+          {heroPhoto ? (
+            <View style={[styles.heroPhoto, { borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
+              <Image source={{ uri: photoSrc(plant.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={200} accessibilityLabel={`Photo of ${plant.name}`} />
+            </View>
+          ) : (
+            <View style={[styles.heroArt, archived && { opacity: 0.6 }]}>
+              <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} pot={plant.potColor} mood={archived ? 'happy' : moodFor(plant, now, !!activeTrip(profile.trips, now))} size={220} bg={tint} faces={archived ? 'off' : profile.faces} />
+              {!archived && <GoldSparkles pot={plant.potColor} size={1.6} />}
+              {plant.rooting && (
+                <View style={[styles.heroChip, { backgroundColor: c.card, borderColor: c.line }]}>
+                  <Text style={[styles.heroChipText, { color: c.ink }]}>Rooting {METHOD_WORD[plant.rooting.method]}</Text>
+                </View>
+              )}
+            </View>
+          )}
+        </View>
+
+        <View style={styles.body}>
+          <View>
+            <Title>{plant.name}</Title>
+            <Label muted>
+              {species.commonName}
+              {plant.room ? ` · ${plant.room}` : ''}
+              {plant.rooting ? ` · rooting in ${plant.rooting.method}` : ''}
+            </Label>
+          </View>
+
+          {archived && (
+            <Sticker drop={0} bg={plant.archivedReason === 'gifted' ? c.blush : c.cloud} style={styles.archived}>
+              {plant.archivedReason !== 'gifted' && <Image source={ART.memorial} style={{ width: 96, height: 96, alignSelf: 'center' }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
+              <Text style={[styles.archivedTitle, { color: c.ink }]}>
+                {plant.archivedReason === 'gifted' ? `Gifted away on ${shortDate(plant.archivedAt!)}` : `In memory since ${shortDate(plant.archivedAt!)}`}
+              </Text>
+              <Text style={[styles.archivedBody, { color: c.ink }]}>
+                {plant.archivedReason === 'gifted'
+                  ? `${plant.name} is growing somewhere new. Their story stays in your Offshoots.`
+                  : `Thanks for the leaves, ${plant.name}. Every plant teaches us something, and their diary stays here.`}
+              </Text>
+              {/* Sits on the card's own tint, with the chosen answer picked out in the card colour. */}
+              <DropdownGroup bg="transparent">
+                <Dropdown
+                  label={plant.archivedReason === 'gifted' ? 'Gifted' : 'Lost'}
+                  value={closestOption(goneOptions, plant.archivedAt!)}
+                  tint={c.card}
+                  options={goneOptions}
+                  onChange={(g) => setArchivedAt(plant.id, daysBefore(GONE.find((o) => o.id === g)?.days ?? 0))}
+                  last
+                />
+              </DropdownGroup>
+              {goneOptions.length < GONE.length && (
+                <Text style={[styles.archivedNote, { color: c.ink }]}>
+                  {goneFloor === plant.acquiredAt
+                    ? `${plant.name} joined on ${shortDate(plant.acquiredAt)}, so it can’t have left before that. To go further back, change that date in Edit.`
+                    : `${plant.name} came back on ${shortDate(goneFloor)}, so it can’t have left again before that.`}
                 </Text>
               )}
-            </ScrollView>
-          </View>
-        )}
+              <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
+            </Sticker>
+          )}
 
-        {plant.rooting && !archived ? (
-          <RootingCare rooting={plant.rooting} now={now} pets={pets} />
-        ) : (
-        <Sticker drop={0} style={{ overflow: 'hidden' }}>
-          {(hydro
-            ? [
-                ['Water', plant.soil === 'water' ? 'Top up as the level drops; keep the crown dry' : 'Keep the water line at the bottom third of the pot'],
-                ['Fresh water', plant.soil === 'water' ? 'Swap it all out every 2 weeks' : 'Flush with plain water monthly'],
-              ]
-            : plant.selfWatering === 'always'
-              ? [['Water', 'Self-watering pot: keep the reservoir topped up. No need to water from the top.']]
-              : [
-                  ['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
-                  ...(plant.selfWatering === 'away' ? [['Reservoir', 'Fill it before a trip; Away mode reminds you']] : []),
-                ]
-          ).concat([
-            ['Light', LIGHT_LABEL[plant.light]],
-            [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
-            ['Feed', feed],
-            ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
-          ]).map(([k, v], i, all) => (
-            <View key={k} style={[styles.row, i < all.length - 1 && { borderBottomWidth: 2, borderColor: c.cloud }]}>
-              <Text style={[styles.rowKey, { color: c.inkMuted }]}>{k}</Text>
-              <Text style={[styles.rowVal, { color: k === 'Pets' && pets !== false ? c.warn : c.ink }]}>{v}</Text>
-            </View>
-          ))}
-        </Sticker>
-        )}
-        {species.tip && !plant.rooting && (
-          <Sticker drop={0} bg={c.butter} style={{ padding: 12 }}>
-            <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
-          </Sticker>
-        )}
-
-        <AboutCard speciesId={plant.speciesId} {...wikiNames(plant.speciesId, plant.custom)} />
-
-        <PlantPageOffshoots parent={parent} babies={babies} />
-
-        {history.length > 0 && (
-          <View style={{ gap: 8 }}>
-            <Label>Recent care</Label>
-            {history.map((e) => {
-              const row = (
-                <>
-                  <Text style={[styles.diaryText, { color: c.ink }]} numberOfLines={e.note && e.type !== 'cutting' ? 4 : 1}>{describe(e, plants, hydro)}</Text>
-                  <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
-                </>
-              );
-              // Notes and photo captions open to be changed.
-              return e.type === 'note' || e.type === 'photo' ? (
-                <Pressable
-                  key={e.id}
-                  accessibilityRole="button"
-                  accessibilityHint={e.type === 'note' ? 'Edit note' : 'Edit caption'}
-                  onPress={() => router.push(`/note/${e.id}`)}
-                  style={({ pressed }) => [styles.diaryRow, pressed && { opacity: 0.6 }]}
-                >
-                  {row}
-                </Pressable>
+          {!archived && plant.rooting && <RootingStats rooting={plant.rooting} now={now} />}
+          {!archived && !plant.rooting && (
+            <View style={styles.stats}>
+              <Sticker drop={0} bg={c.ice} style={styles.stat}>
+                <Text style={[styles.statNum, { color: c.ink }]}>~{rhythm} days</Text>
+                <Text style={[styles.statLabel, { color: c.ink }]}>check rhythm</Text>
+              </Sticker>
+              {hydro ? (
+                <Sticker drop={0} bg={refreshDays <= 0 ? c.peach : c.butter} style={styles.stat}>
+                  <Text style={[styles.statNum, { color: c.ink }]}>{refresh}</Text>
+                  <Text style={[styles.statLabel, { color: c.ink }]}>{plant.soil === 'water' ? 'fresh water' : 'flush'}</Text>
+                </Sticker>
               ) : (
-                <View key={e.id} style={styles.diaryRow}>
-                  {row}
-                </View>
-              );
-            })}
-          </View>
-        )}
-      </View>
-    </ScrollView>
+                <Sticker drop={0} bg={c.butter} style={styles.stat}>
+                  <Text style={[styles.statNum, { color: c.ink }]}>{daysAgo(lastWater?.at, now)}</Text>
+                  <Text style={[styles.statLabel, { color: c.ink }]}>{plant.selfWatering === 'always' ? 'last topped up' : 'last watered'}</Text>
+                </Sticker>
+              )}
+              <Sticker drop={0} bg={c.mint} style={styles.stat}>
+                <Text style={[styles.statNum, { color: c.ink }]}>{nextCheck}</Text>
+                <Text style={[styles.statLabel, { color: c.ink }]}>next check</Text>
+              </Sticker>
+            </View>
+          )}
+
+          {!archived && plant.rooting && (
+            <>
+              <Button title="Roots showing? Pot it up" raised onPress={() => router.push(`/pot-up/${plant.id}`)} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+              <Button title="Log care" bg={c.card} onPress={actions.log} style={{ minHeight: 48 }} />
+            </>
+          )}
+          {!archived && !plant.rooting && (
+            <>
+              <View style={styles.actions}>
+                <ActionTile label="Log care" icon={LOG_ICON} bg={c.leaf} big onPress={actions.log} />
+                {!guide?.regrows && <ActionTile label="Take cuttings" a11y={`Take cuttings from ${plant.name}`} icon={CUTTING_ICON} bg={c.lavender} onPress={() => router.push(`/cuttings/${plant.id}`)} />}
+                <ActionTile label="Something wrong?" a11y={`What's wrong with ${plant.name}?`} icon={DOCTOR_ICON} bg={c.peach} onPress={() => router.push(`/doctor/${plant.id}`)} />
+              </View>
+            </>
+          )}
+          {!archived && !plant.rooting && guide && <StagePanel plant={plant} now={now} />}
+          {!archived && !plant.rooting && species.edible && !guide && (
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <Button title="Log harvest" bg={c.peach} onPress={() => router.push(`/harvest/${plant.id}`)} style={{ flex: 1, minHeight: 48 }} />
+              <Button title="Grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={{ flex: 1, minHeight: 48 }} />
+            </View>
+          )}
+
+          {!archived && <LightCard plant={plant} />}
+
+          {(photos.length > 0 || !archived) && (
+            <View style={{ gap: 8 }}>
+              <View style={styles.rowBetween}>
+                <Label>Photo diary</Label>
+                {photos.length > 0 && <Label muted>{photos.length} {photos.length === 1 ? 'photo' : 'photos'}</Label>}
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.strip} style={styles.stripWrap}>
+                {!archived && (
+                  <Pressable accessibilityRole="button" accessibilityLabel="Add photo" onPress={addNewPhoto} style={[styles.addPhoto, { borderColor: c.line, backgroundColor: c.butter }]}>
+                    <Svg width={26} height={26} viewBox="0 0 24 24"><Path d={CAMERA} stroke={c.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+                    <Text style={[styles.addPhotoText, { color: c.ink }]}>Add photo</Text>
+                  </Pressable>
+                )}
+                {photos.map((e) => {
+                  const stage = guide ? stageAtPhoto(plant, events, e) : undefined;
+                  return (
+                    <Pressable
+                      key={e.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${plant.name} on ${shortDate(e.at)}. Open the photo diary`}
+                      onPress={() => router.push(`/photos/${plant.id}?photo=${e.id}`)}
+                      style={styles.photoItem}
+                    >
+                      <View style={[styles.photo, { borderColor: c.line }]}>
+                        <Image source={{ uri: photoSrc(e.photoUri!) }} style={StyleSheet.absoluteFill} contentFit="cover" transition={150} />
+                      </View>
+                      {guide ? (
+                        <>
+                          <Text style={[styles.photoDate, { color: c.ink }]}>Day {growDay(plant, e)}</Text>
+                          <Text style={[styles.photoStage, { color: c.inkMuted }]}>{(stage && guide.info[stage]?.label) ?? shortDate(e.at)}</Text>
+                        </>
+                      ) : (
+                        <Text style={[styles.photoDate, { color: c.inkMuted }]}>{shortDate(e.at)}</Text>
+                      )}
+                    </Pressable>
+                  );
+                })}
+                {photos.length === 0 && !archived && (
+                  <Text style={[styles.stripHint, { color: c.inkMuted }]}>
+                    {guide ? `Snap ${plant.name} every week or so. Each photo is marked with the grow day and stage, so you can watch it go from ${guide.stages[0] === 'seed' ? 'seed' : 'sprout'} to harvest.` : `Snap ${plant.name} now and then to watch them grow.`}
+                  </Text>
+                )}
+              </ScrollView>
+            </View>
+          )}
+
+          {plant.rooting && !archived ? (
+            <RootingCare rooting={plant.rooting} now={now} pets={pets} />
+          ) : (
+          <Sticker drop={0} style={{ overflow: 'hidden' }}>
+            {(hydro
+              ? [
+                  ['Water', plant.soil === 'water' ? 'Top up as the level drops; keep the crown dry' : 'Keep the water line at the bottom third of the pot'],
+                  ['Fresh water', plant.soil === 'water' ? 'Swap it all out every 2 weeks' : 'Flush with plain water monthly'],
+                ]
+              : plant.selfWatering === 'always'
+                ? [['Water', 'Self-watering pot: keep the reservoir topped up. No need to water from the top.']]
+                : [
+                    ['Water', species.group === 'succulent' ? 'When the mix is dry all the way down' : species.group === 'moisture' ? 'When the surface just starts to dry' : 'When the top 2–3 cm feels dry'],
+                    ...(plant.selfWatering === 'away' ? [['Reservoir', 'Fill it before a trip; Away mode reminds you']] : []),
+                  ]
+            ).concat([
+              ['Light', LIGHT_LABEL[plant.light]],
+              [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
+              ['Feed', feed],
+              ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
+            ]).map(([k, v], i, all) => (
+              <View key={k} style={[styles.row, i < all.length - 1 && { borderBottomWidth: 2, borderColor: c.cloud }]}>
+                <Text style={[styles.rowKey, { color: c.inkMuted }]}>{k}</Text>
+                <Text style={[styles.rowVal, { color: k === 'Pets' && pets !== false ? c.warn : c.ink }]}>{v}</Text>
+              </View>
+            ))}
+          </Sticker>
+          )}
+          {species.tip && !plant.rooting && (
+            <Sticker drop={0} bg={c.butter} style={{ padding: 12 }}>
+              <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
+            </Sticker>
+          )}
+
+          <AboutCard speciesId={plant.speciesId} {...wikiNames(plant.speciesId, plant.custom)} />
+
+          <PlantPageOffshoots parent={parent} babies={babies} />
+
+          {history.length > 0 && (
+            <View style={{ gap: 8 }}>
+              <Label>Recent care</Label>
+              {history.map((e) => (
+                // Notes and captions open to edit; entries logged by mistake get a trash can right on the row.
+                <CareRow
+                  key={e.id}
+                  label={describe(e, plants, hydro)}
+                  when={daysAgo(e.at, now)}
+                  lines={e.note && e.type !== 'cutting' ? 4 : 1}
+                  onOpen={e.type === 'note' || e.type === 'photo' ? () => router.push(`/note/${e.id}`) : undefined}
+                  onDelete={canDeleteEvent(e) ? () => deleteEvent(e.id) : undefined}
+                />
+              ))}
+            </View>
+          )}
+        </View>
+      </Animated.ScrollView>
+      {/* Behind the clock and Dynamic Island once the page scrolls, so text doesn't run into them. */}
+      <StatusScrim scrollY={scrollY} />
+    </View>
   );
 }
 
@@ -454,7 +453,4 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingHorizontal: 14, paddingVertical: 11 },
   rowKey: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
   rowVal: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1, textAlign: 'right' },
-  diaryRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
-  diaryText: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1 },
-  diaryDate: { fontFamily: fonts.body, fontSize: 13 },
 });

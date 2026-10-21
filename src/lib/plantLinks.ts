@@ -1,5 +1,5 @@
 import { getSpecies, isOtherId } from '../data/species';
-import { bestHome, lightNeed, type RoomLight } from '../engine/light';
+import { bestHome, lightNeed, type RoomLight, type Site } from '../engine/light';
 import type { SpeciesId } from '../types';
 
 /*
@@ -29,9 +29,9 @@ export const displayName = (commonNames: string[], latinName: string) => (common
  * "In your home" for a catalogue plant, from the room light setup: where it would suit, or why nowhere does.
  * Null for unlisted plants, edibles (mostly grown outside) and homes with no rooms set up.
  */
-export function homeFor(speciesId: SpeciesId, rooms: Record<string, RoomLight>, lat: number, now: Date): { suits: string | null; line: string } | null {
+export function homeFor(speciesId: SpeciesId, rooms: Record<string, RoomLight>, site: Site, now: Date): { suits: string | null; line: string } | null {
   if (isOtherId(speciesId) || getSpecies(speciesId).edible) return null;
-  const home = bestHome(lightNeed({ speciesId }), rooms, lat, now);
+  const home = bestHome(lightNeed({ speciesId }), rooms, site, now);
   if (!home) return null;
   if ('words' in home) return { suits: home.room, line: `Your ${home.room.toLowerCase()} would suit it, ${home.words}.` };
   return { suits: null, line: home.dim ? 'Your rooms are a bit dark for it. A grow light would help.' : 'Your rooms get more direct sun than it likes. A sheer curtain would help.' };

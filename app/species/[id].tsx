@@ -10,7 +10,7 @@ import { LIGHT_FACT, WATER_STYLE } from '@/data/labels';
 import { roomsInUse } from '@/engine/light';
 import { findWish } from '@/store/plantStore';
 import { addHref, homeFor } from '@/lib/plantLinks';
-import { coordsFor } from '@/lib/weather';
+import { useSite } from '@/hooks/useSite';
 import { usePhoto, useWiki } from '@/lib/wiki';
 import { PhotoCredit, PhotoToggle } from '@/components/PhotoCredit';
 import { localizeTemps } from '@/lib/units';
@@ -51,10 +51,11 @@ export default function SpeciesPage() {
   const profile = usePlantStore((s) => s.profile);
   const saveWish = usePlantStore((s) => s.saveWish);
   const removeWish = usePlantStore((s) => s.removeWish);
+  const site = useSite();
   const saved = findWish(profile.wishlist, { speciesId, custom });
   const close = () => (router.canGoBack() ? router.back() : router.replace('/jungle'));
 
-  const homeLine = homeFor(speciesId, roomsInUse(profile.rooms, plants), coordsFor(profile.climate).lat, new Date())?.line;
+  const homeLine = homeFor(speciesId, roomsInUse(profile.rooms, plants), site, new Date())?.line;
 
   const add = () => {
     haptics.tap();

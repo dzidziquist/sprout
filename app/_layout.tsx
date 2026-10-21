@@ -13,6 +13,7 @@ import { useColors } from '@/theme/theme';
 import { ensureRoundPermission, rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
+import { refreshSunlight } from '@/lib/site';
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(() => usePlantStore.persist.hasHydrated());
@@ -57,8 +58,15 @@ export default function RootLayout() {
         .then((ok) => (ok ? sync() : setProfile({ round: { ...usePlantStore.getState().profile.round, enabled: false } })))
         .catch(() => {});
     if (TIPS_ENABLED) configurePurchases();
+    // The city's measured sunlight for the light estimates: looked up when missing or a year old, and for a new city.
+    const sunlight = () => {
+      const st = usePlantStore.getState();
+      refreshSunlight(st.profile.climate, st.profile.sunlight, st.setSunlight).catch(() => {});
+    };
+    sunlight();
     const unsub = usePlantStore.subscribe((s, prev) => {
       if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos || s.profile.trips !== prev.profile.trips) sync();
+      if (s.profile.climate !== prev.profile.climate) sunlight();
     });
     return () => {
       clearTimeout(timer);

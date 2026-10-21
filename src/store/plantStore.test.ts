@@ -405,3 +405,25 @@ describe('wishlist', () => {
     expect(usePlantStore.getState().profile.wishlist?.map((w) => w.custom?.commonName)).toEqual(['Hindu rope', 'Rex begonia']);
   });
 });
+
+describe('deleting a care entry', () => {
+  it('removes an entry logged by mistake, and walks repot dates back', () => {
+    usePlantStore.setState({
+      plants: [{ ...usePlantStore.getState().plants[0], id: 'p1', lastRepottedAt: '2026-10-20T09:00:00Z' } as never],
+      events: [
+        { id: 'r1', plantId: 'p1', type: 'repot', at: '2026-03-01T09:00:00Z' },
+        { id: 'r2', plantId: 'p1', type: 'repot', at: '2026-10-20T09:00:00Z' },
+        { id: 'f1', plantId: 'p1', type: 'feed', at: '2026-10-19T09:00:00Z' },
+        { id: 'w1', plantId: 'p1', type: 'water', at: '2026-10-18T09:00:00Z' },
+      ],
+    });
+    const s = usePlantStore.getState();
+    s.deleteEvent('r2');
+    s.deleteEvent('f1');
+    // Waterings stay: the rhythm learned from them.
+    s.deleteEvent('w1');
+    const after = usePlantStore.getState();
+    expect(after.events.map((e) => e.id)).toEqual(['r1', 'w1']);
+    expect(after.plants.find((p) => p.id === 'p1')?.lastRepottedAt).toBe('2026-03-01T09:00:00Z');
+  });
+});
