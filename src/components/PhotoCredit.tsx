@@ -2,7 +2,7 @@ import { Linking, Pressable, StyleSheet, Text } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
-import { textOn, useColors } from '@/theme/theme';
+import { useColors } from '@/theme/theme';
 import type { WikiPhoto } from '@/lib/wiki';
 
 /** "Photo: J. Smith · CC BY-SA 4.0 · Wikimedia Commons", linking to the file's page. Always shown with a real photo. */
@@ -24,7 +24,10 @@ export function PhotoCredit({ photo }: { photo: WikiPhoto }) {
 /** The small "Real photo" / "PlantFam art" switch. */
 export function PhotoToggle({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
   const c = useColors();
+  // Dark pill with page-coloured text until it's on, then a plain card. (textOn() can't be used here: it only
+  // knows the bright accent fills, and gave ink-on-ink, so the label was invisible.)
   const fill = on ? c.card : c.ink;
+  const ink = on ? c.ink : c.bg;
   return (
     <Pressable
       accessibilityRole="switch"
@@ -38,10 +41,10 @@ export function PhotoToggle({ on, onChange }: { on: boolean; onChange: (on: bool
       style={[styles.toggle, { backgroundColor: fill, borderColor: c.line }]}
     >
       <Svg width={14} height={14} viewBox="0 0 24 24">
-        <Path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6L16.5 6h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z" stroke={textOn(fill, c)} strokeWidth={2.2} strokeLinejoin="round" fill="none" />
-        <Circle cx={12} cy={13} r={3.2} stroke={textOn(fill, c)} strokeWidth={2.2} fill="none" />
+        <Path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6L16.5 6h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z" stroke={ink} strokeWidth={2.2} strokeLinejoin="round" fill="none" />
+        <Circle cx={12} cy={13} r={3.2} stroke={ink} strokeWidth={2.2} fill="none" />
       </Svg>
-      <Text style={[styles.toggleText, { color: textOn(fill, c) }]}>{on ? 'PlantFam art' : 'Real photo'}</Text>
+      <Text style={[styles.toggleText, { color: ink }]}>{on ? 'PlantFam art' : 'Real photo'}</Text>
     </Pressable>
   );
 }
