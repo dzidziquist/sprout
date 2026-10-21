@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { clearnessFrom, typicalSky } from '../engine/light';
-import { MODEL_CLEARNESS, backfillClearness, fetchClearness, siteOf } from './site';
+import { MODEL_CLEARNESS, fetchClearness, historyRange, refreshSunlight, siteOf, sunlightKey } from './site';
+import type { Sunlight } from '../store/plantStore';
 import type { Climate } from '../types';
 
 const days = (from: string, to: string, radiation: (d: Date) => number | null) => {
@@ -28,38 +29,49 @@ describe('how sunny each month is', () => {
     expect(typicalSky(sea, new Date(2026, 6, 15))).toBeGreaterThan(0.6);
   });
 
-  it('uses a picked city’s own history, or its model city’s lined up by month', () => {
-    const base: Climate = { model: 'seattle', shift: 6, place: 'Sydney', lat: -33.9, lon: 151.2, frost: false };
-    expect(siteOf({ ...base, clearness: new Array(12).fill(0.6) }).clearness[0]).toBe(0.6);
+  it('uses the saved lookup for this city, else the model city’s lined up by month', () => {
+    const sydney: Climate = { model: 'seattle', shift: 6, place: 'Sydney', lat: -33.9, lon: 151.2, frost: false };
+    const saved: Sunlight = { key: sunlightKey(sydney), clearness: new Array(12).fill(0.6), at: '2026-10-01T00:00:00Z' };
+    expect(siteOf(sydney, saved).clearness[0]).toBe(0.6);
+    // A lookup for somewhere else (they've moved) doesn't count.
+    expect(siteOf(sydney, { ...saved, key: '47.61,-122.33' }).clearness[0]).toBe(MODEL_CLEARNESS.seattle[6]);
     // Sydney's January lines up with Seattle's July.
-    expect(siteOf(base).clearness[0]).toBe(MODEL_CLEARNESS.seattle[6]);
-    expect(siteOf(base).lat).toBe(-33.9);
+    expect(siteOf(sydney).clearness[0]).toBe(MODEL_CLEARNESS.seattle[6]);
+    expect(siteOf(sydney).lat).toBe(-33.9);
   });
 });
 
-describe('cities picked before sunlight was saved', () => {
-  const history = days('2023-01-01', '2025-12-31', () => 10);
+describe('keeping the sunlight fresh', () => {
+  const now = new Date(2026, 9, 21);
+  const history = days('2023-10-01', '2026-09-30', () => 10);
   const archive = { daily: { time: history.map((d) => d.date), shortwave_radiation_sum: history.map((d) => d.radiation) } };
-  const ok = (async () => ({ ok: true, json: async () => archive })) as unknown as typeof fetch;
+  const urls: string[] = [];
+  const ok = (async (url: string) => (urls.push(url), { ok: true, json: async () => archive })) as unknown as typeof fetch;
   const down = (async () => ({ ok: false, json: async () => ({}) })) as unknown as typeof fetch;
-  const toronto: Climate = { model: 'seattle', shift: 0, place: 'Toronto', lat: 43.7, lon: -79.4, frost: true };
 
-  it('looks up their own sunlight once and saves it', async () => {
-    const saved: number[][] = [];
-    await backfillClearness(toronto, (c) => saved.push(c), ok);
-    expect(saved).toHaveLength(1);
-    expect(saved[0]).toHaveLength(12);
+  it('uses the last 36 whole months, up to last month', () => {
+    expect(historyRange(now)).toEqual({ start: '2023-10-01', end: '2026-09-30' });
+    expect(historyRange(new Date(2026, 0, 5))).toEqual({ start: '2023-01-01', end: '2025-12-31' });
   });
 
-  it('leaves presets and cities that already have it alone, and saves nothing when offline', async () => {
-    const saved: number[][] = [];
-    let calls = 0;
-    const counting = (async (...a: Parameters<typeof fetch>) => (calls++, ok(...a))) as typeof fetch;
-    await backfillClearness('seattle', (c) => saved.push(c), counting);
-    await backfillClearness({ ...toronto, clearness: new Array(12).fill(0.5) }, (c) => saved.push(c), counting);
-    await backfillClearness(toronto, (c) => saved.push(c), down);
-    expect(calls).toBe(0);
+  it('looks it up when missing, a year old, or for another city, and saves it', async () => {
+    const saved: Sunlight[] = [];
+    await refreshSunlight('seattle', undefined, (s) => saved.push(s), { fetchImpl: ok, now });
+    expect(saved[0]).toMatchObject({ key: '47.61,-122.33', at: now.toISOString() });
+    expect(saved[0].clearness).toHaveLength(12);
+    expect(urls[0]).toContain('start_date=2023-10-01&end_date=2026-09-30');
+    const old: Sunlight = { ...saved[0], at: new Date(2025, 9, 1).toISOString() };
+    await refreshSunlight('seattle', old, (s) => saved.push(s), { fetchImpl: ok, now });
+    await refreshSunlight('accra', saved[0], (s) => saved.push(s), { fetchImpl: ok, now });
+    expect(saved).toHaveLength(3);
+  });
+
+  it('leaves a fresh lookup alone, and saves nothing when offline', async () => {
+    const saved: Sunlight[] = [];
+    const fresh: Sunlight = { key: '47.61,-122.33', clearness: new Array(12).fill(0.5), at: new Date(2026, 3, 1).toISOString() };
+    await refreshSunlight('seattle', fresh, (s) => saved.push(s), { fetchImpl: ok, now });
+    await refreshSunlight('seattle', undefined, (s) => saved.push(s), { fetchImpl: down, now });
     expect(saved).toEqual([]);
-    expect(await fetchClearness(43.7, -79.4, down)).toBeNull();
+    expect(await fetchClearness(43.7, -79.4, down, now)).toBeNull();
   });
 });

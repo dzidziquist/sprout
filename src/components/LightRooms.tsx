@@ -4,7 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { FIT_LABEL, SPOT_LABEL, forecastToday, hasWindow, lightNeed, lightTip, placeOf, roomToday, roomsInUse, shadeWords, spotLight, suits, windowsLine } from '@/engine/light';
 import { useForecast } from '@/lib/weather';
-import { siteOf } from '@/lib/site';
+import { useSite } from '@/hooks/useSite';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { LineIcon } from '@/components/LineIcon';
 import { Sticker } from '@/components/ui';
@@ -25,7 +25,7 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
   const allPlants = usePlantStore((s) => s.plants);
   const rooms = roomsInUse(usePlantStore((s) => s.profile.rooms), allPlants);
   const forecast = useForecast(climate, true);
-  const site = siteOf(climate);
+  const site = useSite();
   const lat = site.lat;
   const now = new Date();
   const today = forecastToday(forecast, now);

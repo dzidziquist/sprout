@@ -11,8 +11,17 @@ import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
 
+/** A place's measured sunlight (lib/site): `key` is the coordinates it was looked up for, `at` when. */
+export interface Sunlight {
+  key: string;
+  clearness: number[];
+  at: string;
+}
+
 export interface Profile {
   climate: ClimateProfile;
+  /** Measured sunlight for the climate's city, refreshed about once a year. */
+  sunlight?: Sunlight;
   city: string;
   faces: FaceStyle;
   /** Where they grow (onboarding / Settings). Picks each new plant's default spot. Empty: species defaults. */
@@ -89,8 +98,8 @@ interface PlantState {
   /** Changing the climate re-paces every upcoming check to the new seasons. */
   setProfile: (p: Partial<Profile>, now?: Date) => void;
   completeOnboarding: () => void;
-  /** Saves a picked city's measured sunlight (lib/site). Only the light estimates use it, so checks aren't re-paced. */
-  setClearness: (clearness: number[]) => void;
+  /** Saves the city's measured sunlight (lib/site). Only the light estimates use it, so checks aren't re-paced. */
+  setSunlight: (sunlight: Sunlight) => void;
   /**
    * New plants get their first soil check today by default: we don't know when it was last watered,
    * and one real answer calibrates far better than a guess. Demo plants use the modelled schedule.
@@ -254,8 +263,7 @@ export const usePlantStore = create<PlantState>()(
           return { profile, plants, events: rebook(s.events, shifted, now), undo: withoutUndo(s.undo, shifted.keys()) };
         }),
       completeOnboarding: () => set({ onboarded: true }),
-      setClearness: (clearness) =>
-        set((s) => (typeof s.profile.climate === 'string' ? {} : { profile: { ...s.profile, climate: { ...s.profile.climate, clearness } } })),
+      setSunlight: (sunlight) => set((s) => ({ profile: { ...s.profile, sunlight } })),
 
       addPlant: (input, now = new Date(), opts) => {
         const base = { ...input, id: uid(), k: 1, createdAt: now.toISOString() };

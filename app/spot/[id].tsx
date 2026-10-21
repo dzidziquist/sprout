@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
 import { FIT_LABEL, hasWindow, shadeWords, spotFits, windowsLine } from '@/engine/light';
-import { siteOf } from '@/lib/site';
+import { useSite } from '@/hooks/useSite';
 import { LIGHT_ART } from '@/data/art';
 import { fitFill } from '@/components/LightRooms';
 import { GlassButton } from '@/components/GlassButton';
@@ -33,7 +33,7 @@ export default function SpotSheet() {
   const insets = useSafeAreaInsets();
   const sheetTop = useSheetTop();
   const plant = usePlantStore((s) => s.plants.find((p) => p.id === id));
-  const climate = usePlantStore((s) => s.profile.climate);
+  const site = useSite();
   const updatePlant = usePlantStore((s) => s.updatePlant);
   const roomName = plant?.room?.trim() ?? '';
   const room = usePlantStore((s) => (roomName ? s.profile.rooms?.[roomName] : undefined));
@@ -68,7 +68,7 @@ export default function SpotSheet() {
         </>
       );
     }
-    const fits = spotFits(plant, room, siteOf(climate), new Date());
+    const fits = spotFits(plant, room, site, new Date());
     // Too dark everywhere by this window: point out the sill as the best there is rather than four dead ends.
     const allDim = Object.values(fits).every((f) => f === 'dim');
     const label = (id: WindowSpot) => (allDim && id === 'sill' ? 'Brightest spot here' : FIT_LABEL[fits[id]]);

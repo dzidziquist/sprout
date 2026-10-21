@@ -80,8 +80,7 @@ describe('weather history and geocoding', () => {
       { name: 'Toronto', region: 'Ontario, Canada', country: 'CA', lat: 43.7, lon: -79.4 },
     ]);
     expect(parseGeocode({})).toEqual([]);
-    expect(parseArchive({ daily: { time: ['2024-01-01'], temperature_2m_mean: [3], temperature_2m_min: [null], precipitation_sum: [1], shortwave_radiation_sum: [4.2] } })).toEqual([{ date: '2024-01-01', tMean: 3, tMin: null, precip: 1, radiation: 4.2 }]);
-    expect(parseArchive({ daily: { time: ['2024-01-01'], temperature_2m_mean: [3], temperature_2m_min: [1], precipitation_sum: [1] } })[0].radiation).toBeNull();
+    expect(parseArchive({ daily: { time: ['2024-01-01'], temperature_2m_mean: [3], temperature_2m_min: [null], precipitation_sum: [1] } })).toEqual([{ date: '2024-01-01', tMean: 3, tMin: null, precip: 1 }]);
   });
 
   it('guesses from latitude when history is unavailable', () => {

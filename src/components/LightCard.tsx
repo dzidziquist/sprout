@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { usePlantStore } from '@/store/plantStore';
 import { FACING_LABEL, SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearFit } from '@/engine/light';
 import { useForecast } from '@/lib/weather';
-import { siteOf } from '@/lib/site';
+import { useSite } from '@/hooks/useSite';
 import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
 import { Button, Sticker } from '@/components/ui';
@@ -27,6 +27,7 @@ export function LightCard({ plant }: { plant: Plant }) {
   const room = roomName ? rooms[roomName] : undefined;
   const place = placeOf(plant, rooms);
   const forecast = useForecast(climate, !!place);
+  const site = useSite();
   if (plant.placement !== 'indoor' || plant.rooting || plant.archivedAt) return null;
 
   const spot = () => router.push(`/spot/${plant.id}`);
@@ -50,7 +51,6 @@ export function LightCard({ plant }: { plant: Plant }) {
     );
   }
 
-  const site = siteOf(climate);
   const now = new Date();
   const windowless = !hasWindow(room);
   const here = spotLight(room, place.spot, site, now);

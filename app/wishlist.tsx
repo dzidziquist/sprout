@@ -7,7 +7,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { getSpecies, isOtherId } from '@/data/species';
 import { roomsInUse } from '@/engine/light';
 import { addHref, homeFor, speciesHref } from '@/lib/plantLinks';
-import { siteOf } from '@/lib/site';
+import { useSite } from '@/hooks/useSite';
 import { wikiNames } from '@/components/AboutCard';
 import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -61,7 +61,7 @@ function WishCard({ wish }: { wish: WishItem }) {
   const router = useRouter();
   const plants = usePlantStore((s) => s.plants);
   const rooms = usePlantStore((s) => s.profile.rooms);
-  const climate = usePlantStore((s) => s.profile.climate);
+  const site = useSite();
   const updateWish = usePlantStore((s) => s.updateWish);
   const removeWish = usePlantStore((s) => s.removeWish);
   const [note, setNote] = useState(wish.note ?? '');
@@ -79,7 +79,7 @@ function WishCard({ wish }: { wish: WishItem }) {
   const sp = getSpecies(wish.speciesId);
   const names = wikiNames(wish.speciesId, wish.custom);
   const title = other ? names.common : sp.commonName;
-  const home = homeFor(wish.speciesId, roomsInUse(rooms, plants), siteOf(climate), new Date());
+  const home = homeFor(wish.speciesId, roomsInUse(rooms, plants), site, new Date());
   const homeLine = !home ? null : home.suits ? `Would suit your ${home.suits.toLowerCase()}` : 'No great spot in your rooms yet';
   const open = () => router.push(speciesHref(wish.speciesId, wish.custom) as never);
   const add = () => {
