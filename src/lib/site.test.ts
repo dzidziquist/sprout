@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clearnessFrom, typicalSky } from '../engine/light';
-import { MODEL_CLEARNESS, siteOf } from './site';
+import { MODEL_CLEARNESS, backfillClearness, fetchClearness, siteOf } from './site';
 import type { Climate } from '../types';
 
 const days = (from: string, to: string, radiation: (d: Date) => number | null) => {
@@ -34,5 +34,32 @@ describe('how sunny each month is', () => {
     // Sydney's January lines up with Seattle's July.
     expect(siteOf(base).clearness[0]).toBe(MODEL_CLEARNESS.seattle[6]);
     expect(siteOf(base).lat).toBe(-33.9);
+  });
+});
+
+describe('cities picked before sunlight was saved', () => {
+  const history = days('2023-01-01', '2025-12-31', () => 10);
+  const archive = { daily: { time: history.map((d) => d.date), shortwave_radiation_sum: history.map((d) => d.radiation) } };
+  const ok = (async () => ({ ok: true, json: async () => archive })) as unknown as typeof fetch;
+  const down = (async () => ({ ok: false, json: async () => ({}) })) as unknown as typeof fetch;
+  const toronto: Climate = { model: 'seattle', shift: 0, place: 'Toronto', lat: 43.7, lon: -79.4, frost: true };
+
+  it('looks up their own sunlight once and saves it', async () => {
+    const saved: number[][] = [];
+    await backfillClearness(toronto, (c) => saved.push(c), ok);
+    expect(saved).toHaveLength(1);
+    expect(saved[0]).toHaveLength(12);
+  });
+
+  it('leaves presets and cities that already have it alone, and saves nothing when offline', async () => {
+    const saved: number[][] = [];
+    let calls = 0;
+    const counting = (async (...a: Parameters<typeof fetch>) => (calls++, ok(...a))) as typeof fetch;
+    await backfillClearness('seattle', (c) => saved.push(c), counting);
+    await backfillClearness({ ...toronto, clearness: new Array(12).fill(0.5) }, (c) => saved.push(c), counting);
+    await backfillClearness(toronto, (c) => saved.push(c), down);
+    expect(calls).toBe(0);
+    expect(saved).toEqual([]);
+    expect(await fetchClearness(43.7, -79.4, down)).toBeNull();
   });
 });

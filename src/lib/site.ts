@@ -1,4 +1,4 @@
-import type { Site } from '../engine/light';
+import { clearnessFrom, type Site } from '../engine/light';
 import type { ClimateModel, ClimateProfile } from '../types';
 import { coordsFor } from './weather';
 
@@ -19,4 +19,38 @@ export function siteOf(climate: ClimateProfile): Site {
   if (climate.clearness?.length === 12) return { lat, clearness: climate.clearness };
   const model = MODEL_CLEARNESS[climate.model];
   return { lat, clearness: model.map((_, m) => model[(((m + climate.shift) % 12) + 12) % 12]) };
+}
+
+/** Measured sunlight for a place: its last three full years of Open-Meteo history, as monthly clearness. Null when it can't be had. */
+export async function fetchClearness(lat: number, lon: number, fetchImpl: typeof fetch = fetch, now = new Date()): Promise<number[] | null> {
+  const end = now.getFullYear() - 1;
+  const url =
+    `https://archive-api.open-meteo.com/v1/archive?latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}` +
+    `&start_date=${end - 2}-01-01&end_date=${end}-12-31&daily=shortwave_radiation_sum&timezone=auto`;
+  try {
+    const res = await fetchImpl(url);
+    if (!res.ok) return null;
+    const d = ((await res.json()) as { daily?: { time?: unknown[]; shortwave_radiation_sum?: unknown[] } })?.daily;
+    if (!d || !Array.isArray(d.time)) return null;
+    const days = d.time.map((date, i) => ({ date: String(date), radiation: typeof d.shortwave_radiation_sum?.[i] === 'number' ? (d.shortwave_radiation_sum[i] as number) : null }));
+    return clearnessFrom(days, lat);
+  } catch {
+    return null;
+  }
+}
+
+let backfilling = false;
+/**
+ * A city picked before its sunlight was saved: look it up once, quietly, and keep it. Until then (or offline)
+ * it borrows its model city's. Tries again next launch if it fails.
+ */
+export async function backfillClearness(climate: ClimateProfile, save: (clearness: number[]) => void, fetchImpl?: typeof fetch): Promise<void> {
+  if (typeof climate === 'string' || climate.clearness?.length === 12 || backfilling) return;
+  backfilling = true;
+  try {
+    const clearness = await fetchClearness(climate.lat, climate.lon, fetchImpl);
+    if (clearness) save(clearness);
+  } finally {
+    backfilling = false;
+  }
 }

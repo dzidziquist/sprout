@@ -89,6 +89,8 @@ interface PlantState {
   /** Changing the climate re-paces every upcoming check to the new seasons. */
   setProfile: (p: Partial<Profile>, now?: Date) => void;
   completeOnboarding: () => void;
+  /** Saves a picked city's measured sunlight (lib/site). Only the light estimates use it, so checks aren't re-paced. */
+  setClearness: (clearness: number[]) => void;
   /**
    * New plants get their first soil check today by default: we don't know when it was last watered,
    * and one real answer calibrates far better than a guess. Demo plants use the modelled schedule.
@@ -252,6 +254,8 @@ export const usePlantStore = create<PlantState>()(
           return { profile, plants, events: rebook(s.events, shifted, now), undo: withoutUndo(s.undo, shifted.keys()) };
         }),
       completeOnboarding: () => set({ onboarded: true }),
+      setClearness: (clearness) =>
+        set((s) => (typeof s.profile.climate === 'string' ? {} : { profile: { ...s.profile, climate: { ...s.profile.climate, clearness } } })),
 
       addPlant: (input, now = new Date(), opts) => {
         const base = { ...input, id: uid(), k: 1, createdAt: now.toISOString() };

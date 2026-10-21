@@ -13,6 +13,7 @@ import { useColors } from '@/theme/theme';
 import { ensureRoundPermission, rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
+import { backfillClearness } from '@/lib/site';
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(() => usePlantStore.persist.hasHydrated());
@@ -57,6 +58,8 @@ export default function RootLayout() {
         .then((ok) => (ok ? sync() : setProfile({ round: { ...usePlantStore.getState().profile.round, enabled: false } })))
         .catch(() => {});
     if (TIPS_ENABLED) configurePurchases();
+    // A city picked before the app kept its sunlight gets its own, for the light estimates.
+    backfillClearness(profile.climate, usePlantStore.getState().setClearness).catch(() => {});
     const unsub = usePlantStore.subscribe((s, prev) => {
       if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos || s.profile.trips !== prev.profile.trips) sync();
     });
