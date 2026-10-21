@@ -54,16 +54,61 @@ const SHADE_FACTOR: Record<Shade, number> = { none: 1, sheer: 0.6, outside: 0.5 
 /** Sky light per daylight hour, against a full hour of direct sun. */
 const SKY_WEIGHT = 0.25;
 /**
- * Typical share of direct sun that gets through cloud in each month, when there's no forecast for the day:
- * the share of possible sunshine actually recorded, on the two climates the app is calibrated on. Seattle
- * (NOAA normals) stands in for anywhere outside the tropics, six months apart south of the equator; Accra
- * for the tropics. Seattle's grey winters are why a south sill there isn't "too sunny" in December.
+ * Where the home is, for its light: the latitude (the sun's path) and each month's clearness, the
+ * sunlight measured at the ground against what arrives at the top of the atmosphere (January first).
+ * Clearness comes from the city's own weather history; see lib/site.
  */
-const SUNSHINE_TEMPERATE = [0.25, 0.35, 0.42, 0.5, 0.55, 0.56, 0.67, 0.64, 0.58, 0.43, 0.28, 0.22];
-const SUNSHINE_TROPICAL = [0.58, 0.6, 0.58, 0.58, 0.57, 0.41, 0.37, 0.36, 0.43, 0.55, 0.62, 0.58];
-export function typicalSky(lat: number, date: Date): number {
-  if (Math.abs(lat) < 23.5) return SUNSHINE_TROPICAL[date.getMonth()];
-  return SUNSHINE_TEMPERATE[(date.getMonth() + (lat < 0 ? 6 : 0)) % 12];
+export interface Site {
+  lat: number;
+  clearness: readonly number[];
+}
+
+/** Clearness of a cloudless day: what's left after a clear atmosphere. */
+const CLEAR_SKY = 0.72;
+/** Share of the ground's sunlight that's diffuse sky light, for a month's clearness (Erbs et al., 1982, monthly). */
+const diffuseShare = (kt: number) => 1.391 - 3.56 * kt + 4.189 * kt ** 2 - 2.137 * kt ** 3;
+/** Direct sun reaching the ground for a clearness (the fit holds between 0.3 and 0.8). */
+const beamOf = (kt: number) => {
+  const k = Math.min(0.8, Math.max(0.3, kt));
+  return k * (1 - diffuseShare(k));
+};
+
+/**
+ * Typical share of a cloudless day's direct sun that gets through in this month, from the site's measured
+ * clearness: about a fifth in a Seattle December, three quarters in its July.
+ */
+export function typicalSky(site: Site, date: Date): number {
+  const kt = site.clearness[date.getMonth()];
+  if (typeof kt !== 'number' || !Number.isFinite(kt)) return beamOf(0.5) / beamOf(CLEAR_SKY);
+  return Math.min(1, beamOf(kt) / beamOf(CLEAR_SKY));
+}
+
+/**
+ * Monthly clearness from daily history: each day's measured sunlight (MJ/m², Open-Meteo's
+ * shortwave_radiation_sum) against the sunlight at the top of the atmosphere that day. Null unless every
+ * month has at least 20 days of data.
+ */
+export function clearnessFrom(days: { date: string; radiation: number | null }[], lat: number): number[] | null {
+  const ground = new Array(12).fill(0);
+  const top = new Array(12).fill(0);
+  const count = new Array(12).fill(0);
+  const phi = lat * RAD;
+  for (const d of days) {
+    if (typeof d.radiation !== 'number' || !Number.isFinite(d.radiation)) continue;
+    const [y, m, day] = d.date.split('-').map(Number);
+    if (!y || !m || !day) continue;
+    const n = dayOfYear(new Date(y, m - 1, day));
+    const decl = 23.44 * Math.sin(((2 * Math.PI) / 365) * (284 + n)) * RAD;
+    const ws = Math.acos(Math.max(-1, Math.min(1, -Math.tan(phi) * Math.tan(decl))));
+    // Extraterrestrial sunlight on level ground over the day, MJ/m² (solar constant 1367 W/m²).
+    const toa = ((24 * 3600) / Math.PI) * 1367e-6 * (1 + 0.033 * Math.cos((2 * Math.PI * n) / 365)) * (Math.cos(phi) * Math.cos(decl) * Math.sin(ws) + ws * Math.sin(phi) * Math.sin(decl));
+    if (toa <= 0) continue;
+    ground[m - 1] += d.radiation;
+    top[m - 1] += toa;
+    count[m - 1] += 1;
+  }
+  if (count.some((c) => c < 20)) return null;
+  return ground.map((g, i) => Math.round((g / top[i]) * 1000) / 1000);
 }
 
 function dayOfYear(d: Date): number {
@@ -159,9 +204,9 @@ export interface SpotLight {
 }
 
 /** The light at a spot in a room on a date, with `sky` the share of direct sun the weather lets through. */
-export function spotLight(room: RoomLight, spot: WindowSpot, lat: number, date: Date, sky = typicalSky(lat, date)): SpotLight {
+export function spotLight(room: RoomLight, spot: WindowSpot, site: Site, date: Date, sky = typicalSky(site, date)): SpotLight {
   if (!hasWindow(room)) return { level: 'low', score: 0, direct: 0 };
-  const sun = sunDay(lat, date);
+  const sun = sunDay(site.lat, date);
   const f = SPOT_FACTOR[spot];
   if (!room.windows.length) {
     // Direction unknown: an average window, neither the sunniest nor the darkest guess.
@@ -218,7 +263,7 @@ export interface LightTip {
 }
 
 export interface LightContext {
-  lat: number;
+  site: Site;
   now: Date;
   /** Every room's light setup by name, to look for a better room when this one can't do. */
   rooms: Record<string, RoomLight>;
@@ -254,14 +299,14 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   if (!place) return null;
   const { room, spot } = place;
   const need = lightNeed(plant);
-  const here = spotLight(room, spot, ctx.lat, ctx.now);
+  const here = spotLight(room, spot, ctx.site, ctx.now);
   // The other season at its height (midsummer in winter, midwinter in summer), to tell a seasonal problem from a lasting one.
   const name = plant.name;
   const days = daysAhead(ctx.forecast, ctx.now).slice(0, 5);
   // Which half of the year it is here: a tip only calls something seasonal when the season it names is now.
-  const longDays = sunDay(ctx.lat, ctx.now).daylight >= sunDay(ctx.lat, shiftDays(ctx.now, 182)).daylight;
-  const peak = new Date(ctx.now.getFullYear(), (longDays ? 0 : 6) + (ctx.lat < 0 ? 6 : 0), 15);
-  const halfYear = spotLight(room, spot, ctx.lat, peak);
+  const longDays = sunDay(ctx.site.lat, ctx.now).daylight >= sunDay(ctx.site.lat, shiftDays(ctx.now, 182)).daylight;
+  const peak = new Date(ctx.now.getFullYear(), (longDays ? 0 : 6) + (ctx.site.lat < 0 ? 6 : 0), 15);
+  const halfYear = spotLight(room, spot, ctx.site, peak);
 
   // A hot day on a sill that takes strong sun: worth pulling back for the afternoon.
   const hot = days.slice(0, 3).find((d) => d.maxC >= 30);
@@ -296,7 +341,7 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
   const grey = days.filter((d) => skyFactor(d) <= 0.3).length >= 4;
   if (grey && here.level === need && need !== 'low') {
     const closer = SPOTS.find((s) => {
-      const there = spotLight(room, s, ctx.lat, ctx.now);
+      const there = spotLight(room, s, ctx.site, ctx.now);
       return there.score >= here.score * 1.3 && suits(there.level, need) === 'ok';
     });
     if (closer) return { kind: 'grey', text: `Grey days ahead: ${name} would get more light ${spotWords(closer, here.window)} for now.` };
@@ -306,16 +351,16 @@ export function lightTip(plant: Plant, ctx: LightContext): LightTip | null {
 
 /** The smallest move that would suit the plant: a brighter spot by this room's window, else another room. */
 function brighterSpot(plant: Plant, roomName: string, room: RoomLight, spot: WindowSpot, need: Light, ctx: LightContext): string | null {
-  const ok = (r: RoomLight, s: WindowSpot) => suits(spotLight(r, s, ctx.lat, ctx.now).level, need) === 'ok';
-  const here = spotLight(room, spot, ctx.lat, ctx.now).score;
-  const brighter = SPOTS.map((s) => ({ s, light: spotLight(room, s, ctx.lat, ctx.now) }))
+  const ok = (r: RoomLight, s: WindowSpot) => suits(spotLight(r, s, ctx.site, ctx.now).level, need) === 'ok';
+  const here = spotLight(room, spot, ctx.site, ctx.now).score;
+  const brighter = SPOTS.map((s) => ({ s, light: spotLight(room, s, ctx.site, ctx.now) }))
     .filter(({ light }) => light.score > here)
     .sort((a, b) => a.light.score - b.light.score);
   for (const { s, light } of brighter) if (ok(room, s)) return spotWords(s, light.window);
   for (const [name, other] of Object.entries(ctx.rooms)) {
     if (name === roomName || !hasWindow(other)) continue;
     for (const s of ['near', 'below', 'sill'] as WindowSpot[]) {
-      if (ok(other, s)) return `${spotWords(s, spotLight(other, s, ctx.lat, ctx.now).window)} in the ${name.toLowerCase()}`;
+      if (ok(other, s)) return `${spotWords(s, spotLight(other, s, ctx.site, ctx.now).window)} in the ${name.toLowerCase()}`;
     }
   }
   return null;
@@ -325,21 +370,21 @@ function brighterSpot(plant: Plant, roomName: string, room: RoomLight, spot: Win
  * How a spot will suit the plant through the year, for a spot that suits it now: a warning when summer sun
  * or winter gloom would be too much for it here, else the spot's light over the year.
  */
-export function yearFit(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, spot: WindowSpot, lat: number, now: Date): string {
+export function yearFit(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, spot: WindowSpot, site: Site, now: Date): string {
   const need = lightNeed(plant);
   const year = now.getFullYear();
-  const [winter, summer] = (lat >= 0 ? [new Date(year, 11, 21), new Date(year, 5, 21)] : [new Date(year, 5, 21), new Date(year, 11, 21)]).map((d) => suits(spotLight(room, spot, lat, d).level, need));
-  const longDays = sunDay(lat, now).daylight >= sunDay(lat, shiftDays(now, 182)).daylight;
+  const [winter, summer] = (site.lat >= 0 ? [new Date(year, 11, 21), new Date(year, 5, 21)] : [new Date(year, 5, 21), new Date(year, 11, 21)]).map((d) => suits(spotLight(room, spot, site, d).level, need));
+  const longDays = sunDay(site.lat, now).daylight >= sunDay(site.lat, shiftDays(now, 182)).daylight;
   if (summer === 'harsh' && !longDays) return 'Good for now. Summer sun gets too strong here, so move it back from the glass in late spring.';
   if (winter === 'dim' && longDays) return 'Good for now. Too dim here in winter, so move it closer to the glass in autumn.';
-  return yearLight(room, spot, lat, year);
+  return yearLight(room, spot, site, year);
 }
 
 /** How a spot's light changes over the year: "Medium all year" or "Low in winter · bright in summer". */
-export function yearLight(room: RoomLight, spot: WindowSpot, lat: number, year: number): string {
-  const june = spotLight(room, spot, lat, new Date(year, 5, 21)).level;
-  const dec = spotLight(room, spot, lat, new Date(year, 11, 21)).level;
-  const [winter, summer] = lat >= 0 ? [dec, june] : [june, dec];
+export function yearLight(room: RoomLight, spot: WindowSpot, site: Site, year: number): string {
+  const june = spotLight(room, spot, site, new Date(year, 5, 21)).level;
+  const dec = spotLight(room, spot, site, new Date(year, 11, 21)).level;
+  const [winter, summer] = site.lat >= 0 ? [dec, june] : [june, dec];
   const word = (l: Light) => (l === 'direct' ? 'sunny' : l);
   return winter === summer ? `${word(winter)[0].toUpperCase()}${word(winter).slice(1)} all year` : `${word(winter)[0].toUpperCase()}${word(winter).slice(1)} in winter · ${word(summer)} in summer`;
 }
@@ -376,9 +421,9 @@ export function windowsLine(room: RoomLight): string {
  * How each spot by this room's window would suit the plant at this time of year, on a typical day. Weather is
  * left out on purpose so verdicts don't flip with each cloudy day; hot and grey spells come through lightTip.
  */
-export function spotFits(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, lat: number, now: Date): Record<WindowSpot, 'ok' | 'dim' | 'harsh'> {
+export function spotFits(plant: Pick<Plant, 'speciesId' | 'custom'>, room: RoomLight, site: Site, now: Date): Record<WindowSpot, 'ok' | 'dim' | 'harsh'> {
   const need = lightNeed(plant);
-  return Object.fromEntries(SPOTS.map((s) => [s, suits(spotLight(room, s, lat, now).level, need)])) as Record<WindowSpot, 'ok' | 'dim' | 'harsh'>;
+  return Object.fromEntries(SPOTS.map((s) => [s, suits(spotLight(room, s, site, now).level, need)])) as Record<WindowSpot, 'ok' | 'dim' | 'harsh'>;
 }
 
 /** A compass heading (degrees from north) rounded to the nearest of north, east, south and west. */
@@ -389,7 +434,7 @@ export const facingOf = (heading: number): Facing => FACINGS[Math.round((((headi
  * that suits it, trying a comfortable distance from the window before the sill. Null when no room suits
  * (or none is set up); `dim` says whether every room is too dark for it rather than too sunny.
  */
-export function bestHome(need: Light, rooms: Record<string, RoomLight>, lat: number, now: Date): { room: string; words: string } | { room: null; dim: boolean } | null {
+export function bestHome(need: Light, rooms: Record<string, RoomLight>, site: Site, now: Date): { room: string; words: string } | { room: null; dim: boolean } | null {
   if (!Object.keys(rooms).length) return null;
   const lit = Object.entries(rooms).filter(([, r]) => hasWindow(r));
   // Rooms set up, all without windows: too dark for anything that wants light.
@@ -397,7 +442,7 @@ export function bestHome(need: Light, rooms: Record<string, RoomLight>, lat: num
   let dim = true;
   for (const [name, room] of lit.sort(([a], [b]) => a.localeCompare(b))) {
     for (const spot of ['near', 'below', 'sill', 'far'] as WindowSpot[]) {
-      const here = spotLight(room, spot, lat, now);
+      const here = spotLight(room, spot, site, now);
       const fit = suits(here.level, need);
       if (fit === 'ok') return { room: name, words: spotWords(spot, here.window) };
       if (fit === 'harsh') dim = false;

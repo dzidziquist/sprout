@@ -2,7 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePlantStore } from '@/store/plantStore';
 import { FACING_LABEL, SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearFit } from '@/engine/light';
-import { coordsFor, useForecast } from '@/lib/weather';
+import { useForecast } from '@/lib/weather';
+import { siteOf } from '@/lib/site';
 import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
 import { Button, Sticker } from '@/components/ui';
@@ -49,18 +50,18 @@ export function LightCard({ plant }: { plant: Plant }) {
     );
   }
 
-  const lat = coordsFor(climate).lat;
+  const site = siteOf(climate);
   const now = new Date();
   const windowless = !hasWindow(room);
-  const here = spotLight(room, place.spot, lat, now);
+  const here = spotLight(room, place.spot, site, now);
   const fit = suits(here.level, lightNeed(plant));
-  const tip = lightTip(plant, { lat, now, rooms, forecast });
+  const tip = lightTip(plant, { site, now, rooms, forecast });
   // The verdict is the spot on a typical day, the same as the spot sheet says. A hot day or a grey week only
   // adds a note under it, so a good spot doesn't turn into a warning with the weather.
   const weather = tip?.kind === 'heat' || tip?.kind === 'grey' ? tip.text : null;
   const advice = weather ? null : tip?.text;
   const headline = fit === 'dim' ? (tip?.growLight ? 'Short on light' : 'May need a brighter spot') : fit === 'harsh' ? 'May get too much sun' : 'Good spot';
-  const detail = advice ?? (windowless ? 'No window here, so low light all year.' : yearFit(plant, room, place.spot, lat, now));
+  const detail = advice ?? (windowless ? 'No window here, so low light all year.' : yearFit(plant, room, place.spot, site, now));
   const fill = fit === 'ok' ? c.mint : c.butter;
   const ink = textOn(fill, c);
   const window = room.windows.length === 1 ? `${FACING_LABEL[room.windows[0]][0].toUpperCase()}${FACING_LABEL[room.windows[0]].slice(1)} window` : roomName;

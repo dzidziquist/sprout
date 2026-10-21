@@ -7,7 +7,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { getSpecies, isOtherId } from '@/data/species';
 import { roomsInUse } from '@/engine/light';
 import { addHref, homeFor, speciesHref } from '@/lib/plantLinks';
-import { coordsFor } from '@/lib/weather';
+import { siteOf } from '@/lib/site';
 import { wikiNames } from '@/components/AboutCard';
 import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -79,7 +79,7 @@ function WishCard({ wish }: { wish: WishItem }) {
   const sp = getSpecies(wish.speciesId);
   const names = wikiNames(wish.speciesId, wish.custom);
   const title = other ? names.common : sp.commonName;
-  const home = homeFor(wish.speciesId, roomsInUse(rooms, plants), coordsFor(climate).lat, new Date());
+  const home = homeFor(wish.speciesId, roomsInUse(rooms, plants), siteOf(climate), new Date());
   const homeLine = !home ? null : home.suits ? `Would suit your ${home.suits.toLowerCase()}` : 'No great spot in your rooms yet';
   const open = () => router.push(speciesHref(wish.speciesId, wish.custom) as never);
   const add = () => {

@@ -5,7 +5,7 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
 import { FIT_LABEL, hasWindow, shadeWords, spotFits, windowsLine } from '@/engine/light';
-import { coordsFor } from '@/lib/weather';
+import { siteOf } from '@/lib/site';
 import { LIGHT_ART } from '@/data/art';
 import { fitFill } from '@/components/LightRooms';
 import { GlassButton } from '@/components/GlassButton';
@@ -68,7 +68,7 @@ export default function SpotSheet() {
         </>
       );
     }
-    const fits = spotFits(plant, room, coordsFor(climate).lat, new Date());
+    const fits = spotFits(plant, room, siteOf(climate), new Date());
     // Too dark everywhere by this window: point out the sill as the best there is rather than four dead ends.
     const allDim = Object.values(fits).every((f) => f === 'dim');
     const label = (id: WindowSpot) => (allDim && id === 'sill' ? 'Brightest spot here' : FIT_LABEL[fits[id]]);

@@ -12,7 +12,7 @@ import { useColors } from '@/theme/theme';
 
 const CREDITS: { name: string; what: string; url: string }[] = [
   { name: 'Pl@ntNet', what: 'Photo ID', url: 'https://plantnet.org' },
-  { name: 'Open-Meteo', what: 'Weather forecasts (CC BY 4.0)', url: 'https://open-meteo.com' },
+  { name: 'Open-Meteo', what: 'Weather forecasts, and past weather and sunlight (CC BY 4.0)', url: 'https://open-meteo.com' },
   { name: 'WSU, OSU, RHS & university extension services', what: 'Care, soil and Seattle growing guidance', url: 'https://extension.wsu.edu' },
   { name: 'ASPCA', what: 'Pet-safety lists we checked our flags against', url: 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants' },
 ];

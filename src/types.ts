@@ -51,6 +51,8 @@ export interface Climate {
   lon: number;
   /** Any month averaging nights at or below freezing. */
   frost: boolean;
+  /** Each month's clearness from the city's weather history (see lib/site), January first. */
+  clearness?: number[];
 }
 
 /** A preset model (exactly Seattle or Accra) or a shifted climate for anywhere else. */

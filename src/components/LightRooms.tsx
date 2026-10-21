@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { FIT_LABEL, SPOT_LABEL, forecastToday, hasWindow, lightNeed, lightTip, placeOf, roomToday, roomsInUse, shadeWords, spotLight, suits, windowsLine } from '@/engine/light';
-import { coordsFor, useForecast } from '@/lib/weather';
+import { useForecast } from '@/lib/weather';
+import { siteOf } from '@/lib/site';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { LineIcon } from '@/components/LineIcon';
 import { Sticker } from '@/components/ui';
@@ -24,7 +25,8 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
   const allPlants = usePlantStore((s) => s.plants);
   const rooms = roomsInUse(usePlantStore((s) => s.profile.rooms), allPlants);
   const forecast = useForecast(climate, true);
-  const lat = coordsFor(climate).lat;
+  const site = siteOf(climate);
+  const lat = site.lat;
   const now = new Date();
   const today = forecastToday(forecast, now);
 
@@ -41,9 +43,9 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
 
   const row = (p: Plant, last: boolean) => {
     const place = placeOf(p, rooms);
-    const here = place ? spotLight(place.room, place.spot, lat, now) : null;
+    const here = place ? spotLight(place.room, place.spot, site, now) : null;
     const fit = here ? suits(here.level, lightNeed(p)) : null;
-    const tip = place ? lightTip(p, { lat, now, rooms, forecast }) : null;
+    const tip = place ? lightTip(p, { site, now, rooms, forecast }) : null;
     // Weather tips (a hot day, a grey week) say what to do; the fit says the rest.
     const weather = tip && (tip.kind === 'heat' || tip.kind === 'grey') ? tip.text : null;
     const windowless = !!place && !hasWindow(place.room);

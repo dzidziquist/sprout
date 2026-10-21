@@ -1,4 +1,5 @@
 import { classifyClimate, monthlyNormals } from './climate';
+import { clearnessFrom } from '../engine/light';
 import type { Climate } from '../types';
 
 /*
@@ -45,6 +46,7 @@ export function parseArchive(body: unknown) {
     tMean: (d.temperature_2m_mean?.[i] as number | null) ?? null,
     tMin: (d.temperature_2m_min?.[i] as number | null) ?? null,
     precip: (d.precipitation_sum?.[i] as number | null) ?? null,
+    radiation: (d.shortwave_radiation_sum?.[i] as number | null) ?? null,
   }));
 }
 
@@ -64,13 +66,17 @@ export async function climateFor(p: PlaceResult, fetchImpl: FetchLike = fetch, n
   const end = now.getFullYear() - 1;
   const url =
     `https://archive-api.open-meteo.com/v1/archive?latitude=${p.lat.toFixed(3)}&longitude=${p.lon.toFixed(3)}` +
-    `&start_date=${end - 2}-01-01&end_date=${end}-12-31&daily=temperature_2m_mean,temperature_2m_min,precipitation_sum&timezone=auto`;
+    `&start_date=${end - 2}-01-01&end_date=${end}-12-31&daily=temperature_2m_mean,temperature_2m_min,precipitation_sum,shortwave_radiation_sum&timezone=auto`;
   try {
     const res = await fetchImpl(url);
     if (!res.ok) throw new Error(`archive ${res.status}`);
-    const normals = monthlyNormals(parseArchive(await res.json()));
+    const days = parseArchive(await res.json());
+    const normals = monthlyNormals(days);
     if (normals.some((n) => Number.isNaN(n.tMean))) throw new Error('incomplete history');
-    return classifyClimate(normals, { place: label(p), country: p.country, lat: p.lat, lon: p.lon });
+    const climate = classifyClimate(normals, { place: label(p), country: p.country, lat: p.lat, lon: p.lon });
+    // The same history says how sunny each month really is there, for the light estimates.
+    const clearness = clearnessFrom(days, p.lat);
+    return clearness ? { ...climate, clearness } : climate;
   } catch {
     return guessClimate(p);
   }
