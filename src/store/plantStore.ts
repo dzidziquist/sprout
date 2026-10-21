@@ -130,6 +130,8 @@ interface PlantState {
   addNote: (plantId: string, note: string, now?: Date) => void;
   /** Rewrite a note (or a photo's caption). Emptying a plain note removes it. */
   editNote: (eventId: string, note: string) => void;
+  /** Removes a care entry logged by mistake (see canDeleteEvent). Waterings and checks stay: the rhythm learned from them. */
+  deleteEvent: (eventId: string) => void;
   /** Plan a trip (replacing any that hasn't started), or end the current one now. */
   planTrip: (trip: Trip) => void;
   endTrip: (now?: Date) => void;
@@ -206,6 +208,13 @@ function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
 }
 
 /** The earliest an In memory / gifted date can be: when it joined the fam, or when it last came back. */
+/**
+ * Entries a person can delete later. Waterings and checks aren't here: the watering rhythm learned from them
+ * (Undo on Today covers a mistaken one straight away), and cuttings, stages and memories are the plant's story.
+ */
+const DELETABLE = new Set<CareEvent['type']>(['feed', 'prune', 'pest', 'repot', 'staked', 'refresh', 'harvest', 'note']);
+export const canDeleteEvent = (e: Pick<CareEvent, 'type'>) => DELETABLE.has(e.type);
+
 /** Which plant a wish is for: the species, plus the name for plants not in the catalogue. */
 export const wishKey = (w: Pick<WishItem, 'speciesId' | 'custom'>) => `${w.speciesId}|${(w.custom?.latinName || w.custom?.commonName || '').trim().toLowerCase()}`;
 /** The saved wish for this plant, if there is one. */
@@ -502,6 +511,22 @@ export const usePlantStore = create<PlantState>()(
             return [{ ...e, note: text || undefined }];
           }),
         }));
+      },
+
+      deleteEvent: (eventId) => {
+        set((s) => {
+          const gone = s.events.find((e) => e.id === eventId);
+          if (!gone || !canDeleteEvent(gone)) return {};
+          const events = s.events.filter((e) => e.id !== eventId);
+          // Repot and fresh-water dates come from these entries, so they fall back to the one before.
+          const latest = (type: CareEvent['type']) =>
+            events.filter((e) => e.plantId === gone.plantId && e.type === type).reduce<string | undefined>((m, e) => (!m || e.at > m ? e.at : m), undefined);
+          const plants =
+            gone.type === 'repot' || gone.type === 'refresh'
+              ? s.plants.map((p) => (p.id !== gone.plantId ? p : gone.type === 'repot' ? { ...p, lastRepottedAt: latest('repot') } : { ...p, lastRefreshedAt: latest('refresh') }))
+              : s.plants;
+          return { events, plants };
+        });
       },
 
       planTrip: (trip) => {

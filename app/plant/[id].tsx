@@ -381,21 +381,18 @@ export default function PlantDetail() {
                   <Text style={[styles.diaryDate, { color: c.inkMuted }]}>{daysAgo(e.at, now)}</Text>
                 </>
               );
-              // Notes and photo captions open to be changed.
-              return e.type === 'note' || e.type === 'photo' ? (
+              // Every entry opens: notes and photo captions to edit, the rest to see or delete.
+              const text = e.type === 'note' || e.type === 'photo';
+              return (
                 <Pressable
                   key={e.id}
                   accessibilityRole="button"
-                  accessibilityHint={e.type === 'note' ? 'Edit note' : 'Edit caption'}
-                  onPress={() => router.push(`/note/${e.id}`)}
+                  accessibilityHint={e.type === 'note' ? 'Edit or delete note' : e.type === 'photo' ? 'Edit caption' : 'Open entry'}
+                  onPress={() => router.push(text ? `/note/${e.id}` : `/entry/${e.id}`)}
                   style={({ pressed }) => [styles.diaryRow, pressed && { opacity: 0.6 }]}
                 >
                   {row}
                 </Pressable>
-              ) : (
-                <View key={e.id} style={styles.diaryRow}>
-                  {row}
-                </View>
               );
             })}
           </View>
