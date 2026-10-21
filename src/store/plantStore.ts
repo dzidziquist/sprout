@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Trip } from '../engine/away';
-import type { RoomLight } from '../engine/light';
+import type { AnyRoomLight, RoomLight } from '../engine/light';
 import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
@@ -38,8 +38,8 @@ export interface Profile {
   accent?: Accent;
   /** Plants tab layout the person last picked. Unset: grid for a small fam, list from 16 plants. */
   jungleView?: 'grid' | 'list' | 'light';
-  /** Each room's windows and shade, by room name, for the light view. */
-  rooms?: Record<string, RoomLight>;
+  /** Each room's windows (each with what's in its way), by room name, for the light view. Older saves have one shade per room. */
+  rooms?: Record<string, AnyRoomLight>;
   /** No longer used: plant pages always show their light card. Kept so old backups still load. */
   lightTips?: 'important' | 'daily';
   /** Whether the About card (Wikipedia intro) on plant pages starts open. Folded by default. */
@@ -142,7 +142,7 @@ interface PlantState {
   /** Rewrite a note (or a photo's caption). Emptying a plain note removes it. */
   editNote: (eventId: string, note: string) => void;
   /** Removes a care entry logged by mistake (see canDeleteEvent). Waterings and checks stay: the rhythm learned from them. */
-  deleteEvent: (eventId: string) => void;
+  deleteEvent: (eventId: string, now?: Date) => void;
   /** Plan a trip (replacing any that hasn't started), or end the current one now. */
   planTrip: (trip: Trip) => void;
   endTrip: (now?: Date) => void;
@@ -212,6 +212,53 @@ function scheduleNotBefore(plant: Omit<Plant, 'nextCheckAt'>, climate: ClimatePr
   return new Date(Math.max(new Date(schedule(plant, climate, at)).getTime(), now.getTime())).toISOString();
 }
 
+/**
+ * Deleting a check or a watering. A check where the soil was dry goes with the watering it logged (one action,
+ * two entries), and the other way round.
+ * - The latest check: the schedule and learned rhythm go back to just before it (checks saved before this
+ *   was kept only get their last-check date back).
+ * - An older check: it leaves the list; the small nudge it gave the rhythm stays, and later checks correct it.
+ * - The latest watering: the next check is planned from the watering before it (due now if that was long ago,
+ *   or today if there's none).
+ */
+function forgetWatering(s: PlantState, gone: CareEvent, now: Date): Partial<PlantState> {
+  const plant = s.plants.find((p) => p.id === gone.plantId);
+  if (!plant) return {};
+  const mine = (type: CareEvent['type']) => s.events.filter((e) => e.plantId === gone.plantId && e.type === type);
+  const pair = gone.type === 'check' ? mine('water').find((e) => e.at === gone.at) : mine('check').find((e) => e.at === gone.at);
+  const check = gone.type === 'check' ? gone : pair;
+  const water = gone.type === 'water' ? gone : pair;
+  const ids = new Set([gone.id, pair?.id].filter(Boolean) as string[]);
+  const events = s.events.filter((e) => !ids.has(e.id));
+  const newest = (list: CareEvent[]) => list.reduce<CareEvent | undefined>((m, e) => (!m || e.at > m.at ? e : m), undefined);
+  const latestCheck = newest(mine('check'));
+  const latestWater = newest(mine('water'));
+  const left = (type: CareEvent['type']) => newest(events.filter((e) => e.plantId === gone.plantId && e.type === type));
+
+  let next: Partial<Plant> = {};
+  let restored = false;
+  if (check && check.id === latestCheck?.id) {
+    const prev = left('check');
+    // A watering logged after this check has moved the schedule on since: keep that, only the last-check date goes back.
+    const since = s.events.some((e) => e.plantId === plant.id && !ids.has(e.id) && (e.type === 'water' || e.type === 'check') && e.at > check.at);
+    restored = !!check.before && !since;
+    next = restored ? { ...check.before } : { lastCheckAt: prev?.at, lastResult: prev?.result };
+  }
+  // A watering with a check logged after it: that check planned the schedule since, so it stays.
+  const checkedSince = !!water && s.events.some((e) => e.plantId === plant.id && !ids.has(e.id) && e.type === 'check' && e.at > water.at);
+  if (water && water.id === latestWater?.id && !restored && !checkedSince) {
+    const prev = left('water');
+    next.nextCheckAt = prev ? scheduleNotBefore(plant, s.profile.climate, new Date(prev.at), now) : now.toISOString();
+  }
+  const updated = { ...plant, ...next };
+  const moved = updated.nextCheckAt !== plant.nextCheckAt ? new Map([[plant.id, updated.nextCheckAt]]) : new Map<string, string>();
+  return {
+    plants: s.plants.map((p) => (p.id === plant.id ? updated : p)),
+    events: rebook(events, moved, now),
+    undo: withoutUndo(s.undo, [plant.id]),
+  };
+}
+
 /** Plants whose booked check changed between two lists, by id → new date. */
 function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
   const old = new Map(before.map((p) => [p.id, p.nextCheckAt]));
@@ -220,10 +267,10 @@ function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
 
 /** The earliest an In memory / gifted date can be: when it joined the fam, or when it last came back. */
 /**
- * Entries a person can delete later. Waterings and checks aren't here: the watering rhythm learned from them
- * (Undo on Today covers a mistaken one straight away), and cuttings, stages and memories are the plant's story.
+ * Entries a person can delete later. Cuttings, stages and memories aren't: they're the plant's story. Deleting a
+ * watering or a check re-plans the next check (see deleteEvent).
  */
-const DELETABLE = new Set<CareEvent['type']>(['feed', 'prune', 'pest', 'repot', 'staked', 'refresh', 'harvest', 'note']);
+const DELETABLE = new Set<CareEvent['type']>(['feed', 'prune', 'pest', 'repot', 'staked', 'refresh', 'harvest', 'note', 'water', 'check']);
 export const canDeleteEvent = (e: Pick<CareEvent, 'type'>) => DELETABLE.has(e.type);
 
 /** Which plant a wish is for: the species, plus the name for plants not in the catalogue. */
@@ -299,7 +346,8 @@ export const usePlantStore = create<PlantState>()(
         const plant = plants.find((p) => p.id === plantId);
         if (!plant) return '';
         const out = applyCheck({ group: speciesOf(plant).group, plant, profile: profile.climate, at: now }, result);
-        const events: CareEvent[] = [{ id: uid(), plantId, type: 'check', result, at: now.toISOString(), nextAt: out.nextCheckAt }];
+        const before = { k: plant.k, nextCheckAt: plant.nextCheckAt, lastCheckAt: plant.lastCheckAt, lastResult: plant.lastResult };
+        const events: CareEvent[] = [{ id: uid(), plantId, type: 'check', result, at: now.toISOString(), nextAt: out.nextCheckAt, before }];
         if (out.watered) events.push({ id: uid(), plantId, type: 'water', at: now.toISOString() });
         set((s) => ({
           plants: s.plants.map((p) =>
@@ -525,10 +573,11 @@ export const usePlantStore = create<PlantState>()(
         }));
       },
 
-      deleteEvent: (eventId) => {
+      deleteEvent: (eventId, now = new Date()) => {
         set((s) => {
           const gone = s.events.find((e) => e.id === eventId);
           if (!gone || !canDeleteEvent(gone)) return {};
+          if (gone.type === 'check' || gone.type === 'water') return forgetWatering(s, gone, now);
           const events = s.events.filter((e) => e.id !== eventId);
           // Repot and fresh-water dates come from these entries, so they fall back to the one before.
           const latest = (type: CareEvent['type']) =>

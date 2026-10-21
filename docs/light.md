@@ -3,7 +3,8 @@
 The simple version of the light map: no floor plan, furniture or scanning.
 
 ## What the user sets
-- **Room windows** (Jungle, Light view, then Set up or Edit on a room): every way the room's windows face (N, E, S or W), or None. Plus what's in the way: nothing, a sheer curtain, or a tree or building. Open-plan spaces count as one room.
+- **Room windows** (Jungle, Light view, then Set up or Edit on a room): each window in the room, with which way it faces (N, E, S or W, or not sure) and what's in its way: nothing, a curtain or frosted glass, or a tree or building. A room can have none. Open-plan spaces count as one room. Rooms saved before each window had its own view read as one window per direction, all with the room's old shade.
+- **Which window a plant is by**: asked on the spot sheet when the room has two or more. Until it's picked (or if that window is removed), the brightest counts.
 - **Where each plant sits**: Sill, Below (the floor or a stool under the window), about 1 m, or Far (across the room). Stored as `plant.windowSpot`.
 
 ## How light is worked out (`src/engine/light.ts`)
@@ -22,7 +23,7 @@ Each spot also gets one plain verdict: **Likely suitable**, **Likely too dark** 
 
 ## Where it shows
 - **Jungle, Light view** (the sun icon next to search): a "rooms left to set up" card with progress, then each set-up room with its windows and today's sun. Each plant shows where it sits and its verdict, with "Find a brighter spot" or "Find a shadier spot" when it doesn't suit, or "Set position" when its spot isn't known. Rooms not set up yet are dashed cards with a Set up button.
-- **Room sheet**: the window direction by phone compass (iOS asks for location access, which it uses for the compass; only the direction is kept) or by tapping North / East / South / West (any number), plus Not sure (an average window) or No windows, and what blocks the light: clear view, curtains, or trees and buildings.
+- **Room sheet**: a card per window and ＋ Add a window. Adding or editing one asks which way it faces, by phone compass (iOS asks for location access, which it uses for the compass; only the direction is kept) or by tapping North / East / South / West or Not sure (an average window), then what blocks the light at it: clear view, curtain or frosted, or trees and buildings. A room with no cards has no window.
 - **Where it sits sheet**: four pictured spots (on the sill, below the window, about 1 m away, across the room), each with its verdict, and Save position.
 - **Plant page**: a "Light at this spot" card with the verdict and what to do, or the over-the-year light when all is well, where it sits with Change, and Compare spots. Before setup it shows the one next step: choose a room, set up the room, or set the position.
 

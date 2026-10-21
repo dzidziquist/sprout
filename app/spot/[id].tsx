@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { FIT_LABEL, hasWindow, shadeWords, spotFits, windowsLine } from '@/engine/light';
+import { FIT_LABEL, hasWindow, spotFits, spotLight, windowShort, windowsLine, windowsOf } from '@/engine/light';
 import { useSite } from '@/hooks/useSite';
 import { LIGHT_ART } from '@/data/art';
 import { fitFill } from '@/components/LightRooms';
@@ -38,6 +38,11 @@ export default function SpotSheet() {
   const roomName = plant?.room?.trim() ?? '';
   const room = usePlantStore((s) => (roomName ? s.profile.rooms?.[roomName] : undefined));
   const [picked, setPicked] = useState<WindowSpot | undefined>(plant?.windowSpot);
+  const windows = room ? windowsOf(room) : [];
+  // Which window it's by, when the room has more than one: as saved, else the brightest to start with.
+  const [byWindow, setByWindow] = useState<string | undefined>(() =>
+    windows.some((w) => w.id === plant?.windowId) ? plant?.windowId : room ? spotLight(room, 'sill', site, new Date()).windowId : undefined,
+  );
   const close = () => (router.canGoBack() ? router.back() : router.replace('/jungle'));
 
   if (!plant) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
@@ -68,16 +73,43 @@ export default function SpotSheet() {
         </>
       );
     }
-    const fits = spotFits(plant, room, site, new Date());
+    const several = windows.length > 1;
+    const windowId = several ? byWindow : undefined;
+    const current = windows.find((w) => w.id === windowId);
+    const fits = spotFits(plant, room, site, new Date(), windowId);
     // Too dark everywhere by this window: point out the sill as the best there is rather than four dead ends.
     const allDim = Object.values(fits).every((f) => f === 'dim');
     const label = (id: WindowSpot) => (allDim && id === 'sill' ? 'Brightest spot here' : FIT_LABEL[fits[id]]);
     return (
       <>
+        {several && (
+          <View style={{ gap: 8 }}>
+            <Text style={[styles.question, { color: c.ink }]}>Which window is {plant.name} by?</Text>
+            <View style={styles.windows} accessibilityRole="radiogroup">
+              {windows.map((w) => {
+                const on = w.id === byWindow;
+                return (
+                  <Pressable
+                    key={w.id}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: on }}
+                    onPress={() => {
+                      haptics.tap();
+                      setByWindow(w.id);
+                    }}
+                    style={[styles.window, { borderColor: c.line, backgroundColor: on ? c.ink : c.card }]}
+                  >
+                    <Text style={[styles.windowText, { color: on ? c.bg : c.ink }]}>{windowShort(w)}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        )}
         <View style={[styles.list, { borderColor: c.line }]}>
           <View style={[styles.band, { backgroundColor: c.ice, borderColor: c.line }]}>
             <LineIcon name="window" color={textOn(c.ice, c)} size={22} width={2.2} />
-            <Text style={[styles.bandText, { color: textOn(c.ice, c) }]}>{windowsLine(room)}{shadeWords(room)}</Text>
+            <Text style={[styles.bandText, { color: textOn(c.ice, c) }]}>{current ? windowShort(current) : windowsLine(room)}</Text>
           </View>
           {SPOTS.map((s, i) => {
             const on = picked === s.id;
@@ -117,7 +149,7 @@ export default function SpotSheet() {
           disabled={!picked}
           onPress={() => {
             if (!picked) return;
-            updatePlant(plant.id, { windowSpot: picked });
+            updatePlant(plant.id, { windowSpot: picked, windowId });
             haptics.success();
             close();
           }}
@@ -156,6 +188,10 @@ const styles = StyleSheet.create({
   list: { borderWidth: 2, borderRadius: 22, overflow: 'hidden' },
   band: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 12, borderBottomWidth: 2 },
   bandText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  question: { fontFamily: fonts.display, fontSize: 18 },
+  windows: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  window: { flexGrow: 1, flexBasis: '45%', minHeight: 48, borderWidth: 2, borderRadius: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+  windowText: { fontFamily: fonts.bodyHeavy, fontSize: 15, textAlign: 'center' },
   spot: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 10 },
   radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   dot: { width: 12, height: 12, borderRadius: 6 },

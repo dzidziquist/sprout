@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bestHome, facingOf, lightTip, placeOf, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearFit, yearLight, type RoomLight } from './light';
+import { bestHome, facingOf, windowsOf, lightTip, placeOf, roomToday, roomsInUse, spotFits, spotLight, suits, sunDay, windowsLine, yearFit, yearLight, type AnyRoomLight } from './light';
 import { siteOf } from '../lib/site';
 import type { Plant } from '../types';
 
@@ -10,7 +10,7 @@ const SEA_SITE = siteOf('seattle');
 const ACC_SITE = siteOf('accra');
 const june = new Date(2026, 5, 21, 12);
 const dec = new Date(2026, 11, 21, 12);
-const west: RoomLight = { windows: ['W'], shade: 'none' };
+const west: AnyRoomLight = { windows: ['W'], shade: 'none' };
 
 function plant(extra: Partial<Plant> = {}): Plant {
   return {
@@ -112,7 +112,7 @@ describe('light tips', () => {
 describe('review fixes', () => {
   it('only calls a tip seasonal when that season is now', () => {
     // Accra's dry-season sun pours through a south sill in December: harsh now, and not a summer thing.
-    const south = { 'Living room': { windows: ['S'], shade: 'none' } as RoomLight };
+    const south = { 'Living room': { windows: ['S'], shade: 'none' } as AnyRoomLight };
     expect(lightTip(plant({ windowSpot: 'sill' }), { site: ACC_SITE, now: dec, rooms: south })?.text).toBe('Strong sun here. Try about 1 m from the south window.');
     // Seattle's grey December doesn't make the same sill too sunny.
     expect(lightTip(plant({ windowSpot: 'sill' }), { site: SEA_SITE, now: dec, rooms: south })).toBeNull();
@@ -130,7 +130,7 @@ describe('review fixes', () => {
 
 describe('room setup', () => {
   it('works out an unsure window as an average one, between the darkest and sunniest guesses', () => {
-    const unsure: RoomLight = { windows: [], shade: 'none', unsure: true };
+    const unsure: AnyRoomLight = { windows: [], shade: 'none', unsure: true };
     const avg = spotLight(unsure, 'sill', SEA_SITE, dec).score;
     expect(avg).toBeGreaterThan(spotLight({ windows: ['N'], shade: 'none' }, 'sill', SEA_SITE, dec).score);
     expect(avg).toBeLessThan(spotLight({ windows: ['S'], shade: 'none' }, 'sill', SEA_SITE, dec).score);
@@ -139,9 +139,9 @@ describe('room setup', () => {
   });
 
   it('describes windows the way a person would', () => {
-    expect(windowsLine(west)).toBe('West-facing window');
-    expect(windowsLine({ windows: ['E', 'S', 'W'], shade: 'none' })).toBe('East, south and west windows');
-    expect(windowsLine({ windows: [], shade: 'none', unsure: true })).toBe('Window, direction not sure');
+    expect(windowsLine(west)).toBe('West · clear');
+    expect(windowsLine({ windows: ['E', 'S'], shade: 'sheer' })).toBe('East · curtain or frosted, South · curtain or frosted');
+    expect(windowsLine({ windows: [], shade: 'none', unsure: true })).toBe('Not sure which way · clear');
     expect(windowsLine({ windows: [], shade: 'none' })).toBe('No window');
   });
 
@@ -162,7 +162,7 @@ describe('room setup', () => {
 
 describe('in your home', () => {
   it('names a room and spot that would suit a new plant, or says why none does', () => {
-    const rooms = { 'Living room': west, Hallway: { windows: [], shade: 'none' } as RoomLight };
+    const rooms = { 'Living room': west, Hallway: { windows: [], shade: 'none' } as AnyRoomLight };
     expect(bestHome('medium', rooms, SEA_SITE, june)).toEqual({ room: 'Living room', words: 'about 1 m from the west window' });
     expect(bestHome('direct', { Hallway: rooms.Hallway, North: { windows: ['N'], shade: 'outside' } }, SEA_SITE, dec)).toEqual({ room: null, dim: true });
     expect(bestHome('medium', {}, SEA_SITE, june)).toBeNull();
@@ -170,7 +170,7 @@ describe('in your home', () => {
 });
 
 describe('rooms without a window', () => {
-  const dark: RoomLight = { windows: [], shade: 'none' };
+  const dark: AnyRoomLight = { windows: [], shade: 'none' };
   it('places a plant there without asking where it sits, and says why it is dim', () => {
     expect(placeOf(plant({ room: 'Bathroom', windowSpot: undefined }), { Bathroom: dark })?.spot).toBe('far');
     // With a window, the spot still has to be known.
@@ -185,7 +185,7 @@ describe('rooms without a window', () => {
 });
 
 describe('light at a west window in a Seattle autumn', () => {
-  const west: RoomLight = { windows: ['W'], shade: 'none' };
+  const west: AnyRoomLight = { windows: ['W'], shade: 'none' };
   const rooms = { 'Living room': west };
   const oct = new Date(2026, 9, 21, 12);
   const grey = [0, 1, 2, 3, 4].map((i) => ({ date: `2026-10-${21 + i}`, minC: 8, maxC: 12, precipMm: 6, code: 61 }));
@@ -205,5 +205,37 @@ describe('light at a west window in a Seattle autumn', () => {
   it('warns about summer sun on a sill that only suits a fern for now', () => {
     expect(yearFit({ speciesId: 'heart-fern' }, west, 'sill', SEA_SITE, oct)).toBe('Good for now. Summer sun gets too strong here, so move it back from the glass in late spring.');
     expect(yearFit({ speciesId: 'heart-fern' }, west, 'near', SEA_SITE, oct)).toBe('Medium in winter · bright in summer');
+  });
+});
+
+describe('each window with its own view', () => {
+  const oct = new Date(2026, 9, 21, 12);
+  // A clear south window and a west one behind a tree.
+  const living: AnyRoomLight = { windows: [{ id: 's1', facing: 'S', shade: 'none' }, { id: 'w1', facing: 'W', shade: 'outside' }] };
+
+  it('reads rooms saved before, one shade for the room', () => {
+    expect(windowsOf({ windows: ['S', 'W'], shade: 'sheer' })).toEqual([{ id: 'S', facing: 'S', shade: 'sheer' }, { id: 'W', facing: 'W', shade: 'sheer' }]);
+    expect(windowsOf({ windows: [], shade: 'none', unsure: true })).toEqual([{ id: 'unsure', shade: 'none' }]);
+    expect(windowsOf({ windows: [] })).toEqual([]);
+  });
+
+  it('works out the light by the window a plant is by, else the brightest', () => {
+    const south = spotLight(living, 'near', SEA_SITE, oct, { windowId: 's1' });
+    const west = spotLight(living, 'near', SEA_SITE, oct, { windowId: 'w1' });
+    expect(south.score).toBeGreaterThan(west.score);
+    expect(west.window).toBe('W');
+    expect(spotLight(living, 'near', SEA_SITE, oct).windowId).toBe('s1');
+    // A window that's since been removed: back to the brightest.
+    expect(spotLight(living, 'near', SEA_SITE, oct, { windowId: 'gone' }).windowId).toBe('s1');
+    expect(windowsLine(living)).toBe('South · clear, West · tree or building');
+  });
+
+  it('suggests the brighter window in the same room before another room', () => {
+    // December: even the sill behind the tree is too dim for a fig, but the clear south sill isn't.
+    const fig = plant({ speciesId: 'fig', name: 'Big Fig', windowSpot: 'sill', windowId: 'w1' });
+    const tip = lightTip(fig, { site: SEA_SITE, now: new Date(2026, 11, 15, 12), rooms: { 'Living room': living } });
+    expect(tip?.kind).toBe('dim');
+    expect(tip?.text).toContain('south');
+    expect(placeOf(fig, { 'Living room': living })?.windowId).toBe('w1');
   });
 });

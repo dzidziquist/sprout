@@ -420,10 +420,57 @@ describe('deleting a care entry', () => {
     const s = usePlantStore.getState();
     s.deleteEvent('r2');
     s.deleteEvent('f1');
-    // Waterings stay: the rhythm learned from them.
-    s.deleteEvent('w1');
     const after = usePlantStore.getState();
     expect(after.events.map((e) => e.id)).toEqual(['r1', 'w1']);
     expect(after.plants.find((p) => p.id === 'p1')?.lastRepottedAt).toBe('2026-03-01T09:00:00Z');
+  });
+});
+
+describe('deleting a watering or a check', () => {
+  const day = (n: number) => new Date(now.getTime() + n * 86400000);
+
+  it('puts the schedule and rhythm back when the latest check goes, watering and all', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Goldie' }, now, { firstCheck: 'scheduled' });
+    s.logCheck(p.id, 'damp', day(3));
+    const mid = usePlantStore.getState().plants[0];
+    s.logCheck(p.id, 'dry', day(6));
+    const dry = usePlantStore.getState().events.find((e) => e.type === 'check' && e.result === 'dry')!;
+    usePlantStore.getState().deleteEvent(dry.id, day(6));
+    const after = usePlantStore.getState();
+    // The check and the watering it logged are both gone.
+    expect(after.events.filter((e) => e.at === dry.at)).toEqual([]);
+    const back = after.plants[0];
+    expect([back.k, back.nextCheckAt, back.lastCheckAt, back.lastResult]).toEqual([mid.k, mid.nextCheckAt, mid.lastCheckAt, mid.lastResult]);
+  });
+
+  it('takes an older check off the list without touching the schedule', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Goldie' }, now, { firstCheck: 'scheduled' });
+    s.logCheck(p.id, 'damp', day(3));
+    s.logCheck(p.id, 'damp', day(5));
+    const latest = usePlantStore.getState().plants[0];
+    const first = usePlantStore.getState().events.find((e) => e.type === 'check')!;
+    usePlantStore.getState().deleteEvent(first.id, day(5));
+    const after = usePlantStore.getState();
+    expect(after.events.filter((e) => e.type === 'check')).toHaveLength(1);
+    expect(after.plants[0]).toEqual(latest);
+  });
+
+  it('plans the next check from the watering before, when the latest watering goes', () => {
+    const s = usePlantStore.getState();
+    const p = s.addPlant({ ...base, name: 'Goldie' }, now, { firstCheck: 'scheduled' });
+    s.setLastWatered(p.id, day(1), day(1));
+    const afterFirst = usePlantStore.getState().plants[0].nextCheckAt;
+    s.setLastWatered(p.id, day(4), day(4));
+    const second = usePlantStore.getState().events.filter((e) => e.type === 'water').pop()!;
+    usePlantStore.getState().deleteEvent(second.id, day(4));
+    const after = usePlantStore.getState();
+    expect(after.events.filter((e) => e.type === 'water')).toHaveLength(1);
+    // Planned from day 1 again, but never before now.
+    expect(after.plants[0].nextCheckAt).toBe(new Date(Math.max(new Date(afterFirst).getTime(), day(4).getTime())).toISOString());
+    // The only watering gone: check today.
+    usePlantStore.getState().deleteEvent(after.events.find((e) => e.type === 'water')!.id, day(4));
+    expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(day(4).toISOString());
   });
 });
