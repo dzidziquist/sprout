@@ -5,7 +5,7 @@ import { useRewards } from '@/hooks/useRewards';
 import { REWARDS } from '@/engine/rewards';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
@@ -71,5 +71,5 @@ const styles = StyleSheet.create({
   buddy: { width: 96, height: 96 },
   bubble: { flex: 1, borderWidth: 2, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 10 },
   tail: { position: 'absolute', left: -12, top: 0, bottom: 0, width: 14, justifyContent: 'center' },
-  text: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
+  text: { fontFamily: fonts.bodyHeavy, ...type.callout },
 });

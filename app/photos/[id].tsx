@@ -9,7 +9,7 @@ import { diaryPhotos, growDay, stageAtPhoto } from '@/engine/photoDiary';
 import { deletePhoto, photoSrc } from '@/lib/photos';
 import { GlassButton } from '@/components/GlassButton';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import type { CareEvent } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
@@ -177,17 +177,17 @@ export default function PhotoDiary() {
 
 const styles = StyleSheet.create({
   toolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44, paddingHorizontal: 20, gap: 12 },
-  toolbarTitle: { flex: 1, textAlign: 'center', fontSize: 17, fontWeight: '700' },
+  toolbarTitle: { flex: 1, textAlign: 'center', ...type.headline, fontWeight: '700' },
   frame: { borderRadius: 26, borderWidth: 2, overflow: 'hidden' },
   compare: { flexDirection: 'row', gap: 12, paddingHorizontal: 20 },
-  compareLabel: { fontFamily: fonts.display, fontSize: 17, textAlign: 'center' },
+  compareLabel: { fontFamily: fonts.display, ...type.headline, textAlign: 'center' },
   caption: { paddingHorizontal: 20, alignItems: 'center', gap: 4 },
-  headline: { fontFamily: fonts.display, fontSize: 26, textAlign: 'center' },
-  meta: { fontFamily: fonts.bodyHeavy, fontSize: 13, textAlign: 'center' },
-  note: { fontFamily: fonts.body, fontSize: 16, lineHeight: 22, textAlign: 'center', marginTop: 4 },
+  headline: { fontFamily: fonts.display, ...type.title2, textAlign: 'center' },
+  meta: { fontFamily: fonts.bodyHeavy, ...type.footnote, textAlign: 'center' },
+  note: { fontFamily: fonts.body, ...type.body, textAlign: 'center', marginTop: 4 },
   compareBtn: { alignSelf: 'center', borderWidth: 2, borderRadius: 999, paddingHorizontal: 20, paddingVertical: 12 },
-  compareBtnText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  compareBtnText: { fontFamily: fonts.bodyHeavy, ...type.body },
   strip: { gap: 10, paddingHorizontal: 20 },
   thumb: { width: 64, height: 64, borderRadius: 14, overflow: 'hidden' },
-  thumbLabel: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  thumbLabel: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
 });

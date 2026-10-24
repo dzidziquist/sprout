@@ -6,7 +6,7 @@ import type { FamilyLayout } from '../engine/treeLayout';
 import { PlantBuddy } from './PlantBuddy';
 import { nodeInfo } from './FamilyTree';
 import { textOn, useColors, type Palette } from '../theme/theme';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import * as haptics from '../lib/haptics';
 import type { Plant } from '../types';
 
@@ -95,9 +95,9 @@ function makeStyles(c: Palette) {
     elbow: { position: 'absolute', top: '50%', width: INDENT - 8, height: 2, backgroundColor: c.inkMuted, opacity: 0.6 },
     thumb: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: c.line, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
     thumbGone: { borderStyle: 'dashed', borderColor: c.inkMuted },
-    name: { fontFamily: fonts.displaySemi, fontSize: 16, color: c.ink },
-    sub: { fontFamily: fonts.bodyHeavy, fontSize: 12, color: c.inkMuted },
+    name: { fontFamily: fonts.displaySemi, ...type.body, color: c.ink },
+    sub: { fontFamily: fonts.bodyHeavy, ...type.caption, color: c.inkMuted },
     tag: { borderWidth: 2, borderColor: c.line, borderRadius: 10, paddingHorizontal: 7, height: 22, justifyContent: 'center' },
-    tagText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+    tagText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   });
 }

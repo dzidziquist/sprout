@@ -10,7 +10,7 @@ import { SPOTS, type Spot } from '@/lib/spots';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { ensureRoundPermission } from '@/lib/notifications';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { light, textOn, useColors, type Palette, selectedFill } from '@/theme/theme';
 import { LineIcon } from '@/components/LineIcon';
 
@@ -74,10 +74,10 @@ export default function Onboarding() {
           <Image source={ART.welcome} style={{ width: '100%', height: 300 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
         </View>
         <View style={{ gap: 10 }}>
-          <Title style={{ fontSize: 42, lineHeight: 44, color: light.ink }}>Your plants, but happier.</Title>
+          <Title size="display" style={{ color: light.ink }}>Your plants, but happier.</Title>
           <Text style={w.lede}>Every plant in the fam gets its own rhythm, a photo diary, and a family tree for every cutting.</Text>
         </View>
-        <Button title="Get started" raised bg={light.white} onPress={() => setStep(1)} style={{ minHeight: 60, borderColor: light.line, boxShadow: `0px 4px 0px ${light.drop}` }} textStyle={{ fontSize: 20, fontFamily: fonts.display, color: light.ink }} />
+        <Button title="Get started" raised bg={light.white} onPress={() => setStep(1)} style={{ minHeight: 60, borderColor: light.line, boxShadow: `0px 4px 0px ${light.drop}` }} textStyle={{ ...type.title3, fontFamily: fonts.display, color: light.ink }} />
       </View>
     );
   }
@@ -137,7 +137,7 @@ export default function Onboarding() {
             </Pressable>
           ))}
         </View>
-        <Button title="Next" raised onPress={() => setStep(2)} style={{ minHeight: 56, marginTop: 8 }} textStyle={{ fontSize: 18, fontFamily: fonts.display }} />
+        <Button title="Next" raised onPress={() => setStep(2)} style={{ minHeight: 56, marginTop: 8 }} textStyle={{ ...type.headline, fontFamily: fonts.display }} />
       </ScrollView>
     );
   }
@@ -165,7 +165,7 @@ export default function Onboarding() {
         })}
       </View>
       <View style={{ gap: 10, marginTop: 8 }}>
-        <Button title="Add my first plant" raised onPress={() => finish(false)} style={{ minHeight: 56 }} textStyle={{ fontSize: 18, fontFamily: fonts.display }} />
+        <Button title="Add my first plant" raised onPress={() => finish(false)} style={{ minHeight: 56 }} textStyle={{ ...type.headline, fontFamily: fonts.display }} />
         <Button title="Look around with a demo fam" bg={c.white} onPress={() => finish(true)} style={{ minHeight: 48 }} />
       </View>
     </ScrollView>
@@ -186,18 +186,18 @@ function Progress({ step }: { step: number }) {
 
 const makeStyles = (c: Palette) =>
   StyleSheet.create({
-  welcome: { flex: 1, backgroundColor: c.leaf, paddingHorizontal: 24, justifyContent: 'space-between' },
+  welcome: { flex: 1, backgroundColor: c.leaf, paddingHorizontal: space.xl, justifyContent: 'space-between' },
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoBadge: { width: 44, height: 44, borderRadius: 14, backgroundColor: c.white, borderWidth: 2, borderColor: c.line, alignItems: 'center', justifyContent: 'center' },
-  logoText: { fontFamily: fonts.display, fontSize: 26, color: c.ink },
+  logoText: { fontFamily: fonts.display, ...type.title2, color: c.ink },
   cluster: { height: 320 },
   tile: { position: 'absolute', width: 160, height: 160, borderRadius: 36, borderWidth: 2, borderColor: c.line, alignItems: 'center', justifyContent: 'center', boxShadow: `0px 5px 0px ${c.drop}` },
-  lede: { fontFamily: fonts.bodyHeavy, fontSize: 17, lineHeight: 24, color: c.ink },
-  page: { paddingHorizontal: 20, gap: 14, backgroundColor: c.bg, flexGrow: 1 },
+  lede: { fontFamily: fonts.bodyHeavy, ...type.headline, color: c.ink },
+  page: { paddingHorizontal: space.xl, gap: space.lg, backgroundColor: c.bg, flexGrow: 1 },
   progress: { flex: 1, height: 10, borderRadius: 5, borderWidth: 2, borderColor: c.line },
   choice: { borderWidth: 2, borderColor: c.line, borderRadius: 18 },
-  choiceTitle: { fontFamily: fonts.displaySemi, fontSize: 17, color: c.ink },
-  choiceSub: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.inkMuted },
+  choiceTitle: { fontFamily: fonts.displaySemi, ...type.headline, color: c.ink },
+  choiceSub: { fontFamily: fonts.bodyHeavy, ...type.footnote, color: c.inkMuted },
   row3: { flexDirection: 'row', gap: 8 },
   growTile: { flex: 1, height: 116, alignItems: 'center', justifyContent: 'center' },
   hydroRow: { paddingVertical: 12, paddingHorizontal: 14, gap: 2 },
@@ -205,5 +205,5 @@ const makeStyles = (c: Palette) =>
   spot: { width: '48.5%', flexGrow: 1, paddingVertical: 10, paddingHorizontal: 12, gap: 1 },
   segment: { flexDirection: 'row', gap: 4, padding: 4, borderWidth: 2, borderColor: c.line, borderRadius: 16 },
   segBtn: { flex: 1, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  segText: { fontFamily: fonts.displaySemi, fontSize: 15, color: c.ink },
+  segText: { fontFamily: fonts.displaySemi, ...type.body, color: c.ink },
 });

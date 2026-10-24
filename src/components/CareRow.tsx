@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 
 /**
@@ -71,9 +71,9 @@ export function CareRow({ label, when, lines = 1, onOpen, onDelete }: { label: s
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 32 },
   main: { flex: 1, flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
-  text: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1 },
-  date: { fontFamily: fonts.body, fontSize: 13 },
+  text: { fontFamily: fonts.bodyHeavy, ...type.callout, flexShrink: 1 },
+  date: { fontFamily: fonts.body, ...type.footnote },
   trash: { width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
   confirm: { borderRadius: 12, paddingHorizontal: 14, minHeight: 36, justifyContent: 'center' },
-  confirmText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  confirmText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
 });

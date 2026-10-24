@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Label } from '@/components/ui';
 import { useColors } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import type { Plant } from '@/types';
 
 /** Offshoots on the plant page: tappable chips for the parent and every baby. */
@@ -52,8 +52,8 @@ export function PlantPageOffshoots({ parent, babies }: { parent?: Plant; babies:
 
 const styles = StyleSheet.create({
   line: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  lead: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  lead: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderWidth: 2, borderRadius: 16, minHeight: 36, paddingHorizontal: 12, justifyContent: 'center', maxWidth: '100%' },
-  chipText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  chipText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
 });

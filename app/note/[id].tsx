@@ -7,7 +7,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { useSheetTop } from '@/lib/sheetTop';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 import { Glyph } from '@/components/Glyph';
@@ -102,10 +102,10 @@ export default function NoteSheet() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 14 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row' },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 14, marginTop: -8 },
-  input: { minHeight: 120, borderRadius: 14, paddingHorizontal: 14, paddingTop: 13, paddingBottom: 13, textAlignVertical: 'top', fontFamily: fonts.bodyHeavy, fontSize: 16 },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.callout, marginTop: -8 },
+  input: { minHeight: 120, borderRadius: 14, paddingHorizontal: 14, paddingTop: 13, paddingBottom: 13, textAlignVertical: 'top', fontFamily: fonts.bodyHeavy, fontSize: type.body.fontSize },
   delete: { alignSelf: 'center', padding: 8 },
-  deleteText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  deleteText: { fontFamily: fonts.bodyHeavy, ...type.body },
 });

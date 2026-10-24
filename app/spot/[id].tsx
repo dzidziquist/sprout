@@ -13,7 +13,7 @@ import { LineIcon } from '@/components/LineIcon';
 import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { useSheetTop } from '@/lib/sheetTop';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { WindowSpot } from '@/types';
 import { Glyph } from '@/components/Glyph';
@@ -181,25 +181,25 @@ export default function SpotSheet() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 14 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row' },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 15, marginTop: -6 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 16, lineHeight: 22 },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.body, marginTop: -6 },
+  note: { fontFamily: fonts.bodyHeavy, ...type.body },
   list: { borderWidth: 2, borderRadius: 22, overflow: 'hidden' },
   band: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 12, borderBottomWidth: 2 },
-  bandText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
-  question: { fontFamily: fonts.display, fontSize: 18 },
+  bandText: { fontFamily: fonts.bodyHeavy, ...type.body },
+  question: { fontFamily: fonts.display, ...type.headline },
   windows: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   window: { flexGrow: 1, flexBasis: '45%', minHeight: 48, borderWidth: 2, borderRadius: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  windowText: { fontFamily: fonts.bodyHeavy, fontSize: 15, textAlign: 'center' },
+  windowText: { fontFamily: fonts.bodyHeavy, ...type.body, textAlign: 'center' },
   spot: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 10 },
   radio: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   dot: { width: 12, height: 12, borderRadius: 6 },
   art: { width: 72, height: 72 },
-  spotTitle: { fontFamily: fonts.display, fontSize: 17 },
-  spotSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  spotTitle: { fontFamily: fonts.display, ...type.headline },
+  spotSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   pill: { alignSelf: 'flex-start', borderWidth: 2, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 2, marginTop: 4 },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   footnote: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  footText: { flex: 1, fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  footText: { flex: 1, fontFamily: fonts.bodyHeavy, ...type.footnote },
 });

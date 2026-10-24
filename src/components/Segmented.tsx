@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import * as haptics from '../lib/haptics';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 
 /** Pill-style segmented control (radio group). */
@@ -34,5 +34,5 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
 const styles = StyleSheet.create({
   segment: { flexDirection: 'row', gap: 4, padding: 4, borderWidth: 2, borderRadius: 16 },
   segBtn: { flex: 1, minHeight: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
-  segText: { fontFamily: fonts.displaySemi, fontSize: 15 },
+  segText: { fontFamily: fonts.displaySemi, ...type.body },
 });

@@ -6,7 +6,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import * as haptics from '@/lib/haptics';
 import { useColors } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import type { Plant } from '@/types';
 
 type ArchiveReason = NonNullable<Plant['archivedReason']>;
@@ -247,9 +247,9 @@ const styles = StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(10,10,20,0.45)' },
   sheet: { position: 'absolute', left: 0, right: 0, bottom: 0, borderTopLeftRadius: 30, borderTopRightRadius: 30, borderWidth: 2, borderBottomWidth: 0, padding: 16, paddingTop: 10, gap: 8, maxWidth: 560, alignSelf: 'center', width: '100%' },
   grabber: { alignSelf: 'center', width: 40, height: 5, borderRadius: 3, opacity: 0.5, marginBottom: 6 },
-  title: { fontFamily: fonts.display, fontSize: 22, marginBottom: 2 },
-  body: { fontFamily: fonts.bodyHeavy, fontSize: 14, marginBottom: 4 },
+  title: { fontFamily: fonts.display, ...type.title2, marginBottom: 2 },
+  body: { fontFamily: fonts.bodyHeavy, ...type.callout, marginBottom: 4 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 16, padding: 8, minHeight: 52 },
   rowIcon: { width: 36, height: 36, borderRadius: 12, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  rowText: { fontFamily: fonts.displaySemi, fontSize: 16 },
+  rowText: { fontFamily: fonts.displaySemi, ...type.body },
 });

@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react';
 import { LayoutAnimation, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 
 /** `swatch` shows a colour dot beside the label (for colour choices). */
@@ -114,11 +114,11 @@ export function Dropdown<T extends string | null>({
 const styles = StyleSheet.create({
   group: { borderWidth: 2, borderRadius: 20, overflow: 'hidden' },
   row: { minHeight: 54, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14 },
-  label: { flex: 1, fontFamily: fonts.displaySemi, fontSize: 16 },
-  value: { flexShrink: 1, maxWidth: '50%', fontFamily: fonts.bodyHeavy, fontSize: 15, textAlign: 'right' },
+  label: { flex: 1, fontFamily: fonts.displaySemi, ...type.body },
+  value: { flexShrink: 1, maxWidth: '50%', fontFamily: fonts.bodyHeavy, ...type.body, textAlign: 'right' },
   list: { paddingHorizontal: 8, paddingBottom: 8, gap: 2 },
   option: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 12 },
-  optionText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  optionText: { fontFamily: fonts.bodyHeavy, ...type.body },
   optionLabel: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   swatch: { width: 20, height: 20, borderRadius: 10, borderWidth: 2 },
 });

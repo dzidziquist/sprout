@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { fonts, radius } from '../theme/tokens';
+import { fonts, radius, type } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 import type { CheckResult } from '../types';
 
@@ -48,6 +48,6 @@ export function TodayAnswerButtons({ name, reservoir, onAnswer }: { name: string
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 6 },
   button: { flex: 1, minHeight: 48, borderWidth: 2, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingVertical: 3 },
-  word: { fontFamily: fonts.displaySemi, fontSize: 15, lineHeight: 18 },
-  means: { fontFamily: fonts.bodyHeavy, fontSize: 11, lineHeight: 13 },
+  word: { fontFamily: fonts.displaySemi, ...type.body },
+  means: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
 });

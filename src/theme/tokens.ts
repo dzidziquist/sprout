@@ -60,4 +60,29 @@ export const sticker = {
   borderColor: colors.ink,
 };
 
+/**
+ * Spacing. xl is the page gutter everywhere and the gap between sections on tab screens; sheets and forms
+ * use lg between sections, and dense forms md.
+ */
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24 };
+
+/**
+ * The type scale, after iOS's text styles (a step smaller below headline, since Nunito runs large).
+ * Spread one into a text style: `{ fontFamily: fonts.bodyHeavy, ...type.footnote }`. Inputs take only
+ * `fontSize`, because a line height on a single-line TextInput shifts its text on iOS.
+ */
+export const type = {
+  display: { fontSize: 44, lineHeight: 48 },
+  largeTitle: { fontSize: 36, lineHeight: 40 },
+  title1: { fontSize: 30, lineHeight: 34 },
+  title2: { fontSize: 24, lineHeight: 28 },
+  title3: { fontSize: 20, lineHeight: 25 },
+  headline: { fontSize: 17, lineHeight: 22 },
+  body: { fontSize: 15, lineHeight: 21 },
+  callout: { fontSize: 14, lineHeight: 19 },
+  footnote: { fontSize: 13, lineHeight: 18 },
+  caption: { fontSize: 12, lineHeight: 16 },
+  caption2: { fontSize: 11, lineHeight: 14 },
+} satisfies Record<string, { fontSize: number; lineHeight: number }>;
+
+export type TypeStyle = keyof typeof type;

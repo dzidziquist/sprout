@@ -13,7 +13,7 @@ import { useTips } from '@/hooks/useTips';
 import { REWARDS, type RewardId } from '@/engine/rewards';
 import type { TipId } from '@/lib/purchases';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
@@ -144,7 +144,7 @@ export default function SupportScreen() {
   return (
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 28 }]}>
       <View style={styles.header}>
-        <Title style={{ flex: 1, fontSize: 26 }}>Support PlantFam</Title>
+        <Title size="title2" style={{ flex: 1 }}>Support PlantFam</Title>
         <GlassButton accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
           <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
@@ -280,34 +280,34 @@ function TipCard({ c, on, onPress, name, price, sub }: { c: Palette; on: boolean
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 16 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, minHeight: 44 },
   hero: { paddingTop: 14, paddingBottom: 18, paddingHorizontal: 16, gap: 6, alignItems: 'center' },
   buddies: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6 },
   buddyTile: { width: 88, height: 88, borderRadius: 24, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   buddyBig: { width: 108, height: 108, borderRadius: 28 },
-  kicker: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
-  heroTitle: { fontFamily: fonts.display, fontSize: 22, lineHeight: 27, textAlign: 'center' },
-  heroBody: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20, textAlign: 'center' },
+  kicker: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  heroTitle: { fontFamily: fonts.display, ...type.title2, textAlign: 'center' },
+  heroBody: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },
   pill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, borderWidth: 1.5 },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   benefit: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   benefitIcon: { width: 46, height: 46, borderRadius: 14, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  benefitTitle: { fontFamily: fonts.displaySemi, fontSize: 17 },
-  benefitBody: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 18 },
-  sectionTitle: { fontFamily: fonts.displaySemi, fontSize: 18 },
+  benefitTitle: { fontFamily: fonts.displaySemi, ...type.headline },
+  benefitBody: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  sectionTitle: { fontFamily: fonts.displaySemi, ...type.headline },
   plans: { flexDirection: 'row', gap: 8, paddingTop: 4 },
   plan: { flex: 1, borderWidth: 2, borderRadius: 20, padding: 10, paddingTop: 12, gap: 0 },
   planTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  planName: { flexShrink: 1, fontFamily: fonts.displaySemi, fontSize: 15 },
+  planName: { flexShrink: 1, fontFamily: fonts.displaySemi, ...type.body },
   radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  planPrice: { fontFamily: fonts.display, fontSize: 24, marginTop: 6 },
-  planSub: { fontFamily: fonts.bodyHeavy, fontSize: 12, marginTop: 8 },
-  honest: { fontFamily: fonts.bodyHeavy, fontSize: 14, textAlign: 'center' },
+  planPrice: { fontFamily: fonts.display, ...type.title2, marginTop: 6 },
+  planSub: { fontFamily: fonts.bodyHeavy, ...type.caption, marginTop: 8 },
+  honest: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },
   bigBtn: { minHeight: 58 },
-  bigBtnText: { fontSize: 19, fontFamily: fonts.display },
-  msg: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20, textAlign: 'center' },
-  small: { fontFamily: fonts.body, fontSize: 12, lineHeight: 17 },
+  bigBtnText: { ...type.title3, fontFamily: fonts.display },
+  msg: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },
+  small: { fontFamily: fonts.body, ...type.caption },
   legal: { flexDirection: 'row', gap: 8, justifyContent: 'center', alignItems: 'center' },
-  link: { fontFamily: fonts.bodyHeavy, fontSize: 12, textDecorationLine: 'underline', paddingVertical: 6 },
+  link: { fontFamily: fonts.bodyHeavy, ...type.caption, textDecorationLine: 'underline', paddingVertical: 6 },
 });

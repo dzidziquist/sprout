@@ -19,7 +19,7 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors, selectedFill } from '@/theme/theme';
 import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import type { Light, Origin, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
 import { edibleGuide } from '@/data/edibles';
 import { useSheetTop } from '@/lib/sheetTop';
@@ -268,7 +268,7 @@ export default function EditPlantScreen() {
       )}
 
       <Label>Name</Label>
-      <TextInput value={name} onChangeText={setName} style={[input, { fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" autoCapitalize="words" returnKeyType="done" placeholder={plant.name} placeholderTextColor={c.inkMuted} />
+      <TextInput value={name} onChangeText={setName} style={[input, { fontFamily: fonts.displaySemi, fontSize: type.title3.fontSize }]} accessibilityLabel="Plant name" autoCapitalize="words" returnKeyType="done" placeholder={plant.name} placeholderTextColor={c.inkMuted} />
 
       <Label>Card colour</Label>
       <View style={styles.wrap} accessibilityRole="radiogroup">
@@ -390,7 +390,7 @@ export default function EditPlantScreen() {
       <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" autoCapitalize="words" returnKeyType="done" />
       <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next check.</Text>
 
-      <Button title="Save changes" raised onPress={save} style={{ minHeight: 56, marginTop: 6 }} textStyle={{ fontSize: 18, fontFamily: fonts.display }} />
+      <Button title="Save changes" raised onPress={save} style={{ minHeight: 56, marginTop: 6 }} textStyle={{ ...type.headline, fontFamily: fonts.display }} />
 
       <View style={[styles.danger, { borderColor: c.line, backgroundColor: c.cloud }]}>
         <Text style={[styles.dangerTitle, { color: c.ink }]}>Archive or delete</Text>
@@ -410,7 +410,7 @@ export default function EditPlantScreen() {
         )}
         {confirming ? (
           <View style={{ gap: 8 }}>
-            <Text style={[styles.dangerTitle, { color: c.ink, fontSize: 16 }]}>{deleteCopy(plant.name).title}</Text>
+            <Text style={[styles.dangerTitle, { color: c.ink, ...type.body }]}>{deleteCopy(plant.name).title}</Text>
             <Text style={[styles.note, { color: c.inkMuted }]}>{deleteCopy(plant.name).body}</Text>
             <View style={styles.row}>
               <Button title="Cancel" bg={c.card} style={{ flex: 1 }} onPress={() => setConfirming(false)} />
@@ -428,24 +428,24 @@ export default function EditPlantScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 12 },
+  page: { paddingHorizontal: space.xl, gap: space.md },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  headerTitle: { fontFamily: fonts.displaySemi, fontSize: 17 },
+  headerTitle: { fontFamily: fonts.displaySemi, ...type.headline },
   save: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 22, borderWidth: 2, marginBottom: 4 },
-  heroKicker: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  heroName: { fontFamily: fonts.display, fontSize: 22 },
-  input: { minHeight: 50, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  heroKicker: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  heroName: { fontFamily: fonts.display, ...type.title2 },
+  input: { minHeight: 50, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: type.body.fontSize },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pill: { minHeight: 44, paddingHorizontal: 14, borderRadius: 22, borderWidth: 2, justifyContent: 'center' },
   pillWithSwatch: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 6 },
   swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2 },
   color: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  note: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   danger: { marginTop: 16, borderWidth: 2, borderRadius: 22, padding: 14, gap: 10 },
-  dangerTitle: { fontFamily: fonts.display, fontSize: 18 },
+  dangerTitle: { fontFamily: fonts.display, ...type.headline },
   row: { flexDirection: 'row', gap: 8 },
   deleteLink: { alignSelf: 'center', paddingVertical: 6 },
-  deleteText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  deleteText: { fontFamily: fonts.bodyHeavy, ...type.body },
 });

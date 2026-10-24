@@ -33,7 +33,7 @@ import { CUTTING_ICON, METHOD_WORD } from '@/components/CuttingMethods';
 import { choosePhoto, photoSrc } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, space, type } from '@/theme/tokens';
 import type { CareEvent, Plant } from '@/types';
 import { Glyph } from '@/components/Glyph';
 
@@ -275,7 +275,7 @@ export default function PlantDetail() {
 
           {!archived && plant.rooting && (
             <>
-              <Button title="Roots showing? Pot it up" raised onPress={() => router.push(`/pot-up/${plant.id}`)} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+              <Button title="Roots showing? Pot it up" raised onPress={() => router.push(`/pot-up/${plant.id}`)} style={{ minHeight: 56 }} textStyle={{ ...type.title3, fontFamily: fonts.display }} />
               <Button title="Log care" bg={c.card} onPress={actions.log} style={{ minHeight: 48 }} />
             </>
           )}
@@ -425,34 +425,34 @@ function ActionTile({ label, a11y, icon, bg, big, onPress }: { label: string; a1
 
 const styles = StyleSheet.create({
   hero: { alignItems: 'center', borderBottomWidth: 2, paddingBottom: 4 },
-  heroBar: { alignSelf: 'stretch', paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between' },
+  heroBar: { alignSelf: 'stretch', paddingHorizontal: space.xl, flexDirection: 'row', justifyContent: 'space-between' },
   heroArt: { width: 220, alignItems: 'center' },
   heroChip: { marginTop: -4, marginBottom: 8, borderWidth: 2, borderRadius: 14, paddingHorizontal: 10, minHeight: 28, paddingVertical: 2, justifyContent: 'center' },
-  heroChipText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  heroChipText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   actions: { flexDirection: 'row', gap: 10 },
   actionTile: { flex: 1, minHeight: 84, borderWidth: 2, borderRadius: 18, alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 6, paddingVertical: 10 },
-  actionText: { fontFamily: fonts.displaySemi, fontSize: 14, lineHeight: 17, textAlign: 'center' },
+  actionText: { fontFamily: fonts.displaySemi, ...type.callout, textAlign: 'center' },
   heroPhoto: { width: 210, height: 210, borderRadius: 28, borderWidth: 2, overflow: 'hidden', marginVertical: 10 },
   body: { padding: 20, gap: 16 },
   archived: { padding: 14, gap: 4 },
-  archivedTitle: { fontFamily: fonts.display, fontSize: 18 },
-  archivedNote: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17, opacity: 0.75 },
-  archivedBody: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  archivedTitle: { fontFamily: fonts.display, ...type.headline },
+  archivedNote: { fontFamily: fonts.bodyHeavy, ...type.caption, opacity: 0.75 },
+  archivedBody: { fontFamily: fonts.bodyHeavy, ...type.callout },
   stats: { flexDirection: 'row', gap: 8 },
   stat: { flex: 1, padding: 10, borderRadius: 16 },
-  statNum: { fontFamily: fonts.display, fontSize: 16 },
-  statLabel: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  statNum: { fontFamily: fonts.display, ...type.body },
+  statLabel: { fontFamily: fonts.bodyHeavy, ...type.caption },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   stripWrap: { marginHorizontal: -20 },
   strip: { gap: 10, paddingHorizontal: 20, alignItems: 'flex-start' },
   addPhoto: { width: 96, height: 96, borderRadius: 18, borderWidth: 2, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4 },
-  addPhotoText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  stripHint: { fontFamily: fonts.bodyHeavy, fontSize: 13, width: 200, alignSelf: 'center' },
+  addPhotoText: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  stripHint: { fontFamily: fonts.bodyHeavy, ...type.footnote, width: 200, alignSelf: 'center' },
   photoItem: { alignItems: 'center', gap: 4 },
   photo: { width: 96, height: 96, borderRadius: 18, borderWidth: 2, overflow: 'hidden' },
-  photoDate: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  photoStage: { fontFamily: fonts.bodyHeavy, fontSize: 11, marginTop: -3 },
+  photoDate: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  photoStage: { fontFamily: fonts.bodyHeavy, ...type.caption2, marginTop: -3 },
   row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingHorizontal: 14, paddingVertical: 11 },
-  rowKey: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
-  rowVal: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1, textAlign: 'right' },
+  rowKey: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  rowVal: { fontFamily: fonts.bodyHeavy, ...type.callout, flexShrink: 1, textAlign: 'right' },
 });

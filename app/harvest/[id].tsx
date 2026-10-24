@@ -12,7 +12,7 @@ import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { GROW_ICON, Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
@@ -100,13 +100,13 @@ export default function HarvestSheet() {
             <Text style={[styles.ribbonText, { color: textOn(c.coral, c) }]}>Milestone</Text>
           </View>
         ) : null}
-        <Title style={{ textAlign: 'center', fontSize: saved.first ? 40 : 32, lineHeight: saved.first ? 44 : 36 }}>{saved.first ? 'First harvest!' : 'Into the basket!'}</Title>
+        <Title size={saved.first ? 'display' : 'title1'} style={{ textAlign: 'center' }}>{saved.first ? 'First harvest!' : 'Into the basket!'}</Title>
         <Text style={[styles.doneSub, { color: c.ink }]}>
           {saved.first
             ? `${formatAmount(amount, unit)} from ${plant.name}. You grew that. Many more to come.`
             : `${formatAmount(amount, unit)} from ${plant.name}.${total ? ` That's ${total} so far.` : ''}`}
         </Text>
-        <Button title="Back to the patch" raised bg={c.card} onPress={close} style={{ alignSelf: 'stretch', minHeight: 56 }} textStyle={{ fontSize: 18, fontFamily: fonts.display }} />
+        <Button title="Back to the patch" raised bg={c.card} onPress={close} style={{ alignSelf: 'stretch', minHeight: 56 }} textStyle={{ ...type.headline, fontFamily: fonts.display }} />
       </View>
     );
   }
@@ -125,7 +125,7 @@ export default function HarvestSheet() {
         <View style={[styles.thumb, { backgroundColor: tint, borderColor: c.line }]}>
           <PlantBuddy speciesId={plant.speciesId} pot={plant.potColor} mood="happy" size={92} bg={tint} faces={faces} />
         </View>
-        <Title style={{ flex: 1, fontSize: 26, lineHeight: 30 }}>What did {plant.name} give you?</Title>
+        <Title size="title2" style={{ flex: 1 }}>What did {plant.name} give you?</Title>
       </View>
 
       <View style={[styles.stepper, { backgroundColor: c.card, borderColor: c.line, boxShadow: `0px 4px 0px ${c.drop}` }]}>
@@ -168,7 +168,7 @@ export default function HarvestSheet() {
         accessibilityLabel="Note"
       />
 
-      <Button title="Add to basket" raised bg={c.leaf} onPress={save} style={{ minHeight: 56, marginTop: 4 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+      <Button title="Add to basket" raised bg={c.leaf} onPress={save} style={{ minHeight: 56, marginTop: 4 }} textStyle={{ ...type.title3, fontFamily: fonts.display }} />
       <View style={styles.hintRow}>
         <Icon d={GROW_ICON.harvest} color={c.inkMuted} size={16} />
         <Text style={[styles.hint, { color: c.inkMuted }]}>{isFirstHarvest(events, plant.id) ? 'This will be the first harvest from ' + plant.name + '!' : 'Every pick adds to the season total.'}</Text>
@@ -178,24 +178,24 @@ export default function HarvestSheet() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 16 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44 },
-  toolbarTitle: { fontSize: 17, fontWeight: '700' },
+  toolbarTitle: { ...type.headline, fontWeight: '700' },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   thumb: { width: 100, height: 100, borderRadius: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   stepper: { flexDirection: 'row', alignItems: 'center', borderWidth: 2, borderRadius: 22, padding: 12, gap: 12 },
   stepBtn: { width: 56, height: 56, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  amount: { fontFamily: fonts.display, fontSize: 48, lineHeight: 54 },
-  amountUnit: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  amount: { fontFamily: fonts.display, ...type.display },
+  amountUnit: { fontFamily: fonts.bodyHeavy, ...type.callout },
   units: { flexDirection: 'row', gap: 8 },
   unit: { flex: 1, height: 44, borderRadius: 14, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  unitText: { fontFamily: fonts.displaySemi, fontSize: 15 },
-  note: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, fontSize: 15, fontFamily: fonts.body },
+  unitText: { fontFamily: fonts.displaySemi, ...type.body },
+  note: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, ...type.body, fontFamily: fonts.body },
   hintRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
-  hint: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  hint: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   done: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, paddingHorizontal: 24, overflow: 'hidden' },
   circle: { width: 196, height: 196, borderRadius: 98, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   ribbon: { borderWidth: 2, borderRadius: 14, paddingHorizontal: 12, minHeight: 28, paddingVertical: 2, justifyContent: 'center', marginTop: 4 },
-  ribbonText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  doneSub: { fontFamily: fonts.bodyHeavy, fontSize: 16, lineHeight: 22, textAlign: 'center' },
+  ribbonText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  doneSub: { fontFamily: fonts.bodyHeavy, ...type.body, textAlign: 'center' },
 });

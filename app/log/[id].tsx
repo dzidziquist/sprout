@@ -14,7 +14,7 @@ import { supportFor } from '@/data/edibles';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 import { Glyph } from '@/components/Glyph';
 
@@ -167,7 +167,7 @@ export default function LogCareSheet() {
           <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m5 12 5 5 9-10" stroke={textOn(c.leafDeep, c)} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
         </Pressable>
       </View>
-      <Title style={{ fontSize: 26 }}>What did {plant.name} get?</Title>
+      <Title size="title2">What did {plant.name} get?</Title>
 
       <View style={styles.grid}>
         {tiles.map((t) => {
@@ -214,17 +214,17 @@ export default function LogCareSheet() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 20, paddingTop: 16, gap: 14 },
+  page: { padding: space.xl, paddingTop: space.lg, gap: space.lg },
   toolbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  toolbarTitle: { fontFamily: fonts.displaySemi, fontSize: 17 },
+  toolbarTitle: { fontFamily: fonts.displaySemi, ...type.headline },
   save: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tile: { width: '23%', flexGrow: 1, height: 82, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', gap: 6 },
   thumb: { width: 30, height: 30, borderRadius: 8, borderWidth: 2 },
-  tileText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  hint: { fontFamily: fonts.bodyHeavy, fontSize: 14, borderWidth: 2, borderRadius: 14, padding: 10 },
-  note: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, paddingTop: 13, paddingBottom: 13, textAlignVertical: 'top', fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  tileText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  hint: { fontFamily: fonts.bodyHeavy, ...type.callout, borderWidth: 2, borderRadius: 14, padding: 10 },
+  note: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, paddingTop: 13, paddingBottom: 13, textAlignVertical: 'top', fontFamily: fonts.bodyHeavy, ...type.body },
   saved: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   circle: { width: 180, height: 180, borderRadius: 90, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  savedSub: { fontFamily: fonts.bodyHeavy, fontSize: 16, textAlign: 'center' },
+  savedSub: { fontFamily: fonts.bodyHeavy, ...type.body, textAlign: 'center' },
 });

@@ -3,7 +3,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Sticker } from '@/components/ui';
 import { ART } from '@/data/art';
 import { useColors } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { FREEZES_PER_MONTH, startOfWeek, type StreakResult } from '@/engine/streak';
 
 const SPROUT = 'M12 21v-8M12 13C12 8.5 8.5 5 3.5 5c0 4.5 3.5 8 8.5 8zM12 15.5c0-3.5 3.5-7 8.5-7 0 4.5-3.5 7-8.5 7z';
@@ -133,25 +133,25 @@ const styles = StyleSheet.create({
   card: { padding: 14, gap: 12 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   badge: { width: 58, height: 58, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  big: { fontFamily: fonts.display, fontSize: 24, lineHeight: 28 },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  big: { fontFamily: fonts.display, ...type.title2 },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   weeks: { flexDirection: 'row', gap: 6 },
   col: { flex: 1, maxWidth: 44, alignItems: 'center', gap: 3 },
   nowCol: { maxWidth: 56, flexGrow: 1.3 },
   week: { alignSelf: 'stretch', minHeight: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  date: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  date: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   help: { marginLeft: 'auto' },
-  helpText: { fontFamily: fonts.bodyHeavy, fontSize: 12, textDecorationLine: 'underline' },
+  helpText: { fontFamily: fonts.bodyHeavy, ...type.caption, textDecorationLine: 'underline' },
   ahead: { borderStyle: 'dashed', opacity: 0.45 },
-  nowText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  nowText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
   savers: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 5, paddingLeft: 6, paddingRight: 10, borderRadius: 16, borderWidth: 2 },
   tokens: { flexDirection: 'row', alignItems: 'center' },
   saver: { width: 34, height: 34 },
-  saverTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 15 },
-  saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 11, lineHeight: 14 },
-  meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  how: { fontFamily: fonts.bodyHeavy, fontSize: 11, opacity: 0.8 },
+  saverTitle: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  saverSub: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
+  meta: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  how: { fontFamily: fonts.bodyHeavy, ...type.caption2, opacity: 0.8 },
   legend: { flexDirection: 'row', alignItems: 'center', marginTop: -2 },
   key: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   dot: { width: 10, height: 10, borderRadius: 3, borderWidth: 1.5 },

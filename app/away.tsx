@@ -10,7 +10,7 @@ import { Icon } from '@/components/GrowTodayCard';
 import { ART } from '@/data/art';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { useSheetTop } from '@/lib/sheetTop';
 import { Glyph } from '@/components/Glyph';
@@ -99,7 +99,7 @@ export default function AwayScreen() {
       <Image source={ART.awayTrip} style={styles.art} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
       <View style={styles.hero}>
         <View style={{ flex: 1, gap: 4 }}>
-          <Title style={{ fontSize: 28, lineHeight: 32 }}>{away ? 'You’re away' : current ? 'Trip planned' : 'Going away?'}</Title>
+          <Title>{away ? 'You’re away' : current ? 'Trip planned' : 'Going away?'}</Title>
           <Text style={[styles.sub, { color: c.inkMuted }]}>
             {current
               ? `${fmt(trip.from)} to ${fmt(trip.to)} · ${tripDays(trip)} days`
@@ -165,7 +165,7 @@ export default function AwayScreen() {
           bg={away ? c.leaf : c.card}
           onPress={finish}
           style={{ minHeight: 54 }}
-          textStyle={{ fontSize: 18, fontFamily: fonts.display }}
+          textStyle={{ ...type.headline, fontFamily: fonts.display }}
         />
       ) : (
         <Button
@@ -177,7 +177,7 @@ export default function AwayScreen() {
             leaveScreen(close);
           }}
           style={{ minHeight: 56 }}
-          textStyle={{ fontSize: 19, fontFamily: fonts.display }}
+          textStyle={{ ...type.title3, fontFamily: fonts.display }}
         />
       )}
     </ScrollView>
@@ -202,23 +202,23 @@ function StepButton({ d, label, disabled, onPress }: { d: string; label: string;
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 16 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row' },
   art: { width: '100%', height: undefined, aspectRatio: 960 / 603, maxHeight: 230, marginTop: -8 },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  note: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   listHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
-  count: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  count: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   item: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', padding: 8, minHeight: 44 },
   box: { width: 24, height: 24, borderRadius: 7, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginTop: 0 },
   struck: { textDecorationLine: 'line-through' },
-  itemText: { flex: 1, fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20 },
+  itemText: { flex: 1, fontFamily: fonts.bodyHeavy, ...type.callout },
   stepRow: { minHeight: 58, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14 },
-  stepLabel: { flex: 1, fontFamily: fonts.displaySemi, fontSize: 16 },
-  stepValue: { minWidth: 76, textAlign: 'center', fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  stepLabel: { flex: 1, fontFamily: fonts.displaySemi, ...type.body },
+  stepValue: { minWidth: 76, textAlign: 'center', fontFamily: fonts.bodyHeavy, ...type.body },
   stepBtn: { width: 38, height: 38, borderRadius: 19, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   share: { borderWidth: 2, borderRadius: 18, padding: 14, gap: 2 },
-  shareTitle: { fontFamily: fonts.display, fontSize: 17 },
-  shareSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  shareTitle: { fontFamily: fonts.display, ...type.headline },
+  shareSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
 });

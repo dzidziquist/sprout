@@ -8,7 +8,7 @@ import { useSite } from '@/hooks/useSite';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { LineIcon } from '@/components/LineIcon';
 import { Sticker } from '@/components/ui';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { Plant, WindowSpot } from '@/types';
 
@@ -176,23 +176,23 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
 
 const styles = StyleSheet.create({
   progress: { gap: 10, padding: 14 },
-  progressTitle: { fontFamily: fonts.display, fontSize: 18 },
+  progressTitle: { fontFamily: fonts.display, ...type.headline },
   barRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   bar: { flex: 1, height: 12, borderRadius: 6, borderWidth: 2, overflow: 'hidden' },
   head: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 2 },
-  roomName: { fontFamily: fonts.display, fontSize: 19 },
-  headSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  today: { fontFamily: fonts.bodyHeavy, fontSize: 12, opacity: 0.8 },
+  roomName: { fontFamily: fonts.display, ...type.title3 },
+  headSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  today: { fontFamily: fonts.bodyHeavy, ...type.caption, opacity: 0.8 },
   edit: { borderWidth: 2, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5 },
-  editText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  editText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   row: { paddingHorizontal: 12, paddingVertical: 8, gap: 2 },
   rowMain: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 60 },
-  name: { fontFamily: fonts.displaySemi, fontSize: 17 },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  name: { fontFamily: fonts.displaySemi, ...type.headline },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   pill: { alignSelf: 'flex-start', borderWidth: 2, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 2, marginTop: 2 },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   action: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', marginLeft: 64, paddingVertical: 4 },
-  actionText: { fontFamily: fonts.bodyHeavy, fontSize: 14, textDecorationLine: 'underline' },
+  actionText: { fontFamily: fonts.bodyHeavy, ...type.callout, textDecorationLine: 'underline' },
   unset: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderStyle: 'dashed', borderRadius: 22, padding: 14 },
   setUp: { borderWidth: 2, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
   outside: { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderStyle: 'dashed', borderRadius: 16, padding: 12 },

@@ -19,7 +19,7 @@ import { AboutCard } from '@/components/AboutCard';
 import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, selectedFill } from '@/theme/theme';
 import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
@@ -516,7 +516,7 @@ export default function AddPlantScreen() {
 
       <Label>Give them a name</Label>
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        <TextInput value={name} onChangeText={setName} style={[inputStyle, { flex: 1, fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" autoCapitalize="words" returnKeyType="done" />
+        <TextInput value={name} onChangeText={setName} style={[inputStyle, { flex: 1, fontFamily: fonts.displaySemi, fontSize: type.title3.fontSize }]} accessibilityLabel="Plant name" autoCapitalize="words" returnKeyType="done" />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Suggest another name"
@@ -699,39 +699,39 @@ export default function AddPlantScreen() {
         </View>
       )}
 
-      <Button title={`Add ${name.trim() || suggestions[0]}`} raised onPress={save} style={{ minHeight: 58, marginTop: 8 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+      <Button title={`Add ${name.trim() || suggestions[0]}`} raised onPress={save} style={{ minHeight: 58, marginTop: 8 }} textStyle={{ ...type.title3, fontFamily: fonts.display }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 12 },
+  page: { paddingHorizontal: space.xl, gap: space.md },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  search: { minHeight: 50, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  search: { minHeight: 50, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: type.body.fontSize },
   idTile: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 20, borderWidth: 2, marginBottom: 4 },
   idIcon: { width: 52, height: 52, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  idTitle: { fontFamily: fonts.display, fontSize: 18, flexShrink: 1 },
-  idSub: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 17 },
+  idTitle: { fontFamily: fonts.display, ...type.headline, flexShrink: 1 },
+  idSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   plusBadge: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, minHeight: 22, paddingVertical: 1, justifyContent: 'center' },
-  plusBadgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  plusBadgeText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   moreCard: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderRadius: 18, padding: 12 },
-  moreLink: { fontFamily: fonts.displaySemi, fontSize: 15 },
+  moreLink: { fontFamily: fonts.displaySemi, ...type.body },
   careType: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderRadius: 18, padding: 8 },
-  careTitle: { fontFamily: fonts.displaySemi, fontSize: 16 },
-  careSub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  careTitle: { fontFamily: fonts.displaySemi, ...type.body },
+  careSub: { fontFamily: fonts.bodyHeavy, ...type.caption },
   speciesTile: { width: '31%', flexGrow: 1, borderRadius: 18, borderWidth: 2, alignItems: 'center', paddingVertical: 8, gap: 2 },
   info: { position: 'absolute', top: 6, right: 6, width: 26, height: 26, borderRadius: 13, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  speciesName: { fontFamily: fonts.bodyHeavy, fontSize: 12, paddingHorizontal: 4 },
+  speciesName: { fontFamily: fonts.bodyHeavy, ...type.caption, paddingHorizontal: 4 },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 22, borderWidth: 2 },
-  heroKicker: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  heroName: { fontFamily: fonts.display, fontSize: 22 },
+  heroKicker: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  heroName: { fontFamily: fonts.display, ...type.title2 },
   dice: { width: 50, height: 50, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pill: { minHeight: 44, paddingHorizontal: 14, borderRadius: 22, borderWidth: 2, justifyContent: 'center' },
   pillWithIcon: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   soilPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 6 },
   swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2 },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  note: { fontFamily: fonts.bodyHeavy, ...type.footnote },
 });

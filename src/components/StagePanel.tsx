@@ -8,7 +8,7 @@ import { Button, Sticker } from '@/components/ui';
 import { GROW_ICON, Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import type { EdibleStage, Plant } from '@/types';
 
 /** The grow-patch stage track (same look as the Grow patch crop cards), for one plant. */
@@ -139,19 +139,19 @@ export function StagePanel({ plant, now }: { plant: Plant; now: Date }) {
 const styles = StyleSheet.create({
   card: { padding: 14, gap: 14 },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' },
-  title: { fontFamily: fonts.display, fontSize: 19 },
+  title: { fontFamily: fonts.display, ...type.title3 },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   pill: { borderWidth: 2, borderRadius: 14, height: 28, paddingHorizontal: 10, justifyContent: 'center' },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   track: { flexDirection: 'row', position: 'relative' },
   trackLine: { position: 'absolute', top: 14, height: 2 },
   stageCol: { flex: 1, alignItems: 'center', gap: 4 },
   dot: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  dotNum: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  stageLabel: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  dotNum: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  stageLabel: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   confirm: { borderWidth: 2, borderRadius: 16, padding: 12, gap: 10 },
-  confirmText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
-  tip: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
+  confirmText: { fontFamily: fonts.bodyHeavy, ...type.body },
+  tip: { fontFamily: fonts.bodyHeavy, ...type.callout },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   half: { flexGrow: 1, flexBasis: '40%', minHeight: 44 },
 });

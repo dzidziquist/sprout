@@ -11,7 +11,7 @@ import { CUT, daysAgo, type CutId } from '@/lib/when';
 import { METHOD_WORD, ROOTING_METHODS, firstBabyNumber, type RootingMethod } from '@/components/CuttingMethods';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import type { CareEvent } from '@/types';
 import { Glyph } from '@/components/Glyph';
 import { useDiscardGuard } from '@/hooks/useDiscardGuard';
@@ -107,7 +107,7 @@ export default function TakeCuttingsScreen() {
               router.push('/offshoots');
             }}
             style={{ minHeight: 56 }}
-            textStyle={{ fontSize: 18, fontFamily: fonts.display }}
+            textStyle={{ ...type.headline, fontFamily: fonts.display }}
           />
           <Button title="Done" bg={c.leafLight} onPress={() => router.back()} style={{ minHeight: 48 }} />
         </View>
@@ -118,7 +118,7 @@ export default function TakeCuttingsScreen() {
   return (
     <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: 16, paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.toolbar}>{close}</View>
-      <Title style={{ fontSize: 26, lineHeight: 30 }}>Take cuttings from {plant.name}</Title>
+      <Title size="title2">Take cuttings from {plant.name}</Title>
 
       <View style={styles.section}>
         <Text style={styles.heading}>How many?</Text>
@@ -216,7 +216,7 @@ export default function TakeCuttingsScreen() {
         raised
         onPress={save}
         style={{ minHeight: 56 }}
-        textStyle={{ fontSize: 19, fontFamily: fonts.display }}
+        textStyle={{ ...type.title3, fontFamily: fonts.display }}
       />
     </ScrollView>
   );
@@ -224,24 +224,24 @@ export default function TakeCuttingsScreen() {
 
 function makeStyles(c: Palette) {
   return StyleSheet.create({
-    page: { flexGrow: 1, paddingHorizontal: 20, gap: 20, backgroundColor: c.bg },
+    page: { flexGrow: 1, paddingHorizontal: space.xl, gap: space.xl, backgroundColor: c.bg },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14 },
     toolbar: { flexDirection: 'row', alignSelf: 'stretch' },
-    sub: { fontFamily: fonts.bodyHeavy, fontSize: 15, lineHeight: 21, textAlign: 'center', color: c.inkMuted, paddingHorizontal: 8 },
+    sub: { fontFamily: fonts.bodyHeavy, ...type.body, textAlign: 'center', color: c.inkMuted, paddingHorizontal: 8 },
     section: { gap: 10 },
-    heading: { fontFamily: fonts.display, fontSize: 19, color: c.ink },
+    heading: { fontFamily: fonts.display, ...type.title3, color: c.ink },
     stepper: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     stepBtn: { width: 52, height: 52, borderRadius: 26, borderWidth: 2, borderColor: c.line, backgroundColor: c.butter, alignItems: 'center', justifyContent: 'center', boxShadow: `0px 3px 0px ${c.drop}` },
-    stepSign: { fontFamily: fonts.display, fontSize: 26, lineHeight: 30, color: c.ink },
+    stepSign: { fontFamily: fonts.display, ...type.title2, color: c.ink },
     countBox: { flex: 1, alignItems: 'center' },
-    count: { fontFamily: fonts.display, fontSize: 34, lineHeight: 38, color: c.ink },
-    countLabel: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.inkMuted },
+    count: { fontFamily: fonts.display, ...type.largeTitle, color: c.ink },
+    countLabel: { fontFamily: fonts.bodyHeavy, ...type.footnote, color: c.inkMuted },
     method: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderColor: c.line, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10 },
     radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: c.line, backgroundColor: c.card },
-    methodLabel: { fontFamily: fonts.displaySemi, fontSize: 16, color: c.ink },
-    methodTip: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.inkMuted },
-    input: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15, backgroundColor: c.cloud, color: c.ink },
-    hint: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.inkMuted },
+    methodLabel: { fontFamily: fonts.displaySemi, ...type.body, color: c.ink },
+    methodTip: { fontFamily: fonts.bodyHeavy, ...type.footnote, color: c.inkMuted },
+    input: { minHeight: 48, borderRadius: 14, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: type.body.fontSize, backgroundColor: c.cloud, color: c.ink },
+    hint: { fontFamily: fonts.bodyHeavy, ...type.footnote, color: c.inkMuted },
     circle: { width: 180, height: 180, borderRadius: 90, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   });
 }

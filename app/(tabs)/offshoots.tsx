@@ -10,7 +10,7 @@ import { TreeList } from '@/components/TreeList';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import * as haptics from '@/lib/haptics';
 
 const METHOD_WORD = { water: 'in water', moss: 'in moss', soil: 'in soil', leca: 'in LECA' } as const;
@@ -74,7 +74,7 @@ export default function OffshootsScreen() {
   return (
     <ScrollView style={{ backgroundColor: c.bg }} contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
       <View>
-        <Title>Offshoots</Title>
+        <Title size="largeTitle">Offshoots</Title>
         <Label muted>Every cutting keeps its family tree</Label>
       </View>
 
@@ -256,32 +256,32 @@ export default function OffshootsScreen() {
 
 function makeStyles(c: Palette) {
   return StyleSheet.create({
-    page: { paddingHorizontal: 20, gap: 20 },
+    page: { paddingHorizontal: space.xl, gap: space.xl },
     stats: { flexDirection: 'row', gap: 8 },
     stat: { flex: 1, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 16 },
-    statNum: { fontFamily: fonts.display, fontSize: 24, lineHeight: 28, color: c.ink },
-    statLabel: { fontFamily: fonts.bodyHeavy, fontSize: 12, color: c.ink },
+    statNum: { fontFamily: fonts.display, ...type.title2, color: c.ink },
+    statLabel: { fontFamily: fonts.bodyHeavy, ...type.caption, color: c.ink },
     section: { gap: 10 },
     readyCard: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, borderRadius: 20 },
     readyArt: { width: 60, height: 60, borderRadius: 30, borderWidth: 2, borderColor: c.line, backgroundColor: c.ice, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-    readyName: { fontFamily: fonts.displaySemi, fontSize: 17, color: c.ink },
-    readySub: { fontFamily: fonts.bodyHeavy, fontSize: 12, color: c.inkMuted },
+    readyName: { fontFamily: fonts.displaySemi, ...type.headline, color: c.ink },
+    readySub: { fontFamily: fonts.bodyHeavy, ...type.caption, color: c.inkMuted },
     readyBtn: { paddingHorizontal: 12, minHeight: 40 },
-    familyTitle: { fontFamily: fonts.display, fontSize: 22, lineHeight: 26, color: c.ink },
+    familyTitle: { fontFamily: fonts.display, ...type.title2, color: c.ink },
     familyHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
     segment: { flexDirection: 'row', borderWidth: 2, borderColor: c.line, borderRadius: 14, padding: 2, backgroundColor: c.card },
     segBtn: { minHeight: 32, paddingHorizontal: 10, borderRadius: 10, justifyContent: 'center' },
-    segText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+    segText: { fontFamily: fonts.bodyHeavy, ...type.caption },
     fewer: { alignSelf: 'center', minHeight: 36, justifyContent: 'center', paddingHorizontal: 12 },
-    fewerText: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.ink, textDecorationLine: 'underline' },
+    fewerText: { fontFamily: fonts.bodyHeavy, ...type.footnote, color: c.ink, textDecorationLine: 'underline' },
     jumpRow: { paddingHorizontal: PAGE_PAD, gap: 8 },
     jump: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 2, borderColor: c.line, borderRadius: 18, height: 40, paddingLeft: 4, paddingRight: 12, backgroundColor: c.card },
     allDots: { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-    jumpText: { fontFamily: fonts.bodyHeavy, fontSize: 13, color: c.ink, maxWidth: 160 },
-    footnote: { fontFamily: fonts.body, fontSize: 12, lineHeight: 17, color: c.inkMuted, textAlign: 'center', paddingHorizontal: 12 },
+    jumpText: { fontFamily: fonts.bodyHeavy, ...type.footnote, color: c.ink, maxWidth: 160 },
+    footnote: { fontFamily: fonts.body, ...type.caption, color: c.inkMuted, textAlign: 'center', paddingHorizontal: 12 },
     empty: { alignItems: 'center', gap: 10, padding: 20, marginTop: 12 },
     emptyArt: { width: 136, height: 136, borderRadius: 68, borderWidth: 2, borderColor: c.line, backgroundColor: c.ice, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-    emptyTitle: { fontFamily: fonts.display, fontSize: 22, color: c.ink },
-    emptyBody: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: c.ink, textAlign: 'center' },
+    emptyTitle: { fontFamily: fonts.display, ...type.title2, color: c.ink },
+    emptyBody: { fontFamily: fonts.body, ...type.body, color: c.ink, textAlign: 'center' },
   });
 }

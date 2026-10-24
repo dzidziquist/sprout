@@ -19,7 +19,7 @@ import { activeTrip, upcomingTrip } from '@/engine/away';
 import { deleteAllPhotos } from '@/lib/photos';
 import * as haptics from '@/lib/haptics';
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { ACCENTS, useColors } from '@/theme/theme';
 import type { Accent } from '@/types';
 import { Dropdown } from '@/components/Dropdown';
@@ -307,18 +307,18 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 20 },
+  page: { paddingHorizontal: space.xl, gap: space.xl },
   header: { flexDirection: 'row' },
-  sectionTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, letterSpacing: 0.6, paddingHorizontal: 4 },
+  sectionTitle: { fontFamily: fonts.bodyHeavy, ...type.caption, letterSpacing: 0.6, paddingHorizontal: 4 },
   group: { borderWidth: 2, borderRadius: 20, overflow: 'hidden' },
   row: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14 },
-  rowLabel: { flex: 1, fontFamily: fonts.displaySemi, fontSize: 16 },
-  rowValue: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  rowLabel: { flex: 1, fontFamily: fonts.displaySemi, ...type.body },
+  rowValue: { fontFamily: fonts.bodyHeavy, ...type.callout },
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   field: { padding: 14, gap: 10 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  footer: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17, paddingHorizontal: 4 },
+  note: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  footer: { fontFamily: fonts.bodyHeavy, ...type.caption, paddingHorizontal: 4 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { borderWidth: 2, borderRadius: 16, paddingHorizontal: 12, minHeight: 36, justifyContent: 'center' },
-  chipText: { fontFamily: fonts.displaySemi, fontSize: 14 },
+  chipText: { fontFamily: fonts.displaySemi, ...type.callout },
 });

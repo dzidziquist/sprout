@@ -23,7 +23,7 @@ import { TodayProgress } from '@/components/TodayProgress';
 import { seasonBanner } from '@/lib/season';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import type { CheckResult, Plant } from '@/types';
 import { Glyph } from '@/components/Glyph';
 
@@ -157,7 +157,7 @@ export default function TodayScreen() {
           </GlassButton>
         )}
       </View>
-      <Title style={{ fontSize: 36, lineHeight: 40 }}>Plant round</Title>
+      <Title size="largeTitle">Plant round</Title>
 
       <Sticker bg={heroBg} drop={5} style={styles.hero}>
         <View style={{ flex: 1, gap: 4 }}>
@@ -311,29 +311,29 @@ export default function TodayScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 14 },
+  page: { paddingHorizontal: space.xl, gap: space.xl },
   toolbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 44 },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 12, paddingLeft: 14, paddingRight: 4, overflow: 'hidden' },
-  heroTitle: { fontFamily: fonts.display, fontSize: 22, lineHeight: 26 },
-  heroSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  heroTitle: { fontFamily: fonts.display, ...type.title2 },
+  heroSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   banner: { borderWidth: 2, borderRadius: 16, padding: 10 },
   awayLink: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 12 },
-  awayLinkText: { fontFamily: fonts.bodyHeavy, fontSize: 13, textDecorationLine: 'underline' },
-  bannerText: { fontFamily: fonts.body, fontSize: 13 },
+  awayLinkText: { fontFamily: fonts.bodyHeavy, ...type.footnote, textDecorationLine: 'underline' },
+  bannerText: { fontFamily: fonts.body, ...type.footnote },
   card: { flexDirection: 'row', gap: 12, padding: 10, alignItems: 'center' },
   thumb: { width: 80, height: 80, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  name: { fontFamily: fonts.displaySemi, fontSize: 18 },
-  reason: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  name: { fontFamily: fonts.displaySemi, ...type.headline },
+  reason: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   answers: { flexDirection: 'row', gap: 8, alignItems: 'center', minHeight: 48 },
   tallChip: { minHeight: 44, borderRadius: 22, paddingHorizontal: 14 },
   undo: { minHeight: 44, justifyContent: 'center' },
   swipeActions: { flexDirection: 'row', gap: 6, paddingLeft: 8, paddingVertical: 4 },
   swipeAction: { width: 64, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', gap: 4 },
-  swipeText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  swipeText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   upNext: { flexDirection: 'row', gap: 8 },
   upHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  upToggle: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  upToggle: { fontFamily: fonts.bodyHeavy, ...type.callout },
   upItem: { flex: 1, borderWidth: 2, borderRadius: 18, alignItems: 'center', paddingVertical: 8, paddingHorizontal: 4 },
-  upName: { fontFamily: fonts.displaySemi, fontSize: 14, marginTop: 2 },
-  upWhen: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  upName: { fontFamily: fonts.displaySemi, ...type.callout, marginTop: 2 },
+  upWhen: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
 });

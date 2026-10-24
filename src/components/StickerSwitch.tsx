@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text } from 'react-native';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 
 const W = 62;
@@ -45,6 +45,6 @@ export function StickerSwitch({ value, onChange, label }: { value: boolean; onCh
 
 const styles = StyleSheet.create({
   track: { width: W, height: H, borderRadius: H / 2, borderWidth: 2, justifyContent: 'center' },
-  word: { position: 'absolute', fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  word: { position: 'absolute', fontFamily: fonts.bodyHeavy, ...type.caption2 },
   knob: { position: 'absolute', left: 3, width: KNOB, height: KNOB, borderRadius: KNOB / 2, borderWidth: 2, backgroundColor: '#FFFFFF' },
 });
