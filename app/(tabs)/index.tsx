@@ -194,8 +194,14 @@ export default function TodayScreen() {
                     <GoldSparkles pot={p.potColor} size={0.8} />
                   </View>
                   <View style={{ flex: 1, gap: 6 }}>
-                    {/* VoiceOver's way in to the details: activating it taps the card behind it. */}
-                    <View accessible accessibilityRole="button" accessibilityLabel={`${p.name}, ${due ? reason(p, now) : messages[p.id] ?? 'Logged'}`} accessibilityHint="Opens details. Press and hold for more actions">
+                    {/* VoiceOver's way in to the details, since the card itself isn't one element (its buttons are). */}
+                    <View
+                      accessible
+                      accessibilityRole="button"
+                      accessibilityLabel={`${p.name}, ${due ? reason(p, now) : messages[p.id] ?? 'Logged'}`}
+                      accessibilityHint="Opens details"
+                      onAccessibilityTap={() => router.push(`/plant/${p.id}`)}
+                    >
                       <Text style={[styles.name, { color: c.ink }]} numberOfLines={1}>{p.name}</Text>
                       <Text style={[styles.reason, { color: due ? c.inkMuted : c.good }]}>{due ? reason(p, now) : messages[p.id] ?? 'Logged'}</Text>
                     </View>
