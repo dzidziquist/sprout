@@ -12,7 +12,7 @@ import { DirectionArrow, LineIcon } from '@/components/LineIcon';
 import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { useSheetTop } from '@/lib/sheetTop';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
 import { useDiscardGuard } from '@/hooks/useDiscardGuard';
@@ -196,7 +196,7 @@ export default function RoomLightSheet() {
               style={[styles.dir, f === 'unsure' && styles.dashed, { borderColor: c.line, backgroundColor: on ? c.ink : c.card }]}
             >
               {f === 'unsure' ? <LineIcon name="help" color={on ? c.bg : c.ink} size={20} width={2} /> : <DirectionArrow to={f} color={on ? c.bg : c.ink} />}
-              <Text style={[styles.dirText, { color: on ? c.bg : c.ink }, f === 'unsure' && { fontSize: 15 }]}>
+              <Text style={[styles.dirText, { color: on ? c.bg : c.ink }, f === 'unsure' && { ...type.body }]}>
                 {f === 'unsure' ? 'Not sure' : FACING_LABEL[f][0].toUpperCase() + FACING_LABEL[f].slice(1)}
               </Text>
             </Pressable>
@@ -304,33 +304,33 @@ export default function RoomLightSheet() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 14 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row' },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.body },
   compassCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 20, padding: 14 },
   compass: { borderWidth: 2, borderRadius: 20, padding: 14, gap: 10 },
-  compassHint: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
-  compassRead: { fontFamily: fonts.display, fontSize: 34, textAlign: 'center' },
-  compassDeg: { fontFamily: fonts.bodyHeavy, fontSize: 18 },
-  cardTitle: { fontFamily: fonts.display, fontSize: 18 },
-  cardSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  link: { fontFamily: fonts.bodyHeavy, fontSize: 15, textDecorationLine: 'underline', marginTop: -6 },
-  or: { fontFamily: fonts.bodyHeavy, fontSize: 14, textAlign: 'center' },
+  compassHint: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  compassRead: { fontFamily: fonts.display, ...type.largeTitle, textAlign: 'center' },
+  compassDeg: { fontFamily: fonts.bodyHeavy, ...type.headline },
+  cardTitle: { fontFamily: fonts.display, ...type.headline },
+  cardSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  link: { fontFamily: fonts.bodyHeavy, ...type.body, textDecorationLine: 'underline', marginTop: -6 },
+  or: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },
   dirs: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   dir: { flexGrow: 1, flexBasis: '45%', minHeight: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, borderWidth: 2, borderRadius: 16 },
   dashed: { borderStyle: 'dashed', minHeight: 48 },
-  dirText: { fontFamily: fonts.bodyHeavy, fontSize: 17 },
-  label: { fontFamily: fonts.display, fontSize: 19 },
+  dirText: { fontFamily: fonts.bodyHeavy, ...type.headline },
+  label: { fontFamily: fonts.display, ...type.title3 },
   shades: { flexDirection: 'row', gap: 8 },
   shade: { flex: 1, alignItems: 'center', gap: 6, borderRadius: 18, padding: 8, paddingBottom: 10 },
   shadeArt: { width: '100%', height: 80 },
-  shadeText: { fontFamily: fonts.bodyHeavy, fontSize: 13, textAlign: 'center' },
+  shadeText: { fontFamily: fonts.bodyHeavy, ...type.footnote, textAlign: 'center' },
   editor: { borderWidth: 2, borderRadius: 22, padding: 14, gap: 12 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 20, padding: 10 },
   cardArt: { width: 64, height: 54 },
   chip: { borderWidth: 2, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 4 },
-  chipText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  chipText: { fontFamily: fonts.bodyHeavy, ...type.callout },
   empty: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderStyle: 'dashed', borderRadius: 18, padding: 12 },
   add: { borderWidth: 2, borderStyle: 'dashed', borderRadius: 18, minHeight: 54, alignItems: 'center', justifyContent: 'center' },
-  addText: { fontFamily: fonts.bodyHeavy, fontSize: 16 },
+  addText: { fontFamily: fonts.bodyHeavy, ...type.body },
 });

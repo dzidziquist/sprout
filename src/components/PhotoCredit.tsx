@@ -1,7 +1,7 @@
 import { Linking, Pressable, StyleSheet, Text } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import type { WikiPhoto } from '@/lib/wiki';
 
@@ -50,7 +50,7 @@ export function PhotoToggle({ on, onChange }: { on: boolean; onChange: (on: bool
 }
 
 const styles = StyleSheet.create({
-  credit: { fontFamily: fonts.bodyHeavy, fontSize: 11, lineHeight: 15 },
+  credit: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   toggle: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 2, borderRadius: 14, paddingHorizontal: 10, paddingVertical: 5 },
-  toggleText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  toggleText: { fontFamily: fonts.bodyHeavy, ...type.caption },
 });

@@ -6,7 +6,7 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker, Title } from '@/components/ui';
 import { PRIVACY_SECTIONS, PRIVACY_SUMMARY } from '@/data/privacy';
 import { PRIVACY_UPDATED, SUPPORT_EMAIL, SUPPORT_URL } from '@/config';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
 
@@ -88,12 +88,12 @@ export default function PrivacyScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 18 },
+  page: { paddingHorizontal: space.xl, gap: space.xl },
   hero: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 },
-  heroText: { flex: 1, fontFamily: fonts.displaySemi, fontSize: 17, lineHeight: 23 },
-  h: { fontFamily: fonts.display, fontSize: 19 },
+  heroText: { flex: 1, fontFamily: fonts.displaySemi, ...type.headline },
+  h: { fontFamily: fonts.display, ...type.title3 },
   bullet: { flexDirection: 'row', gap: 8 },
-  dot: { fontFamily: fonts.display, fontSize: 16, lineHeight: 21 },
-  p: { flex: 1, fontFamily: fonts.body, fontSize: 15, lineHeight: 21 },
-  updated: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  dot: { fontFamily: fonts.display, ...type.body },
+  p: { flex: 1, fontFamily: fonts.body, ...type.body },
+  updated: { fontFamily: fonts.bodyHeavy, ...type.caption },
 });

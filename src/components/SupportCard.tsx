@@ -4,7 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useRewards } from '../hooks/useRewards';
 import { REWARDS } from '../engine/rewards';
 import * as haptics from '../lib/haptics';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import { textOn, useColors } from '../theme/theme';
 import { PlantBuddy } from './PlantBuddy';
 
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 22, borderWidth: 2 },
   buddyTile: { width: 68, height: 68, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-5deg' }] },
   arrow: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  title: { fontFamily: fonts.display, fontSize: 19 },
-  body: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 18 },
+  title: { fontFamily: fonts.display, ...type.title3 },
+  body: { fontFamily: fonts.bodyHeavy, ...type.footnote },
 });

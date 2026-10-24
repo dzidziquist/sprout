@@ -14,7 +14,7 @@ import { BadgeSticker } from '@/components/BadgeSticker';
 import { useBadges } from '@/hooks/useBadges';
 import { ART } from '@/data/art';
 import { useColors } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 
 const GEAR =
   'M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.8l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.8v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2z';
@@ -46,7 +46,7 @@ export default function MeScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
       <View style={styles.headerRow}>
-        <Title style={{ flex: 1 }}>Your green thumb</Title>
+        <Title size="largeTitle" style={{ flex: 1 }}>Your green thumb</Title>
         <GlassButton accessibilityLabel="Settings" onPress={() => router.push('/settings')}>
           <Svg width={22} height={22} viewBox="0 0 24 24">
             <Path d={GEAR} stroke={c.ink} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -108,18 +108,18 @@ export default function MeScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 20 },
+  page: { paddingHorizontal: space.xl, gap: space.xl },
   stats: { flexDirection: 'row', gap: 8 },
   stat: { flex: 1, padding: 12, borderRadius: 18 },
-  statNum: { fontFamily: fonts.display, fontSize: 26 },
-  statLabel: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  statNum: { fontFamily: fonts.display, ...type.title2 },
+  statLabel: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   allDone: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 },
-  allDoneTitle: { fontFamily: fonts.display, fontSize: 18 },
-  allDoneBody: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 18 },
+  allDoneTitle: { fontFamily: fonts.display, ...type.headline },
+  allDoneBody: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   badges: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 10, rowGap: 14 },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   settingsRow: { padding: 14, gap: 2 },
-  settingsText: { fontFamily: fonts.display, fontSize: 18 },
-  settingsSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  settingsText: { fontFamily: fonts.display, ...type.headline },
+  settingsSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
 });

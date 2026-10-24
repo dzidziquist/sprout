@@ -16,7 +16,7 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { ALERT_ICON, GROW_ICON, Icon, alertTint, taskTint } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { EdibleStage, Plant } from '@/types';
 
@@ -308,7 +308,7 @@ export default function GrowPatch() {
         </GlassButton>
       </View>
       <View>
-        <Title style={{ fontSize: 36, lineHeight: 40 }}>Grow patch</Title>
+        <Title size="largeTitle">Grow patch</Title>
         <Label muted>
           {placeName(climate)}
           {edibles.length ? ` · ${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing` : ''}
@@ -322,7 +322,7 @@ export default function GrowPatch() {
           <Text style={[styles.emptyBody, { color: c.ink }]}>
             Add a tomato, a pepper or a pot of spring onions and we’ll track stages, watch the weather and count every harvest.
           </Text>
-          <Button title="Add an edible" raised bg={c.sun} onPress={() => router.push('/add')} style={{ alignSelf: 'stretch', minHeight: 52 }} textStyle={{ fontSize: 17 }} />
+          <Button title="Add an edible" raised bg={c.sun} onPress={() => router.push('/add')} style={{ alignSelf: 'stretch', minHeight: 52 }} textStyle={{ ...type.headline }} />
         </Sticker>
       ) : (
         <>
@@ -358,55 +358,55 @@ export default function GrowPatch() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 16 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row', alignItems: 'center', minHeight: 44 },
   offline: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 16 },
-  offlineText: { flex: 1, fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 18 },
+  offlineText: { flex: 1, fontFamily: fonts.bodyHeavy, ...type.footnote },
   strip: { flexDirection: 'row', gap: 5 },
   day: { flex: 1, borderWidth: 2, borderRadius: 14, alignItems: 'center', paddingVertical: 7, gap: 1 },
-  dayName: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
-  dayMax: { fontFamily: fonts.display, fontSize: 17 },
-  dayMin: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  dayName: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
+  dayMax: { fontFamily: fonts.display, ...type.headline },
+  dayMin: { fontFamily: fonts.bodyHeavy, ...type.caption },
   alert: { flexDirection: 'row', gap: 12, padding: 12, alignItems: 'flex-start' },
   badge: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  alertTitle: { fontFamily: fonts.display, fontSize: 18 },
-  alertBody: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
-  section: { fontFamily: fonts.display, fontSize: 21 },
+  alertTitle: { fontFamily: fonts.display, ...type.headline },
+  alertBody: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  section: { fontFamily: fonts.display, ...type.title3 },
   sectionRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 10 },
-  basket: { fontFamily: fonts.bodyHeavy, fontSize: 13, flexShrink: 1 },
+  basket: { fontFamily: fonts.bodyHeavy, ...type.footnote, flexShrink: 1 },
   task: { flexDirection: 'row', gap: 12, padding: 12, alignItems: 'flex-start' },
   taskIcon: { width: 38, height: 38, borderRadius: 12, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   taskHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
-  taskTitle: { fontFamily: fonts.displaySemi, fontSize: 16 },
+  taskTitle: { fontFamily: fonts.displaySemi, ...type.body },
   strike: { textDecorationLine: 'line-through' },
   weekPill: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, minHeight: 22, paddingVertical: 1, justifyContent: 'center' },
-  weekText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
-  taskBody: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18 },
-  taskWho: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  weekText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
+  taskBody: { fontFamily: fonts.body, ...type.footnote },
+  taskWho: { fontFamily: fonts.bodyHeavy, ...type.caption },
   check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginTop: 6 },
   cropHead: { flexDirection: 'row', paddingLeft: 16, borderBottomWidth: 2, minHeight: 118 },
-  cropName: { fontFamily: fonts.display, fontSize: 24, lineHeight: 28 },
-  cropKind: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  cropName: { fontFamily: fonts.display, ...type.title2 },
+  cropKind: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
   pill: { borderWidth: 2, borderRadius: 14, minHeight: 28, paddingVertical: 2, paddingHorizontal: 10, justifyContent: 'center' },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   cropBuddy: { width: 112, alignItems: 'center', justifyContent: 'flex-end', marginBottom: -6 },
   cropBody: { padding: 14, gap: 14 },
   track: { flexDirection: 'row', position: 'relative' },
   trackLine: { position: 'absolute', top: 14, height: 2 },
   stageCol: { flex: 1, alignItems: 'center', gap: 4 },
   dot: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  dotNum: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  stageLabel: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  dotNum: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  stageLabel: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   confirm: { borderWidth: 2, borderRadius: 16, padding: 12, gap: 10 },
-  confirmText: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  confirmText: { fontFamily: fonts.bodyHeavy, ...type.body },
   confirmBtn: { flex: 1, minHeight: 42 },
-  tip: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
+  tip: { fontFamily: fonts.bodyHeavy, ...type.callout },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  meta: { fontFamily: fonts.bodyHeavy, fontSize: 13, flexShrink: 1 },
+  meta: { fontFamily: fonts.bodyHeavy, ...type.footnote, flexShrink: 1 },
   actions: { flexDirection: 'row', gap: 8 },
   action: { flex: 1, minHeight: 46 },
   empty: { alignItems: 'center', padding: 20, gap: 10 },
-  emptyTitle: { fontFamily: fonts.display, fontSize: 24 },
-  emptyBody: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20, textAlign: 'center' },
+  emptyTitle: { fontFamily: fonts.display, ...type.title2 },
+  emptyBody: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },
 });

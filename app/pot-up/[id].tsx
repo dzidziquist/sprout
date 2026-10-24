@@ -13,7 +13,7 @@ import { Button, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { METHOD_WORD } from '@/components/CuttingMethods';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import * as haptics from '@/lib/haptics';
 import type { Soil } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
@@ -151,29 +151,29 @@ export default function PotUpScreen() {
         <Text style={styles.hint}>Go small: a snug pot dries out faster and keeps new roots happy.</Text>
       </View>
 
-      <Button title="Pot it up" accessibilityLabel={`Confirm pot up ${plant.name}`} raised onPress={confirm} style={{ minHeight: 56 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+      <Button title="Pot it up" accessibilityLabel={`Confirm pot up ${plant.name}`} raised onPress={confirm} style={{ minHeight: 56 }} textStyle={{ ...type.title3, fontFamily: fonts.display }} />
     </ScrollView>
   );
 }
 
 function makeStyles(c: Palette) {
   return StyleSheet.create({
-    page: { paddingHorizontal: 20, gap: 22 },
+    page: { paddingHorizontal: space.xl, gap: space.xl },
     center: { flex: 1, gap: 20 },
     toolbar: { flexDirection: 'row', alignSelf: 'stretch' },
     hero: { alignItems: 'center', gap: 8 },
     heroArt: { width: 160, height: 160, borderRadius: 80, borderWidth: 2, borderColor: c.line, backgroundColor: c.ice, boxShadow: `0px 4px 0px ${c.drop}`, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-    heroSub: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: c.inkMuted, textAlign: 'center', paddingHorizontal: 8 },
+    heroSub: { fontFamily: fonts.body, ...type.body, color: c.inkMuted, textAlign: 'center', paddingHorizontal: 8 },
     section: { gap: 10 },
-    heading: { fontFamily: fonts.display, fontSize: 19, color: c.ink },
+    heading: { fontFamily: fonts.display, ...type.title3, color: c.ink },
     chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
     chip: { borderWidth: 2, borderColor: c.line, borderRadius: 16, paddingHorizontal: 12, minHeight: 36, justifyContent: 'center' },
-    chipText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-    hint: { fontFamily: fonts.body, fontSize: 12, color: c.inkMuted },
+    chipText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+    hint: { fontFamily: fonts.body, ...type.caption, color: c.inkMuted },
     sizes: { flexDirection: 'row', gap: 10 },
     size: { flex: 1, borderWidth: 2, borderColor: c.line, borderRadius: 18, paddingVertical: 10, alignItems: 'center' },
     sizeArt: { height: 38, justifyContent: 'flex-end' },
-    sizeLabel: { fontFamily: fonts.displaySemi, fontSize: 15, color: c.ink, marginTop: 4 },
-    sizeCm: { fontFamily: fonts.bodyHeavy, fontSize: 12, color: c.inkMuted },
+    sizeLabel: { fontFamily: fonts.displaySemi, ...type.body, color: c.ink, marginTop: 4 },
+    sizeCm: { fontFamily: fonts.bodyHeavy, ...type.caption, color: c.inkMuted },
   });
 }

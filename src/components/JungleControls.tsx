@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import { textOn, useColors } from '../theme/theme';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import * as haptics from '../lib/haptics';
 import { SunIcon } from './SunIcon';
 import { Glyph } from '@/components/Glyph';
@@ -126,11 +126,11 @@ export function JungleChips({ chips, value, onChange, bleed = 0 }: { chips: Jung
 
 const styles = StyleSheet.create({
   search: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderRadius: 16, paddingLeft: 12, paddingRight: 8, height: 44 },
-  input: { flex: 1, minWidth: 0, fontFamily: fonts.bodyHeavy, fontSize: 15, height: 40, paddingVertical: 0, outlineWidth: 0 },
+  input: { flex: 1, minWidth: 0, fontFamily: fonts.bodyHeavy, fontSize: type.body.fontSize, height: 40, paddingVertical: 0, outlineWidth: 0 },
   clear: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   segment: { flexDirection: 'row', borderWidth: 2, borderRadius: 16, padding: 2, height: 44, gap: 2 },
   segBtn: { width: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 2, borderRadius: 17, height: 36, paddingHorizontal: 12 },
-  chipText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  chipCount: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  chipText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  chipCount: { fontFamily: fonts.bodyHeavy, ...type.caption },
 });

@@ -19,7 +19,7 @@ import { LightRooms } from '@/components/LightRooms';
 import { JungleChips, JungleSearch, JungleViewToggle, type JungleChip, type JungleView } from '@/components/JungleControls';
 import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import type { Mood, Plant, WishItem } from '@/types';
 import { Glyph } from '@/components/Glyph';
 
@@ -219,7 +219,7 @@ export default function JungleScreen() {
     <View style={styles.header}>
       <View style={styles.toolbar}>
         <View style={{ flex: 1 }}>
-          <Title>My jungle</Title>
+          <Title size="largeTitle">My jungle</Title>
           <Label muted>
             {potted.length} {potted.length === 1 ? 'plant' : 'plants'}
             {potRooms.size ? ` · ${potRooms.size} ${potRooms.size === 1 ? 'room' : 'rooms'}` : ''}
@@ -352,7 +352,7 @@ export default function JungleScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20 },
+  page: { paddingHorizontal: space.xl },
   header: { gap: 16, marginBottom: 16 },
   line: { marginBottom: 12 },
   rowLine: { marginBottom: 8 },
@@ -364,22 +364,22 @@ const styles = StyleSheet.create({
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 64, borderWidth: 2, borderRadius: 18, paddingHorizontal: 8, paddingVertical: 6 },
   thumb: { width: 48, height: 48, borderRadius: 24, borderWidth: 2, alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' },
-  rowName: { fontFamily: fonts.displaySemi, fontSize: 16 },
+  rowName: { fontFamily: fonts.displaySemi, ...type.body },
   pill: { borderWidth: 2, borderRadius: 13, paddingHorizontal: 8, paddingVertical: 2, minHeight: 26, justifyContent: 'center', maxWidth: 130 },
   noMatch: { alignItems: 'center', gap: 12, padding: 18 },
-  noMatchTitle: { fontFamily: fonts.displaySemi, fontSize: 17, textAlign: 'center' },
+  noMatchTitle: { fontFamily: fonts.displaySemi, ...type.headline, textAlign: 'center' },
   art: { height: 104, alignItems: 'center', justifyContent: 'flex-end', borderBottomWidth: 2, borderTopLeftRadius: 20, borderTopRightRadius: 20, overflow: 'hidden' },
   badge: { position: 'absolute', top: 8, left: 8, borderWidth: 2, borderRadius: 13, paddingHorizontal: 8, paddingVertical: 2, minHeight: 26, justifyContent: 'center' },
-  badgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  badgeText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   meta: { paddingHorizontal: 12, paddingVertical: 8 },
-  name: { fontFamily: fonts.displaySemi, fontSize: 17 },
-  kind: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  name: { fontFamily: fonts.displaySemi, ...type.headline },
+  kind: { fontFamily: fonts.bodyHeavy, ...type.caption },
   empty: { alignItems: 'center', padding: 20, gap: 10 },
   growLink: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 20 },
-  growTitle: { fontFamily: fonts.display, fontSize: 18 },
-  growSub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  emptyTitle: { fontFamily: fonts.display, fontSize: 22, textAlign: 'center' },
-  emptySub: { fontFamily: fonts.bodyHeavy, fontSize: 14, textAlign: 'center' },
+  growTitle: { fontFamily: fonts.display, ...type.headline },
+  growSub: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  emptyTitle: { fontFamily: fonts.display, ...type.title2, textAlign: 'center' },
+  emptySub: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },
   memoryHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 2, borderRadius: 16, paddingHorizontal: 14, minHeight: 48 },
-  memoryText: { fontFamily: fonts.displaySemi, fontSize: 16 },
+  memoryText: { fontFamily: fonts.displaySemi, ...type.body },
 });

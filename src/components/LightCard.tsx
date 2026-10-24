@@ -7,7 +7,7 @@ import { useSite } from '@/hooks/useSite';
 import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
 import { Button, Sticker } from '@/components/ui';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { Plant, WindowSpot } from '@/types';
 
@@ -102,14 +102,14 @@ export function LightCard({ plant }: { plant: Plant }) {
 }
 
 const styles = StyleSheet.create({
-  card: { gap: 12 },
-  title: { fontFamily: fonts.display, fontSize: 19 },
+  card: { gap: 12, padding: 14 },
+  title: { fontFamily: fonts.display, ...type.title3 },
   verdict: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 14, borderTopWidth: 2, borderBottomWidth: 2 },
-  headline: { fontFamily: fonts.display, fontSize: 18 },
-  detail: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 19 },
+  headline: { fontFamily: fonts.display, ...type.headline },
+  detail: { fontFamily: fonts.bodyHeavy, ...type.callout },
   sits: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 4 },
-  small: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  body: { fontFamily: fonts.bodyHeavy, fontSize: 15, lineHeight: 20 },
+  small: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  body: { fontFamily: fonts.bodyHeavy, ...type.body },
   change: { borderWidth: 2, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6 },
-  changeText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  changeText: { fontFamily: fonts.bodyHeavy, ...type.callout },
 });

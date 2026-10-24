@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
-import { fonts, radius } from '../theme/tokens';
+import { fonts, radius, type, type TypeStyle } from '../theme/tokens';
 import { textOn, useColors } from '../theme/theme';
 
 /** Card with the PlantFam "sticker" look: outline plus a hard drop shadow straight down. `bg` defaults to the theme's card colour. */
@@ -8,10 +8,11 @@ export function Sticker({ style, children, drop = 4, bg }: { style?: StyleProp<V
   return <View style={[styles.sticker, { borderColor: c.line, backgroundColor: bg ?? c.card, boxShadow: `0px ${drop}px 0px ${c.drop}` }, style]}>{children}</View>;
 }
 
-export function Title({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
+/** Screen titles: largeTitle on tab screens, title1 (the default) on sheets, title2 for long or question titles. */
+export function Title({ children, style, size = 'title1' }: { children: React.ReactNode; style?: StyleProp<TextStyle>; size?: Extract<TypeStyle, 'display' | 'largeTitle' | 'title1' | 'title2'> }) {
   const c = useColors();
   return (
-    <Text accessibilityRole="header" style={[styles.title, { color: c.ink }, style]}>
+    <Text accessibilityRole="header" style={[styles.title, type[size], { color: c.ink }, style]}>
       {children}
     </Text>
   );
@@ -62,10 +63,10 @@ export function Button({
 
 const styles = StyleSheet.create({
   sticker: { borderWidth: 2, borderRadius: radius.card },
-  title: { fontFamily: fonts.display, fontSize: 30, lineHeight: 34 },
-  label: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  title: { fontFamily: fonts.display },
+  label: { fontFamily: fonts.bodyHeavy, ...type.callout },
   chip: { borderWidth: 2, minHeight: 32, paddingVertical: 4, paddingHorizontal: 12, borderRadius: 16, justifyContent: 'center', alignSelf: 'flex-start' },
-  chipText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  chipText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   button: { borderWidth: 2, minHeight: 44, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
-  buttonText: { fontFamily: fonts.displaySemi, fontSize: 15 },
+  buttonText: { fontFamily: fonts.displaySemi, ...type.body },
 });

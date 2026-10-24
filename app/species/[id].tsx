@@ -20,7 +20,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Sticker } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 import { Glyph } from '@/components/Glyph';
@@ -163,7 +163,7 @@ export default function SpeciesPage() {
       </ScrollView>
 
       <View style={[styles.actions, { paddingBottom: insets.bottom + 12, backgroundColor: c.bg, borderColor: c.cloud }]}>
-        <Button title="Add to my jungle" raised bg={c.leaf} onPress={add} style={{ flex: 3, minHeight: 56 }} textStyle={{ fontFamily: fonts.display, fontSize: 18 }} />
+        <Button title="Add to my jungle" raised bg={c.leaf} onPress={add} style={{ flex: 3, minHeight: 56 }} textStyle={{ fontFamily: fonts.display, ...type.headline }} />
         <Pressable
           accessibilityRole="button"
           accessibilityState={{ selected: !!saved }}
@@ -197,18 +197,18 @@ const styles = StyleSheet.create({
   photoToggle: { position: 'absolute', right: 14, bottom: 12 },
   toolbar: { position: 'absolute', left: 16 },
   body: { padding: 20, gap: 14 },
-  title: { fontFamily: fonts.display, fontSize: 30, lineHeight: 34 },
-  latin: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  title: { fontFamily: fonts.display, ...type.title1 },
+  latin: { fontFamily: fonts.bodyHeavy, ...type.callout },
   facts: { flexDirection: 'row', gap: 8 },
   fact: { flex: 1, borderWidth: 2, borderRadius: 16, paddingHorizontal: 10, paddingVertical: 9, gap: 2 },
-  factTop: { fontFamily: fonts.display, fontSize: 15 },
-  factBottom: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
-  text: { fontFamily: fonts.bodyHeavy, fontSize: 15, lineHeight: 21 },
-  small: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  link: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  factTop: { fontFamily: fonts.display, ...type.body },
+  factBottom: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
+  text: { fontFamily: fonts.bodyHeavy, ...type.body },
+  small: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  link: { fontFamily: fonts.bodyHeavy, ...type.callout },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   home: { borderWidth: 2, borderStyle: 'dashed', borderRadius: 16, padding: 12, gap: 2 },
   actions: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', gap: 10, paddingHorizontal: 20, paddingTop: 12, borderTopWidth: 1.5 },
   wish: { flex: 2, minHeight: 56, borderWidth: 2.5, borderRadius: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
-  wishText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  wishText: { fontFamily: fonts.bodyHeavy, ...type.callout },
 });

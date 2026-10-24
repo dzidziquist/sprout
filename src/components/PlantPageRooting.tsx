@@ -3,7 +3,7 @@ import { POT_UP_AFTER_DAYS, rootingDays } from '@/engine/treeLayout';
 import { Sticker } from '@/components/ui';
 import { METHOD_CARE, METHOD_LABEL, METHOD_WORD } from '@/components/CuttingMethods';
 import { useColors } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import type { Plant } from '@/types';
 
 type Rooting = NonNullable<Plant['rooting']>;
@@ -62,9 +62,9 @@ export function RootingCare({ rooting, now, pets }: { rooting: Rooting; now: Dat
 const styles = StyleSheet.create({
   stats: { flexDirection: 'row', gap: 8 },
   stat: { flex: 1, padding: 10, borderRadius: 16 },
-  statNum: { fontFamily: fonts.display, fontSize: 16 },
-  statLabel: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  statNum: { fontFamily: fonts.display, ...type.body },
+  statLabel: { fontFamily: fonts.bodyHeavy, ...type.caption },
   row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingHorizontal: 14, paddingVertical: 11 },
-  rowKey: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
-  rowVal: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1, textAlign: 'right' },
+  rowKey: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  rowVal: { fontFamily: fonts.bodyHeavy, ...type.callout, flexShrink: 1, textAlign: 'right' },
 });

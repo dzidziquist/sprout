@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 
 /** One progress bar for the round, however many plants are in it. */
@@ -27,5 +27,5 @@ const styles = StyleSheet.create({
   wrap: { gap: 4, marginTop: 6 },
   track: { height: 14, borderRadius: 7, borderWidth: 2, overflow: 'hidden' },
   fill: { height: '100%' },
-  text: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  text: { fontFamily: fonts.bodyHeavy, ...type.caption },
 });

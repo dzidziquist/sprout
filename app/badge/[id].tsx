@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,7 +11,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { Button } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
 
@@ -67,9 +67,9 @@ export default function BadgeScreen() {
       return;
     }
     if (Math.abs(dx) < 4 && Math.abs(vx) < 100) {
-      // A tap: one full twirl.
+      // A tap: one full twirl. No momentum went in, so it settles without overshoot (only flicks bounce).
       haptics.tap();
-      Animated.timing(x, { toValue: Math.round(now / FULL) * FULL + FULL, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start();
+      Animated.spring(x, { toValue: Math.round(now / FULL) * FULL + FULL, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
       return;
     }
     if (Math.abs(vx) > 300) haptics.tap();
@@ -157,19 +157,19 @@ export default function BadgeScreen() {
 
 const styles = StyleSheet.create({
   missing: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 },
-  missingText: { fontFamily: fonts.displaySemi, fontSize: 18 },
-  page: { flex: 1, paddingHorizontal: 20, gap: 20 },
+  missingText: { fontFamily: fonts.displaySemi, ...type.headline },
+  page: { flex: 1, paddingHorizontal: space.xl, gap: space.xl },
   toolbar: { flexDirection: 'row' },
   stage: { height: SIZE + 40, alignItems: 'center', justifyContent: 'center' },
   face: { position: 'absolute', width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center', backfaceVisibility: 'hidden' },
   backFace: {},
   disc: { width: SIZE - 30, height: SIZE - 30, borderRadius: (SIZE - 30) / 2, borderWidth: 3, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 6 },
-  backKicker: { fontFamily: fonts.bodyHeavy, fontSize: 13, letterSpacing: 0.6, textTransform: 'uppercase' },
-  backText: { fontFamily: fonts.display, fontSize: 20, textAlign: 'center' },
+  backKicker: { fontFamily: fonts.bodyHeavy, ...type.footnote, letterSpacing: 0.6, textTransform: 'uppercase' },
+  backText: { fontFamily: fonts.display, ...type.title3, textAlign: 'center' },
   levelRow: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
   pip: { minWidth: 44, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  pipText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  title: { fontFamily: fonts.display, fontSize: 26, textAlign: 'center' },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 15, textAlign: 'center' },
-  hint: { fontFamily: fonts.bodyHeavy, fontSize: 12, textAlign: 'center', marginTop: 6 },
+  pipText: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  title: { fontFamily: fonts.display, ...type.title2, textAlign: 'center' },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.body, textAlign: 'center' },
+  hint: { fontFamily: fonts.bodyHeavy, ...type.caption, textAlign: 'center', marginTop: 6 },
 });

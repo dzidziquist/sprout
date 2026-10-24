@@ -5,7 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '../store/plantStore';
 import { useShallow } from 'zustand/react/shallow';
 import { Button, Sticker } from './ui';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 import * as haptics from '../lib/haptics';
 import { checksWaterLine } from '../engine/careEngine';
@@ -109,11 +109,11 @@ export function SoilCheckCoach() {
 
 const styles = StyleSheet.create({
   link: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', minHeight: 44, paddingHorizontal: 14, borderWidth: 2, borderRadius: 22 },
-  linkText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  linkText: { fontFamily: fonts.bodyHeavy, ...type.callout },
   card: { padding: 14, gap: 10 },
-  lead: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
+  lead: { fontFamily: fonts.body, ...type.callout },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderRadius: 14, padding: 8 },
-  word: { fontFamily: fonts.display, fontSize: 17, width: 56 },
-  feel: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  do: { fontFamily: fonts.body, fontSize: 12 },
+  word: { fontFamily: fonts.display, ...type.headline, width: 56 },
+  feel: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  do: { fontFamily: fonts.body, ...type.caption },
 });

@@ -8,7 +8,7 @@ import { edgePath, isReadyToPotUp, rootingDays, rootingProgress, type FamilyLayo
 import { PlantBuddy } from './PlantBuddy';
 import { TreeScrollCue } from './TreeScrollCue';
 import { textOn, useColors, type Palette } from '../theme/theme';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import * as haptics from '../lib/haptics';
 import type { Plant } from '../types';
 
@@ -248,7 +248,7 @@ function makeStyles(c: Palette) {
     },
     circleGone: { borderStyle: 'dashed', borderColor: c.inkMuted },
     moreCircle: { borderStyle: 'dashed', backgroundColor: c.cloud },
-    moreNum: { fontFamily: fonts.display, fontSize: 24, color: c.ink },
+    moreNum: { fontFamily: fonts.display, ...type.title2, color: c.ink },
     corner: {
       position: 'absolute',
       top: 0,
@@ -260,10 +260,10 @@ function makeStyles(c: Palette) {
       height: 20,
       justifyContent: 'center',
     },
-    cornerText: { fontFamily: fonts.bodyHeavy, fontSize: 11, letterSpacing: 0.2 },
-    name: { marginTop: RING_GAP + 4, fontFamily: fonts.displaySemi, fontSize: 15, lineHeight: 19, color: c.ink, maxWidth: '100%' },
-    sub: { fontFamily: fonts.bodyHeavy, fontSize: 11, lineHeight: 15, color: c.inkMuted, maxWidth: '100%' },
+    cornerText: { fontFamily: fonts.bodyHeavy, ...type.caption2, letterSpacing: 0.2 },
+    name: { marginTop: RING_GAP + 4, fontFamily: fonts.displaySemi, ...type.body, color: c.ink, maxWidth: '100%' },
+    sub: { fontFamily: fonts.bodyHeavy, ...type.caption2, color: c.inkMuted, maxWidth: '100%' },
     pill: { marginTop: 2, borderWidth: 2, borderColor: c.line, borderRadius: 10, paddingHorizontal: 7, height: 21, justifyContent: 'center', maxWidth: '100%' },
-    pillText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+    pillText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   });
 }

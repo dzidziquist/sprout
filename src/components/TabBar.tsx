@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts } from '../theme/tokens';
+import { colors, fonts, type } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 
 const ACTIVE_BG: Record<string, string> = { index: colors.leaf, jungle: colors.sky, offshoots: colors.grape, me: colors.bubblegum };
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   tab: { minWidth: 62, height: 54, alignItems: 'center', justifyContent: 'center', gap: 2, borderRadius: 18 },
   tabActive: { borderWidth: 2 },
-  label: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  label: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   add: {
     borderWidth: 2,
     width: 56,

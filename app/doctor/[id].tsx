@@ -16,7 +16,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { Icon } from '@/components/GrowTodayCard';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors, type Palette } from '@/theme/theme';
 import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
@@ -157,7 +157,7 @@ export default function DoctorScreen() {
       </View>
 
       <View style={{ gap: 6 }}>
-        <Title style={{ fontSize: 30, lineHeight: 34 }}>What’s up with {plant.name}?</Title>
+        <Title>What’s up with {plant.name}?</Title>
         <Text style={[styles.sub, { color: c.inkMuted }]}>Tap what you see. We’ll use {plant.name}’s care history to work out the likely cause.</Text>
       </View>
 
@@ -324,7 +324,7 @@ export default function DoctorScreen() {
                     >
                       <Text style={[styles.pillText, { color: r.confidence === 'Long shot' ? c.ink : c.onBright }]}>{r.confidence}</Text>
                     </View>
-                    <Text style={[styles.cardTitle, { color: c.ink, flex: 1, fontSize: 16 }]}>{r.name ?? r.code}</Text>
+                    <Text style={[styles.cardTitle, { color: c.ink, flex: 1, ...type.body }]}>{r.name ?? r.code}</Text>
                   </View>
                   {cause && <CauseCard cause={cause} c={c} onSave={() => save(cause, 'Photo check')} onCutting={() => router.push(`/cuttings/${plant.id}`)} />}
                 </View>
@@ -401,9 +401,9 @@ function Bullet({ text, n, c }: { text: string; n?: number; c: Palette }) {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 16 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row' },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 15, lineHeight: 20 },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.body },
   areaChip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     height: 40,
   },
-  areaText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  areaText: { fontFamily: fonts.bodyHeavy, ...type.callout },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   tile: {
     width: '48%',
@@ -433,26 +433,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 4,
   },
-  tileLabel: { fontFamily: fonts.displaySemi, fontSize: 15, lineHeight: 19 },
-  tileHint: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 16 },
-  cardTitle: { fontFamily: fonts.display, fontSize: 18 },
-  beta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  body: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20 },
-  small: { fontFamily: fonts.bodyHeavy, fontSize: 11, letterSpacing: 0.6 },
-  hint: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17 },
-  saved: { fontFamily: fonts.bodyHeavy, fontSize: 14, textAlign: 'center' },
+  tileLabel: { fontFamily: fonts.displaySemi, ...type.body },
+  tileHint: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  cardTitle: { fontFamily: fonts.display, ...type.headline },
+  beta: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  body: { fontFamily: fonts.bodyHeavy, ...type.callout },
+  small: { fontFamily: fonts.bodyHeavy, ...type.caption2, letterSpacing: 0.6 },
+  hint: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  saved: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },
   pill: {
     borderWidth: 2,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 2,
   },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   bullet: { flexDirection: 'row', gap: 8 },
   bulletMark: {
     fontFamily: fonts.bodyHeavy,
-    fontSize: 14,
-    lineHeight: 20,
+    ...type.callout,
     minWidth: 14,
   },
   chosen: {
@@ -465,7 +464,7 @@ const styles = StyleSheet.create({
   },
   change: {
     fontFamily: fonts.bodyHeavy,
-    fontSize: 14,
+    ...type.callout,
     textDecorationLine: 'underline',
   },
   photoRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },

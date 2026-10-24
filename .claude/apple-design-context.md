@@ -1,6 +1,6 @@
 # Apple design context: PlantFam
 
-Shared context for the hig-* skills in .claude/skills.
+Shared context for the hig-* skills and apple-design (Emil Kowalski, motion and craft) in .claude/skills.
 
 ## Product
 - Free, hobby plant-care app: daily soil-check "round", per-plant pages, care log, light estimates by window, photo diary, wishlist, grow patch for edibles.
@@ -22,7 +22,11 @@ Shared context for the hig-* skills in .claude/skills.
 - The tester explicitly prefers the sticker look over stock iOS controls (chose the sticker switch over the iOS Switch). Keep the visual identity; apply HIG to behaviour, accessibility, writing and structure.
 
 ## Accessibility
-- Target: solid VoiceOver, Dynamic Type (no fixed text heights), Reduce Motion (useReducedMotion), 4.5:1 text contrast, 44 pt targets.
+- Target: solid VoiceOver, Dynamic Type (no fixed text heights), Reduce Motion (useReducedMotion), Reduce Transparency (useReducedTransparency), 4.5:1 text contrast, 44 pt targets.
 
 ## Users
 - Houseplant and windowsill-edible growers, checking plants once a day, one-handed, often at the plant.
+
+## Motion and type
+- Anything touchable animates with a spring that starts from the current value. Default critically damped (no overshoot); bounce only after a flick (badge spin).
+- Type comes from `type` in src/theme/tokens.ts: size, line height and per-size tracking. Spacing from `space`.

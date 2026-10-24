@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker, Title } from '@/components/ui';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors, type Palette } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 import { Glyph } from '@/components/Glyph';
@@ -96,9 +96,9 @@ export default function HelpScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 12 },
+  page: { paddingHorizontal: space.xl, gap: space.md },
   header: { flexDirection: 'row' },
   card: { flexDirection: 'row', gap: 12, padding: 12, alignItems: 'flex-start' },
-  h: { fontFamily: fonts.display, fontSize: 18 },
-  p: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
+  h: { fontFamily: fonts.display, ...type.headline },
+  p: { fontFamily: fonts.body, ...type.callout },
 });

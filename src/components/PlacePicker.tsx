@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 
 import { climateFor, label, searchPlaces, type PlaceResult } from '../lib/place';
 import { describeClimate, placeName } from '../lib/climate';
 import * as haptics from '../lib/haptics';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import { useColors } from '../theme/theme';
 import type { ClimateProfile } from '../types';
 
@@ -123,13 +123,13 @@ export function PlacePicker({ value, onPick }: { value: ClimateProfile; onPick: 
 
 const styles = StyleSheet.create({
   current: { borderWidth: 2, borderRadius: 18, padding: 12, gap: 2 },
-  currentName: { fontFamily: fonts.display, fontSize: 18 },
-  currentSub: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
-  input: { minHeight: 48, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  currentName: { fontFamily: fonts.display, ...type.headline },
+  currentSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  input: { minHeight: 48, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: type.body.fontSize },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  note: { fontFamily: fonts.bodyHeavy, ...type.caption },
   result: { borderWidth: 2, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 10, gap: 2 },
-  resultName: { fontFamily: fonts.displaySemi, fontSize: 16 },
+  resultName: { fontFamily: fonts.displaySemi, ...type.body },
   presets: { flexDirection: 'row', gap: 8 },
   preset: { flex: 1, minHeight: 44, borderWidth: 2, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
 });

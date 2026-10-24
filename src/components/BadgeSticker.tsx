@@ -1,7 +1,7 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import type { Badge, BadgeId } from '@/engine/streak';
 import { BADGE_ART } from '@/data/art';
 
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   art: { width: 72, height: 72 },
   circle: { width: 62, height: 62, borderRadius: 31, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   level: { position: 'absolute', top: 0, right: 14, borderWidth: 2, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1, transform: [{ rotate: '8deg' }] },
-  levelText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
-  title: { fontFamily: fonts.bodyHeavy, fontSize: 13, textAlign: 'center', lineHeight: 16 },
-  sub: { fontFamily: fonts.body, fontSize: 11, textAlign: 'center', lineHeight: 14 },
+  levelText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
+  title: { fontFamily: fonts.bodyHeavy, ...type.footnote, textAlign: 'center' },
+  sub: { fontFamily: fonts.body, ...type.caption2, textAlign: 'center' },
 });

@@ -9,7 +9,7 @@ import { usePhoto, useWiki } from '@/lib/wiki';
 import { PhotoCredit, PhotoToggle } from '@/components/PhotoCredit';
 import * as haptics from '@/lib/haptics';
 import { Sticker } from '@/components/ui';
-import { fonts } from '@/theme/tokens';
+import { fonts, type } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 
@@ -91,11 +91,11 @@ export function AboutCard({ speciesId, latin, common }: { speciesId: SpeciesId; 
 const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 10, minHeight: 60 },
   thumb: { width: 40, height: 40, borderRadius: 10, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  title: { fontFamily: fonts.display, fontSize: 17 },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  title: { fontFamily: fonts.display, ...type.headline },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.caption },
   body: { paddingHorizontal: 14, paddingBottom: 14, paddingTop: 12, gap: 10, borderTopWidth: 2 },
-  extract: { fontFamily: fonts.body, fontSize: 15, lineHeight: 21 },
+  extract: { fontFamily: fonts.body, ...type.body },
   photo: { width: '100%', height: 180, borderRadius: 14, borderWidth: 2 },
   foot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  more: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  more: { fontFamily: fonts.bodyHeavy, ...type.callout },
 });

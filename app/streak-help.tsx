@@ -7,7 +7,7 @@ import { FREEZES_PER_MONTH, GRACE_DAYS } from '@/engine/streak';
 import { BACK_GRACE_DAYS } from '@/engine/away';
 import { Title } from '@/components/ui';
 import { useSheetTop } from '@/lib/sheetTop';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
 
@@ -76,15 +76,15 @@ export default function StreakHelp() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 20 },
-  lead: { fontFamily: fonts.bodyHeavy, fontSize: 16, lineHeight: 22 },
-  h: { fontFamily: fonts.display, fontSize: 18 },
-  p: { flex: 1, fontFamily: fonts.body, fontSize: 15, lineHeight: 21 },
-  note: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
+  page: { paddingHorizontal: space.xl, gap: space.xl },
+  lead: { fontFamily: fonts.bodyHeavy, ...type.body },
+  h: { fontFamily: fonts.display, ...type.headline },
+  p: { flex: 1, fontFamily: fonts.body, ...type.body },
+  note: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   pillCol: { width: 48, alignItems: 'center' },
   pill: { width: 44, height: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   dashed: { borderStyle: 'dashed', opacity: 0.6 },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
+  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
   saverBox: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 18, padding: 12 },
 });

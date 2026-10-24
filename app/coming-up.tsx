@@ -8,7 +8,7 @@ import { useDay } from '@/hooks/useDay';
 import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Title } from '@/components/ui';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { calendarDays } from '@/lib/when';
 import type { Plant } from '@/types';
@@ -100,12 +100,12 @@ export default function ComingUpScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20 },
+  page: { paddingHorizontal: space.xl },
   header: { gap: 18, marginBottom: 9 },
-  group: { fontFamily: fonts.display, fontSize: 19 },
+  group: { fontFamily: fonts.display, ...type.title3 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 18, padding: 10 },
   buddy: { width: 56, height: 56, borderRadius: 14, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  name: { fontFamily: fonts.displaySemi, fontSize: 17 },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 13, marginTop: 2 },
-  empty: { fontFamily: fonts.bodyHeavy, fontSize: 15 },
+  name: { fontFamily: fonts.displaySemi, ...type.headline },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.footnote, marginTop: 2 },
+  empty: { fontFamily: fonts.bodyHeavy, ...type.body },
 });

@@ -7,7 +7,7 @@ import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '../store/plantStore';
 import { ediblePlants, tasksFor, weatherAlerts, type AlertKind } from '../engine/growPatch';
 import { useForecast } from '../lib/weather';
-import { fonts } from '../theme/tokens';
+import { fonts, type } from '../theme/tokens';
 import { useColors, type Palette } from '../theme/theme';
 import type { TaskKind } from '../data/edibles';
 
@@ -109,7 +109,7 @@ export function GrowTodayCard() {
 const styles = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 20, padding: 12, paddingRight: 10 },
   badge: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  eyebrow: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
-  title: { fontFamily: fonts.displaySemi, fontSize: 17 },
-  body: { fontFamily: fonts.body, fontSize: 13, lineHeight: 17 },
+  eyebrow: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  title: { fontFamily: fonts.displaySemi, ...type.headline },
+  body: { fontFamily: fonts.body, ...type.footnote },
 });

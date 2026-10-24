@@ -12,7 +12,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import type { WishItem } from '@/types';
 import { Glyph } from '@/components/Glyph';
@@ -138,15 +138,15 @@ function WishCard({ wish }: { wish: WishItem }) {
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 14 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row' },
-  sub: { fontFamily: fonts.bodyHeavy, fontSize: 15, lineHeight: 21 },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.body },
   empty: { borderWidth: 2, borderStyle: 'dashed', borderRadius: 20, padding: 16, gap: 12 },
   card: { borderWidth: 2.5, borderRadius: 22, padding: 12, gap: 10 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   thumb: { width: 60, height: 60, borderRadius: 14, borderWidth: 2, overflow: 'hidden' },
-  name: { fontFamily: fonts.display, fontSize: 18 },
-  small: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
+  name: { fontFamily: fonts.display, ...type.headline },
+  small: { fontFamily: fonts.bodyHeavy, ...type.caption },
   remove: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  note: { minHeight: 42, borderRadius: 12, paddingHorizontal: 12, fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  note: { minHeight: 42, borderRadius: 12, paddingHorizontal: 12, fontFamily: fonts.bodyHeavy, ...type.callout },
 });

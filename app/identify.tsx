@@ -13,7 +13,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { Button, Sticker, Title } from '@/components/ui';
 import { identifyPlant, plantIdConfigured, PlantIdError, type CatalogueMatch, type Confidence, type PlantIdErrorKind, type PlantNetResult, speciesFor } from '@/lib/plantId';
 import * as haptics from '@/lib/haptics';
-import { fonts } from '@/theme/tokens';
+import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { useSheetTop } from '@/lib/sheetTop';
 import { addHref, displayName, speciesHref } from '@/lib/plantLinks';
@@ -342,36 +342,36 @@ function MatchCard({ match, c, onPress }: { match: CatalogueMatch; c: Palette; o
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 14 },
+  page: { paddingHorizontal: space.xl, gap: space.lg },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   hero: { padding: 16, gap: 8, alignItems: 'center' },
   heroBuddies: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 6 },
   heroTile: { width: 92, height: 92, borderRadius: 24, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   heroQ: { width: 64, height: 64, borderRadius: 32 },
-  qMark: { fontFamily: fonts.display, fontSize: 36 },
-  heroTitle: { fontFamily: fonts.display, fontSize: 21, textAlign: 'center' },
-  body: { fontFamily: fonts.bodyHeavy, fontSize: 14, lineHeight: 20 },
+  qMark: { fontFamily: fonts.display, ...type.largeTitle },
+  heroTitle: { fontFamily: fonts.display, ...type.title3, textAlign: 'center' },
+  body: { fontFamily: fonts.bodyHeavy, ...type.callout },
   bigBtn: { minHeight: 56 },
-  bigBtnText: { fontSize: 18, fontFamily: fonts.display },
+  bigBtnText: { ...type.headline, fontFamily: fonts.display },
   photoWrap: { height: 240, borderRadius: 24, borderWidth: 2, overflow: 'hidden', justifyContent: 'flex-end', alignItems: 'center' },
   scanning: { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderRadius: 20, paddingHorizontal: 14, height: 40, marginBottom: 14 },
-  scanText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  scanText: { fontFamily: fonts.bodyHeavy, ...type.callout },
   notice: { padding: 14 },
   noticeRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  noticeTitle: { fontFamily: fonts.display, fontSize: 18 },
-  sectionTitle: { fontFamily: fonts.display, fontSize: 21 },
+  noticeTitle: { fontFamily: fonts.display, ...type.headline },
+  sectionTitle: { fontFamily: fonts.display, ...type.title3 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 22, borderWidth: 2 },
   buddyTile: { width: 84, height: 84, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
-  matchName: { fontFamily: fonts.display, fontSize: 19, flexShrink: 1 },
+  matchName: { fontFamily: fonts.display, ...type.title3, flexShrink: 1 },
   confChip: { borderWidth: 2, borderRadius: 11, minHeight: 24, paddingVertical: 2, paddingHorizontal: 8, justifyContent: 'center' },
-  confText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
-  latin: { fontFamily: fonts.body, fontSize: 13, fontStyle: 'italic' },
+  confText: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
+  latin: { fontFamily: fonts.body, ...type.footnote, fontStyle: 'italic' },
   barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   barTrack: { flex: 1, height: 12, borderRadius: 6, borderWidth: 2, overflow: 'hidden' },
   barFill: { height: '100%', borderRadius: 4 },
-  pct: { fontFamily: fonts.bodyHeavy, fontSize: 12, minWidth: 34, textAlign: 'right' },
-  credit: { fontFamily: fonts.body, fontSize: 12, textAlign: 'center', marginTop: 4 },
+  pct: { fontFamily: fonts.bodyHeavy, ...type.caption, minWidth: 34, textAlign: 'right' },
+  credit: { fontFamily: fonts.body, ...type.caption, textAlign: 'center', marginTop: 4 },
   scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end', paddingHorizontal: 16 },
   confirm: { padding: 18, gap: 12 },
   compare: { flexDirection: 'row', gap: 10, justifyContent: 'center' },
