@@ -1,7 +1,7 @@
 import { PlacePicker } from '@/components/PlacePicker';
 import { resolveUnits } from '@/lib/units';
 import { useState } from 'react';
-import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -23,6 +23,7 @@ import { fonts } from '@/theme/tokens';
 import { ACCENTS, useColors } from '@/theme/theme';
 import type { Accent } from '@/types';
 import { Dropdown } from '@/components/Dropdown';
+import { StickerSwitch } from '@/components/StickerSwitch';
 import { Glyph } from '@/components/Glyph';
 
 const TIMES = [
@@ -108,14 +109,14 @@ function Field({ label, note, children, last }: { label: string; note?: string; 
   );
 }
 
-/** An on/off setting as a native switch, with its label read with it. */
+/** An on/off setting with PlantFam's sticker switch, its label read with it. */
 function SwitchField({ label, value, onChange, note, last, children }: { label: string; value: boolean; onChange: (on: boolean) => void; note?: string; last?: boolean; children?: React.ReactNode }) {
   const c = useColors();
   return (
     <View style={[styles.field, !last && { borderBottomWidth: 1.5, borderColor: c.cloud }]}>
       <View style={styles.switchRow}>
         <Text style={[styles.rowLabel, { color: c.ink, flex: 1 }]}>{label}</Text>
-        <Switch accessibilityLabel={label} value={value} onValueChange={onChange} trackColor={{ true: c.leafDeep, false: c.cloud }} ios_backgroundColor={c.cloud} />
+        <StickerSwitch label={label} value={value} onChange={onChange} />
       </View>
       {children}
       {note ? <Text style={[styles.note, { color: c.inkMuted }]}>{note}</Text> : null}
