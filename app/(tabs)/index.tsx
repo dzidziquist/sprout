@@ -1,4 +1,4 @@
-import { SoilCheckCoach } from '@/components/SoilCheckCoach';
+import { CoachGuide, useCoach } from '@/components/SoilCheckCoach';
 import { GrowTodayCard } from '@/components/GrowTodayCard';
 import { useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
@@ -84,6 +84,8 @@ export default function TodayScreen() {
   const c = useColors();
   const { plants, profile, events, logCheck, undoLastCheck, undo } = usePlantStore(useShallow((s) => ({ plants: s.plants, profile: s.profile, events: s.events, logCheck: s.logCheck, undoLastCheck: s.undoLastCheck, undo: s.undo })));
   const [messages, setMessages] = useState<Record<string, string>>({});
+  const coaching = useCoach();
+  const [howOpen, setHowOpen] = useState(false);
   const swipeRefs = useRef<Record<string, Swipeable | null>>({});
   // Re-renders at midnight so plants that just came due join the round.
   const day = useDay();
@@ -122,6 +124,8 @@ export default function TodayScreen() {
   };
 
   const firstEver = !events.some((e) => e.type === 'check');
+  // How to check, folded into the hero while there's a round to do (it goes after the first few checks).
+  const coach = left > 0 && !trip ? coaching : null;
   const dueNow = round.filter((p) => isDue(p, now));
   const word = checkWord(dueNow);
   const how = word === 'water ' ? 'Peek at the water line' : word === '' ? 'Feel the soil or peek at the water' : 'Feel the soil';
@@ -159,28 +163,46 @@ export default function TodayScreen() {
       </View>
       <Title size="largeTitle">Plant round</Title>
 
-      <Sticker bg={heroBg} drop={5} style={styles.hero}>
-        <View style={{ flex: 1, gap: 4 }}>
-          <Text style={[styles.heroTitle, { color: c.ink }]}>{heroTitle}</Text>
-          <Text style={[styles.heroSub, { color: c.ink }]}>{heroSub}</Text>
-          {round.length > 0 && <TodayProgress done={done} total={round.length} />}
-          {living.length === 0 && <Button title="Add a plant" raised bg={c.leaf} onPress={() => router.push('/add')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
-          {trip && <Button title="View trip" raised bg={c.card} onPress={() => router.push('/away')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
+      <Sticker bg={heroBg} drop={5}>
+        <View style={styles.hero}>
+          <View style={{ flex: 1, gap: 4 }}>
+            <Text style={[styles.heroTitle, { color: c.ink }]}>{heroTitle}</Text>
+            <Text style={[styles.heroSub, { color: c.ink }]}>{heroSub}</Text>
+            {coach && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={coach.question}
+                accessibilityState={{ expanded: howOpen }}
+                hitSlop={12}
+                onPress={() => setHowOpen((o) => !o)}
+                style={({ pressed }) => [styles.howBtn, pressed && { opacity: 0.6 }]}
+              >
+                <Text style={[styles.how, { color: c.ink }]}>{howOpen ? 'Hide' : 'How?'}</Text>
+              </Pressable>
+            )}
+            {round.length > 0 && <TodayProgress done={done} total={round.length} />}
+            {living.length === 0 && <Button title="Add a plant" raised bg={c.leaf} onPress={() => router.push('/add')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
+            {trip && <Button title="View trip" raised bg={c.card} onPress={() => router.push('/away')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
+          </View>
+          {trip ? (
+            <PlantBuddy speciesId="monstera" mood="snoozing" size={84} bg={heroBg} faces={profile.faces} />
+          ) : living.length === 0 ? (
+            <Image source={ART.emptyJungle} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+          ) : round.length === 0 || allDone ? (
+            <Image source={ART.caughtUp} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+          ) : (
+            <PlantBuddy speciesId="monstera" mood="thirsty" size={84} bg={heroBg} faces={profile.faces} />
+          )}
         </View>
-        {trip ? (
-          <PlantBuddy speciesId="monstera" mood="snoozing" size={84} bg={heroBg} faces={profile.faces} />
-        ) : living.length === 0 ? (
-          <Image source={ART.emptyJungle} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
-        ) : round.length === 0 || allDone ? (
-          <Image source={ART.caughtUp} style={{ width: 84, height: 84 }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
-        ) : (
-          <PlantBuddy speciesId="monstera" mood="thirsty" size={84} bg={heroBg} faces={profile.faces} />
+        {coach && howOpen && (
+          <View style={{ paddingHorizontal: 14, paddingBottom: 14 }}>
+            <CoachGuide soil={coach.soil} water={coach.water} />
+          </View>
         )}
       </Sticker>
 
       {round.length > 0 && (
         <View style={{ gap: 12 }}>
-          {left > 0 && <SoilCheckCoach />}
           {round.map((p) => {
             const due = isDue(p, now);
             const mood = moodFor(p, now);
@@ -313,7 +335,9 @@ export default function TodayScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: space.xl, gap: space.xl },
   toolbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 44 },
-  hero: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 12, paddingLeft: 14, paddingRight: 4, overflow: 'hidden' },
+  hero: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 12, paddingLeft: 14, paddingRight: 4, overflow: 'hidden', borderRadius: 20 },
+  howBtn: { alignSelf: 'flex-start' },
+  how: { fontFamily: fonts.display, ...type.footnote, textDecorationLine: 'underline' },
   heroTitle: { fontFamily: fonts.display, ...type.title2 },
   heroSub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
   banner: { borderWidth: 2, borderRadius: 16, padding: 10 },
