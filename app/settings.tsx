@@ -1,7 +1,7 @@
 import { PlacePicker } from '@/components/PlacePicker';
 import { resolveUnits } from '@/lib/units';
 import { useState } from 'react';
-import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -23,6 +23,7 @@ import { fonts } from '@/theme/tokens';
 import { ACCENTS, useColors } from '@/theme/theme';
 import type { Accent } from '@/types';
 import { Dropdown } from '@/components/Dropdown';
+import { Glyph } from '@/components/Glyph';
 
 const TIMES = [
   { label: '8:30 am', hour: 8, minute: 30 },
@@ -107,6 +108,21 @@ function Field({ label, note, children, last }: { label: string; note?: string; 
   );
 }
 
+/** An on/off setting as a native switch, with its label read with it. */
+function SwitchField({ label, value, onChange, note, last, children }: { label: string; value: boolean; onChange: (on: boolean) => void; note?: string; last?: boolean; children?: React.ReactNode }) {
+  const c = useColors();
+  return (
+    <View style={[styles.field, !last && { borderBottomWidth: 1.5, borderColor: c.cloud }]}>
+      <View style={styles.switchRow}>
+        <Text style={[styles.rowLabel, { color: c.ink, flex: 1 }]}>{label}</Text>
+        <Switch accessibilityLabel={label} value={value} onValueChange={onChange} trackColor={{ true: c.leafDeep, false: c.cloud }} ios_backgroundColor={c.cloud} />
+      </View>
+      {children}
+      {note ? <Text style={[styles.note, { color: c.inkMuted }]}>{note}</Text> : null}
+    </View>
+  );
+}
+
 export default function SettingsScreen() {
   const c = useColors();
   const router = useRouter();
@@ -125,7 +141,14 @@ export default function SettingsScreen() {
     : awaySoon
       ? `From ${new Date(awaySoon.from).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
       : 'Off';
-  const roundValue = profile.round.enabled ? (TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null) : 'Off';
+  const roundTime = TIMES.find((t) => t.hour === profile.round.hour && t.minute === profile.round.minute)?.label ?? null;
+  // Turning the round on asks for notification permission, and stays off if it's refused.
+  const setRound = async (on: boolean, time?: (typeof TIMES)[number]) => {
+    if (!on) return setProfile({ round: { ...profile.round, enabled: false } });
+    const ok = await ensureRoundPermission();
+    setProfile({ round: { enabled: ok, hour: time?.hour ?? profile.round.hour, minute: time?.minute ?? profile.round.minute } });
+    if (!ok) Alert.alert('Notifications are off', 'Turn on notifications for PlantFam in your iPhone Settings to get the plant round.', [{ text: 'Not now' }, { text: 'Open Settings', onPress: () => Linking.openSettings() }]);
+  };
 
   const eraseAll = async () => {
     const n = plants.length;
@@ -147,26 +170,22 @@ export default function SettingsScreen() {
     <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/me'))}>
-          <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+          <Glyph name="back" size={18} color={c.ink} width={2.6} />
         </GlassButton>
       </View>
       <Title>Settings</Title>
 
       <Section title="Reminders" footer="At most one reminder a day: when a plant is ready for a check, or on photo day. Nothing due means no notification.">
-        <Field label="Daily plant round">
-          <Segmented
-            label="Daily plant round"
-            value={roundValue}
-            options={[...TIMES.map((t) => ({ id: t.label, label: t.label })), { id: 'Off', label: 'Off' }]}
-            onChange={async (v) => {
-              if (v === 'Off') return setProfile({ round: { ...profile.round, enabled: false } });
-              const t = TIMES.find((x) => x.label === v)!;
-              const ok = await ensureRoundPermission();
-              setProfile({ round: { enabled: ok, hour: t.hour, minute: t.minute } });
-              if (!ok) Alert.alert('Notifications are off', 'Turn on notifications for PlantFam in your iPhone Settings to get the plant round.', [{ text: 'Not now' }, { text: 'Open Settings', onPress: () => Linking.openSettings() }]);
-            }}
-          />
-        </Field>
+        <SwitchField label="Daily plant round" value={profile.round.enabled} onChange={(on) => setRound(on)}>
+          {profile.round.enabled && (
+            <Segmented
+              label="Plant round time"
+              value={roundTime}
+              options={TIMES.map((t) => ({ id: t.label, label: t.label }))}
+              onChange={(v) => setRound(true, TIMES.find((x) => x.label === v))}
+            />
+          )}
+        </SwitchField>
         <Field label="Progress photos" note={PHOTO_NOTE[profile.photos ?? 'monthly']}>
           <Segmented
             label="Progress photos"
@@ -242,17 +261,13 @@ export default function SettingsScreen() {
             })}
           </View>
         </Field>
-        <Field label="Grows in" last note={profile.grows.hydro ? 'Adding a plant asks soil, LECA or water up front. Hydro plants get water-line checks and fresh-water reminders.' : 'Growing in LECA or water too? Turn this on to pick it up front when adding plants.'}>
-          <Segmented
-            label="Grows in"
-            value={profile.grows.hydro ? 'hydro' : 'soil'}
-            options={[
-              { id: 'soil' as const, label: 'Soil' },
-              { id: 'hydro' as const, label: 'Soil + hydro' },
-            ]}
-            onChange={(v) => setProfile({ grows: { ...profile.grows, hydro: v === 'hydro' } })}
-          />
-        </Field>
+        <SwitchField
+          label="Hydro or LECA too"
+          value={!!profile.grows.hydro}
+          onChange={(on) => setProfile({ grows: { ...profile.grows, hydro: on } })}
+          last
+          note={profile.grows.hydro ? 'Adding a plant asks soil, LECA or water up front. Hydro plants get water-line checks and fresh-water reminders.' : 'Growing in LECA or water too? Turn this on to pick it up front when adding plants.'}
+        />
       </Section>
 
       <Section
@@ -301,6 +316,7 @@ const styles = StyleSheet.create({
   row: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14 },
   rowLabel: { flex: 1, fontFamily: fonts.displaySemi, fontSize: 16 },
   rowValue: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
+  switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   field: { padding: 14, gap: 10 },
   note: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   footer: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 17, paddingHorizontal: 4 },

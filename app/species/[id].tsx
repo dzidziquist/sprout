@@ -23,6 +23,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 const ASPCA_URL = 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants';
 
@@ -98,7 +99,7 @@ export default function SpeciesPage() {
           )}
           <View style={[styles.toolbar, { top: 16 }]}>
             <GlassButton accessibilityLabel="Close" onPress={close}>
-              <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+              <Glyph name="close" size={16} color={c.ink} width={2.8} />
             </GlassButton>
           </View>
         </View>

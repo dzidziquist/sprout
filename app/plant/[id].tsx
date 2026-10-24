@@ -35,6 +35,7 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { CareEvent, Plant } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 /** Watering can, for Log care. */
 const LOG_ICON = 'M4 10h11v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7zM15 12l5-4M15 10V8a3 3 0 0 0-6 0v2';
@@ -174,7 +175,7 @@ export default function PlantDetail() {
         <View style={[styles.hero, { backgroundColor: tint, paddingTop: insets.top + 8, borderColor: c.line }]}>
           <View style={styles.heroBar}>
             <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-              {toolbarIcon('m15 18-6-6 6-6')}
+              <Glyph name="back" size={18} color={c.ink} width={2.4} />
             </GlassButton>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               {plant.photoUri && (

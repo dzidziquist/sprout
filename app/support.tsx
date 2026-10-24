@@ -17,6 +17,7 @@ import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
+import { Glyph } from '@/components/Glyph';
 
 
 type Why = 'heart' | 'camera' | 'sprout' | 'medal' | 'star' | 'hat' | 'moon' | 'share' | 'idea';
@@ -145,7 +146,7 @@ export default function SupportScreen() {
       <View style={styles.header}>
         <Title style={{ flex: 1, fontSize: 26 }}>Support PlantFam</Title>
         <GlassButton accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-          <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
 

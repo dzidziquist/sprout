@@ -25,6 +25,7 @@ import { LineIcon } from '@/components/LineIcon';
 import { SunIcon } from '@/components/SunIcon';
 import type { EdibleStage, Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
+import { Glyph } from '@/components/Glyph';
 
 
 const NAMES: Partial<Record<SpeciesId, string[]>> = {
@@ -278,7 +279,7 @@ export default function AddPlantScreen() {
 
   const close = (
     <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>
-      <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+      <Glyph name="close" size={16} color={c.ink} width={2.8} />
     </GlassButton>
   );
 
@@ -454,7 +455,7 @@ export default function AddPlantScreen() {
             setFromWish(undefined);
           }}
         >
-          <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+          <Glyph name="back" size={18} color={c.ink} width={2.6} />
         </GlassButton>
         {close}
       </View>

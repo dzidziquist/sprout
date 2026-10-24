@@ -15,6 +15,8 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts } from '@/theme/tokens';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
+import { Glyph } from '@/components/Glyph';
 
 type Tint = 'ice' | 'lavender' | 'butter' | 'peach' | 'mint' | 'blush';
 
@@ -49,6 +51,7 @@ export default function LogCareSheet() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState(0);
+  useDiscardGuard(saved === 0 && (sel.size > 0 || !!note.trim() || !!photoUri));
   // A picked photo is already copied into the diary folder; if it's dropped or never saved, remove it.
   const unsaved = useRef<string | null>(null);
   useEffect(
@@ -151,7 +154,7 @@ export default function LogCareSheet() {
     <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingBottom: insets.bottom + 24 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>
-          <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
         <Text style={[styles.toolbarTitle, { color: c.ink }]}>Log care</Text>
         <Pressable

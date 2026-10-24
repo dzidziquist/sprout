@@ -23,6 +23,8 @@ import { fonts } from '@/theme/tokens';
 import type { Light, Origin, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
 import { edibleGuide } from '@/data/edibles';
 import { useSheetTop } from '@/lib/sheetTop';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
+import { Glyph } from '@/components/Glyph';
 
 const CARD_COLORS: { id: PotColor; label: string }[] = [
   { id: 'yellow', label: 'Butter' },
@@ -128,10 +130,11 @@ export default function EditPlantScreen() {
   const lastWater = usePlantStore((s) => s.events.filter((e) => e.plantId === id && e.type === 'water').reduce((m, e) => (e.at > m ? e.at : m), ''));
   const faces = usePlantStore((s) => s.profile.faces);
   const rewards = useRewards();
-  const leave = () => {
-    if (router.canDismiss()) router.dismissAll();
-    else router.replace('/');
-  };
+  const leave = () =>
+    go(() => {
+      if (router.canDismiss()) router.dismissAll();
+      else router.replace('/');
+    });
   const actions = usePlantActions(plant, { onDeleted: leave });
 
   const [name, setName] = useState(plant?.name ?? '');
@@ -156,6 +159,11 @@ export default function EditPlantScreen() {
   const [latin, setLatin] = useState(plant?.custom?.latinName ?? '');
   const [otherId, setOtherId] = useState(plant?.speciesId ?? '');
   const [pets, setPets] = useState<'toxic' | 'safe' | 'unsure'>(plant?.custom?.petToxic === true ? 'toxic' : plant?.custom?.petToxic === false ? 'safe' : 'unsure');
+
+  // Everything the form can change, to tell whether closing would lose anything.
+  const form = JSON.stringify([name, light, soil, size, selfWatering, material, placement, room, potColor, joined, cut, origin, watered, kind, latin, otherId, pets]);
+  const [pristine] = useState(form);
+  const go = useDiscardGuard(form !== pristine);
 
   if (!plant || !actions) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
   const sp = speciesOf(plant);
@@ -198,7 +206,7 @@ export default function EditPlantScreen() {
     const days = watered ? WATERED.find((w) => w.id === watered)?.days : null;
     if (days !== null && days !== undefined) setLastWatered(plant.id, daysAgo(days));
     haptics.success();
-    back();
+    go(back);
   };
 
   const askDelete = () => {
@@ -212,7 +220,7 @@ export default function EditPlantScreen() {
     <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Cancel" onPress={back}>
-          <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
         <Text style={[styles.headerTitle, { color: c.ink }]}>Edit plant</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Save changes" onPress={save} style={[styles.save, { backgroundColor: c.leafDeep, borderColor: c.line }]}>
@@ -386,8 +394,8 @@ export default function EditPlantScreen() {
           <>
             <Text style={[styles.note, { color: c.inkMuted }]}>Archiving takes {plant.name} off the round but keeps their diary and family tree.</Text>
             <View style={styles.row}>
-              <Button title={ARCHIVE_COPY.gifted.title} bg={c.blush} style={{ flex: 1 }} onPress={() => { actions.archive('gifted'); back(); }} />
-              <Button title={ARCHIVE_COPY.died.title} bg={c.card} style={{ flex: 1 }} onPress={() => { actions.archive('died'); back(); }} />
+              <Button title={ARCHIVE_COPY.gifted.title} bg={c.blush} style={{ flex: 1 }} onPress={() => { actions.archive('gifted'); go(back); }} />
+              <Button title={ARCHIVE_COPY.died.title} bg={c.card} style={{ flex: 1 }} onPress={() => { actions.archive('died'); go(back); }} />
             </View>
           </>
         )}

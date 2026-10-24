@@ -2,7 +2,6 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { GlassButton } from '@/components/GlassButton';
-import { Icon } from '@/components/GrowTodayCard';
 import { ART } from '@/data/art';
 import { FREEZES_PER_MONTH, GRACE_DAYS } from '@/engine/streak';
 import { BACK_GRACE_DAYS } from '@/engine/away';
@@ -10,6 +9,7 @@ import { Title } from '@/components/ui';
 import { useSheetTop } from '@/lib/sheetTop';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
+import { Glyph } from '@/components/Glyph';
 
 /** Plain-words explainer for the streak card on Me. */
 export default function StreakHelp() {
@@ -33,7 +33,7 @@ export default function StreakHelp() {
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
       <View style={{ flexDirection: 'row' }}>
         <GlassButton accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/me'))}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
       <Title>How your streak works</Title>

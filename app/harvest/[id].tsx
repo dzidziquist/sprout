@@ -16,6 +16,7 @@ import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
+import { Glyph } from '@/components/Glyph';
 
 const UNIT_LABEL: Record<HarvestUnit, string> = { fruit: 'Fruit', handful: 'Handful', bunch: 'Bunch', bulb: 'Bulb', grams: 'Grams' };
 const STEP: Record<HarvestUnit, number> = { fruit: 1, handful: 1, bunch: 1, bulb: 1, grams: 10 };
@@ -112,7 +113,7 @@ export default function HarvestSheet() {
     <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
         <Text style={[styles.toolbarTitle, { color: c.ink }]}>Log harvest</Text>
         <View style={{ width: 44 }} />

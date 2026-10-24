@@ -20,6 +20,7 @@ import { fonts } from '@/theme/tokens';
 import { useColors, type Palette } from '@/theme/theme';
 import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
+import { Glyph } from '@/components/Glyph';
 
 const canUseCamera = Platform.OS === 'ios' || Platform.OS === 'android';
 const today = () => new Date().toDateString();
@@ -151,7 +152,7 @@ export default function DoctorScreen() {
     <ScrollView ref={scroll} style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
 

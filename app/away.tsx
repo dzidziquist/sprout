@@ -13,6 +13,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { useSheetTop } from '@/lib/sheetTop';
+import { Glyph } from '@/components/Glyph';
 
 // Every day for the first week, then the usual longer trips.
 const LEAVE = [0, 1, 2, 3, 4, 5, 6, 7].map((n) => ({ id: String(n), label: n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === 7 ? 'In a week' : `In ${n} days` }));
@@ -75,7 +76,7 @@ export default function AwayScreen() {
     <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
 

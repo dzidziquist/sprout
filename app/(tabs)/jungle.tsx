@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { memo, useDeferredValue, useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDay } from '@/hooks/useDay';
 import { useTabPadding } from '@/hooks/useTabPadding';
@@ -51,7 +51,7 @@ function statusOf(plant: Plant, faded: boolean | undefined, c: Palette, now: Dat
   return { text: nextCheckWords(plant, now), bg: mood === 'snoozing' ? c.lavender : c.mint };
 }
 
-function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
+const PlantCard = memo(function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
   const c = useColors();
   const faces = usePlantStore((s) => s.profile.faces);
   const away = !!activeTrip(usePlantStore((s) => s.profile.trips), new Date());
@@ -86,10 +86,10 @@ function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
       </Sticker>
     </PlantMenu>
   );
-}
+});
 
 /** Compact ~64pt row for collectors: buddy thumb, name, species · room, and the next check. */
-function PlantRow({ plant, faded }: { plant: Plant; faded?: boolean }) {
+const PlantRow = memo(function PlantRow({ plant, faded }: { plant: Plant; faded?: boolean }) {
   const c = useColors();
   const faces = usePlantStore((s) => s.profile.faces);
   const away = !!activeTrip(usePlantStore((s) => s.profile.trips), new Date());
@@ -117,7 +117,7 @@ function PlantRow({ plant, faded }: { plant: Plant; faded?: boolean }) {
       </View>
     </PlantMenu>
   );
-}
+});
 
 const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
@@ -129,24 +129,18 @@ function matches(p: Plant, words: string[]) {
   return words.every((w) => hay.includes(w));
 }
 
-function PlantCollection({ plants, view, faded }: { plants: Plant[]; view: JungleView; faded?: boolean }) {
-  return view === 'list' ? (
-    <View style={{ gap: 8 }}>
-      {plants.map((p) => (
-        <PlantRow key={p.id} plant={p} faded={faded} />
-      ))}
-    </View>
-  ) : (
-    <View style={styles.grid}>
-      {plants.map((p) => (
-        // The cell owns the width: on iOS the context-menu wrapper is a native view that would
-        // otherwise stretch to the full row and stack the cards in one column.
-        <View key={p.id} style={styles.card}>
-          <PlantCard plant={p} faded={faded} />
-        </View>
-      ))}
-    </View>
-  );
+/** One line of the jungle list: plants (one row, or two cards in the grid), or a heading between groups. */
+type Line =
+  | { key: string; kind: 'plants'; plants: Plant[]; faded?: boolean }
+  | { key: string; kind: 'label'; text: string; muted?: boolean }
+  | { key: string; kind: 'memory' };
+
+/** Plants as list lines: one per row, or in pairs for the two-column grid. */
+function linesOf(plants: Plant[], view: JungleView, prefix: string, faded?: boolean): Line[] {
+  const size = view === 'list' ? 1 : 2;
+  const out: Line[] = [];
+  for (let i = 0; i < plants.length; i += size) out.push({ key: `${prefix}${plants[i].id}`, kind: 'plants', plants: plants.slice(i, i + size), faded });
+  return out;
 }
 
 export default function JungleScreen() {
@@ -157,7 +151,7 @@ export default function JungleScreen() {
   const [showMemory, setShowMemory] = useState(false);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
-  const living = plants.filter((p) => !p.archivedAt);
+  const living = useMemo(() => plants.filter((p) => !p.archivedAt), [plants]);
   // Saved with the other settings, so the layout survives closing the app.
   const saved = usePlantStore((s) => s.profile.jungleView);
   const setProfile = usePlantStore((s) => s.setProfile);
@@ -167,10 +161,10 @@ export default function JungleScreen() {
   // Re-renders at midnight so moods and "due" badges catch up.
   useDay();
   const now = new Date();
-  const potted = living.filter((p) => !p.rooting);
-  const rooting = living.filter((p) => p.rooting);
-  const memory = plants.filter((p) => p.archivedAt);
-  const edibles = potted.filter((p) => speciesOf(p).edible);
+  const potted = useMemo(() => living.filter((p) => !p.rooting), [living]);
+  const rooting = useMemo(() => living.filter((p) => p.rooting), [living]);
+  const memory = useMemo(() => plants.filter((p) => p.archivedAt), [plants]);
+  const edibles = useMemo(() => potted.filter((p) => speciesOf(p).edible), [potted]);
   const roomList = useMemo(
     () => [...new Set(living.map((p) => p.room?.trim()).filter((r): r is string => !!r))].sort((a, b) => a.localeCompare(b)),
     [living],
@@ -187,7 +181,9 @@ export default function JungleScreen() {
     ...roomList.map((r) => ({ key: `room:${r}`, label: r, count: living.filter((p) => p.room?.trim() === r).length })),
   ];
   const active = showTools && chips.some((ch) => ch.key === filter) ? filter : 'all';
-  const words = showTools ? norm(query).split(/\s+/).filter(Boolean) : [];
+  // Typing stays quick on a big jungle: the list catches up a moment after the keystroke.
+  const search = useDeferredValue(query);
+  const words = showTools ? norm(search).split(/\s+/).filter(Boolean) : [];
   const chipOk = (p: Plant) => {
     if (active === 'all') return true;
     if (active === 'due') return !p.rooting && !p.archivedAt && isDue(p, now);
@@ -205,8 +201,21 @@ export default function JungleScreen() {
   const nothing = filtering && shownPotted.length + (view === 'light' ? 0 : shownRooting.length) === 0;
   const activeLabel = chips.find((ch) => ch.key === active)?.label;
 
-  return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.bg }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior} contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}>
+  // Everything below the controls is one virtualized list, so a big jungle only draws what's on screen.
+  const lines: Line[] = [];
+  const listed = living.length > 0 && !nothing && view !== 'light';
+  if (listed) {
+    lines.push(...linesOf(shownPotted, view, 'p'));
+    if (shownRooting.length) lines.push({ key: 'rooting', kind: 'label', text: 'Rooting babies' }, ...linesOf(shownRooting, view, 'r'));
+    if (!filtering) lines.push({ key: 'tip', kind: 'label', text: 'Tip: press and hold a plant for quick actions.', muted: true });
+  }
+  if (view !== 'light' && shownMemory.length) {
+    lines.push({ key: 'memory', kind: 'memory' });
+    if (showMemory) lines.push({ key: 'memoryNote', kind: 'label', text: 'Gifted cuttings and plants that taught you something. They stay in Offshoots too.', muted: true }, ...linesOf(shownMemory, view, 'm', true));
+  }
+
+  const header = (
+    <View style={styles.header}>
       <View style={styles.toolbar}>
         <View style={{ flex: 1 }}>
           <Title>My jungle</Title>
@@ -280,55 +289,73 @@ export default function JungleScreen() {
             style={{ alignSelf: 'center', paddingHorizontal: 18 }}
           />
         </Sticker>
-      ) : (
-        <>
-          {filtering && (
-            <Label muted>
-              Showing {shownPotted.length + shownRooting.length} of {living.length}
-            </Label>
-          )}
-          {shownPotted.length > 0 && (view === 'light' ? <LightRooms plants={shownPotted} /> : <PlantCollection plants={shownPotted} view={view} />)}
-          {view !== 'light' && shownRooting.length > 0 && (
-            <View style={{ gap: 10 }}>
-              <Label>Rooting babies</Label>
-              <PlantCollection plants={shownRooting} view={view} />
-            </View>
-          )}
-          {!filtering && view !== 'light' && <Label muted style={{ textAlign: 'center' }}>Tip: press and hold a plant for quick actions.</Label>}
-        </>
+      ) : null}
+      {living.length > 0 && !nothing && filtering && (
+        <Label muted>
+          Showing {shownPotted.length + shownRooting.length} of {living.length}
+        </Label>
       )}
+      {living.length > 0 && !nothing && view === 'light' && shownPotted.length > 0 && <LightRooms plants={shownPotted} />}
+    </View>
+  );
 
-      {view !== 'light' && shownMemory.length > 0 && (
-        <View style={{ gap: 10 }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ expanded: showMemory }}
-            accessibilityLabel={`In memory, ${shownMemory.length} ${shownMemory.length === 1 ? 'plant' : 'plants'}`}
-            onPress={() => {
-              haptics.tap();
-              setShowMemory((v) => !v);
-            }}
-            style={[styles.memoryHead, { borderColor: c.line, backgroundColor: c.cloud }]}
-          >
-            <Text style={[styles.memoryText, { color: c.ink }]}>In memory ({shownMemory.length})</Text>
-            <Svg width={18} height={18} viewBox="0 0 24 24" style={{ transform: [{ rotate: showMemory ? '180deg' : '0deg' }] }}>
-              <Path d="m6 9 6 6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </Svg>
-          </Pressable>
-          {showMemory && (
-            <>
-              <Label muted>Gifted cuttings and plants that taught you something. They stay in Offshoots too.</Label>
-              <PlantCollection plants={shownMemory} view={view} faded />
-            </>
-          )}
-        </View>
-      )}
-    </ScrollView>
+  return (
+    <FlatList
+      data={lines}
+      keyExtractor={(l) => l.key}
+      ListHeaderComponent={header}
+      renderItem={({ item }) => {
+        if (item.kind === 'label') return <Label muted={item.muted} style={[styles.line, item.muted && item.key === 'tip' && { textAlign: 'center' }]}>{item.text}</Label>;
+        if (item.kind === 'memory')
+          return (
+            <View style={styles.line}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded: showMemory }}
+                accessibilityLabel={`In memory, ${shownMemory.length} ${shownMemory.length === 1 ? 'plant' : 'plants'}`}
+                onPress={() => {
+                  haptics.tap();
+                  setShowMemory((v) => !v);
+                }}
+                style={[styles.memoryHead, { borderColor: c.line, backgroundColor: c.cloud }]}
+              >
+                <Text style={[styles.memoryText, { color: c.ink }]}>In memory ({shownMemory.length})</Text>
+                <Svg width={18} height={18} viewBox="0 0 24 24" style={{ transform: [{ rotate: showMemory ? '180deg' : '0deg' }] }}>
+                  <Path d="m6 9 6 6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </Svg>
+              </Pressable>
+            </View>
+          );
+        if (view === 'list') return <View style={styles.rowLine}><PlantRow plant={item.plants[0]} faded={item.faded} /></View>;
+        return (
+          <View style={[styles.grid, styles.gridLine]}>
+            {item.plants.map((p) => (
+              // The cell owns the width: on iOS the context-menu wrapper is a native view that would
+              // otherwise stretch to the full row and stack the cards in one column.
+              <View key={p.id} style={styles.card}>
+                <PlantCard plant={p} faded={item.faded} />
+              </View>
+            ))}
+          </View>
+        );
+      }}
+      initialNumToRender={10}
+      windowSize={7}
+      style={{ flex: 1, backgroundColor: c.bg }}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+      contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior}
+      contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: 20, gap: 16 },
+  page: { paddingHorizontal: 20 },
+  header: { gap: 16, marginBottom: 16 },
+  line: { marginBottom: 12 },
+  rowLine: { marginBottom: 8 },
+  gridLine: { marginBottom: 12 },
   toolbar: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, minHeight: 44 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   card: { width: '47.5%', flexGrow: 0 },

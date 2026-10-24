@@ -1,13 +1,13 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker, Title } from '@/components/ui';
 import { fonts } from '@/theme/tokens';
 import { useColors, type Palette } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 type Tint = keyof Pick<Palette, 'mint' | 'butter' | 'peach' | 'ice' | 'lavender' | 'blush' | 'cloud'>;
 
@@ -78,7 +78,7 @@ export default function HelpScreen() {
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 32 }]}>
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-          <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+          <Glyph name="back" size={18} color={c.ink} width={2.6} />
         </GlassButton>
       </View>
       <Title>How PlantFam works</Title>

@@ -9,11 +9,11 @@ import { BADGE_ART } from '@/data/art';
 import { BADGE_ICON, badgeFill } from '@/components/BadgeSticker';
 import { GlassButton } from '@/components/GlassButton';
 import { Button } from '@/components/ui';
-import { Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
+import { Glyph } from '@/components/Glyph';
 
 const SIZE = 220;
 /** Degrees of turn per pixel dragged. */
@@ -101,7 +101,7 @@ export default function BadgeScreen() {
     <View style={[styles.page, { backgroundColor: c.bg, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 24 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
 
