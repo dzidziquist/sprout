@@ -7,9 +7,11 @@ import {
   formatTotals,
   harvestStats,
   isFirstHarvest,
+  isTicked,
   nextStage,
   tasksFor,
   weatherAlerts,
+  withTickedSupport,
   type DailyForecast,
 } from './growPatch';
 import { CALENDAR, EDIBLES } from '../data/edibles';
@@ -287,6 +289,23 @@ describe('stages and support', () => {
     const after = tasksFor([tom], 'seattle', new Date(2026, 9, 5), [{ id: 's', plantId: tom.id, type: 'staked', at: '2026-10-01T09:00:00' }]);
     expect(after.map((t) => t.id)).not.toContain('stage-stake');
   });
+
+  it('keeps a ticked stake job on the list while the tick lasts, so it can be unticked', () => {
+    const tom = plant({ name: 'Tommy', speciesId: 'tomato', stage: 'growing' });
+    const cuke = plant({ name: 'Cuke', speciesId: 'cucumber', stage: 'flowering' });
+    const at = '2026-10-05T09:00:00.000Z';
+    const events: CareEvent[] = [
+      { id: 's1', plantId: tom.id, type: 'staked', at },
+      { id: 's2', plantId: cuke.id, type: 'staked', at },
+    ];
+    const now = new Date(2026, 9, 5, 12);
+    const shown = withTickedSupport(events, [tom, cuke], { 'stage-stake': at }, now);
+    // The stake ticked here is hidden (job stays, ticked); the trellis wasn't ticked, so it counts.
+    expect(shown.map((e) => e.id)).toEqual(['s2']);
+    expect(tasksFor([tom, cuke], 'seattle', now, shown).map((t) => t.id)).toContain('stage-stake');
+    // Next month the tick has lapsed: the stake is logged and the job is gone.
+    expect(withTickedSupport(events, [tom, cuke], { 'stage-stake': at }, new Date(2026, 10, 2))).toEqual(events);
+  });
 });
 
 describe('the wider edible patch', () => {
@@ -413,3 +432,31 @@ describe('harvestStats', () => {
     expect(formatTotals(undefined)).toBeUndefined();
   });
 });
+
+describe('isTicked', () => {
+  const at = (iso: string) => new Date(iso);
+  it('keeps a repeating job ticked for its window, then brings it back', () => {
+    const shake = { id: 'stage-pollinate', repeatDays: 3 };
+    const ticks = { 'stage-pollinate': '2026-07-10T18:00:00' };
+    expect(isTicked(shake, ticks, at('2026-07-10T20:00:00'))).toBe(true);
+    expect(isTicked(shake, ticks, at('2026-07-12T09:00:00'))).toBe(true);
+    expect(isTicked(shake, ticks, at('2026-07-13T09:00:00'))).toBe(false);
+  });
+  it('keeps a daily job ticked only for that day', () => {
+    const daily = { id: 'sea-water-daily', repeatDays: 1 };
+    const ticks = { 'sea-water-daily': '2026-07-10T23:30:00' };
+    expect(isTicked(daily, ticks, at('2026-07-10T23:59:00'))).toBe(true);
+    expect(isTicked(daily, ticks, at('2026-07-11T00:05:00'))).toBe(false);
+  });
+  it('keeps a one-off job ticked for the rest of the month', () => {
+    const once = { id: 'sea-harden' };
+    const ticks = { 'sea-harden': '2026-05-03T10:00:00' };
+    expect(isTicked(once, ticks, at('2026-05-31T22:00:00'))).toBe(true);
+    expect(isTicked(once, ticks, at('2026-06-01T08:00:00'))).toBe(false);
+    expect(isTicked(once, {}, at('2026-05-04T08:00:00'))).toBe(false);
+  });
+  it('gives the stage and calendar pollination jobs a repeat window', () => {
+    expect(CALENDAR.seattle.find((t) => t.id === 'sea-pollinate')?.repeatDays).toBe(3);
+  });
+});
+

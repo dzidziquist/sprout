@@ -7,7 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, skyOf, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
+import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, isTicked, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
 import { edibleGuide } from '@/data/edibles';
 import { speciesOf } from '@/data/species';
 import { useForecast } from '@/lib/weather';
@@ -269,9 +269,8 @@ export default function GrowPatch() {
   const events = usePlantStore((s) => s.events);
   const climate = usePlantStore((s) => s.profile.climate);
   const faces = usePlantStore((s) => s.profile.faces);
-  const [done, setDone] = useState<Set<string>>(new Set());
-  // Read once: ticking "Give it a stake" logs it, but the row stays (ticked) until the next visit.
-  const [eventsAtOpen] = useState(events);
+  const ticks = usePlantStore((s) => s.profile.growTicks);
+  const tickGrowTask = usePlantStore((s) => s.tickGrowTask);
   const setStaked = usePlantStore((s) => s.setStaked);
   const now = new Date();
 
@@ -279,22 +278,22 @@ export default function GrowPatch() {
   const forecast = useForecast(climate, edibles.length > 0);
   const units = useUnits();
   const alerts = useMemo(() => weatherAlerts(edibles, forecast, units), [edibles, forecast, units]);
+  // A ticked "Give it a stake" stays on the list (ticked) while its tick lasts, so a mis-tap can be unticked.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const tasks = useMemo(() => tasksFor(edibles, climate, new Date(), eventsAtOpen), [edibles, climate, eventsAtOpen]);
+  const tasks = useMemo(() => tasksFor(edibles, climate, new Date(), withTickedSupport(events, edibles, ticks ?? {}, new Date())), [edibles, climate, events, ticks]);
   const stats = useMemo(() => harvestStats(events, edibles), [events, edibles]);
   const basket = formatTotals(stats.totals);
 
   const back = () => (router.canGoBack() ? router.back() : router.replace('/'));
-  const toggle = (id: string) => {
+  // Ticks are saved: a repeating job ("every 2–3 days") comes back unticked after that, others next month.
+  const done = (t: GrowTask) => isTicked(t, ticks ?? {}, now);
+  const toggle = (t: GrowTask) => {
     haptics.tap();
-    const on = !done.has(id);
-    if (id === 'stage-stake' || id === 'stage-trellis') setStaked(tasks.find((t) => t.id === id)?.plantIds ?? [], on);
-    setDone((prev) => {
-      const next = new Set(prev);
-      if (on) next.add(id);
-      else next.delete(id);
-      return next;
-    });
+    const on = !done(t);
+    // One timestamp for both, so the staked events count as logged by this tick.
+    const at = new Date();
+    if (t.id === 'stage-stake' || t.id === 'stage-trellis') setStaked(t.plantIds, on, at);
+    tickGrowTask(t.id, on, at);
   };
 
   return (
@@ -336,7 +335,7 @@ export default function GrowPatch() {
               <Text style={[styles.section, { color: c.ink }]}>This month in {placeName(climate)}</Text>
               <Sticker drop={4} style={{ overflow: 'hidden' }}>
                 {tasks.map((t, i) => (
-                  <TaskRow key={t.id} task={t} done={done.has(t.id)} onToggle={() => toggle(t.id)} plants={edibles} c={c} last={i === tasks.length - 1} />
+                  <TaskRow key={t.id} task={t} done={done(t)} onToggle={() => toggle(t)} plants={edibles} c={c} last={i === tasks.length - 1} />
                 ))}
               </Sticker>
             </View>

@@ -731,6 +731,8 @@ export interface CalendarTask {
   stages?: EdibleStage[];
   /** Weather jobs (bring in, shelter, shade, slugs, rain): only for plants that live outside. */
   outdoorOnly?: boolean;
+  /** A job done again and again ("every 2–3 days"): ticking it off lasts this many days. Others last the month. */
+  repeatDays?: number;
 }
 
 const all = (from: number, to: number): TaskWindow[] => Array.from({ length: to - from + 1 }, (_, i) => ({ month: (from + i) % 12 }));
@@ -756,7 +758,7 @@ const ACC_ALL = [
 export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
   seattle: [
     { id: 'sea-plan', kind: 'care', title: 'Pick your seeds', body: 'Go early and small: cherries like Sungold, Sweet Million or Stupice (≤75 days).', species: ['tomato', ...PEPPERS], when: months(0, 1) },
-    { id: 'sea-overwinter-care', kind: 'care', title: 'Winter pepper check', body: 'Water about every 2 weeks, no feed. Peek under leaves for aphids.', species: ['pepper'], when: months(10, 11, 0, 1, 2) },
+    { id: 'sea-overwinter-care', repeatDays: 14, kind: 'care', title: 'Winter pepper check', body: 'Water about every 2 weeks, no feed. Peek under leaves for aphids.', species: ['pepper'], when: months(10, 11, 0, 1, 2) },
     { id: 'sea-sow-onion', kind: 'sow', title: 'Sow spring onions', body: 'They’re hardy. A pinch per spot, ½ cm deep, indoors or out.', species: ['spring-onion'], when: months(1, 2, 3) },
     { id: 'sea-sow-toms', kind: 'sow', title: 'Start seeds indoors', body: '6–8 weeks before mid-May. Peppers and eggplant want a heat mat at 27–32°C.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', 'cape-gooseberry'], when: [{ month: 2, from: 15 }, { month: 3, to: 7 }] },
     { id: 'sea-mint-wake', kind: 'care', title: 'Wake up the mint', body: 'Cut last year’s stems, top up the pot, or split a crowded clump.', species: ['mint'], when: months(2, 3) },
@@ -768,8 +770,8 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-plant-peps', kind: 'plant', title: 'Peppers out', body: 'Late May or June, when nights stay above 10°C. A cloche helps.', species: [...PEPPERS], when: [{ month: 4, from: 25 }, { month: 5 }] },
     { id: 'sea-basil-out', kind: 'plant', title: 'Basil outside', body: 'Only once nights are reliably warm. Otherwise the sunniest window.', species: ['basil'], when: months(5) },
     { id: 'sea-feed-start', kind: 'feed', title: 'Start feeding', body: 'Balanced feed while they grow. Switch to high-potash once fruit swells.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', ...VINES], when: [{ month: 4, from: 10 }, { month: 5 }] },
-    { id: 'sea-pollinate', kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz flower trusses at midday every 2–3 days. Balconies lack bees.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: months(5, 6, 7) },
-    { id: 'sea-water-daily', kind: 'care', title: 'Check pots daily', body: 'Dry summer: a sunny 5-gal pot can drink every day. Keep it even.', species: ['tomato', ...PEPPERS, 'basil', 'mint', 'eggplant', ...VINES, ...BEANS, 'strawberry', 'blueberry', 'lettuce'], when: months(6, 7) },
+    { id: 'sea-pollinate', repeatDays: 3, kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz flower trusses at midday every 2–3 days. Balconies lack bees.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: months(5, 6, 7) },
+    { id: 'sea-water-daily', repeatDays: 1, kind: 'care', title: 'Check pots daily', body: 'Dry summer: a sunny 5-gal pot can drink every day. Keep it even.', species: ['tomato', ...PEPPERS, 'basil', 'mint', 'eggplant', ...VINES, ...BEANS, 'strawberry', 'blueberry', 'lettuce'], when: months(6, 7) },
     { id: 'sea-basil-pinch', kind: 'harvest', title: 'Pinch basil flowers', body: 'Pick from the top and nip flower spikes so it stays leafy.', species: ['basil'], when: months(6, 7, 8) },
     { id: 'sea-sow-onion-fall', kind: 'sow', title: 'Sow onions for autumn', body: 'A July–August sowing gives snips through autumn and spring.', species: ['spring-onion'], when: months(6, 7) },
     { id: 'sea-feed-stop', kind: 'feed', title: 'Stop feeding', body: 'Mid-August is the cut-off for balcony edibles. Ripening time now.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: [{ month: 7, from: 10, to: 25 }] },
@@ -788,8 +790,8 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-slugs', outdoorOnly: true, kind: 'protect', title: 'Slug patrol', body: 'Damp nights bring slugs. Check pot rims and leaf undersides after dark; copper tape helps.', species: [...SALAD, 'kale', 'chard', ...BEANS, 'pea', ...VINES, 'strawberry', 'basil', 'microgreens'], when: months(2, 3, 4, 8, 9, 10) },
 
     // Salad and leafy greens.
-    { id: 'sea-lettuce-succession', kind: 'sow', title: 'Sow more lettuce', body: 'A short row every 2–3 weeks keeps salad coming. In July–Aug, sow in shade.', species: ['lettuce'], when: all(2, 8) },
-    { id: 'sea-sow-greens', kind: 'sow', title: 'Sow quick greens', body: 'Spinach, rocket, bok choy and mustard love cool weather. Sow every few weeks.', species: ['spinach', 'arugula', 'bok-choy', 'mustard-greens'], when: [{ month: 2 }, { month: 3 }, { month: 4, to: 15 }] },
+    { id: 'sea-lettuce-succession', repeatDays: 14, kind: 'sow', title: 'Sow more lettuce', body: 'A short row every 2–3 weeks keeps salad coming. In July–Aug, sow in shade.', species: ['lettuce'], when: all(2, 8) },
+    { id: 'sea-sow-greens', repeatDays: 21, kind: 'sow', title: 'Sow quick greens', body: 'Spinach, rocket, bok choy and mustard love cool weather. Sow every few weeks.', species: ['spinach', 'arugula', 'bok-choy', 'mustard-greens'], when: [{ month: 2 }, { month: 3 }, { month: 4, to: 15 }] },
     { id: 'sea-sow-greens-fall', kind: 'sow', title: 'Sow winter greens', body: 'Late-summer sowings of spinach, rocket and mustard crop into winter.', species: ['spinach', 'arugula', 'bok-choy', 'mustard-greens'], when: [{ month: 7, from: 10 }, { month: 8 }] },
     { id: 'sea-greens-shade', kind: 'care', title: 'Shade the salad', body: 'Heat and long days make greens bolt. Move them to afternoon shade and keep them moist.', species: [...SALAD, 'cilantro'], when: months(6, 7) },
     { id: 'sea-sow-kale', kind: 'sow', title: 'Sow kale and chard', body: 'Sow in spring for summer leaves. A July sowing gives picking all winter.', species: ['kale', 'chard'], when: [{ month: 2, from: 15 }, { month: 3 }, { month: 6 }] },
@@ -799,11 +801,11 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
 
     // Peas and beans.
     { id: 'sea-sow-peas', kind: 'sow', title: 'Sow peas', body: 'Peas love cool soil. Put the netting up first, then sow 3 cm deep.', species: ['pea'], when: [{ month: 1, from: 15 }, { month: 2 }, { month: 3 }] },
-    { id: 'sea-pick-peas', kind: 'harvest', title: 'Pick peas often', body: 'Pick pods young, every couple of days, and the vines keep flowering.', species: ['pea'], when: months(5, 6) },
+    { id: 'sea-pick-peas', repeatDays: 2, kind: 'harvest', title: 'Pick peas often', body: 'Pick pods young, every couple of days, and the vines keep flowering.', species: ['pea'], when: months(5, 6) },
     { id: 'sea-sow-peas-fall', kind: 'sow', title: 'Peas for autumn', body: 'A mid-July sowing gives a modest autumn crop (WSU).', species: ['pea'], when: [{ month: 6, to: 25 }] },
     { id: 'sea-sow-beans', kind: 'sow', title: 'Sow beans', body: 'Wait for warm soil, about late May. Cold, wet soil rots bean seed.', species: BEANS, when: [{ month: 4, from: 20 }, { month: 5 }] },
     { id: 'sea-sow-beans-late', kind: 'sow', title: 'Last bean sowing', body: 'Bush beans sown by late July still crop before autumn. Runners by July 1.', species: BEANS, when: [{ month: 6 }] },
-    { id: 'sea-pick-beans', kind: 'harvest', title: 'Pick beans young', body: 'Every 2–3 days, pencil-thick and snappy. Missed pods stop the plant.', species: BEANS, when: months(6, 7, 8) },
+    { id: 'sea-pick-beans', repeatDays: 3, kind: 'harvest', title: 'Pick beans young', body: 'Every 2–3 days, pencil-thick and snappy. Missed pods stop the plant.', species: BEANS, when: months(6, 7, 8) },
     { id: 'sea-sow-fava', kind: 'sow', title: 'Sow fava beans', body: 'A November sowing overwinters and crops in June (WSU).', species: ['fava-bean'], when: [{ month: 9, from: 20 }, { month: 10 }] },
     { id: 'sea-sow-fava-spring', kind: 'sow', title: 'Sow fava beans', body: 'Missed autumn? A late-winter sowing crops by midsummer.', species: ['fava-bean'], when: [{ month: 1, from: 10 }, { month: 2 }] },
     { id: 'sea-fava-tips', kind: 'care', title: 'Pinch fava tips', body: 'Once the first pods set, pinch the tips: it deters blackfly. Cook the tips!', species: ['fava-bean'], when: months(4, 5) },
@@ -812,7 +814,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-sow-vines', kind: 'sow', title: 'Start cukes and zukes', body: 'Sow indoors, one seed per small pot, at 20°C+. They hate root disturbance.', species: VINES, when: [{ month: 3, from: 20 }, { month: 4, to: 20 }] },
     { id: 'sea-plant-vines', kind: 'plant', title: 'Cukes and zukes out', body: 'Once nights stay above 10°C (late May–June). One zucchini per 15+ gal pot.', species: VINES, when: [{ month: 4, from: 20 }, { month: 5, to: 20 }] },
     { id: 'sea-pollinate-vines', kind: 'care', title: 'Hand-pollinate', body: 'Few bees on balconies. In the morning, dab a male flower’s pollen into the female.', species: VINES, when: months(6, 7) },
-    { id: 'sea-pick-vines', kind: 'harvest', title: 'Pick small, daily', body: 'Zucchini at 15–20 cm, cucumbers before they yellow. Check every day.', species: VINES, when: [{ month: 6, from: 10 }, { month: 7 }, { month: 8 }] },
+    { id: 'sea-pick-vines', repeatDays: 1, kind: 'harvest', title: 'Pick small, daily', body: 'Zucchini at 15–20 cm, cucumbers before they yellow. Check every day.', species: VINES, when: [{ month: 6, from: 10 }, { month: 7 }, { month: 8 }] },
     { id: 'sea-mildew', kind: 'protect', title: 'Mildew watch', body: 'White dust on leaves in late summer. Remove the worst and water the soil, not leaves.', species: [...VINES, 'pea'], when: months(7, 8) },
 
     // Eggplant and friends.
@@ -820,7 +822,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'sea-physalis-pick', kind: 'harvest', title: 'Pick cape gooseberries', body: 'Ripe when the husk is tan and papery. They keep for weeks in the husk.', species: ['cape-gooseberry'], when: months(8, 9) },
 
     // Roots.
-    { id: 'sea-sow-roots', kind: 'sow', title: 'Sow roots in place', body: 'Carrots and radishes go straight in the pot. Sow a pinch every 3 weeks.', species: ROOTS, when: all(2, 6) },
+    { id: 'sea-sow-roots', repeatDays: 21, kind: 'sow', title: 'Sow roots in place', body: 'Carrots and radishes go straight in the pot. Sow a pinch every 3 weeks.', species: ROOTS, when: all(2, 6) },
     { id: 'sea-thin-roots', kind: 'care', title: 'Thin seedlings', body: 'Thin carrots to 5 cm and radishes to 3 cm, or the roots stay tiny.', species: ROOTS, when: months(3, 4, 5) },
     { id: 'sea-sow-radish-fall', kind: 'sow', title: 'Autumn radishes', body: 'Quick radishes sown until mid-September still size up before winter.', species: ['radish'], when: [{ month: 7 }, { month: 8, to: 15 }] },
 
@@ -847,7 +849,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
 
     // Herbs.
     { id: 'sea-sow-herbs', kind: 'sow', title: 'Sow parsley and dill', body: 'Soak parsley seed overnight: it’s slow. Dill and cilantro go straight in the pot.', species: ['parsley', 'dill', 'cilantro'], when: [{ month: 2, from: 15 }, { month: 3 }, { month: 4 }] },
-    { id: 'sea-cilantro-succession', kind: 'sow', title: 'Sow more cilantro', body: 'It bolts fast in summer. A small sowing every 3 weeks keeps leaves coming.', species: ['cilantro', 'dill'], when: all(4, 8) },
+    { id: 'sea-cilantro-succession', repeatDays: 21, kind: 'sow', title: 'Sow more cilantro', body: 'It bolts fast in summer. A small sowing every 3 weeks keeps leaves coming.', species: ['cilantro', 'dill'], when: all(4, 8) },
     { id: 'sea-sow-parsley-fall', kind: 'sow', title: 'Parsley for winter', body: 'An early-July sowing gives leaves in autumn and again in spring.', species: ['parsley'], when: [{ month: 6, to: 15 }] },
     { id: 'sea-herbs-wake', kind: 'care', title: 'Wake the perennials', body: 'Cut dead stems back to new shoots and give a light feed.', species: ['chives', 'oregano', 'lemon-balm', 'thyme', 'tarragon', 'sage'], when: months(2, 3) },
     { id: 'sea-herbs-trim', kind: 'care', title: 'Trim after flowers', body: 'Shear woody herbs lightly once flowers fade. Never cut into bare old wood.', species: ['rosemary', 'thyme', 'sage', 'oregano', 'lavender', 'lemon-balm'], when: months(6, 7) },
@@ -876,7 +878,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
    * so the wording stays gentle.
    */
   accra: [
-    { id: 'acc-harmattan-water', kind: 'care', title: 'Harmattan watering', body: 'Dry winds empty pots fast. Check daily and mulch the top.', species: ACC_ALL, when: [{ month: 11 }, { month: 0 }, { month: 1 }] },
+    { id: 'acc-harmattan-water', repeatDays: 1, kind: 'care', title: 'Harmattan watering', body: 'Dry winds empty pots fast. Check daily and mulch the top.', species: ACC_ALL, when: [{ month: 11 }, { month: 0 }, { month: 1 }] },
     { id: 'acc-mites', kind: 'protect', title: 'Spider mite check', body: 'Dry air brings mites. Look under leaves for speckles and fine webbing.', species: ['tomato', ...PEPPERS, 'basil', 'eggplant', 'garden-egg', 'okra', ...VINES, ...BEANS, 'strawberry', 'meyer-lemon'], when: months(11, 0, 1, 2) },
     { id: 'acc-tomato-prime', kind: 'harvest', title: 'Tomato picking time', body: 'Cooler, drier weeks are when tomatoes set best. Pick them fully coloured.', species: ['tomato'], when: months(0, 1) },
     { id: 'acc-shade', outdoorOnly: true, kind: 'protect', title: 'Afternoon shade', body: 'Days over 32°C drop tomato flowers. Shade from about 1–4 pm and water evenly.', species: ['tomato', 'mint'], when: months(1, 2, 3) },
@@ -886,18 +888,18 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'acc-gnats', kind: 'care', title: 'Gnat and rot watch', body: 'Pots stay wet in the rains. Let the top dry before watering again.', species: ['basil', 'mint', 'spring-onion', 'scent-leaf', 'parsley', 'cilantro', 'chives', 'microgreens'], when: months(4, 5, 9) },
     { id: 'acc-sow-onion', kind: 'sow', title: 'Sow spring onions', body: 'They grow all year here. Shade the seed tray in the hottest weeks.', species: ['spring-onion'], when: months(5, 6, 10) },
     { id: 'acc-sow-pepper', kind: 'sow', title: 'Sow peppers', body: 'Nursery tray now, move to pots at 4–6 true leaves (6–8 weeks).', species: [...PEPPERS], when: months(3, 7) },
-    { id: 'acc-cool-set', kind: 'care', title: 'Little dry season', body: 'The coolest weeks of the year: great for fruit set. Shake flowers at midday.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: [{ month: 6, from: 15 }, { month: 7 }] },
+    { id: 'acc-cool-set', repeatDays: 3, kind: 'care', title: 'Little dry season', body: 'The coolest weeks of the year: great for fruit set. Shake flowers at midday.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg'], when: [{ month: 6, from: 15 }, { month: 7 }] },
     { id: 'acc-whitefly', kind: 'protect', title: 'Whitefly watch', body: 'They spread leaf curl virus. Yellow sticky traps, and check leaf undersides.', species: ['tomato', ...PEPPERS, 'eggplant', 'garden-egg', 'okra', 'sweet-potato'], when: months(8, 9) },
     { id: 'acc-sow-toms', kind: 'sow', title: 'Sow tomatoes', body: 'Start a nursery tray now so fruit lands in the cooler Jan–Feb weeks.', species: ['tomato'], when: [{ month: 9, from: 15 }, { month: 10 }] },
     { id: 'acc-plant-toms', kind: 'plant', title: 'Move tomato seedlings', body: 'Pot on at 4–6 true leaves, deep, into 5 gal pots with fresh mix.', species: ['tomato'], when: [{ month: 10, from: 15 }, { month: 11 }] },
-    { id: 'acc-basil-pinch', kind: 'harvest', title: 'Pinch basil weekly', body: 'Warm all year means flowers come fast. Pick tops and nip flower spikes.', species: ['basil', 'scent-leaf'], when: all(0, 11) },
+    { id: 'acc-basil-pinch', repeatDays: 7, kind: 'harvest', title: 'Pinch basil weekly', body: 'Warm all year means flowers come fast. Pick tops and nip flower spikes.', species: ['basil', 'scent-leaf'], when: all(0, 11) },
 
     // Local greens and staples with the rains.
     { id: 'acc-sow-local-greens', kind: 'sow', title: 'Sow local greens', body: 'Ayoyo and aleefu love the rains. Sow now and pick young leaves in 4–6 weeks.', species: ['ayoyo', 'amaranth'], when: months(3, 4, 8, 9) },
     { id: 'acc-plant-cocoyam', kind: 'plant', title: 'Plant cocoyam', body: 'Set a sprouting corm in a big pot as the rains start. Kontomire leaves in ~3 months.', species: ['kontomire'], when: months(3, 4) },
     { id: 'acc-pick-kontomire', kind: 'harvest', title: 'Pick kontomire', body: 'Take young leaves for stew, a few at a time, and always cook them well.', species: ['kontomire'], when: all(5, 9) },
     { id: 'acc-sow-okro', kind: 'sow', title: 'Sow okro', body: 'Soak seed overnight and sow two per pot with the rains. Pods in about two months.', species: ['okra'], when: months(3, 4, 8) },
-    { id: 'acc-pick-okro', kind: 'harvest', title: 'Pick okro young', body: 'Finger-length pods, every two days, before they turn woody.', species: ['okra'], when: months(5, 6, 7, 10, 11) },
+    { id: 'acc-pick-okro', repeatDays: 2, kind: 'harvest', title: 'Pick okro young', body: 'Finger-length pods, every two days, before they turn woody.', species: ['okra'], when: months(5, 6, 7, 10, 11) },
     { id: 'acc-sow-garden-egg', kind: 'sow', title: 'Sow garden eggs', body: 'Nursery tray now, pot on after 5–6 weeks. Fruit in about 3 months and for months after.', species: ['garden-egg', 'eggplant'], when: months(3, 8) },
     { id: 'acc-sow-roselle', kind: 'sow', title: 'Sow roselle', body: 'Sow with the rains; the red calyces for sobolo come as days shorten, around Oct–Dec.', species: ['roselle'], when: months(4, 5) },
     { id: 'acc-pick-roselle', kind: 'harvest', title: 'Pick sobolo calyces', body: 'Pick plump red calyces about 10 days after the flowers, then dry them in the shade.', species: ['roselle'], when: months(9, 10, 11) },
@@ -912,7 +914,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     { id: 'acc-sow-roots', kind: 'sow', title: 'Sow carrots and radish', body: 'The cooler, drier months suit roots. Sow straight into a deep pot and keep it damp.', species: ROOTS, when: months(9, 10, 11, 0) },
     { id: 'acc-sow-vines', kind: 'sow', title: 'Sow cucumbers', body: 'Drier months mean less mildew. Big pots, a trellis, and water at the base.', species: VINES, when: months(9, 10, 1, 2) },
     { id: 'acc-plant-garlic', kind: 'plant', title: 'Plant garlic', body: 'Worth a try in the cool dry season. Chill cloves in the fridge for a few weeks first.', species: ['garlic'], when: months(10, 11) },
-    { id: 'acc-sow-herbs', kind: 'sow', title: 'Sow cilantro and dill', body: 'They bolt in the heat; the harmattan months suit them best. Sow every 3 weeks.', species: ['cilantro', 'dill', 'parsley', 'chives'], when: months(10, 11, 0) },
+    { id: 'acc-sow-herbs', repeatDays: 21, kind: 'sow', title: 'Sow cilantro and dill', body: 'They bolt in the heat; the harmattan months suit them best. Sow every 3 weeks.', species: ['cilantro', 'dill', 'parsley', 'chives'], when: months(10, 11, 0) },
     { id: 'acc-herb-shade', outdoorOnly: true, kind: 'protect', title: 'Shade soft herbs', body: 'Cilantro, parsley, dill and lettuce bolt in the heat. Morning sun only.', species: ['cilantro', 'parsley', 'dill', 'lettuce', 'lemon-balm'], when: months(1, 2, 3) },
     { id: 'acc-dry-herbs', outdoorOnly: true, kind: 'protect', title: 'Keep herbs dry-footed', body: 'Rosemary, thyme and lavender hate wet roots. Shelter them from downpours.', species: [...MED_HERBS, 'bay-laurel'], when: months(4, 5, 9) },
     { id: 'acc-strawberry', kind: 'care', title: 'Strawberry season', body: 'Lowland heat is hard on strawberries. They do best now, with morning sun only.', species: ['strawberry'], when: months(10, 11, 0, 1) },
@@ -920,7 +922,7 @@ export const CALENDAR: Record<ClimateModel, CalendarTask[]> = {
     // Fruit.
     { id: 'acc-plant-pineapple', kind: 'plant', title: 'Plant a pineapple top', body: 'Twist off the top, strip the lower leaves, dry 2 days and plant shallow.', species: ['pineapple'], when: months(3, 4) },
     { id: 'acc-passion-train', kind: 'care', title: 'Train passion fruit', body: 'Tie new shoots onto the trellis. Fruit comes on this season’s growth.', species: ['passion-fruit'], when: months(3, 4, 8) },
-    { id: 'acc-passion-pick', kind: 'harvest', title: 'Gather passion fruit', body: 'Ripe fruit drops or starts to wrinkle. Check under the vine every day or two.', species: ['passion-fruit'], when: months(5, 6, 7, 10, 11) },
+    { id: 'acc-passion-pick', repeatDays: 2, kind: 'harvest', title: 'Gather passion fruit', body: 'Ripe fruit drops or starts to wrinkle. Check under the vine every day or two.', species: ['passion-fruit'], when: months(5, 6, 7, 10, 11) },
     { id: 'acc-lemon-feed', kind: 'feed', title: 'Feed the lemon', body: 'Citrus feed as the rains start. Lemons often flower after a dry spell.', species: ['meyer-lemon'], when: months(3, 8) },
   ],
 };

@@ -54,6 +54,8 @@ export interface Profile {
   streakFreezes: number;
   /** The "how to check soil" coach on Today was dismissed. */
   coachDismissed: boolean;
+  /** Grow patch jobs ticked off: task id → when. Old ticks are dropped as new ones come in. */
+  growTicks: Record<string, string>;
   /** When the user last saved a backup file. */
   lastBackupAt?: string;
   /** Temperatures and rain: 'auto' follows the climate (Seattle °F, Accra °C). */
@@ -76,6 +78,7 @@ export const DEFAULT_PROFILE: Profile = {
   supporter: false,
   streakFreezes: 2,
   coachDismissed: false,
+  growTicks: {},
   units: 'auto',
   idUsage: { day: '', count: 0 },
 };
@@ -155,6 +158,8 @@ interface PlantState {
   logDiagnosis: (plantId: string, note: string, tweak?: 'slow-water' | 'more-water', now?: Date) => void;
   /** Mark plants as staked (or trellised), or take the mark back off. */
   setStaked: (plantIds: string[], on: boolean, now?: Date) => void;
+  /** Tick a grow patch job off, or untick it. */
+  tickGrowTask: (taskId: string, on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
   removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
@@ -643,6 +648,14 @@ export const usePlantStore = create<PlantState>()(
         });
       },
 
+      tickGrowTask: (taskId, on, now = new Date()) => {
+        set((s) => {
+          // Nothing lasts longer than a month, so ticks older than two are dead weight.
+          const cutoff = now.getTime() - 62 * 86400000;
+          const kept = Object.fromEntries(Object.entries(s.profile.growTicks ?? {}).filter(([id, at]) => id !== taskId && new Date(at).getTime() > cutoff));
+          return { profile: { ...s.profile, growTicks: on ? { ...kept, [taskId]: now.toISOString() } : kept } };
+        });
+      },
       setStaked: (plantIds, on, now = new Date()) => {
         const ids = new Set(plantIds);
         set((s) => ({
