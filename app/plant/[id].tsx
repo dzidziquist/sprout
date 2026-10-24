@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 import { archiveFloor, canDeleteEvent, usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
@@ -34,6 +35,7 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { CareEvent, Plant } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 /** Watering can, for Log care. */
 const LOG_ICON = 'M4 10h11v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7zM15 12l5-4M15 10V8a3 3 0 0 0-6 0v2';
@@ -101,7 +103,7 @@ export default function PlantDetail() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { plants, events, profile, addPhoto, setArchivedAt, deleteEvent } = usePlantStore();
+  const { plants, events, profile, addPhoto, setArchivedAt, deleteEvent } = usePlantStore(useShallow((s) => ({ plants: s.plants, events: s.events, profile: s.profile, addPhoto: s.addPhoto, setArchivedAt: s.setArchivedAt, deleteEvent: s.deleteEvent })));
   const plant = plants.find((p) => p.id === id);
   const actions = usePlantActions(plant);
   const [showPhoto, setShowPhoto] = useState(true);
@@ -173,7 +175,7 @@ export default function PlantDetail() {
         <View style={[styles.hero, { backgroundColor: tint, paddingTop: insets.top + 8, borderColor: c.line }]}>
           <View style={styles.heroBar}>
             <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-              {toolbarIcon('m15 18-6-6 6-6')}
+              <Glyph name="back" size={18} color={c.ink} width={2.4} />
             </GlassButton>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               {plant.photoUri && (
@@ -372,7 +374,7 @@ export default function PlantDetail() {
           )}
           {species.tip && !plant.rooting && (
             <Sticker drop={0} bg={c.butter} style={{ padding: 12 }}>
-              <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
+              <Text style={[styles.rowVal, { color: textOn(c.butter, c), textAlign: 'left' }]}>{species.tip}</Text>
             </Sticker>
           )}
 

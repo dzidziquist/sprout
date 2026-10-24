@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Title } from '@/components/ui';
@@ -14,6 +13,7 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { CareEvent } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 const MAX = 12;
 
@@ -37,9 +37,7 @@ export default function TakeCuttingsScreen() {
 
   const close = (
     <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>
-      <Svg width={16} height={16} viewBox="0 0 24 24">
-        <Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" />
-      </Svg>
+      <Glyph name="close" size={16} color={c.ink} width={2.8} />
     </GlassButton>
   );
 

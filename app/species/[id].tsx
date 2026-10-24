@@ -23,6 +23,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { SpeciesId } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 const ASPCA_URL = 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants';
 
@@ -98,7 +99,7 @@ export default function SpeciesPage() {
           )}
           <View style={[styles.toolbar, { top: 16 }]}>
             <GlassButton accessibilityLabel="Close" onPress={close}>
-              <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+              <Glyph name="close" size={16} color={c.ink} width={2.8} />
             </GlassButton>
           </View>
         </View>
@@ -127,7 +128,7 @@ export default function SpeciesPage() {
           {known && (
             <Text style={[styles.small, { color: c.inkMuted }]}>
               Pet safety is our reading of the ASPCA list.{' '}
-              <Text accessibilityRole="link" onPress={() => Linking.openURL(ASPCA_URL)} style={{ color: c.leafDeep, textDecorationLine: 'underline' }}>
+              <Text accessibilityRole="link" onPress={() => Linking.openURL(ASPCA_URL)} style={{ color: c.link, textDecorationLine: 'underline' }}>
                 Check ASPCA ›
               </Text>
             </Text>
@@ -147,7 +148,7 @@ export default function SpeciesPage() {
               <Text style={[styles.text, { color: c.ink }]}>{wiki.extract}</Text>
               <View style={styles.row}>
                 <Text style={[styles.small, { color: c.inkMuted }]}>From Wikipedia</Text>
-                <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.link, { color: c.leafDeep }]}>Read more ›</Text>
+                <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.link, { color: c.link }]}>Read more ›</Text>
               </View>
             </View>
           )}

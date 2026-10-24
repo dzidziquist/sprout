@@ -21,6 +21,8 @@ export interface Palette {
   white: string;
   leaf: string;
   leafDeep: string;
+  /** Link and accent-coloured text: leafDeep is for fills and fails contrast as text, this passes 4.5:1. */
+  link: string;
   leafLight: string;
   sun: string;
   coral: string;
@@ -45,6 +47,7 @@ export interface Palette {
 const shared = {
   leaf: colors.leaf,
   leafDeep: colors.leafDeep,
+  link: '#11733F',
   leafLight: colors.leafLight,
   sun: colors.sun,
   coral: colors.coral,
@@ -83,6 +86,7 @@ export const dark: Palette = {
   ...shared,
   scheme: 'dark',
   bg: '#14141F',
+  link: '#22B864',
   card: '#1F1E30',
   line: '#D8D4F5',
   drop: '#000000',
@@ -106,12 +110,12 @@ export const dark: Palette = {
  * Accent colours: each swaps the leaf family (leaf, leafDeep, leafLight and the mint tint) so buttons,
  * highlights and heroes follow the person's pick. Status text (`good`) and plant art stay green.
  */
-export const ACCENTS: Record<Accent, { label: string; leaf: string; leafDeep: string; leafLight: string; mint: string; mintDark: string }> = {
-  leaf: { label: 'Leaf', leaf: colors.leaf, leafDeep: colors.leafDeep, leafLight: colors.leafLight, mint: colors.mint, mintDark: '#17372A' },
-  sky: { label: 'Sky', leaf: colors.sky, leafDeep: '#2E8FE0', leafLight: '#9ED4FF', mint: colors.ice, mintDark: '#1D3245' },
-  grape: { label: 'Grape', leaf: colors.grape, leafDeep: '#7C5CE6', leafLight: '#C9B8FF', mint: colors.lavender, mintDark: '#2D2648' },
-  coral: { label: 'Coral', leaf: colors.coral, leafDeep: '#E04A3A', leafLight: '#FFA197', mint: colors.peach, mintDark: '#46271F' },
-  bubblegum: { label: 'Bubblegum', leaf: colors.bubblegum, leafDeep: '#E8789A', leafLight: '#FFD1DD', mint: colors.blush, mintDark: '#45222E' },
+export const ACCENTS: Record<Accent, { label: string; leaf: string; leafDeep: string; leafLight: string; mint: string; mintDark: string; link: string; linkDark: string }> = {
+  leaf: { label: 'Leaf', leaf: colors.leaf, leafDeep: colors.leafDeep, leafLight: colors.leafLight, mint: colors.mint, mintDark: '#17372A', link: '#11733F', linkDark: '#22B864' },
+  sky: { label: 'Sky', leaf: colors.sky, leafDeep: '#2E8FE0', leafLight: '#9ED4FF', mint: colors.ice, mintDark: '#1D3245', link: '#1A6CB5', linkDark: '#5AAEF2' },
+  grape: { label: 'Grape', leaf: colors.grape, leafDeep: '#7C5CE6', leafLight: '#C9B8FF', mint: colors.lavender, mintDark: '#2D2648', link: '#5E3FD0', linkDark: '#A58DFF' },
+  coral: { label: 'Coral', leaf: colors.coral, leafDeep: '#E04A3A', leafLight: '#FFA197', mint: colors.peach, mintDark: '#46271F', link: '#B8362A', linkDark: '#FF8A7D' },
+  bubblegum: { label: 'Bubblegum', leaf: colors.bubblegum, leafDeep: '#E8789A', leafLight: '#FFD1DD', mint: colors.blush, mintDark: '#45222E', link: '#B4406A', linkDark: '#FF9DBA' },
 };
 
 const BRIGHT = new Set<string>([
@@ -122,6 +126,16 @@ const BRIGHT = new Set<string>([
 /** Text colour that reads on a given fill: dark ink on saturated colours, theme ink elsewhere. */
 export function textOn(bg: string, c: Palette): string {
   return BRIGHT.has(bg) ? c.onBright : c.ink;
+}
+
+/**
+ * Fill for a selected chip. Dark tints sit too close to the card colour to read as selected, so dark mode
+ * uses the bright twin (mint → leaf, butter → sun…). Pair with textOn() for its label.
+ */
+export function selectedFill(bg: string, c: Palette): string {
+  if (c.scheme !== 'dark') return bg;
+  const twin: Record<string, string> = { [c.mint]: c.leaf, [c.peach]: c.coral, [c.ice]: c.sky, [c.butter]: c.sun, [c.lavender]: c.grape };
+  return twin[bg] ?? bg;
 }
 
 export function useColors(): Palette {
@@ -141,7 +155,7 @@ export function paletteFor(scheme: 'light' | 'dark', accent: Accent): Palette {
   let p = cache.get(key);
   if (!p) {
     const a = ACCENTS[accent];
-    p = { ...base, leaf: a.leaf, leafDeep: a.leafDeep, leafLight: a.leafLight, mint: scheme === 'dark' ? a.mintDark : a.mint };
+    p = { ...base, leaf: a.leaf, leafDeep: a.leafDeep, leafLight: a.leafLight, mint: scheme === 'dark' ? a.mintDark : a.mint, link: scheme === 'dark' ? a.linkDark : a.link };
     cache.set(key, p);
   }
   return p;

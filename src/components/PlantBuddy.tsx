@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image } from 'expo-image';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { BUDDY_IMAGES } from '../data/buddyImages';
 import { EXPANDED_BUDDY_IMAGES } from '../data/expandedBuddyImages';
@@ -336,7 +336,10 @@ export function PlantBuddy({ speciesId, mood = 'happy', pot = 'yellow', size = 9
         source={(Object.prototype.hasOwnProperty.call(EXPANDED_BUDDY_IMAGES, speciesId)
           ? EXPANDED_BUDDY_IMAGES[speciesId] : undefined)?.[shown] ?? BUDDY_IMAGES[artId][shown]}
         style={{ width: size, height: size }}
-        resizeMode="contain"
+        contentFit="contain"
+        // Decoded at the size it's drawn, not the 640 px source, and kept in memory for long lists.
+        cachePolicy="memory"
+        transition={0}
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       />

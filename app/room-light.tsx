@@ -8,13 +8,13 @@ import { usePlantStore } from '@/store/plantStore';
 import { FACING_LABEL, SHADE_LABEL, facingOf, windowName, windowsOf, type Facing, type Shade, type WindowLight } from '@/engine/light';
 import { LIGHT_ART } from '@/data/art';
 import { GlassButton } from '@/components/GlassButton';
-import { Icon } from '@/components/GrowTodayCard';
 import { DirectionArrow, LineIcon } from '@/components/LineIcon';
 import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { useSheetTop } from '@/lib/sheetTop';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
+import { Glyph } from '@/components/Glyph';
 
 const FACINGS: Facing[] = ['N', 'E', 'S', 'W'];
 const SHADES: { id: Shade; label: string }[] = [
@@ -242,7 +242,7 @@ export default function RoomLightSheet() {
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
       <View style={{ gap: 4 }}>

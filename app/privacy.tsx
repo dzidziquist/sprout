@@ -1,7 +1,6 @@
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker, Title } from '@/components/ui';
@@ -9,6 +8,7 @@ import { PRIVACY_SECTIONS, PRIVACY_SUMMARY } from '@/data/privacy';
 import { PRIVACY_UPDATED, SUPPORT_EMAIL, SUPPORT_URL } from '@/config';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
+import { Glyph } from '@/components/Glyph';
 
 const CREDITS: { name: string; what: string; url: string }[] = [
   { name: 'Pl@ntNet', what: 'Photo ID', url: 'https://plantnet.org' },
@@ -25,7 +25,7 @@ export default function PrivacyScreen() {
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }]}>
       <View style={{ flexDirection: 'row' }}>
         <GlassButton accessibilityLabel="Back" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-          <Svg width={18} height={18} viewBox="0 0 24 24"><Path d="m15 18-6-6 6-6" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" /></Svg>
+          <Glyph name="back" size={18} color={c.ink} width={2.6} />
         </GlassButton>
       </View>
       <Title>Privacy</Title>
@@ -40,7 +40,7 @@ export default function PrivacyScreen() {
           <Text style={[styles.h, { color: c.ink }]} accessibilityRole="header">{s.title}</Text>
           {s.body.map((p) => (
             <View key={p} style={styles.bullet}>
-              <Text style={[styles.dot, { color: c.leafDeep }]}>•</Text>
+              <Text style={[styles.dot, { color: c.link }]}>•</Text>
               <Text style={[styles.p, { color: c.ink }]}>{p}</Text>
             </View>
           ))}
@@ -53,7 +53,7 @@ export default function PrivacyScreen() {
           {SUPPORT_EMAIL ? (
             <>
               Write to{' '}
-              <Text style={{ color: c.leafDeep, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=PlantFam%20privacy`)}>
+              <Text style={{ color: c.link, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=PlantFam%20privacy`)}>
                 {SUPPORT_EMAIL}
               </Text>
               . A real person answers.
@@ -61,7 +61,7 @@ export default function PrivacyScreen() {
           ) : (
             <>
               PlantFam is made by an independent developer. Get in touch at{' '}
-              <Text style={{ color: c.leafDeep, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(SUPPORT_URL)}>
+              <Text style={{ color: c.link, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(SUPPORT_URL)}>
                 {SUPPORT_URL.replace(/^https?:\/\//, '')}
               </Text>
               .
@@ -74,7 +74,7 @@ export default function PrivacyScreen() {
         <Text style={[styles.h, { color: c.ink }]} accessibilityRole="header">Credits</Text>
         {CREDITS.map((cr) => (
           <Text key={cr.name} style={[styles.p, { color: c.ink }]}>
-            <Text style={{ color: c.leafDeep, textDecorationLine: 'underline', fontFamily: fonts.bodyHeavy }} accessibilityRole="link" onPress={() => Linking.openURL(cr.url)}>
+            <Text style={{ color: c.link, textDecorationLine: 'underline', fontFamily: fonts.bodyHeavy }} accessibilityRole="link" onPress={() => Linking.openURL(cr.url)}>
               {cr.name}
             </Text>
             {` · ${cr.what}`}

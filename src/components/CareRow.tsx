@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
   text: { fontFamily: fonts.bodyHeavy, fontSize: 14, flexShrink: 1 },
   date: { fontFamily: fonts.body, fontSize: 13 },
   trash: { width: 28, height: 28, alignItems: 'center', justifyContent: 'center' },
-  confirm: { borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 },
+  confirm: { borderRadius: 12, paddingHorizontal: 14, minHeight: 36, justifyContent: 'center' },
   confirmText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
 });

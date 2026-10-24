@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { getSpecies, isOtherId } from '@/data/species';
 import { roomsInUse } from '@/engine/light';
@@ -16,6 +15,7 @@ import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import type { WishItem } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 /** One shared empty list, so the store selector doesn't hand back a new array every render. */
 const NO_WISHES: WishItem[] = [];
@@ -37,7 +37,7 @@ export default function WishlistScreen() {
     >
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
       <View style={{ gap: 4 }}>
@@ -89,7 +89,19 @@ function WishCard({ wish }: { wish: WishItem }) {
 
   return (
     <View style={[styles.card, { borderColor: c.line, backgroundColor: c.card, boxShadow: `0px 4px 0px ${c.drop}` }]}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`Read about ${title}`} onPress={open} style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Read about ${title}`}
+        // One VoiceOver element: removing is offered as an action on it.
+        accessibilityActions={[{ name: 'remove', label: `Remove ${title} from wishlist` }]}
+        onAccessibilityAction={(e) => {
+          if (e.nativeEvent.actionName !== 'remove') return;
+          haptics.tap();
+          removeWish(wish.id);
+        }}
+        onPress={open}
+        style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}
+      >
         <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.potTint[sp.artPot], alignItems: 'center', justifyContent: 'center' }]}>
           <PlantBuddy speciesId={wish.speciesId} size={50} bg={c.potTint[sp.artPot]} />
         </View>
@@ -108,7 +120,7 @@ function WishCard({ wish }: { wish: WishItem }) {
           }}
           style={[styles.remove, { borderColor: c.line }]}
         >
-          <Svg width={12} height={12} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={3.2} strokeLinecap="round" /></Svg>
+          <Glyph name="close" size={12} color={c.ink} width={3.2} />
         </Pressable>
       </Pressable>
       <TextInput

@@ -1,7 +1,7 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 /** PlantFam's line icons (from the icon set in the design files), drawn at any size and colour. */
-export type LineIconName = 'window' | 'no-window' | 'help' | 'compass' | 'info' | 'arrow-right' | 'chevron-right';
+export type LineIconName = 'window' | 'no-window' | 'help' | 'compass' | 'info' | 'arrow-right' | 'chevron-right' | 'bulb' | 'drop';
 
 export function LineIcon({ name, color, size = 20, width = 2 }: { name: LineIconName; color: string; size?: number; width?: number }) {
   const p = { stroke: color, strokeWidth: width, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, fill: 'none' };
@@ -38,6 +38,8 @@ export function LineIcon({ name, color, size = 20, width = 2 }: { name: LineIcon
         </>
       )}
       {name === 'arrow-right' && <Path d="M4 12h16m-6-6 6 6-6 6" {...p} />}
+      {name === 'bulb' && <Path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z" {...p} />}
+      {name === 'drop' && <Path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11Z" {...p} />}
       {name === 'chevron-right' && <Path d="m9 5 7 7-7 7" {...p} />}
     </Svg>
   );

@@ -9,10 +9,11 @@ import { BADGE_ART } from '@/data/art';
 import { BADGE_ICON, badgeFill } from '@/components/BadgeSticker';
 import { GlassButton } from '@/components/GlassButton';
 import { Button } from '@/components/ui';
-import { Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
+import { Glyph } from '@/components/Glyph';
 
 const SIZE = 220;
 /** Degrees of turn per pixel dragged. */
@@ -25,6 +26,7 @@ export default function BadgeScreen() {
   const c = useColors();
   const insets = useSafeAreaInsets();
   const { badges } = useBadges();
+  const reduced = useReducedMotion();
   const badge = badges.find((b) => b.id === id);
   // One value, in pixels of drag, drives the spin. While a finger is down it follows translationX on the
   // native driver (the resting spin sits in the value's offset), so dragging never waits on JavaScript,
@@ -55,6 +57,15 @@ export default function BadgeScreen() {
   };
 
   const release = (now: number, dx: number, vx: number) => {
+    // Reduce Motion: no twirls or coasting. A tap turns it straight to the other side; a let-go settles
+    // on the nearest side without a spring. Dragging still follows the finger.
+    if (reduced) {
+      const half = FULL / 2;
+      const side = Math.round(now / half);
+      if (Math.abs(dx) < 4 && Math.abs(vx) < 100) haptics.tap();
+      x.setValue((Math.abs(dx) < 4 && Math.abs(vx) < 100 ? side + 1 : side) * half);
+      return;
+    }
     if (Math.abs(dx) < 4 && Math.abs(vx) < 100) {
       // A tap: one full twirl.
       haptics.tap();
@@ -90,7 +101,7 @@ export default function BadgeScreen() {
     <View style={[styles.page, { backgroundColor: c.bg, paddingTop: insets.top + 8, paddingBottom: insets.bottom + 24 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
 

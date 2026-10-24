@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Appearance, Platform, View } from 'react-native';
+import { Appearance, Platform, View } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { Fredoka_600SemiBold, Fredoka_700Bold } from '@expo-google-fonts/fredoka';
 import { Nunito_700Bold, Nunito_800ExtraBold } from '@expo-google-fonts/nunito';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePlantStore } from '@/store/plantStore';
-import { colors } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { ensureRoundPermission, rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 import { refreshSunlight } from '@/lib/site';
+
+// Keep the launch screen up until saved plants and fonts are loaded, so it goes straight to the app
+// instead of launch screen, then a spinner, then the app.
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(() => usePlantStore.persist.hasHydrated());
@@ -74,13 +78,12 @@ export default function RootLayout() {
     };
   }, [hydrated]);
 
-  if (!hydrated || !(fontsLoaded || fontError)) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.leaf }}>
-        <ActivityIndicator color={colors.ink} />
-      </View>
-    );
-  }
+  const ready = hydrated && !!(fontsLoaded || fontError);
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync().catch(() => {});
+  }, [ready]);
+  // The launch screen is still showing; this only fills the frame behind it.
+  if (!ready) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
 
   return (
     <ThemeProvider value={c.scheme === 'dark' ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: c.bg, card: c.card } } : { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: c.bg } }}>
