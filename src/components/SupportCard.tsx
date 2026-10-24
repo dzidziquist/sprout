@@ -25,7 +25,6 @@ export function SupportCard() {
       accessibilityRole="button"
       accessibilityLabel={`Support PlantFam. ${body}`}
       onPress={() => {
-        haptics.tap();
         router.push('/support');
       }}
       style={({ pressed }) => [styles.card, { backgroundColor: bg, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 5}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 4 }] }]}

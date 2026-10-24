@@ -121,7 +121,6 @@ export default function OffshootsScreen() {
                       raised
                       accessibilityLabel={`Pot up ${p.name}`}
                       onPress={() => {
-                        haptics.tap();
                         router.push(`/pot-up/${p.id}`);
                       }}
                       style={styles.readyBtn}

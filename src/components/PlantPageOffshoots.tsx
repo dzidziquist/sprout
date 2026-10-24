@@ -1,7 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Label } from '@/components/ui';
-import * as haptics from '@/lib/haptics';
 import { useColors } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { Plant } from '@/types';
@@ -18,7 +17,6 @@ export function PlantPageOffshoots({ parent, babies }: { parent?: Plant; babies:
       accessibilityRole="link"
       accessibilityLabel={`Open ${p.name}`}
       onPress={() => {
-        haptics.tap();
         router.push(`/plant/${p.id}`);
       }}
       style={({ pressed }) => [styles.chip, { backgroundColor: bg, borderColor: c.line }, p.archivedAt && { opacity: 0.55 }, pressed && { transform: [{ translateY: 1 }] }]}

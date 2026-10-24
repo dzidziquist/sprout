@@ -254,7 +254,7 @@ function CropCard({ plant, total, now }: { plant: Plant; total?: string; now: Da
 
         <View style={styles.actions}>
           <Button title="Log harvest" raised bg={c.leaf} onPress={() => router.push(`/harvest/${plant.id}`)} style={styles.action} />
-          {guide.regrows ? <Button title="Cut & regrow" raised bg={c.card} onPress={regrow} style={styles.action} /> : null}
+          {guide.regrows ? <Button title="Cut and regrow" raised bg={c.card} onPress={regrow} style={styles.action} /> : null}
         </View>
       </View>
     </Sticker>
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
   taskHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   taskTitle: { fontFamily: fonts.displaySemi, fontSize: 16 },
   strike: { textDecorationLine: 'line-through' },
-  weekPill: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, height: 22, justifyContent: 'center' },
+  weekPill: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, minHeight: 22, paddingVertical: 1, justifyContent: 'center' },
   weekText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   taskBody: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18 },
   taskWho: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
   cropName: { fontFamily: fonts.display, fontSize: 24, lineHeight: 28 },
   cropKind: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
-  pill: { borderWidth: 2, borderRadius: 14, height: 28, paddingHorizontal: 10, justifyContent: 'center' },
+  pill: { borderWidth: 2, borderRadius: 14, minHeight: 28, paddingVertical: 2, paddingHorizontal: 10, justifyContent: 'center' },
   pillText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   cropBuddy: { width: 112, alignItems: 'center', justifyContent: 'flex-end', marginBottom: -6 },
   cropBody: { padding: 14, gap: 14 },

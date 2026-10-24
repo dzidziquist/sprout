@@ -100,18 +100,15 @@ export default function IdentifyScreen() {
   };
 
   const toList = () => {
-    haptics.tap();
     router.replace('/add');
   };
 
   /** Plants Pl@ntNet knows but our list doesn't: add them as themselves, with the name filled in. */
   const addAsItself = (r: PlantNetResult) => {
-    haptics.tap();
     router.replace(addHref('other-tropical', { commonName: displayName(r.commonNames, r.latinName), latinName: r.latinName }) as never);
   };
   /** Read about an unlisted plant first: its species page, by the names Pl@ntNet gave. */
   const readAbout = (r: PlantNetResult) => {
-    haptics.tap();
     router.push(speciesHref('other-tropical', { commonName: displayName(r.commonNames, r.latinName), latinName: r.latinName }) as never);
   };
   const topUnlisted = phase.kind === 'results' ? phase.results.find((r) => !speciesFor(r.latinName, r.genus)?.exact) : undefined;
@@ -278,7 +275,7 @@ export default function IdentifyScreen() {
                 <Text style={[styles.latin, { color: c.inkMuted }]}>{getSpecies(confirm.speciesId).latinName}</Text>
               </View>
               <Button
-                title="Yes, that's them!"
+                title="Yes, add it"
                 raised
                 onPress={() => {
                   haptics.success();
@@ -367,7 +364,7 @@ const styles = StyleSheet.create({
   buddyTile: { width: 84, height: 84, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   matchName: { fontFamily: fonts.display, fontSize: 19, flexShrink: 1 },
-  confChip: { borderWidth: 2, borderRadius: 11, height: 24, paddingHorizontal: 8, justifyContent: 'center' },
+  confChip: { borderWidth: 2, borderRadius: 11, minHeight: 24, paddingVertical: 2, paddingHorizontal: 8, justifyContent: 'center' },
   confText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   latin: { fontFamily: fonts.body, fontSize: 13, fontStyle: 'italic' },
   barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },

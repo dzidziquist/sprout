@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
@@ -14,6 +14,7 @@ import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { useSheetTop } from '@/lib/sheetTop';
 import { Glyph } from '@/components/Glyph';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 
 // Every day for the first week, then the usual longer trips.
 const LEAVE = [0, 1, 2, 3, 4, 5, 6, 7].map((n) => ({ id: String(n), label: n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === 7 ? 'In a week' : `In ${n} days` }));
@@ -50,6 +51,7 @@ export default function AwayScreen() {
   const away = !!activeTrip(trips, now);
   const [leave, setLeave] = useState<LeaveId>('1');
   const [stay, setStay] = useState(7);
+  const leaveScreen = useDiscardGuard(!current && (leave !== '1' || stay !== 7 || draftDone.length > 0));
 
   const draft: Trip = (() => {
     const from = dayStart(plusDays(now, Number(leave)));
@@ -66,6 +68,20 @@ export default function AwayScreen() {
     else setDraftDone((d) => (on ? [...d, id] : d.filter((x) => x !== id)));
   };
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
+
+  // Ending a trip early turns reminders back on, so it asks first. Coming home doesn't need to.
+  const finish = () => {
+    const end = () => {
+      haptics.tap();
+      endTrip();
+      close();
+    };
+    if (away || Platform.OS === 'web') return end();
+    Alert.alert('End this trip?', 'Reminders go back to normal straight away.', [
+      { text: 'Keep trip', style: 'cancel' },
+      { text: 'End trip', style: 'destructive', onPress: end },
+    ]);
+  };
 
   const share = () => {
     haptics.tap();
@@ -144,14 +160,10 @@ export default function AwayScreen() {
 
       {current ? (
         <Button
-          title={away ? 'I’m back' : 'Cancel the trip'}
+          title={away ? 'I’m back' : 'End trip'}
           raised
           bg={away ? c.leaf : c.card}
-          onPress={() => {
-            haptics.success();
-            endTrip();
-            close();
-          }}
+          onPress={finish}
           style={{ minHeight: 54 }}
           textStyle={{ fontSize: 18, fontFamily: fonts.display }}
         />
@@ -162,7 +174,7 @@ export default function AwayScreen() {
           onPress={() => {
             haptics.success();
             planTrip({ ...draft, done: draftDone.filter((id) => list.some((x) => x.id === id)) });
-            close();
+            leaveScreen(close);
           }}
           style={{ minHeight: 56 }}
           textStyle={{ fontSize: 19, fontFamily: fonts.display }}

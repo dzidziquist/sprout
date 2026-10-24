@@ -49,7 +49,6 @@ export function TreeList({ family, now = new Date() }: { family: FamilyLayout<Pl
             accessibilityRole="button"
             accessibilityLabel={`${info.a11y}${n.depth ? `, generation ${n.depth + 1}` : ''}`}
             onPress={() => {
-              haptics.tap();
               router.push(`/plant/${p.id}`);
             }}
             style={({ pressed }) => [styles.row, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth * 2, borderTopColor: c.cloud }, pressed && { backgroundColor: c.cloud }]}

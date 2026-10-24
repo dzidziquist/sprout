@@ -14,6 +14,7 @@ import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { CareEvent } from '@/types';
 import { Glyph } from '@/components/Glyph';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 
 const MAX = 12;
 
@@ -34,6 +35,7 @@ export default function TakeCuttingsScreen() {
   const [note, setNote] = useState('');
   const [taken, setTaken] = useState<CutId>('today');
   const [made, setMade] = useState<{ n: number; method: RootingMethod } | null>(null);
+  useDiscardGuard(!made && (!!note.trim() || count !== 1 || method !== 'water' || taken !== 'today' || prefix !== (plant ? `${plant.name} baby` : '')));
 
   const close = (
     <GlassButton accessibilityLabel="Close" onPress={() => router.back()}>
@@ -192,6 +194,8 @@ export default function TakeCuttingsScreen() {
           placeholderTextColor={c.inkMuted}
           style={styles.input}
           accessibilityLabel="Name prefix"
+          autoCapitalize="words"
+          returnKeyType="done"
           autoCorrect={false}
         />
         <Text style={styles.hint}>Becomes {preview}. Rename any of them later.</Text>

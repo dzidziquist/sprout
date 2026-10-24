@@ -26,6 +26,7 @@ import { SunIcon } from '@/components/SunIcon';
 import type { EdibleStage, Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
 import { Glyph } from '@/components/Glyph';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 
 
 const NAMES: Partial<Record<SpeciesId, string[]>> = {
@@ -68,7 +69,7 @@ const LIGHTS: { id: Light; label: string; suns: number }[] = [
   { id: 'low', label: 'Shady', suns: 1 },
   { id: 'medium', label: 'Some', suns: 2 },
   { id: 'bright', label: 'Bright', suns: 3 },
-  { id: 'direct', label: 'Sun!', suns: 4 },
+  { id: 'direct', label: 'Direct sun', suns: 4 },
 ];
 const SOILS: { id: Soil; swatch: string; note: string }[] = [
   { id: 'potting_mix', swatch: '#8B5E3C', note: 'Holds water longest. Checks spaced out; repot every 1–2 years.' },
@@ -219,6 +220,8 @@ export default function AddPlantScreen() {
   // The wishlist entry this screen was opened for, until the person goes back and picks another plant.
   const [fromWish, setFromWish] = useState<string | undefined>(typeof params.wish === 'string' ? params.wish : undefined);
   // Hydro growers: new plants follow the medium of the last plant added in LECA or water.
+  // Picked a plant (or changed the one from photo ID): closing asks before throwing that away.
+  const leave = useDiscardGuard(speciesId !== null && (speciesId !== preset || name !== (presetDefaults?.name ?? '') || room.trim() !== ''));
   const lastHydro = profile.grows.hydro ? [...plants].reverse().find((p) => !p.archivedAt && isReservoir(p.soil))?.soil : undefined;
   const mediumFor = (speciesSoil: Soil) => lastHydro ?? speciesSoil;
   const soilBase = speciesId && !isReservoir(getSpecies(speciesId).defaultSoil) ? getSpecies(speciesId).defaultSoil : 'potting_mix';
@@ -265,7 +268,7 @@ export default function AddPlantScreen() {
     setName(freeName(id, plants.map((p) => p.name)));
   };
 
-  // Back from a species page's "Add to my fam" (?species=…&pick=<new each time>): pick that plant, even if
+  // Back from a species page's "Add to my jungle" (?species=…&pick=<new each time>): pick that plant, even if
   // it's the same one as last time.
   useEffect(() => {
     if (params.pick && isSpeciesId(params.species)) {
@@ -288,7 +291,6 @@ export default function AddPlantScreen() {
       accessibilityRole="button"
       accessibilityLabel="Identify from a photo"
       onPress={() => {
-        haptics.tap();
         // Replace so confirming a match lands back on a single add screen.
         router.replace('/identify');
       }}
@@ -331,6 +333,8 @@ export default function AddPlantScreen() {
           style={inputStyle}
           accessibilityLabel="Search plants"
           autoCorrect={false}
+          returnKeyType="search"
+          clearButtonMode="while-editing"
         />
         {/* Edge-to-edge strip: the padding lines the first chip up with the page, and the bottom padding
             leaves room for the selected chip's drop shadow, which a horizontal ScrollView would clip. */}
@@ -369,7 +373,6 @@ export default function AddPlantScreen() {
                 accessibilityLabel={`About ${s.commonName}`}
                 hitSlop={8}
                 onPress={() => {
-                  haptics.tap();
                   router.push(`/species/${s.id}?from=add`);
                 }}
                 style={[styles.info, { borderColor: c.line, backgroundColor: c.card }]}
@@ -441,7 +444,7 @@ export default function AddPlantScreen() {
     // (Editing an unlisted plant's names doesn't change which plant it is.)
     if (fromWish) removeWish(fromWish);
     haptics.success();
-    router.replace(`/plant/${plant.id}`);
+    leave(() => router.replace(`/plant/${plant.id}`));
   };
 
   return (
@@ -478,8 +481,8 @@ export default function AddPlantScreen() {
       {isOther && (
         <View style={{ gap: 10 }}>
           <Label>What kind of plant is it?</Label>
-          <TextInput value={customName} onChangeText={setCustomName} placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Kind of plant" />
-          <TextInput value={customLatin} onChangeText={setCustomLatin} placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Latin name" autoCapitalize="words" autoCorrect={false} />
+          <TextInput value={customName} onChangeText={setCustomName} placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Kind of plant" autoCapitalize="words" returnKeyType="next" />
+          <TextInput value={customLatin} onChangeText={setCustomLatin} placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Latin name" autoCapitalize="words" autoCorrect={false} returnKeyType="done" />
           <Label>How does it like its water?</Label>
           <View style={{ gap: 8 }}>
             {CARE_TYPES.map((t) => {
@@ -513,7 +516,7 @@ export default function AddPlantScreen() {
 
       <Label>Give them a name</Label>
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        <TextInput value={name} onChangeText={setName} style={[inputStyle, { flex: 1, fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" />
+        <TextInput value={name} onChangeText={setName} style={[inputStyle, { flex: 1, fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" autoCapitalize="words" returnKeyType="done" />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Suggest another name"
@@ -691,12 +694,12 @@ export default function AddPlantScreen() {
             </>
           )}
 
-          <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" />
+          <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" autoCapitalize="words" returnKeyType="done" />
 
         </View>
       )}
 
-      <Button title={`Welcome home, ${name.trim() || suggestions[0]}!`} raised onPress={save} style={{ minHeight: 58, marginTop: 8 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
+      <Button title={`Add ${name.trim() || suggestions[0]}`} raised onPress={save} style={{ minHeight: 58, marginTop: 8 }} textStyle={{ fontSize: 19, fontFamily: fonts.display }} />
     </ScrollView>
   );
 }
@@ -709,7 +712,7 @@ const styles = StyleSheet.create({
   idIcon: { width: 52, height: 52, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   idTitle: { fontFamily: fonts.display, fontSize: 18, flexShrink: 1 },
   idSub: { fontFamily: fonts.bodyHeavy, fontSize: 13, lineHeight: 17 },
-  plusBadge: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, height: 22, justifyContent: 'center' },
+  plusBadge: { borderWidth: 2, borderRadius: 10, paddingHorizontal: 7, minHeight: 22, paddingVertical: 1, justifyContent: 'center' },
   plusBadgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   moreCard: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 2, borderRadius: 18, padding: 12 },

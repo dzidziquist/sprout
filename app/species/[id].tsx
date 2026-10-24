@@ -29,7 +29,7 @@ const ASPCA_URL = 'https://www.aspca.org/pet-care/animal-poison-control/toxic-an
 
 /**
  * A plant to read about before (or without) adding it: its buddy art and Wikipedia intro, what it needs,
- * where it would suit this home, and Add to my fam or Save for later. Opened from the add list, photo ID
+ * where it would suit this home, and Add to my jungle or Save for later. Opened from the add list, photo ID
  * and the wishlist. Plants not in the catalogue come as /species/other?name=…&latin=….
  */
 export default function SpeciesPage() {
@@ -163,7 +163,7 @@ export default function SpeciesPage() {
       </ScrollView>
 
       <View style={[styles.actions, { paddingBottom: insets.bottom + 12, backgroundColor: c.bg, borderColor: c.cloud }]}>
-        <Button title="Add to my fam" raised bg={c.leaf} onPress={add} style={{ flex: 3, minHeight: 56 }} textStyle={{ fontFamily: fonts.display, fontSize: 18 }} />
+        <Button title="Add to my jungle" raised bg={c.leaf} onPress={add} style={{ flex: 3, minHeight: 56 }} textStyle={{ fontFamily: fonts.display, fontSize: 18 }} />
         <Pressable
           accessibilityRole="button"
           accessibilityState={{ selected: !!saved }}

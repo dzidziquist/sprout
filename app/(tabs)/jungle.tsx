@@ -21,6 +21,7 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { Mood, Plant, WishItem } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 /** One shared empty list, so the store selector doesn't hand back a new array every render. */
 const NO_WISHES: WishItem[] = [];
@@ -226,7 +227,7 @@ export default function JungleScreen() {
           </Label>
         </View>
         <GlassButton accessibilityLabel="Add a plant" onPress={() => router.push('/add')}>
-          <Svg width={20} height={20} viewBox="0 0 24 24"><Path d="M12 5v14M5 12h14" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" /></Svg>
+          <Glyph name="add" size={18} color={c.ink} width={2.6} />
         </GlassButton>
       </View>
 

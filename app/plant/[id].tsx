@@ -112,7 +112,7 @@ export default function PlantDetail() {
   if (!plant || !actions)
     return (
       <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
-        <Title style={{ textAlign: 'center' }}>This plant isn’t in your fam</Title>
+        <Title style={{ textAlign: 'center' }}>This plant isn’t in your jungle</Title>
         <Button title="Back to Today" bg={c.leaf} onPress={() => router.replace('/')} />
       </View>
     );
@@ -184,7 +184,7 @@ export default function PlantDetail() {
                 </GlassButton>
               )}
               <GlassButton accessibilityLabel={`Edit ${plant.name}`} onPress={actions.edit}>
-                {toolbarIcon('M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4')}
+                <Glyph name="edit" size={18} color={c.ink} width={2.4} />
               </GlassButton>
             </View>
           </View>
@@ -244,7 +244,7 @@ export default function PlantDetail() {
                     : `${plant.name} came back on ${shortDate(goneFloor)}, so it can’t have left again before that.`}
                 </Text>
               )}
-              <Button title="Bring back to the jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
+              <Button title="Restore to jungle" bg={c.card} onPress={actions.restore} style={{ alignSelf: 'flex-start', marginTop: 4 }} />
             </Sticker>
           )}
 
@@ -292,7 +292,7 @@ export default function PlantDetail() {
           {!archived && !plant.rooting && species.edible && !guide && (
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <Button title="Log harvest" bg={c.peach} onPress={() => router.push(`/harvest/${plant.id}`)} style={{ flex: 1, minHeight: 48 }} />
-              <Button title="Grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={{ flex: 1, minHeight: 48 }} />
+              <Button title="Open grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={{ flex: 1, minHeight: 48 }} />
             </View>
           )}
 
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   hero: { alignItems: 'center', borderBottomWidth: 2, paddingBottom: 4 },
   heroBar: { alignSelf: 'stretch', paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between' },
   heroArt: { width: 220, alignItems: 'center' },
-  heroChip: { marginTop: -4, marginBottom: 8, borderWidth: 2, borderRadius: 14, paddingHorizontal: 10, height: 28, justifyContent: 'center' },
+  heroChip: { marginTop: -4, marginBottom: 8, borderWidth: 2, borderRadius: 14, paddingHorizontal: 10, minHeight: 28, paddingVertical: 2, justifyContent: 'center' },
   heroChipText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   actions: { flexDirection: 'row', gap: 10 },
   actionTile: { flex: 1, minHeight: 84, borderWidth: 2, borderRadius: 18, alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 6, paddingVertical: 10 },

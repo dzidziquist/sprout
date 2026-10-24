@@ -17,6 +17,7 @@ import { textOn, useColors, type Palette } from '@/theme/theme';
 import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
 import { Glyph } from '@/components/Glyph';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 
 const UNIT_LABEL: Record<HarvestUnit, string> = { fruit: 'Fruit', handful: 'Handful', bunch: 'Bunch', bulb: 'Bulb', grams: 'Grams' };
 const STEP: Record<HarvestUnit, number> = { fruit: 1, handful: 1, bunch: 1, bulb: 1, grams: 10 };
@@ -59,6 +60,7 @@ export default function HarvestSheet() {
   const [amount, setAmount] = useState(START[guide?.unit ?? 'fruit']);
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState<{ first: boolean } | null>(null);
+  useDiscardGuard(!saved && (!!note.trim() || unit !== (guide?.unit ?? 'fruit') || amount !== START[guide?.unit ?? 'fruit']));
 
   if (!plant) return <PlantGone />;
   const tint = c.potTint[plant.potColor];
@@ -193,7 +195,7 @@ const styles = StyleSheet.create({
   hint: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   done: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, paddingHorizontal: 24, overflow: 'hidden' },
   circle: { width: 196, height: 196, borderRadius: 98, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  ribbon: { borderWidth: 2, borderRadius: 14, paddingHorizontal: 12, height: 28, justifyContent: 'center', marginTop: 4 },
+  ribbon: { borderWidth: 2, borderRadius: 14, paddingHorizontal: 12, minHeight: 28, paddingVertical: 2, justifyContent: 'center', marginTop: 4 },
   ribbonText: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   doneSub: { fontFamily: fonts.bodyHeavy, fontSize: 16, lineHeight: 22, textAlign: 'center' },
 });

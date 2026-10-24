@@ -11,7 +11,7 @@ import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
-import { ARCHIVE_COPY, confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
+import { confirmDelete, deleteCopy, usePlantActions } from '@/components/PlantMenu';
 import { GlassButton } from '@/components/GlassButton';
 import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { Button, Label, Title } from '@/components/ui';
@@ -39,7 +39,7 @@ const LIGHTS: { id: Light; label: string; suns: number }[] = [
   { id: 'low', label: 'Shady', suns: 1 },
   { id: 'medium', label: 'Some', suns: 2 },
   { id: 'bright', label: 'Bright', suns: 3 },
-  { id: 'direct', label: 'Sun!', suns: 4 },
+  { id: 'direct', label: 'Direct sun', suns: 4 },
 ];
 // Soil swatches are illustration colours (they depict the mix), not UI colours.
 const SOILS: { id: Soil; swatch: string }[] = [
@@ -174,7 +174,8 @@ export default function EditPlantScreen() {
   const archived = !!plant.archivedAt;
   const back = () => (router.canGoBack() ? router.back() : router.replace(`/plant/${plant.id}`));
 
-  const save = () => {
+  // Writes the form. Archiving goes through here too, so edits made just before aren't lost.
+  const commit = () => {
     updatePlant(plant.id, {
       origin,
       name: name.trim() || plant.name,
@@ -205,7 +206,15 @@ export default function EditPlantScreen() {
     });
     const days = watered ? WATERED.find((w) => w.id === watered)?.days : null;
     if (days !== null && days !== undefined) setLastWatered(plant.id, daysAgo(days));
+  };
+  const save = () => {
+    commit();
     haptics.success();
+    go(back);
+  };
+  const archive = (reason: 'gifted' | 'died') => {
+    if (form !== pristine) commit();
+    actions.archive(reason);
     go(back);
   };
 
@@ -241,8 +250,8 @@ export default function EditPlantScreen() {
       {isOther && (
         <View style={{ gap: 10 }}>
           <Label>What kind of plant is it?</Label>
-          <TextInput value={kind} onChangeText={setKind} style={input} accessibilityLabel="Kind of plant" placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} />
-          <TextInput value={latin} onChangeText={setLatin} style={input} accessibilityLabel="Latin name" placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} autoCorrect={false} />
+          <TextInput value={kind} onChangeText={setKind} style={input} accessibilityLabel="Kind of plant" autoCapitalize="words" returnKeyType="next" placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} />
+          <TextInput value={latin} onChangeText={setLatin} style={input} accessibilityLabel="Latin name" placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} autoCorrect={false} autoCapitalize="words" returnKeyType="done" />
           <Label>How does it like its water?</Label>
           <View style={styles.wrap}>
             {(Object.keys(OTHER) as SpeciesGroup[]).map((g) => (
@@ -259,7 +268,7 @@ export default function EditPlantScreen() {
       )}
 
       <Label>Name</Label>
-      <TextInput value={name} onChangeText={setName} style={[input, { fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" placeholder={plant.name} placeholderTextColor={c.inkMuted} />
+      <TextInput value={name} onChangeText={setName} style={[input, { fontFamily: fonts.displaySemi, fontSize: 19 }]} accessibilityLabel="Plant name" autoCapitalize="words" returnKeyType="done" placeholder={plant.name} placeholderTextColor={c.inkMuted} />
 
       <Label>Card colour</Label>
       <View style={styles.wrap} accessibilityRole="radiogroup">
@@ -378,7 +387,7 @@ export default function EditPlantScreen() {
           ? 'Its light comes from the lamp, so it isn’t in the Light view.'
           : 'Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.'}
       </Text>
-      <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" />
+      <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" autoCapitalize="words" returnKeyType="done" />
       <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next check.</Text>
 
       <Button title="Save changes" raised onPress={save} style={{ minHeight: 56, marginTop: 6 }} textStyle={{ fontSize: 18, fontFamily: fonts.display }} />
@@ -388,14 +397,14 @@ export default function EditPlantScreen() {
         {archived ? (
           <>
             <Text style={[styles.note, { color: c.inkMuted }]}>{plant.name} is in memory. Bring them back if that was a mix-up.</Text>
-            <Button title="Bring back to the jungle" bg={c.card} onPress={() => { actions.restore(); back(); }} />
+            <Button title="Restore to jungle" bg={c.card} onPress={() => { actions.restore(); back(); }} />
           </>
         ) : (
           <>
             <Text style={[styles.note, { color: c.inkMuted }]}>Archiving takes {plant.name} off the round but keeps their diary and family tree.</Text>
             <View style={styles.row}>
-              <Button title={ARCHIVE_COPY.gifted.title} bg={c.blush} style={{ flex: 1 }} onPress={() => { actions.archive('gifted'); go(back); }} />
-              <Button title={ARCHIVE_COPY.died.title} bg={c.card} style={{ flex: 1 }} onPress={() => { actions.archive('died'); go(back); }} />
+              <Button title="Archive as gifted" bg={c.blush} style={{ flex: 1 }} onPress={() => archive('gifted')} />
+              <Button title="Archive as lost" bg={c.card} style={{ flex: 1 }} onPress={() => archive('died')} />
             </View>
           </>
         )}

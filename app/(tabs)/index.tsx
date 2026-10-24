@@ -25,6 +25,7 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts } from '@/theme/tokens';
 import type { CheckResult, Plant } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 const outcomeChip = (c: Palette): Record<CheckResult, { text: string; bg: string }> => ({
   dry: { text: 'Watered', bg: c.leaf },
@@ -152,7 +153,7 @@ export default function TodayScreen() {
         {/* iOS native tabs have no + tab, so the header keeps the add button there only. */}
         {Platform.OS === 'ios' && (
           <GlassButton accessibilityLabel="Add a plant" onPress={() => router.push('/add')}>
-            <Svg width={20} height={20} viewBox="0 0 24 24"><Path d="M12 5v14M5 12h14" stroke={c.ink} strokeWidth={2.6} strokeLinecap="round" /></Svg>
+            <Glyph name="add" size={18} color={c.ink} width={2.6} />
           </GlassButton>
         )}
       </View>
@@ -164,7 +165,7 @@ export default function TodayScreen() {
           <Text style={[styles.heroSub, { color: c.ink }]}>{heroSub}</Text>
           {round.length > 0 && <TodayProgress done={done} total={round.length} />}
           {living.length === 0 && <Button title="Add a plant" raised bg={c.leaf} onPress={() => router.push('/add')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
-          {trip && <Button title="Trip details" raised bg={c.card} onPress={() => router.push('/away')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
+          {trip && <Button title="View trip" raised bg={c.card} onPress={() => router.push('/away')} style={{ alignSelf: 'flex-start', marginTop: 8 }} />}
         </View>
         {trip ? (
           <PlantBuddy speciesId="monstera" mood="snoozing" size={84} bg={heroBg} faces={profile.faces} />

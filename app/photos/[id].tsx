@@ -8,7 +8,6 @@ import { edibleGuide } from '@/data/edibles';
 import { diaryPhotos, growDay, stageAtPhoto } from '@/engine/photoDiary';
 import { deletePhoto, photoSrc } from '@/lib/photos';
 import { GlassButton } from '@/components/GlassButton';
-import { Icon } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
@@ -16,7 +15,6 @@ import type { CareEvent } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
 import { Glyph } from '@/components/Glyph';
 
-const TRASH = 'M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3';
 const longDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
@@ -90,7 +88,7 @@ export default function PhotoDiary() {
           {plant.name}'s diary
         </Text>
         <GlassButton accessibilityLabel="Remove this photo" onPress={confirmRemove}>
-          <Icon d={TRASH} color={c.ink} size={18} width={2.2} />
+          <Glyph name="trash" size={18} color={c.ink} width={2.2} />
         </GlassButton>
       </View>
 

@@ -31,6 +31,12 @@ export async function ensureRoundPermission(): Promise<boolean> {
   return supported ? requestPermission() : true;
 }
 
+/** Whether reminders can arrive, without asking. Used at launch, where a prompt would come out of nowhere. */
+export async function roundAllowed(): Promise<boolean> {
+  if (!supported) return true;
+  return (await Notifications.getPermissionsAsync()).granted;
+}
+
 /**
  * How far ahead rounds are scheduled. Rescheduling only happens while the app runs, so this is how long
  * reminders keep coming if it's never opened. At most one a day keeps it well under iOS's 64 pending.

@@ -9,7 +9,7 @@ export function PlantGone() {
   const router = useRouter();
   return (
     <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
-      <Title style={{ textAlign: 'center' }}>This plant isn’t in your fam</Title>
+      <Title style={{ textAlign: 'center' }}>This plant isn’t in your jungle</Title>
       <Button title="Close" bg={c.leaf} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
     </View>
   );

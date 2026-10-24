@@ -6,6 +6,9 @@ import Svg, { Path } from 'react-native-svg';
 const GLYPHS = {
   close: { sf: 'xmark', d: 'M6 6l12 12M18 6 6 18' },
   back: { sf: 'chevron.left', d: 'm15 18-6-6 6-6' },
+  add: { sf: 'plus', d: 'M12 5v14M5 12h14' },
+  edit: { sf: 'pencil', d: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4' },
+  trash: { sf: 'trash', d: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3' },
 } satisfies Record<string, { sf: SFSymbol; d: string }>;
 
 export type GlyphName = keyof typeof GLYPHS;

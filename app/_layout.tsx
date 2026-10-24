@@ -10,7 +10,7 @@ import { Nunito_700Bold, Nunito_800ExtraBold } from '@expo-google-fonts/nunito';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePlantStore } from '@/store/plantStore';
 import { useColors } from '@/theme/theme';
-import { ensureRoundPermission, rescheduleRounds, useNotificationRoute } from '@/lib/notifications';
+import { rescheduleRounds, roundAllowed, useNotificationRoute } from '@/lib/notifications';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 import { refreshSunlight } from '@/lib/site';
@@ -55,11 +55,12 @@ export default function RootLayout() {
       }, 400);
     };
     sync();
-    // Reminders shown as on but never allowed (set up before the app asked): ask once, or show them as off.
+    // Reminders shown as on but not allowed (turned off in iOS Settings, or set up before the app asked):
+    // show them as off rather than prompting at launch. Turning them on in Settings asks in context.
     const { onboarded, profile, setProfile } = usePlantStore.getState();
     if (onboarded && profile.round.enabled)
-      ensureRoundPermission()
-        .then((ok) => (ok ? sync() : setProfile({ round: { ...usePlantStore.getState().profile.round, enabled: false } })))
+      roundAllowed()
+        .then((ok) => !ok && setProfile({ round: { ...usePlantStore.getState().profile.round, enabled: false } }))
         .catch(() => {});
     if (TIPS_ENABLED) configurePurchases();
     // The city's measured sunlight for the light estimates: looked up when missing or a year old, and for a new city.

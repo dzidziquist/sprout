@@ -100,7 +100,7 @@ export function PlantMenu({
     const archived = !!plant.archivedAt;
     const items = archived
       ? [
-          <Link.MenuAction key="restore" title="Bring back to the jungle" icon="arrow.uturn.backward" onPress={actions.restore} />,
+          <Link.MenuAction key="restore" title="Restore to jungle" icon="arrow.uturn.backward" onPress={actions.restore} />,
           <Link.MenuAction key="delete" title="Delete" icon="trash" destructive onPress={() => confirmDelete(plant.name, actions.remove)} />,
         ]
       : [
@@ -207,7 +207,7 @@ export function PlantActionSheet({ plant, visible, onClose, actions }: { plant: 
             <Text style={[styles.title, { color: c.ink }]} numberOfLines={1}>{plant.name}</Text>
             {archived ? (
               <>
-                <Row icon="back" title="Bring back to the jungle" tint={c.mint} onPress={run(actions.restore)} />
+                <Row icon="back" title="Restore to jungle" tint={c.mint} onPress={run(actions.restore)} />
                 <Row icon="trash" title="Delete" tint={c.peach} destructive onPress={() => setStep('delete')} />
               </>
             ) : (
