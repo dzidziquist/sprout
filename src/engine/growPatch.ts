@@ -91,6 +91,26 @@ export interface GrowTask {
   plantIds: string[];
   /** Due in the coming 7 days (vs. sometime this month). */
   thisWeek: boolean;
+  /** A repeating job: a tick lasts this many days. Without it, a tick lasts the rest of the month. */
+  repeatDays?: number;
+}
+
+/** When each grow task was last ticked off (task id → ISO time). */
+export type GrowTicks = Record<string, string>;
+
+/**
+ * Whether a task still counts as done: ticked within its last `repeatDays` days (today only for a daily
+ * job), or for a one-off, ticked this month. So "Shake the flowers" comes back after 3 days.
+ */
+export function isTicked(task: Pick<GrowTask, 'id' | 'repeatDays'>, ticks: GrowTicks, now: Date): boolean {
+  const at = ticks[task.id];
+  if (!at) return false;
+  const then = new Date(at);
+  if (task.repeatDays) {
+    const days = Math.round((new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() - new Date(then.getFullYear(), then.getMonth(), then.getDate()).getTime()) / DAY);
+    return days >= 0 && days < task.repeatDays;
+  }
+  return then.getFullYear() === now.getFullYear() && then.getMonth() === now.getMonth();
 }
 
 function windowRange(w: TaskWindow, year: number): [number, number] {
@@ -157,7 +177,7 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Dat
     if (!plantIds.length) continue;
     // A window that has already closed this month isn't worth showing.
     if (!overlaps(task, dayStart, monthEnd, y)) continue;
-    out.push({ id: task.id, kind: task.kind, title: localizeClimateText(task.title, climate), body: localizeClimateText(task.body, climate), plantIds, thisWeek: overlaps(task, dayStart, weekEnd, y) });
+    out.push({ id: task.id, kind: task.kind, title: localizeClimateText(task.title, climate), body: localizeClimateText(task.body, climate), plantIds, thisWeek: overlaps(task, dayStart, weekEnd, y), repeatDays: task.repeatDays });
   }
 
   // Support: tall croppers and climbers need it once they're growing, until it's been logged.
@@ -177,22 +197,22 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Dat
   const guide = (p: Plant) => edibleGuide(p.speciesId);
   const swelling = mine.filter((p) => (p.stage === 'fruiting' || p.stage === 'harvesting') && guide(p)?.fruitingFeed && !edibleFeedingPaused(p, climate, realDate));
   if (swelling.length) {
-    out.push({ id: 'stage-potash', kind: 'feed', title: 'High-potash feed', body: 'Fruit is swelling: switch to a tomato feed every 10–14 days.', plantIds: swelling.map((p) => p.id), thisWeek: true });
+    out.push({ id: 'stage-potash', repeatDays: 10, kind: 'feed', title: 'High-potash feed', body: 'Fruit is swelling: switch to a tomato feed every 10–14 days.', plantIds: swelling.map((p) => p.id), thisWeek: true });
   }
   // Plants a calendar pollination task already covers this month don't need a second reminder.
   const pollinated = new Set(out.filter((t) => t.id.includes('pollinate')).flatMap((t) => t.plantIds));
   const flowering = (how: 'shake' | 'brush') => mine.filter((p) => p.stage === 'flowering' && guide(p)?.pollinate === how && !pollinated.has(p.id));
   const shake = flowering('shake');
   if (shake.length) {
-    out.push({ id: 'stage-pollinate', kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz open flowers at midday every 2–3 days to help them set.', plantIds: shake.map((p) => p.id), thisWeek: true });
+    out.push({ id: 'stage-pollinate', repeatDays: 3, kind: 'care', title: 'Shake the flowers', body: 'Tap or buzz open flowers at midday every 2–3 days to help them set.', plantIds: shake.map((p) => p.id), thisWeek: true });
   }
   const brush = flowering('brush');
   if (brush.length) {
-    out.push({ id: 'stage-hand-pollinate', kind: 'care', title: 'Hand-pollinate', body: 'In the morning, dab pollen from a male flower into the female (the one with a tiny fruit).', plantIds: brush.map((p) => p.id), thisWeek: true });
+    out.push({ id: 'stage-hand-pollinate', repeatDays: 2, kind: 'care', title: 'Hand-pollinate', body: 'In the morning, dab pollen from a male flower into the female (the one with a tiny fruit).', plantIds: brush.map((p) => p.id), thisWeek: true });
   }
   const basilFlowers = mine.filter((p) => p.speciesId === 'basil' && p.stage === 'flowering');
   if (basilFlowers.length && !out.some((t) => t.id === 'sea-basil-pinch' || t.id === 'acc-basil-pinch')) {
-    out.push({ id: 'stage-basil', kind: 'harvest', title: 'Pinch basil flowers', body: 'Nip the flower spikes so the leaves stay sweet.', plantIds: basilFlowers.map((p) => p.id), thisWeek: true });
+    out.push({ id: 'stage-basil', repeatDays: 7, kind: 'harvest', title: 'Pinch basil flowers', body: 'Nip the flower spikes so the leaves stay sweet.', plantIds: basilFlowers.map((p) => p.id), thisWeek: true });
   }
 
   return out.sort((a, b) => Number(b.thisWeek) - Number(a.thisWeek) || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));

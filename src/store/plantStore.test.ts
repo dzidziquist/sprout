@@ -474,3 +474,15 @@ describe('deleting a watering or a check', () => {
     expect(usePlantStore.getState().plants[0].nextCheckAt).toBe(day(4).toISOString());
   });
 });
+
+describe('tickGrowTask', () => {
+  it('saves a tick, takes it back off, and drops ticks older than two months', () => {
+    usePlantStore.setState({ profile: { ...DEFAULT_PROFILE, growTicks: { 'sea-old': '2026-01-01T00:00:00.000Z' } } });
+    const now = new Date('2026-07-10T12:00:00.000Z');
+    usePlantStore.getState().tickGrowTask('stage-pollinate', true, now);
+    expect(usePlantStore.getState().profile.growTicks).toEqual({ 'stage-pollinate': now.toISOString() });
+    usePlantStore.getState().tickGrowTask('stage-pollinate', false, now);
+    expect(usePlantStore.getState().profile.growTicks).toEqual({});
+  });
+});
+

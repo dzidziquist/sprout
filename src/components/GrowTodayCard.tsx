@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '../store/plantStore';
-import { ediblePlants, tasksFor, weatherAlerts, type AlertKind } from '../engine/growPatch';
+import { ediblePlants, isTicked, tasksFor, weatherAlerts, type AlertKind } from '../engine/growPatch';
 import { useForecast } from '../lib/weather';
 import { fonts, type } from '../theme/tokens';
 import { useColors, type Palette } from '../theme/theme';
@@ -63,6 +63,7 @@ export function GrowTodayCard() {
   const plants = usePlantStore((s) => s.plants);
   const climate = usePlantStore((s) => s.profile.climate);
   const events = usePlantStore((s) => s.events);
+  const ticks = usePlantStore((s) => s.profile.growTicks);
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
   const forecast = useForecast(climate, edibles.length > 0);
   const units = useUnits();
@@ -71,10 +72,12 @@ export function GrowTodayCard() {
     if (!edibles.length) return null;
     const alert = weatherAlerts(edibles, forecast, units)[0];
     if (alert) return { title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
-    const task = tasksFor(edibles, climate, new Date(), events)[0];
+    // The top job not already ticked off in the grow patch.
+    const now = new Date();
+    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now));
     if (task) return { title: task.title, body: localizeTemps(task.body, units), icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
     return { title: `${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing`, body: 'All quiet in the patch. Peek at stages and harvests.', icon: GROW_ICON.sow, tint: c.mint, eyebrow: 'Grow patch' };
-  }, [edibles, forecast, climate, c, units, events]);
+  }, [edibles, forecast, climate, c, units, events, ticks]);
 
   if (!item) return null;
 
