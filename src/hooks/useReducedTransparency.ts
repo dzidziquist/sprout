@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, Platform } from 'react-native';
 
 /** Whether the person has Reduce Transparency on (iOS Settings › Accessibility › Display & Text Size), kept up to date. */
 export function useReducedTransparency(): boolean {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
+    // An iOS setting; react-native-web doesn't implement the check at all (it throws).
+    if (Platform.OS !== 'ios') return;
     let live = true;
     AccessibilityInfo.isReduceTransparencyEnabled()
       .then((on) => live && setReduced(on))
