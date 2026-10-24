@@ -11,6 +11,7 @@ import {
   nextStage,
   tasksFor,
   weatherAlerts,
+  withTickedSupport,
   type DailyForecast,
 } from './growPatch';
 import { CALENDAR, EDIBLES } from '../data/edibles';
@@ -287,6 +288,23 @@ describe('stages and support', () => {
     expect(ids.find((t) => t.id === 'stage-trellis')?.plantIds).toEqual([cuke.id]);
     const after = tasksFor([tom], 'seattle', new Date(2026, 9, 5), [{ id: 's', plantId: tom.id, type: 'staked', at: '2026-10-01T09:00:00' }]);
     expect(after.map((t) => t.id)).not.toContain('stage-stake');
+  });
+
+  it('keeps a ticked stake job on the list while the tick lasts, so it can be unticked', () => {
+    const tom = plant({ name: 'Tommy', speciesId: 'tomato', stage: 'growing' });
+    const cuke = plant({ name: 'Cuke', speciesId: 'cucumber', stage: 'flowering' });
+    const at = '2026-10-05T09:00:00.000Z';
+    const events: CareEvent[] = [
+      { id: 's1', plantId: tom.id, type: 'staked', at },
+      { id: 's2', plantId: cuke.id, type: 'staked', at },
+    ];
+    const now = new Date(2026, 9, 5, 12);
+    const shown = withTickedSupport(events, [tom, cuke], { 'stage-stake': at }, now);
+    // The stake ticked here is hidden (job stays, ticked); the trellis wasn't ticked, so it counts.
+    expect(shown.map((e) => e.id)).toEqual(['s2']);
+    expect(tasksFor([tom, cuke], 'seattle', now, shown).map((t) => t.id)).toContain('stage-stake');
+    // Next month the tick has lapsed: the stake is logged and the job is gone.
+    expect(withTickedSupport(events, [tom, cuke], { 'stage-stake': at }, new Date(2026, 10, 2))).toEqual(events);
   });
 });
 

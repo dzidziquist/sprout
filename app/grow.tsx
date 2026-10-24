@@ -7,7 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, isTicked, skyOf, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
+import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, isTicked, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
 import { edibleGuide } from '@/data/edibles';
 import { speciesOf } from '@/data/species';
 import { useForecast } from '@/lib/weather';
@@ -271,8 +271,6 @@ export default function GrowPatch() {
   const faces = usePlantStore((s) => s.profile.faces);
   const ticks = usePlantStore((s) => s.profile.growTicks);
   const tickGrowTask = usePlantStore((s) => s.tickGrowTask);
-  // Read once: ticking "Give it a stake" logs it, but the row stays (ticked) until the next visit.
-  const [eventsAtOpen] = useState(events);
   const setStaked = usePlantStore((s) => s.setStaked);
   const now = new Date();
 
@@ -280,8 +278,9 @@ export default function GrowPatch() {
   const forecast = useForecast(climate, edibles.length > 0);
   const units = useUnits();
   const alerts = useMemo(() => weatherAlerts(edibles, forecast, units), [edibles, forecast, units]);
+  // A ticked "Give it a stake" stays on the list (ticked) while its tick lasts, so a mis-tap can be unticked.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const tasks = useMemo(() => tasksFor(edibles, climate, new Date(), eventsAtOpen), [edibles, climate, eventsAtOpen]);
+  const tasks = useMemo(() => tasksFor(edibles, climate, new Date(), withTickedSupport(events, edibles, ticks ?? {}, new Date())), [edibles, climate, events, ticks]);
   const stats = useMemo(() => harvestStats(events, edibles), [events, edibles]);
   const basket = formatTotals(stats.totals);
 
@@ -291,8 +290,10 @@ export default function GrowPatch() {
   const toggle = (t: GrowTask) => {
     haptics.tap();
     const on = !done(t);
-    if (t.id === 'stage-stake' || t.id === 'stage-trellis') setStaked(t.plantIds, on);
-    tickGrowTask(t.id, on);
+    // One timestamp for both, so the staked events count as logged by this tick.
+    const at = new Date();
+    if (t.id === 'stage-stake' || t.id === 'stage-trellis') setStaked(t.plantIds, on, at);
+    tickGrowTask(t.id, on, at);
   };
 
   return (

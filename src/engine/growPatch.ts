@@ -113,6 +113,24 @@ export function isTicked(task: Pick<GrowTask, 'id' | 'repeatDays'>, ticks: GrowT
   return then.getFullYear() === now.getFullYear() && then.getMonth() === now.getMonth();
 }
 
+/**
+ * The events to plan grow jobs from, minus the "staked" events logged by ticking "Give it a stake" or
+ * "Something to climb" while that tick lasts. Otherwise logging it would drop the job from the list,
+ * leaving nothing to untick when it was a mis-tap.
+ */
+export function withTickedSupport(events: CareEvent[], plants: Plant[], ticks: GrowTicks, now: Date): CareEvent[] {
+  const since: Partial<Record<'stake' | 'trellis', string>> = {};
+  for (const kind of ['stake', 'trellis'] as const) if (isTicked({ id: `stage-${kind}` }, ticks, now)) since[kind] = ticks[`stage-${kind}`];
+  if (!since.stake && !since.trellis) return events;
+  const kindOf = new Map(plants.map((p) => [p.id, supportFor(p.speciesId)]));
+  return events.filter((e) => {
+    if (e.type !== 'staked') return true;
+    const kind = kindOf.get(e.plantId);
+    const from = kind && since[kind];
+    return !(from && e.at >= from);
+  });
+}
+
 function windowRange(w: TaskWindow, year: number): [number, number] {
   const last = new Date(year, w.month + 1, 0).getDate();
   const start = new Date(year, w.month, w.from ?? 1).getTime();
