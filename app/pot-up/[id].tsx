@@ -114,13 +114,13 @@ export default function PotUpScreen() {
               >
                 <Text style={[styles.chipText, { color: on ? textOn(c.leaf, c) : c.ink }]}>
                   {SOIL_LABEL[s]}
-                  {s === defaultSoil ? ' ★' : ''}
+                  {s === defaultSoil ? ' · usual' : ''}
                 </Text>
               </Pressable>
             );
           })}
         </View>
-        <Text style={styles.hint}>★ what {speciesOf(plant).commonName} usually likes</Text>
+        <Text style={styles.hint}>“Usual” is what {speciesOf(plant).commonName} usually likes.</Text>
       </View>
 
       <View style={styles.section}>

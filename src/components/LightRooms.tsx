@@ -77,8 +77,8 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
         </Pressable>
         {action && (
           <Pressable accessibilityRole="button" accessibilityLabel={`${action} for ${p.name}`} hitSlop={8} onPress={() => go('/spot/[id]', { id: p.id })} style={styles.action}>
-            <Text style={[styles.actionText, { color: c.leafDeep }]}>{action}</Text>
-            <LineIcon name="arrow-right" color={c.leafDeep} size={14} width={2.4} />
+            <Text style={[styles.actionText, { color: c.link }]}>{action}</Text>
+            <LineIcon name="arrow-right" color={c.link} size={14} width={2.4} />
           </Pressable>
         )}
       </View>

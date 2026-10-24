@@ -89,7 +89,19 @@ function WishCard({ wish }: { wish: WishItem }) {
 
   return (
     <View style={[styles.card, { borderColor: c.line, backgroundColor: c.card, boxShadow: `0px 4px 0px ${c.drop}` }]}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`Read about ${title}`} onPress={open} style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Read about ${title}`}
+        // One VoiceOver element: removing is offered as an action on it.
+        accessibilityActions={[{ name: 'remove', label: `Remove ${title} from wishlist` }]}
+        onAccessibilityAction={(e) => {
+          if (e.nativeEvent.actionName !== 'remove') return;
+          haptics.tap();
+          removeWish(wish.id);
+        }}
+        onPress={open}
+        style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}
+      >
         <View style={[styles.thumb, { borderColor: c.line, backgroundColor: c.potTint[sp.artPot], alignItems: 'center', justifyContent: 'center' }]}>
           <PlantBuddy speciesId={wish.speciesId} size={50} bg={c.potTint[sp.artPot]} />
         </View>

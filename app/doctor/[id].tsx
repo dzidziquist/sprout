@@ -272,7 +272,7 @@ export default function DoctorScreen() {
               onCutting={() => router.push(`/cuttings/${plant.id}`)}
             />
           ))}
-          {saved && <Text style={[styles.saved, { color: c.leafDeep }]}>{saved}</Text>}
+          {saved && <Text style={[styles.saved, { color: c.link }]}>{saved}</Text>}
         </View>
       )}
 

@@ -110,7 +110,7 @@ export default function AwayScreen() {
         <View style={{ gap: 8 }}>
           <View style={styles.listHead}>
             <Label>{away ? 'Hope you did these' : 'Before you go'}</Label>
-            <Text style={[styles.count, { color: ticked === list.length ? c.leafDeep : c.inkMuted }]}>
+            <Text style={[styles.count, { color: ticked === list.length ? c.link : c.inkMuted }]}>
               {ticked === list.length ? 'All set ✓' : `${ticked} of ${list.length} done`}
             </Text>
           </View>

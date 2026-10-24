@@ -40,7 +40,7 @@ export default function PrivacyScreen() {
           <Text style={[styles.h, { color: c.ink }]} accessibilityRole="header">{s.title}</Text>
           {s.body.map((p) => (
             <View key={p} style={styles.bullet}>
-              <Text style={[styles.dot, { color: c.leafDeep }]}>•</Text>
+              <Text style={[styles.dot, { color: c.link }]}>•</Text>
               <Text style={[styles.p, { color: c.ink }]}>{p}</Text>
             </View>
           ))}
@@ -53,7 +53,7 @@ export default function PrivacyScreen() {
           {SUPPORT_EMAIL ? (
             <>
               Write to{' '}
-              <Text style={{ color: c.leafDeep, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=PlantFam%20privacy`)}>
+              <Text style={{ color: c.link, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=PlantFam%20privacy`)}>
                 {SUPPORT_EMAIL}
               </Text>
               . A real person answers.
@@ -61,7 +61,7 @@ export default function PrivacyScreen() {
           ) : (
             <>
               PlantFam is made by an independent developer. Get in touch at{' '}
-              <Text style={{ color: c.leafDeep, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(SUPPORT_URL)}>
+              <Text style={{ color: c.link, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(SUPPORT_URL)}>
                 {SUPPORT_URL.replace(/^https?:\/\//, '')}
               </Text>
               .
@@ -74,7 +74,7 @@ export default function PrivacyScreen() {
         <Text style={[styles.h, { color: c.ink }]} accessibilityRole="header">Credits</Text>
         {CREDITS.map((cr) => (
           <Text key={cr.name} style={[styles.p, { color: c.ink }]}>
-            <Text style={{ color: c.leafDeep, textDecorationLine: 'underline', fontFamily: fonts.bodyHeavy }} accessibilityRole="link" onPress={() => Linking.openURL(cr.url)}>
+            <Text style={{ color: c.link, textDecorationLine: 'underline', fontFamily: fonts.bodyHeavy }} accessibilityRole="link" onPress={() => Linking.openURL(cr.url)}>
               {cr.name}
             </Text>
             {` · ${cr.what}`}

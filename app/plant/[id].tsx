@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import Svg, { Path } from 'react-native-svg';
 import { archiveFloor, canDeleteEvent, usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
@@ -101,7 +102,7 @@ export default function PlantDetail() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const c = useColors();
-  const { plants, events, profile, addPhoto, setArchivedAt, deleteEvent } = usePlantStore();
+  const { plants, events, profile, addPhoto, setArchivedAt, deleteEvent } = usePlantStore(useShallow((s) => ({ plants: s.plants, events: s.events, profile: s.profile, addPhoto: s.addPhoto, setArchivedAt: s.setArchivedAt, deleteEvent: s.deleteEvent })));
   const plant = plants.find((p) => p.id === id);
   const actions = usePlantActions(plant);
   const [showPhoto, setShowPhoto] = useState(true);
@@ -372,7 +373,7 @@ export default function PlantDetail() {
           )}
           {species.tip && !plant.rooting && (
             <Sticker drop={0} bg={c.butter} style={{ padding: 12 }}>
-              <Text style={[styles.rowVal, { color: c.ink, textAlign: 'left' }]}>💡 {species.tip}</Text>
+              <Text style={[styles.rowVal, { color: textOn(c.butter, c), textAlign: 'left' }]}>{species.tip}</Text>
             </Sticker>
           )}
 

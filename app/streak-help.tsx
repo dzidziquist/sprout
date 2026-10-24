@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
   pillCol: { width: 48, alignItems: 'center' },
   pill: { width: 44, height: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   dashed: { borderStyle: 'dashed', opacity: 0.6 },
-  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 10 },
+  pillText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   saverBox: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 18, padding: 12 },
 });

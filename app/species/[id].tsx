@@ -127,7 +127,7 @@ export default function SpeciesPage() {
           {known && (
             <Text style={[styles.small, { color: c.inkMuted }]}>
               Pet safety is our reading of the ASPCA list.{' '}
-              <Text accessibilityRole="link" onPress={() => Linking.openURL(ASPCA_URL)} style={{ color: c.leafDeep, textDecorationLine: 'underline' }}>
+              <Text accessibilityRole="link" onPress={() => Linking.openURL(ASPCA_URL)} style={{ color: c.link, textDecorationLine: 'underline' }}>
                 Check ASPCA ›
               </Text>
             </Text>
@@ -147,7 +147,7 @@ export default function SpeciesPage() {
               <Text style={[styles.text, { color: c.ink }]}>{wiki.extract}</Text>
               <View style={styles.row}>
                 <Text style={[styles.small, { color: c.inkMuted }]}>From Wikipedia</Text>
-                <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.link, { color: c.leafDeep }]}>Read more ›</Text>
+                <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.link, { color: c.link }]}>Read more ›</Text>
               </View>
             </View>
           )}

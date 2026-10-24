@@ -1,4 +1,5 @@
 import { usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -53,7 +54,7 @@ export default function IdentifyScreen() {
   const insets = useSafeAreaInsets();
   const sheetTop = useSheetTop();
   const c = useColors();
-  const { profile, setProfile } = usePlantStore();
+  const { profile, setProfile } = usePlantStore(useShallow((s) => ({ profile: s.profile, setProfile: s.setProfile })));
   const [phase, setPhase] = useState<Phase>(() => (plantIdConfigured() ? { kind: 'empty' } : { kind: 'error', problem: 'no-key' }));
   const [confirm, setConfirm] = useState<CatalogueMatch | null>(null);
   const abort = useRef<AbortController | null>(null);

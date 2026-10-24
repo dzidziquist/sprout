@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore, type FaceStyle, type Profile } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { GlassButton } from '@/components/GlassButton';
 import { Segmented } from '@/components/Segmented';
 import { useDataActions } from '@/hooks/useDataActions';
@@ -110,7 +111,7 @@ export default function SettingsScreen() {
   const c = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { profile, setProfile, plants, eraseEverything } = usePlantStore();
+  const { profile, setProfile, plants, eraseEverything } = usePlantStore(useShallow((s) => ({ profile: s.profile, setProfile: s.setProfile, plants: s.plants, eraseEverything: s.eraseEverything })));
   const rewards = useRewards();
   const data = useDataActions();
   const idle = (fn: () => void) => () => {

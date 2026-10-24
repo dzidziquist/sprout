@@ -9,6 +9,7 @@ import { useTabPadding } from '@/hooks/useTabPadding';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { checksWaterLine, isDue, isRefreshDue, isReservoir, moodFor } from '@/engine/careEngine';
 import { activeTrip, upcomingTrip } from '@/engine/away';
 import { PlantBuddy } from '@/components/PlantBuddy';
@@ -80,7 +81,7 @@ export default function TodayScreen() {
   const pad = useTabPadding(8);
   const router = useRouter();
   const c = useColors();
-  const { plants, profile, events, logCheck, undoLastCheck, undo } = usePlantStore();
+  const { plants, profile, events, logCheck, undoLastCheck, undo } = usePlantStore(useShallow((s) => ({ plants: s.plants, profile: s.profile, events: s.events, logCheck: s.logCheck, undoLastCheck: s.undoLastCheck, undo: s.undo })));
   const [messages, setMessages] = useState<Record<string, string>>({});
   const swipeRefs = useRef<Record<string, Swipeable | null>>({});
   // Re-renders at midnight so plants that just came due join the round.
@@ -186,14 +187,15 @@ export default function TodayScreen() {
             const water = checksWaterLine(p);
             const outcome = !due && p.lastResult ? (water && p.lastResult === 'dry' ? { ...OUTCOME.dry, text: 'Topped up' } : OUTCOME[p.lastResult]) : undefined;
             const card = (
-              <PlantMenu plant={p}>
+              <PlantMenu plant={p} hasControls>
                 <Sticker style={styles.card}>
                   <View style={[styles.thumb, { backgroundColor: tint, borderColor: c.line }, goldFrame(p.potColor)]}>
                     <PlantBuddy speciesId={p.speciesId} mood={mood} pot={p.potColor} size={74} bg={tint} faces={profile.faces} />
                     <GoldSparkles pot={p.potColor} size={0.8} />
                   </View>
                   <View style={{ flex: 1, gap: 6 }}>
-                    <View>
+                    {/* VoiceOver's way in to the details: activating it taps the card behind it. */}
+                    <View accessible accessibilityRole="button" accessibilityLabel={`${p.name}, ${due ? reason(p, now) : messages[p.id] ?? 'Logged'}`} accessibilityHint="Opens details. Press and hold for more actions">
                       <Text style={[styles.name, { color: c.ink }]} numberOfLines={1}>{p.name}</Text>
                       <Text style={[styles.reason, { color: due ? c.inkMuted : c.good }]}>{due ? reason(p, now) : messages[p.id] ?? 'Logged'}</Text>
                     </View>
@@ -270,7 +272,7 @@ export default function TodayScreen() {
             <Label>Coming up</Label>
             {upNext.length > 3 && (
               <Pressable accessibilityRole="button" hitSlop={10} onPress={() => router.push('/coming-up')}>
-                <Text style={[styles.upToggle, { color: c.leafDeep }]}>See all {upNext.length}</Text>
+                <Text style={[styles.upToggle, { color: c.link }]}>See all {upNext.length}</Text>
               </Pressable>
             )}
           </View>
@@ -316,7 +318,7 @@ const styles = StyleSheet.create({
   name: { fontFamily: fonts.displaySemi, fontSize: 18 },
   reason: { fontFamily: fonts.bodyHeavy, fontSize: 13 },
   answers: { flexDirection: 'row', gap: 8, alignItems: 'center', minHeight: 48 },
-  tallChip: { height: 44, borderRadius: 22, paddingHorizontal: 14 },
+  tallChip: { minHeight: 44, borderRadius: 22, paddingHorizontal: 14 },
   undo: { minHeight: 44, justifyContent: 'center' },
   swipeActions: { flexDirection: 'row', gap: 6, paddingLeft: 8, paddingVertical: 4 },
   swipeAction: { width: 64, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', gap: 4 },

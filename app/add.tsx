@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { OTHER, SPECIES_LIST, getSpecies, isOtherId, isSpeciesId, searchSpecies } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
 import { isReservoir } from '@/engine/careEngine';
@@ -19,7 +20,9 @@ import { GlassButton } from '@/components/GlassButton';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
-import { textOn, useColors } from '@/theme/theme';
+import { textOn, useColors, selectedFill } from '@/theme/theme';
+import { LineIcon } from '@/components/LineIcon';
+import { SunIcon } from '@/components/SunIcon';
 import type { EdibleStage, Light, Origin, PlantCategory, Placement, PotMaterial, Soil, SpeciesGroup, SpeciesId } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
 
@@ -122,9 +125,9 @@ function startStage(guide: EdibleGuide, origin: Origin): EdibleStage {
   return has('seedling') ? 'seedling' : (guide.stages.find((s) => s !== 'seed') ?? guide.stages[0]);
 }
 
-function Pill({ on, label, onPress, bg }: { on: boolean; label: string; onPress: () => void; bg?: string }) {
+function Pill({ on, label, onPress, bg, children }: { on: boolean; label: string; onPress: () => void; bg?: string; children?: React.ReactNode }) {
   const c = useColors();
-  const fill = bg ?? c.mint;
+  const fill = selectedFill(bg ?? c.mint, c);
   return (
     <Pressable
       accessibilityRole="button"
@@ -133,8 +136,9 @@ function Pill({ on, label, onPress, bg }: { on: boolean; label: string; onPress:
         haptics.tap();
         onPress();
       }}
-      style={[styles.pill, { borderColor: c.line, backgroundColor: on ? fill : c.card }, on && { boxShadow: `0px 3px 0px ${c.drop}` }]}
+      style={[styles.pill, { borderColor: c.line, backgroundColor: on ? fill : c.card }, on && { boxShadow: `0px 3px 0px ${c.drop}` }, !!children && styles.pillWithIcon]}
     >
+      {children}
       <Text style={[styles.pillText, { color: on ? textOn(fill, c) : c.ink }]}>{label}</Text>
     </Pressable>
   );
@@ -182,7 +186,7 @@ export default function AddPlantScreen() {
   // Arriving from photo ID (/add?species=pothos) skips the picker.
   const otherPreset = params.other ? OTHER.tropical.id : null;
   const preset = isSpeciesId(params.species) ? params.species : otherPreset;
-  const { plants, addPlant, profile, removeWish } = usePlantStore();
+  const { plants, addPlant, profile, removeWish } = usePlantStore(useShallow((s) => ({ plants: s.plants, addPlant: s.addPlant, profile: s.profile, removeWish: s.removeWish })));
   const presetDefaults = preset ? defaultsFor(preset, profile.spots) : null;
   const units = useUnits();
   const [speciesId, setSpeciesId] = useState<SpeciesId | null>(preset);
@@ -347,7 +351,16 @@ export default function AddPlantScreen() {
         )}
         <View style={styles.grid}>
           {results.slice(0, limit).map((s) => (
-            <Pressable key={s.id} accessibilityRole="button" accessibilityLabel={s.commonName} onPress={() => pick(s.id)} style={[styles.speciesTile, { backgroundColor: c.potTint[s.artPot], borderColor: c.line }]}>
+            <Pressable
+              key={s.id}
+              accessibilityRole="button"
+              accessibilityLabel={s.commonName}
+              // The tile is one VoiceOver element, so its About button is offered as an action on it.
+              accessibilityActions={[{ name: 'about', label: `About ${s.commonName}` }]}
+              onAccessibilityAction={(e) => e.nativeEvent.actionName === 'about' && router.push(`/species/${s.id}?from=add`)}
+              onPress={() => pick(s.id)}
+              style={[styles.speciesTile, { backgroundColor: c.potTint[s.artPot], borderColor: c.line }]}
+            >
               <PlantBuddy speciesId={s.id} size={84} />
               <Text style={[styles.speciesName, { color: c.ink }]} numberOfLines={1}>{s.commonName}</Text>
               <Pressable
@@ -521,7 +534,11 @@ export default function AddPlantScreen() {
       <Label>How sunny is its spot?</Label>
       <View style={styles.wrap}>
         {LIGHTS.map((l) => (
-          <Pill key={l.id} on={light === l.id} bg={c.sun} label={`${'☀'.repeat(l.suns)} ${l.label}`} onPress={() => setLight(l.id)} />
+          <Pill key={l.id} on={light === l.id} bg={c.sun} label={l.label} onPress={() => setLight(l.id)}>
+            <View style={{ flexDirection: 'row' }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              {Array.from({ length: l.suns }, (_, i) => <SunIcon key={i} color={light === l.id ? textOn(selectedFill(c.sun, c), c) : c.ink} size={14} width={2.4} />)}
+            </View>
+          </Pill>
         ))}
       </View>
 
@@ -544,7 +561,11 @@ export default function AddPlantScreen() {
       </View>
       {indoors && (
         <View style={styles.wrap}>
-          <Pill on={placement === 'growlight'} bg={c.butter} label="💡 Under a grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')} />
+          <Pill on={placement === 'growlight'} bg={c.butter} label="Under a grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')}>
+            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <LineIcon name="bulb" color={placement === 'growlight' ? textOn(selectedFill(c.butter, c), c) : c.ink} size={16} width={2.2} />
+            </View>
+          </Pill>
         </View>
       )}
       <Text style={[styles.note, { color: c.inkMuted }]}>
@@ -617,7 +638,7 @@ export default function AddPlantScreen() {
             </Text>
           )}
         </View>
-        <Text style={[styles.moreLink, { color: c.leafDeep }]}>{showMore ? 'Done' : 'Change'}</Text>
+        <Text style={[styles.moreLink, { color: c.link }]}>{showMore ? 'Done' : 'Change'}</Text>
       </Pressable>
       {!showMore && <Text style={[styles.note, { color: c.inkMuted }]}>Good defaults are set. Your checks fine-tune everything over time.</Text>}
       {showMore && (
@@ -703,7 +724,8 @@ const styles = StyleSheet.create({
   heroName: { fontFamily: fonts.display, fontSize: 22 },
   dice: { width: 50, height: 50, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  pill: { minHeight: 42, paddingHorizontal: 14, borderRadius: 21, borderWidth: 2, justifyContent: 'center' },
+  pill: { minHeight: 44, paddingHorizontal: 14, borderRadius: 22, borderWidth: 2, justifyContent: 'center' },
+  pillWithIcon: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   soilPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 6 },
   swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2 },
   pillText: { fontFamily: fonts.bodyHeavy, fontSize: 14 },

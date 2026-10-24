@@ -60,7 +60,7 @@ function PlantCard({ plant, faded }: { plant: Plant; faded?: boolean }) {
   const tint = c.potTint[plant.potColor];
   const badge = statusOf(plant, faded, c, now, false, away);
   return (
-    <PlantMenu plant={plant} style={{ flex: 1 }}>
+    <PlantMenu plant={plant} style={{ flex: 1 }} label={[plant.name, speciesOf(plant).commonName, badge.text, plant.room].filter(Boolean).join(', ')}>
       <Sticker drop={faded ? 0 : 4} style={[{ flex: 1 }, faded && { opacity: 0.55 }]}>
         <View style={[styles.art, { backgroundColor: tint, borderColor: c.line }, goldFrame(plant.potColor)]}>
           <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} mood={faded ? 'happy' : mood} pot={plant.potColor} size={96} bg={tint} faces={faded ? 'off' : faces} />
@@ -99,7 +99,7 @@ function PlantRow({ plant, faded }: { plant: Plant; faded?: boolean }) {
   const pill = statusOf(plant, faded, c, now, true, away);
   const kind = speciesOf(plant).commonName;
   return (
-    <PlantMenu plant={plant}>
+    <PlantMenu plant={plant} label={[plant.name, kind, pill.text, plant.room].filter(Boolean).join(', ')}>
       <View style={[styles.row, { borderColor: c.line, backgroundColor: c.card }, faded && { opacity: 0.6 }]}>
         <View style={[styles.thumb, { backgroundColor: tint, borderColor: c.line }]}>
           <PlantBuddy speciesId={plant.rooting ? 'cutting' : plant.speciesId} mood={faded ? 'happy' : mood} pot={plant.potColor} size={42} bg={tint} faces={faded ? 'off' : faces} />
@@ -337,11 +337,11 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 64, borderWidth: 2, borderRadius: 18, paddingHorizontal: 8, paddingVertical: 6 },
   thumb: { width: 48, height: 48, borderRadius: 24, borderWidth: 2, alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' },
   rowName: { fontFamily: fonts.displaySemi, fontSize: 16 },
-  pill: { borderWidth: 2, borderRadius: 13, paddingHorizontal: 8, height: 26, justifyContent: 'center', maxWidth: 130 },
+  pill: { borderWidth: 2, borderRadius: 13, paddingHorizontal: 8, paddingVertical: 2, minHeight: 26, justifyContent: 'center', maxWidth: 130 },
   noMatch: { alignItems: 'center', gap: 12, padding: 18 },
   noMatchTitle: { fontFamily: fonts.displaySemi, fontSize: 17, textAlign: 'center' },
   art: { height: 104, alignItems: 'center', justifyContent: 'flex-end', borderBottomWidth: 2, borderTopLeftRadius: 20, borderTopRightRadius: 20, overflow: 'hidden' },
-  badge: { position: 'absolute', top: 8, left: 8, borderWidth: 2, borderRadius: 13, paddingHorizontal: 8, height: 26, justifyContent: 'center' },
+  badge: { position: 'absolute', top: 8, left: 8, borderWidth: 2, borderRadius: 13, paddingHorizontal: 8, paddingVertical: 2, minHeight: 26, justifyContent: 'center' },
   badgeText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   meta: { paddingHorizontal: 12, paddingVertical: 8 },
   name: { fontFamily: fonts.displaySemi, fontSize: 17 },

@@ -92,7 +92,7 @@ export function StreakCard({ streak, onHelp }: { streak: StreakResult; onHelp?: 
         </View>
         {onHelp && (
           <Pressable accessibilityRole="button" accessibilityLabel="How your streak works" hitSlop={10} onPress={onHelp} style={styles.help}>
-            <Text style={[styles.helpText, { color: c.leafDeep }]}>How it works</Text>
+            <Text style={[styles.helpText, { color: c.link }]}>How it works</Text>
           </Pressable>
         )}
       </View>
@@ -138,18 +138,18 @@ const styles = StyleSheet.create({
   weeks: { flexDirection: 'row', gap: 6 },
   col: { flex: 1, maxWidth: 44, alignItems: 'center', gap: 3 },
   nowCol: { maxWidth: 56, flexGrow: 1.3 },
-  week: { alignSelf: 'stretch', height: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  date: { fontFamily: fonts.bodyHeavy, fontSize: 9, opacity: 0.75 },
+  week: { alignSelf: 'stretch', minHeight: 22, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  date: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   help: { marginLeft: 'auto' },
   helpText: { fontFamily: fonts.bodyHeavy, fontSize: 12, textDecorationLine: 'underline' },
   ahead: { borderStyle: 'dashed', opacity: 0.45 },
-  nowText: { fontFamily: fonts.bodyHeavy, fontSize: 10 },
+  nowText: { fontFamily: fonts.bodyHeavy, fontSize: 11 },
   footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
   savers: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 5, paddingLeft: 6, paddingRight: 10, borderRadius: 16, borderWidth: 2 },
   tokens: { flexDirection: 'row', alignItems: 'center' },
   saver: { width: 34, height: 34 },
   saverTitle: { fontFamily: fonts.bodyHeavy, fontSize: 12, lineHeight: 15 },
-  saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 10, lineHeight: 12 },
+  saverSub: { fontFamily: fonts.bodyHeavy, fontSize: 11, lineHeight: 14 },
   meta: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   how: { fontFamily: fonts.bodyHeavy, fontSize: 11, opacity: 0.8 },
   legend: { flexDirection: 'row', alignItems: 'center', marginTop: -2 },
