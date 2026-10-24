@@ -129,8 +129,8 @@ export function StagePanel({ plant, now }: { plant: Plant; now: Date }) {
 
       <View style={styles.actions}>
         <Button title="Log harvest" bg={c.peach} onPress={() => router.push(`/harvest/${plant.id}`)} style={styles.half} />
-        {guide.regrows ? <Button title="Cut & regrow" bg={c.mint} onPress={regrow} style={styles.half} /> : null}
-        <Button title="Grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={styles.half} />
+        {guide.regrows ? <Button title="Cut and regrow" bg={c.mint} onPress={regrow} style={styles.half} /> : null}
+        <Button title="Open grow patch" bg={c.butter} onPress={() => router.push('/grow')} style={styles.half} />
       </View>
     </Sticker>
   );

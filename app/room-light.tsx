@@ -15,6 +15,7 @@ import { useSheetTop } from '@/lib/sheetTop';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 
 const FACINGS: Facing[] = ['N', 'E', 'S', 'W'];
 const SHADES: { id: Shade; label: string }[] = [
@@ -41,6 +42,8 @@ export default function RoomLightSheet() {
   const [windows, setWindows] = useState<WindowLight[]>(() => (saved ? windowsOf(saved) : []));
   // A room being set up for the first time starts by adding its first window.
   const [draft, setDraft] = useState<Draft | null>(() => (saved ? null : { index: null, facing: null, shade: 'none' }));
+  const [start] = useState(() => JSON.stringify(windows));
+  const leave = useDiscardGuard(JSON.stringify(windows) !== start || !!draft?.facing);
   const [compass, setCompass] = useState<Compass>('off');
   const [heading, setHeading] = useState<number | null>(null);
   const [calibrated, setCalibrated] = useState(true);
@@ -121,7 +124,7 @@ export default function RoomLightSheet() {
     if (draft) return;
     setRoomLight(name, { windows });
     haptics.success();
-    close();
+    leave(close);
   };
 
   const editor = draft && (
@@ -145,7 +148,7 @@ export default function RoomLightSheet() {
               }}
               style={{ flex: 1 }}
             />
-            <Button title={pointed ? `It faces ${FACING_LABEL[pointed]}` : 'Waiting…'} raised bg={c.leaf} disabled={!pointed} onPress={usePointed} style={[{ flex: 2 }, !pointed && { opacity: 0.5 }]} />
+            <Button title={pointed ? `Use ${FACING_LABEL[pointed]}` : 'Finding direction…'} raised bg={c.leaf} disabled={!pointed} onPress={usePointed} style={[{ flex: 2 }, !pointed && { opacity: 0.5 }]} />
           </View>
         </View>
       ) : (

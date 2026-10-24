@@ -384,7 +384,7 @@ function CauseCard({ cause, likelihood, why, c, onSave, onCutting }: { cause: Ca
         ))}
       </View>
       <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
-        <Button title="This is it: save" bg={c.leaf} onPress={onSave} style={{ flex: 1, minHeight: 44 }} />
+        <Button title="Save diagnosis" bg={c.leaf} onPress={onSave} style={{ flex: 1, minHeight: 44 }} />
         {cause.rescue && <Button title="Save a cutting" bg={c.lavender} onPress={onCutting} style={{ flex: 1, minHeight: 44 }} />}
       </View>
     </Sticker>

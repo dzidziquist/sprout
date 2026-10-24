@@ -55,10 +55,10 @@ describe('away mode', () => {
     const plants = [plant('a', { name: 'Monty', nextCheckAt: '2026-06-12T09:00:00' })];
     const rounds = planRounds(plants, new Date('2026-06-08T07:00:00'), 8, 30, 20, undefined, [trip]);
     const days = rounds.map((r) => `${r.fireAt.getDate()} ${r.digest.title}`);
-    expect(days).toContain('9 Off tomorrow? 🧳');
+    expect(days).toContain('9 Off tomorrow?');
     expect(rounds.some((r) => r.fireAt.getDate() > 9 && r.fireAt.getDate() < 24)).toBe(false);
     const back = rounds.find((r) => r.fireAt.getDate() === 24)!;
-    expect(back.digest.title).toBe('Welcome back 🧳');
+    expect(back.digest.title).toBe('Welcome back');
     expect(back.digest.body).toMatch(/Monty/);
   });
 

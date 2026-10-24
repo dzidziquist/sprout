@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
@@ -39,14 +39,25 @@ export default function NoteSheet() {
     go(close);
   };
   const remove = () => {
+    const del = () => {
+      editNote(event.id, '');
+      haptics.success();
+      go(close);
+    };
+    // Web has no native alert, so the preview asks with a second tap instead.
+    if (Platform.OS !== 'web') {
+      Alert.alert('Delete this note?', 'It comes off the plant’s history.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: del },
+      ]);
+      return;
+    }
     if (!confirm) {
       haptics.tap();
       setConfirm(true);
       return;
     }
-    editNote(event.id, '');
-    haptics.success();
-    go(close);
+    del();
   };
 
   return (
@@ -80,8 +91,8 @@ export default function NoteSheet() {
         style={[styles.input, { backgroundColor: c.cloud, color: c.ink }]}
         accessibilityLabel={photo ? 'Caption' : 'Note'}
       />
-      <Button title="Save" raised bg={c.leaf} onPress={save} style={{ minHeight: 56 }} />
-      {!photo && (
+      <Button title={!photo && !text.trim() ? 'Delete note' : 'Save'} raised bg={!photo && !text.trim() ? c.coral : c.leaf} onPress={save} style={{ minHeight: 56 }} />
+      {!photo && !!text.trim() && (
         <Pressable accessibilityRole="button" onPress={remove} hitSlop={8} style={styles.delete}>
           <Text style={[styles.deleteText, { color: c.warn }]}>{confirm ? 'Tap again to delete' : 'Delete note'}</Text>
         </Pressable>

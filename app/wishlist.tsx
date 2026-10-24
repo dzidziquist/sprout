@@ -83,7 +83,6 @@ function WishCard({ wish }: { wish: WishItem }) {
   const homeLine = !home ? null : home.suits ? `Would suit your ${home.suits.toLowerCase()}` : 'No great spot in your rooms yet';
   const open = () => router.push(speciesHref(wish.speciesId, wish.custom) as never);
   const add = () => {
-    haptics.tap();
     router.replace(addHref(wish.speciesId, wish.custom, wish.id) as never);
   };
 
@@ -133,7 +132,7 @@ function WishCard({ wish }: { wish: WishItem }) {
         accessibilityLabel={`Note for ${title}`}
         style={[styles.note, { backgroundColor: c.cloud, color: c.ink }]}
       />
-      <Button title="Got it! Add to my fam" bg={c.leaf} onPress={add} style={{ minHeight: 46 }} />
+      <Button title="Bought it: add to jungle" bg={c.leaf} onPress={add} style={{ minHeight: 46 }} />
     </View>
   );
 }

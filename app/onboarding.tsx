@@ -55,8 +55,9 @@ export default function Onboarding() {
     // Waiting on the permission prompt: a second tap (or the other button) mustn't run this twice.
     if (finishing.current) return;
     finishing.current = true;
-    // The round is on by default, so this is where iOS asks to send it.
-    const ok = await ensureRoundPermission().catch(() => false);
+    // The round is on by default, so this is where iOS asks to send it. The demo is just a look around,
+    // so it doesn't ask; reminders can be turned on in Settings later.
+    const ok = demo ? false : await ensureRoundPermission().catch(() => false);
     setProfile({ round: { ...profile.round, enabled: ok } });
     if (demo) seedDemo();
     completeOnboarding();
@@ -76,7 +77,7 @@ export default function Onboarding() {
           <Title style={{ fontSize: 42, lineHeight: 44, color: light.ink }}>Your plants, but happier.</Title>
           <Text style={w.lede}>Every plant in the fam gets its own rhythm, a photo diary, and a family tree for every cutting.</Text>
         </View>
-        <Button title="Let's grow!" raised bg={light.white} onPress={() => setStep(1)} style={{ minHeight: 60, borderColor: light.line, boxShadow: `0px 4px 0px ${light.drop}` }} textStyle={{ fontSize: 20, fontFamily: fonts.display, color: light.ink }} />
+        <Button title="Get started" raised bg={light.white} onPress={() => setStep(1)} style={{ minHeight: 60, borderColor: light.line, boxShadow: `0px 4px 0px ${light.drop}` }} textStyle={{ fontSize: 20, fontFamily: fonts.display, color: light.ink }} />
       </View>
     );
   }

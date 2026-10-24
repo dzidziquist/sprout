@@ -30,7 +30,7 @@ describe('round digest', () => {
   });
 
   it('names one or two plants in their own voice', () => {
-    expect(roundDigestFor([plant('Queenie', '2026-10-14T09:00:00')], day)?.body).toBe('Queenie would love a soil check. 1 min, tops.');
+    expect(roundDigestFor([plant('Queenie', '2026-10-14T09:00:00')], day)?.body).toBe('Queenie would love a soil check. About 1 min.');
     expect(roundDigestFor([plant('Queenie', '2026-10-13T09:00:00'), plant('Cal', '2026-10-14T20:00:00')], day)?.body).toMatch(/^Queenie and Cal would love/);
   });
 
@@ -38,7 +38,7 @@ describe('round digest', () => {
     const list = ['A', 'B', 'C', 'D'].map((n) => plant(n, '2026-10-14T09:00:00'));
     list.push(plant('Rootie', '2026-10-14T09:00:00', { rooting: { method: 'water', startedAt: '2026-10-01T00:00:00' } }));
     const d = roundDigestFor(list, day)!;
-    expect(d.body).toBe('A, B and 2 more would love a soil check. 5 mins, tops.');
+    expect(d.body).toBe('A, B and 2 more would love a soil check. About 5 mins.');
     expect(d.plantIds).not.toContain('rootie');
   });
 
@@ -79,9 +79,9 @@ describe('round digest wording', () => {
   it('asks for a water check when only hydro plants are due, and just "a check" for a mix', () => {
     const jar = plant('Jar', '2026-10-14T09:00:00', { soil: 'water' });
     const pot = plant('Pot', '2026-10-14T09:00:00');
-    expect(roundDigestFor([jar], day)?.body).toBe('Jar would love a water check. 1 min, tops.');
-    expect(roundDigestFor([pot], day)?.body).toBe('Pot would love a soil check. 1 min, tops.');
-    expect(roundDigestFor([jar, pot], day)?.body).toBe('Jar and Pot would love a check. 2 mins, tops.');
+    expect(roundDigestFor([jar], day)?.body).toBe('Jar would love a water check. About 1 min.');
+    expect(roundDigestFor([pot], day)?.body).toBe('Pot would love a soil check. About 1 min.');
+    expect(roundDigestFor([jar, pot], day)?.body).toBe('Jar and Pot would love a check. About 2 mins.');
   });
 });
 
@@ -114,12 +114,12 @@ describe('photo day', () => {
     const due = plant('Queenie', '2026-10-18T09:00:00');
     const plan = planRounds([due], now, 8, 30, 8, { cadence: 'weekly', lastPhotoAt: {} });
     expect(plan).toHaveLength(1);
-    expect(plan[0].digest.body).toBe('Queenie would love a soil check. 1 min, tops. Photo day too: snap Queenie for the diary.');
+    expect(plan[0].digest.body).toBe('Queenie would love a soil check. About 1 min. It’s photo day too.');
 
     const quiet = planRounds([plant('Monty', '2026-12-01T09:00:00')], now, 8, 30, 8, { cadence: 'weekly', lastPhotoAt: {} });
     expect(quiet).toHaveLength(1);
     expect(quiet[0].fireAt.toISOString()).toBe(new Date('2026-10-18T08:30:00').toISOString());
-    expect(quiet[0].digest.title).toBe('Photo day 📸');
+    expect(quiet[0].digest.title).toBe('Photo day');
     expect(quiet[0].digest.route).toBe('/plant/monty');
 
     expect(planRounds([plant('Monty', '2026-12-01T09:00:00')], now, 8, 30, 8)).toEqual([]);

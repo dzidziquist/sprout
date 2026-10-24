@@ -39,10 +39,10 @@ export function photoCandidates(plants: Plant[], lastPhotoAt: Record<string, str
 function withPhotoDay(digest: RoundDigest | null, subjects: Plant[]): RoundDigest | null {
   if (subjects.length === 0) return digest;
   const n = names(subjects.map((p) => p.name));
-  if (digest) return { ...digest, body: `${digest.body} Photo day too: snap ${n} for the diary.` };
+  if (digest) return { ...digest, body: `${digest.body} It’s photo day too.` };
   return {
-    title: 'Photo day 📸',
-    body: `${n} would love a progress photo. Future you will want to see how far they've come.`,
+    title: 'Photo day',
+    body: `${n} ${subjects.length === 1 ? 'is' : 'are'} due a progress photo.`,
     plantIds: [],
     route: subjects.length === 1 ? `/plant/${subjects[0].id}` : '/jungle',
   };
@@ -66,17 +66,22 @@ function names(list: string[]): string {
  * Written in the plants' voice, curious and never guilt-tripping.
  */
 export function roundDigestFor(plants: Plant[], day: Date): RoundDigest | null {
-  const endOfDay = at(day, 23, 59);
-  const due = plants.filter((p) => !p.rooting && !p.archivedAt && new Date(p.nextCheckAt).getTime() <= endOfDay.getTime());
+  const due = dueOn(plants, day);
   if (due.length === 0) return null;
-  const n = due.map((p) => p.name);
+  const mins = due.length === 1 ? '1 min' : due.length <= 3 ? '2 mins' : '5 mins';
+  return { title: 'Plant round', body: `${whoWants(due)} About ${mins}.`, plantIds: due.map((p) => p.id) };
+}
+
+function dueOn(plants: Plant[], day: Date): Plant[] {
+  const endOfDay = at(day, 23, 59);
+  return plants.filter((p) => !p.rooting && !p.archivedAt && new Date(p.nextCheckAt).getTime() <= endOfDay.getTime());
+}
+
+/** "Queenie and Cal would love a soil check." Says soil or water only when it's the same for all of them. */
+function whoWants(due: Plant[]): string {
   const water = due.filter((p) => checksWaterLine(p)).length;
   const check = water === 0 ? 'a soil check' : water === due.length ? 'a water check' : 'a check';
-  const body =
-    due.length === 1
-      ? `${n[0]} would love ${check}. 1 min, tops.`
-      : `${names(n)} would love ${check}. ${due.length <= 3 ? '2 mins' : '5 mins'}, tops.`;
-  return { title: 'Plant round 🌱', body, plantIds: due.map((p) => p.id) };
+  return `${names(due.map((p) => p.name))} would love ${check}.`;
 }
 
 /**
@@ -110,13 +115,13 @@ export function planRounds(
       continue;
     }
     if (back) {
-      const due = roundDigestFor(plants, day);
-      due?.plantIds.forEach((id) => announced.add(id));
-      out.push({ fireAt, digest: { title: 'Welcome back 🧳', body: due ? `${due.body.replace(/ \d mins?, tops\./, '')} Time for a catch-up round.` : 'Everyone held on nicely. Have a peek when you can.', plantIds: due?.plantIds ?? [] } });
+      const due = dueOn(plants, day);
+      due.forEach((p) => announced.add(p.id));
+      out.push({ fireAt, digest: { title: 'Welcome back', body: due.length ? `${whoWants(due)} Time for a catch-up round.` : 'Everyone held on nicely. Check on them when you can.', plantIds: due.map((p) => p.id) } });
       continue;
     }
     if (leaving) {
-      out.push({ fireAt, digest: { title: 'Off tomorrow? 🧳', body: 'Give everyone a deep drink today and fill the reservoirs. Your away list has the rest.', plantIds: [], route: '/away' } });
+      out.push({ fireAt, digest: { title: 'Off tomorrow?', body: 'Give everyone a deep drink today and fill the reservoirs. Your away list has the rest.', plantIds: [], route: '/away' } });
       continue;
     }
     const fresh = plants.filter((p) => !announced.has(p.id));

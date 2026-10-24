@@ -71,6 +71,8 @@ export function PlacePicker({ value, onPick }: { value: ClimateProfile; onPick: 
         placeholder="Search your city"
         placeholderTextColor={c.inkMuted}
         autoCorrect={false}
+        returnKeyType="search"
+        clearButtonMode="while-editing"
         accessibilityLabel="Search your city"
         style={[styles.input, { borderColor: c.line, color: c.ink, backgroundColor: c.card }]}
       />

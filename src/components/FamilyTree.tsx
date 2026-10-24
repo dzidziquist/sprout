@@ -164,7 +164,6 @@ export function FamilyTree({
             accessibilityRole="button"
             accessibilityLabel={info.a11y}
             onPress={() => {
-              haptics.tap();
               router.push(`/plant/${p.id}`);
             }}
             style={({ pressed }) => [styles.node, box, pressed && { transform: [{ translateY: 2 }] }]}

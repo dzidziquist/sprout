@@ -27,7 +27,7 @@ const TILES: { id: CareAction; label: string; tint: Tint; icon: string }[] = [
   { id: 'feed', label: 'Fed', tint: 'butter', icon: 'M9 3h6M10 3v5l-4.5 7.5A3 3 0 0 0 8 20h8a3 3 0 0 0 2.5-4.5L14 8V3M7.5 14h9' },
   { id: 'repot', label: 'Repotted', tint: 'peach', icon: 'M7 20h10l1-9H6zM12 11V5M9 7c1-2 5-2 6 0' },
   { id: 'prune', label: 'Trimmed', tint: 'mint', icon: 'M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12' },
-  { id: 'pest', label: 'Bugs!', tint: 'blush', icon: 'M12 6a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0v-6a4 4 0 0 1 4-4zM12 20v-9M8 10H4M16 10h4M8 15H4M16 15h4' },
+  { id: 'pest', label: 'Pests', tint: 'blush', icon: 'M12 6a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0v-6a4 4 0 0 1 4-4zM12 20v-9M8 10H4M16 10h4M8 15H4M16 15h4' },
   { id: 'cutting', label: 'Cutting', tint: 'lavender', icon: 'M6 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 21.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 7.5v9M6 12h4a4 4 0 0 0 4-4V8M15.5 12H10' },
   { id: 'stake', label: 'Staked', tint: 'peach', icon: 'M12 3v18M12 8c-3 0-5-1.5-5-4M12 13c3 0 5-1.5 5-4M8 21h8' },
   { id: 'photo', label: 'Photo', tint: 'butter', icon: 'M3 9a3 3 0 0 1 3-3h1.5L9 4h6l1.5 2H18a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z' },

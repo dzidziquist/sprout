@@ -153,14 +153,12 @@ export default function SettingsScreen() {
 
   const eraseAll = async () => {
     const n = plants.length;
-    const first = await confirm(
+    const ok = await confirm(
       'Delete all your data?',
       `This erases ${n} ${n === 1 ? 'plant' : 'plants'}, the whole care diary, diary photos and your settings from this phone. It can’t be undone unless you have a backup.`,
       'Delete everything',
     );
-    if (!first) return;
-    const second = await confirm('Really delete?', 'Last check: your fam will be gone from this phone.', 'Yes, delete');
-    if (!second) return;
+    if (!ok) return;
     deleteAllPhotos();
     eraseEverything();
     haptics.success();
@@ -289,18 +287,17 @@ export default function SettingsScreen() {
 
       <Section title="About">
         <Row label="How PlantFam works" onPress={() => router.push('/help')} />
-        <Row label="Privacy" onPress={() => router.push('/privacy')} />
+        <Row label="Privacy and credits" onPress={() => router.push('/privacy')} />
         <Row label="Terms of use" onPress={() => Linking.openURL(TERMS_URL)} />
         {SUPPORT_EMAIL ? (
           <Row label="Contact support" value={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=PlantFam%20${APP_VERSION}`)} />
         ) : (
-          <Row label="Contact & support" value={SUPPORT_URL.replace(/^https?:\/\//, '')} onPress={() => Linking.openURL(SUPPORT_URL)} />
+          <Row label="Contact and support" value={SUPPORT_URL.replace(/^https?:\/\//, '')} onPress={() => Linking.openURL(SUPPORT_URL)} />
         )}
-        <Row label="Credits" onPress={() => router.push('/privacy')} />
         <Row label="Version" value={APP_VERSION} last />
       </Section>
 
-      <Section title="Danger zone" footer="Erases everything on this phone and starts fresh. Make a backup first if you might want your fam back.">
+      <Section title="Erase data" footer="Erases everything on this phone and starts fresh. Make a backup first if you might want your plants back.">
         <Row label="Delete all my data" danger onPress={eraseAll} chevron={false} last />
       </Section>
 

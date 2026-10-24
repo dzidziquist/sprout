@@ -8,7 +8,6 @@ import { useSite } from '@/hooks/useSite';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { LineIcon } from '@/components/LineIcon';
 import { Sticker } from '@/components/ui';
-import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { Plant, WindowSpot } from '@/types';
@@ -37,7 +36,6 @@ export function LightRooms({ plants }: { plants: Plant[] }) {
   const left = names.filter((n) => !rooms[n]).length;
 
   const go = (pathname: '/room-light' | '/spot/[id]', params: Record<string, string>) => {
-    haptics.tap();
     router.push({ pathname, params });
   };
 

@@ -7,6 +7,7 @@ import { PlantBuddy } from '@/components/PlantBuddy';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const PARTY = REWARDS.find((r) => r.id === 'party')!;
 
@@ -19,14 +20,17 @@ export function MeBuddy() {
   const rewards = useRewards();
   const party = rewards.party.unlocked;
   const hop = useRef(new Animated.Value(0)).current;
+  const reduced = useReducedMotion();
   const left = Math.max(0, PARTY.needs - rewards.earned);
 
   const bounce = () => {
     haptics.tap();
+    // Reduce Motion: the haptic says hi on its own.
+    if (reduced) return;
     hop.setValue(0);
     Animated.sequence([
       Animated.timing(hop, { toValue: 1, duration: 160, useNativeDriver: true }),
-      Animated.spring(hop, { toValue: 0, friction: 3, tension: 120, useNativeDriver: true }),
+      Animated.spring(hop, { toValue: 0, friction: 6, tension: 120, useNativeDriver: true }),
     ]).start();
   };
   const lift = hop.interpolate({ inputRange: [0, 1], outputRange: [0, -18] });
