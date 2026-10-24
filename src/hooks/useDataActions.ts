@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { backupMyData, exportSpreadsheet, parseBackup, pickBackupText, type BackupData } from '@/lib/export';
 import * as haptics from '@/lib/haptics';
 
@@ -24,7 +25,7 @@ function confirm(title: string, body: string): Promise<boolean> {
  */
 export function useDataActions() {
   const router = useRouter();
-  const { profile, plants, events, setProfile, restoreBackup } = usePlantStore();
+  const { profile, plants, events, setProfile, restoreBackup } = usePlantStore(useShallow((s) => ({ profile: s.profile, plants: s.plants, events: s.events, setProfile: s.setProfile, restoreBackup: s.restoreBackup })));
   const [busy, setBusy] = useState<'backup' | 'restore' | 'csv' | null>(null);
   const [msg, setMsg] = useState<{ text: string; bad?: boolean } | null>(null);
   const last = fmt(profile.lastBackupAt);

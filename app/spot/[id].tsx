@@ -9,7 +9,6 @@ import { useSite } from '@/hooks/useSite';
 import { LIGHT_ART } from '@/data/art';
 import { fitFill } from '@/components/LightRooms';
 import { GlassButton } from '@/components/GlassButton';
-import { Icon } from '@/components/GrowTodayCard';
 import { LineIcon } from '@/components/LineIcon';
 import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
@@ -17,6 +16,7 @@ import { useSheetTop } from '@/lib/sheetTop';
 import { fonts } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import type { WindowSpot } from '@/types';
+import { Glyph } from '@/components/Glyph';
 
 const SPOTS: { id: WindowSpot; title: string; sub: string }[] = [
   { id: 'sill', title: 'On the sill', sub: 'Right next to the glass.' },
@@ -163,7 +163,7 @@ export default function SpotSheet() {
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 32 }]}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
       <Title>Where does {plant.name} sit?</Title>

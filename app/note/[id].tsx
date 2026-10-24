@@ -4,12 +4,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
 import { GlassButton } from '@/components/GlassButton';
-import { Icon } from '@/components/GrowTodayCard';
 import { Button, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { useSheetTop } from '@/lib/sheetTop';
 import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
+import { Glyph } from '@/components/Glyph';
 
 /** Change or remove a note from a plant's history (or a photo's caption). */
 export default function NoteSheet() {
@@ -24,6 +25,7 @@ export default function NoteSheet() {
   const [text, setText] = useState(event?.note ?? '');
   const [confirm, setConfirm] = useState(false);
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
+  const go = useDiscardGuard(text !== (event?.note ?? ''));
 
   if (!event) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
   const photo = event.type === 'photo';
@@ -34,7 +36,7 @@ export default function NoteSheet() {
     if (!photo && !text.trim()) return remove();
     editNote(event.id, text);
     haptics.success();
-    close();
+    go(close);
   };
   const remove = () => {
     if (!confirm) {
@@ -44,7 +46,7 @@ export default function NoteSheet() {
     }
     editNote(event.id, '');
     haptics.success();
-    close();
+    go(close);
   };
 
   return (
@@ -56,7 +58,7 @@ export default function NoteSheet() {
     >
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
       </View>
       <Title>{photo ? 'Photo caption' : 'Note'}</Title>

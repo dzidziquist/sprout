@@ -78,7 +78,7 @@ export function AboutCard({ speciesId, latin, common }: { speciesId: SpeciesId; 
               <Text style={[styles.sub, { color: c.inkMuted }]}>From Wikipedia</Text>
               {!!wiki.imageFile && <PhotoToggle on={showPhoto} onChange={setShowPhoto} />}
             </View>
-            <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.more, { color: c.leafDeep }]}>
+            <Text accessibilityRole="link" onPress={() => Linking.openURL(wiki.url)} style={[styles.more, { color: c.link }]}>
               Read more ›
             </Text>
           </View>

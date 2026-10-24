@@ -16,11 +16,15 @@ import { GlassButton } from '@/components/GlassButton';
 import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { Button, Label, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
-import { textOn, useColors } from '@/theme/theme';
+import { textOn, useColors, selectedFill } from '@/theme/theme';
+import { LineIcon } from '@/components/LineIcon';
+import { SunIcon } from '@/components/SunIcon';
 import { fonts } from '@/theme/tokens';
 import type { Light, Origin, Placement, PotColor, PotMaterial, Soil, SpeciesGroup } from '@/types';
 import { edibleGuide } from '@/data/edibles';
 import { useSheetTop } from '@/lib/sheetTop';
+import { useDiscardGuard } from '@/hooks/useDiscardGuard';
+import { Glyph } from '@/components/Glyph';
 
 const CARD_COLORS: { id: PotColor; label: string }[] = [
   { id: 'yellow', label: 'Butter' },
@@ -77,9 +81,7 @@ const nearestSize = (cm: number) => POT_SIZES.reduce((a, b) => (Math.abs(b.cm - 
 
 function Pill({ on, label, onPress, bg, children }: { on: boolean; label: string; onPress: () => void; bg: string; children?: React.ReactNode }) {
   const c = useColors();
-  // Dark tints are too quiet for a selected state, so dark mode uses the bright twin.
-  const BRIGHT: Record<string, string> = { [c.mint]: c.leaf, [c.peach]: c.coral, [c.ice]: c.sky };
-  const fill = on ? (c.scheme === 'dark' ? BRIGHT[bg] ?? bg : bg) : c.card;
+  const fill = on ? selectedFill(bg, c) : c.card;
   return (
     <Pressable
       accessibilityRole="button"
@@ -128,10 +130,11 @@ export default function EditPlantScreen() {
   const lastWater = usePlantStore((s) => s.events.filter((e) => e.plantId === id && e.type === 'water').reduce((m, e) => (e.at > m ? e.at : m), ''));
   const faces = usePlantStore((s) => s.profile.faces);
   const rewards = useRewards();
-  const leave = () => {
-    if (router.canDismiss()) router.dismissAll();
-    else router.replace('/');
-  };
+  const leave = () =>
+    go(() => {
+      if (router.canDismiss()) router.dismissAll();
+      else router.replace('/');
+    });
   const actions = usePlantActions(plant, { onDeleted: leave });
 
   const [name, setName] = useState(plant?.name ?? '');
@@ -156,6 +159,11 @@ export default function EditPlantScreen() {
   const [latin, setLatin] = useState(plant?.custom?.latinName ?? '');
   const [otherId, setOtherId] = useState(plant?.speciesId ?? '');
   const [pets, setPets] = useState<'toxic' | 'safe' | 'unsure'>(plant?.custom?.petToxic === true ? 'toxic' : plant?.custom?.petToxic === false ? 'safe' : 'unsure');
+
+  // Everything the form can change, to tell whether closing would lose anything.
+  const form = JSON.stringify([name, light, soil, size, selfWatering, material, placement, room, potColor, joined, cut, origin, watered, kind, latin, otherId, pets]);
+  const [pristine] = useState(form);
+  const go = useDiscardGuard(form !== pristine);
 
   if (!plant || !actions) return <View style={{ flex: 1, backgroundColor: c.bg }} />;
   const sp = speciesOf(plant);
@@ -198,7 +206,7 @@ export default function EditPlantScreen() {
     const days = watered ? WATERED.find((w) => w.id === watered)?.days : null;
     if (days !== null && days !== undefined) setLastWatered(plant.id, daysAgo(days));
     haptics.success();
-    back();
+    go(back);
   };
 
   const askDelete = () => {
@@ -212,7 +220,7 @@ export default function EditPlantScreen() {
     <ScrollView automaticallyAdjustKeyboardInsets keyboardDismissMode="interactive" style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={[styles.page, { paddingTop: sheetTop + 12, paddingBottom: insets.bottom + 32 }]} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <GlassButton accessibilityLabel="Cancel" onPress={back}>
-          <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
         <Text style={[styles.headerTitle, { color: c.ink }]}>Edit plant</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Save changes" onPress={save} style={[styles.save, { backgroundColor: c.leafDeep, borderColor: c.line }]}>
@@ -309,7 +317,11 @@ export default function EditPlantScreen() {
       <Label>How sunny is its spot?</Label>
       <View style={styles.wrap}>
         {LIGHTS.map((l) => (
-          <Pill key={l.id} on={light === l.id} bg={c.sun} label={`${'☀'.repeat(l.suns)} ${l.label}`} onPress={() => setLight(l.id)} />
+          <Pill key={l.id} on={light === l.id} bg={c.sun} label={l.label} onPress={() => setLight(l.id)}>
+            <View style={{ flexDirection: 'row' }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              {Array.from({ length: l.suns }, (_, i) => <SunIcon key={i} color={light === l.id ? textOn(selectedFill(c.sun, c), c) : c.ink} size={14} width={2.4} />)}
+            </View>
+          </Pill>
         ))}
       </View>
 
@@ -354,7 +366,11 @@ export default function EditPlantScreen() {
       </View>
       {indoors && (
         <View style={styles.wrap}>
-          <Pill on={placement === 'growlight'} bg={c.butter} label="💡 Under a grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')} />
+          <Pill on={placement === 'growlight'} bg={c.butter} label="Under a grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')}>
+            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <LineIcon name="bulb" color={placement === 'growlight' ? textOn(selectedFill(c.butter, c), c) : c.ink} size={16} width={2.2} />
+            </View>
+          </Pill>
         </View>
       )}
       <Text style={[styles.note, { color: c.inkMuted }]}>
@@ -378,8 +394,8 @@ export default function EditPlantScreen() {
           <>
             <Text style={[styles.note, { color: c.inkMuted }]}>Archiving takes {plant.name} off the round but keeps their diary and family tree.</Text>
             <View style={styles.row}>
-              <Button title={ARCHIVE_COPY.gifted.title} bg={c.blush} style={{ flex: 1 }} onPress={() => { actions.archive('gifted'); back(); }} />
-              <Button title={ARCHIVE_COPY.died.title} bg={c.card} style={{ flex: 1 }} onPress={() => { actions.archive('died'); back(); }} />
+              <Button title={ARCHIVE_COPY.gifted.title} bg={c.blush} style={{ flex: 1 }} onPress={() => { actions.archive('gifted'); go(back); }} />
+              <Button title={ARCHIVE_COPY.died.title} bg={c.card} style={{ flex: 1 }} onPress={() => { actions.archive('died'); go(back); }} />
             </View>
           </>
         )}
@@ -412,7 +428,7 @@ const styles = StyleSheet.create({
   heroName: { fontFamily: fonts.display, fontSize: 22 },
   input: { minHeight: 50, borderRadius: 16, borderWidth: 2, paddingHorizontal: 14, fontFamily: fonts.bodyHeavy, fontSize: 15 },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  pill: { minHeight: 42, paddingHorizontal: 14, borderRadius: 21, borderWidth: 2, justifyContent: 'center' },
+  pill: { minHeight: 44, paddingHorizontal: 14, borderRadius: 22, borderWidth: 2, justifyContent: 'center' },
   pillWithSwatch: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 6 },
   swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2 },
   color: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },

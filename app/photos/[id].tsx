@@ -14,6 +14,7 @@ import { fonts } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import type { CareEvent } from '@/types';
 import { useSheetTop } from '@/lib/sheetTop';
+import { Glyph } from '@/components/Glyph';
 
 const TRASH = 'M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3';
 const longDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
@@ -83,7 +84,7 @@ export default function PhotoDiary() {
     <View style={{ flex: 1, backgroundColor: c.bg, paddingTop: sheetTop + 8, paddingBottom: insets.bottom + 16 }}>
       <View style={styles.toolbar}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
-          <Icon d="M6 6l12 12M18 6 6 18" color={c.ink} size={16} width={2.8} />
+          <Glyph name="close" size={16} color={c.ink} width={2.8} />
         </GlassButton>
         <Text style={[styles.toolbarTitle, { color: c.ink }]} numberOfLines={1}>
           {plant.name}'s diary

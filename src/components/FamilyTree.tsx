@@ -261,7 +261,7 @@ function makeStyles(c: Palette) {
       height: 20,
       justifyContent: 'center',
     },
-    cornerText: { fontFamily: fonts.bodyHeavy, fontSize: 10, letterSpacing: 0.2 },
+    cornerText: { fontFamily: fonts.bodyHeavy, fontSize: 11, letterSpacing: 0.2 },
     name: { marginTop: RING_GAP + 4, fontFamily: fonts.displaySemi, fontSize: 15, lineHeight: 19, color: c.ink, maxWidth: '100%' },
     sub: { fontFamily: fonts.bodyHeavy, fontSize: 11, lineHeight: 15, color: c.inkMuted, maxWidth: '100%' },
     pill: { marginTop: 2, borderWidth: 2, borderColor: c.line, borderRadius: 10, paddingHorizontal: 7, height: 21, justifyContent: 'center', maxWidth: '100%' },

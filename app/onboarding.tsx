@@ -4,13 +4,15 @@ import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from '
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore, type FaceStyle } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { ART } from '@/data/art';
 import { SPOTS, type Spot } from '@/lib/spots';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { ensureRoundPermission } from '@/lib/notifications';
 import * as haptics from '@/lib/haptics';
 import { fonts } from '@/theme/tokens';
-import { light, textOn, useColors, type Palette } from '@/theme/theme';
+import { light, textOn, useColors, type Palette, selectedFill } from '@/theme/theme';
+import { LineIcon } from '@/components/LineIcon';
 
 
 const TIMES = [
@@ -30,7 +32,8 @@ function Choice({ on, onPress, children, bg, style }: { on: boolean; onPress: ()
         haptics.tap();
         onPress();
       }}
-      style={[styles.choice, { backgroundColor: on ? (bg ?? c.mint) : c.card }, on && { boxShadow: `0px 4px 0px ${c.drop}` }, style]}
+      // In dark mode the tint alone barely differs from the card, so a selected choice also gets a bright outline.
+      style={[styles.choice, { backgroundColor: on ? (bg ?? c.mint) : c.card }, on && { boxShadow: `0px 4px 0px ${c.drop}` }, on && c.scheme === 'dark' && { borderColor: selectedFill(bg ?? c.mint, c), borderWidth: 3 }, style]}
     >
       {children}
     </Pressable>
@@ -40,7 +43,7 @@ function Choice({ on, onPress, children, bg, style }: { on: boolean; onPress: ()
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { profile, setProfile, completeOnboarding, seedDemo } = usePlantStore();
+  const { profile, setProfile, completeOnboarding, seedDemo } = usePlantStore(useShallow((s) => ({ profile: s.profile, setProfile: s.setProfile, completeOnboarding: s.completeOnboarding, seedDemo: s.seedDemo })));
   const [step, setStep] = useState(0);
   const c = useColors();
   const styles = useMemo(() => makeStyles(c), [c]);
@@ -118,7 +121,10 @@ export default function Onboarding() {
         </View>
 
         <Choice on={!!profile.grows.hydro} bg={c.ice} onPress={() => setProfile({ grows: { ...profile.grows, hydro: !profile.grows.hydro } })} style={styles.hydroRow}>
-          <Text style={styles.choiceTitle}>💧 Hydro or LECA</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <LineIcon name="drop" color={c.ink} size={18} width={2.2} />
+            <Text style={styles.choiceTitle}>Hydro or LECA</Text>
+          </View>
           <Text style={styles.choiceSub}>Plants in water, clay balls or a countertop hydro garden</Text>
         </Choice>
 

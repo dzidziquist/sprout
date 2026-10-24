@@ -4,6 +4,7 @@ import { textOn, useColors } from '../theme/theme';
 import { fonts } from '../theme/tokens';
 import * as haptics from '../lib/haptics';
 import { SunIcon } from './SunIcon';
+import { Glyph } from '@/components/Glyph';
 
 export type JungleView = 'grid' | 'list' | 'light';
 
@@ -30,9 +31,7 @@ export function JungleSearch({ value, onChange }: { value: string; onChange: (q:
       />
       {value.length > 0 && (
         <Pressable accessibilityRole="button" accessibilityLabel="Clear search" hitSlop={10} onPress={() => onChange('')} style={[styles.clear, { backgroundColor: c.cloud }]}>
-          <Svg width={12} height={12} viewBox="0 0 24 24">
-            <Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={3.4} strokeLinecap="round" />
-          </Svg>
+          <Glyph name="close" size={12} color={c.ink} width={3.4} />
         </Pressable>
       )}
     </View>

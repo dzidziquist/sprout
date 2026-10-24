@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '../store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Button, Sticker } from './ui';
 import { fonts } from '../theme/tokens';
 import { useColors } from '../theme/theme';
@@ -28,7 +29,7 @@ const WATER_STEPS: typeof STEPS = [
 export function SoilCheckCoach() {
   const c = useColors();
   const router = useRouter();
-  const { events, plants, profile, setProfile } = usePlantStore();
+  const { events, plants, profile, setProfile } = usePlantStore(useShallow((s) => ({ events: s.events, plants: s.plants, profile: s.profile, setProfile: s.setProfile })));
   const [open, setOpen] = useState(false);
   const checks = events.filter((e) => e.type === 'check').length;
   const living = plants.filter((p) => !p.archivedAt);

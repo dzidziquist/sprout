@@ -1,4 +1,5 @@
 import { usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -6,7 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { shrinkPhoto } from '@/lib/shrinkPhoto';
-import Svg, { Path } from 'react-native-svg';
 import { getSpecies } from '@/data/species';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { GlassButton } from '@/components/GlassButton';
@@ -17,6 +17,7 @@ import { fonts } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import { useSheetTop } from '@/lib/sheetTop';
 import { addHref, displayName, speciesHref } from '@/lib/plantLinks';
+import { Glyph } from '@/components/Glyph';
 
 type Problem = PlantIdErrorKind | 'camera-denied' | 'camera-failed' | 'daily-limit';
 
@@ -53,7 +54,7 @@ export default function IdentifyScreen() {
   const insets = useSafeAreaInsets();
   const sheetTop = useSheetTop();
   const c = useColors();
-  const { profile, setProfile } = usePlantStore();
+  const { profile, setProfile } = usePlantStore(useShallow((s) => ({ profile: s.profile, setProfile: s.setProfile })));
   const [phase, setPhase] = useState<Phase>(() => (plantIdConfigured() ? { kind: 'empty' } : { kind: 'error', problem: 'no-key' }));
   const [confirm, setConfirm] = useState<CatalogueMatch | null>(null);
   const abort = useRef<AbortController | null>(null);
@@ -138,7 +139,7 @@ export default function IdentifyScreen() {
         <View style={styles.header}>
           <Title style={{ flex: 1 }}>Who's this plant?</Title>
           <GlassButton accessibilityLabel="Close" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}>
-            <Svg width={16} height={16} viewBox="0 0 24 24"><Path d="M6 6l12 12M18 6 6 18" stroke={c.ink} strokeWidth={2.8} strokeLinecap="round" /></Svg>
+            <Glyph name="close" size={16} color={c.ink} width={2.8} />
           </GlassButton>
         </View>
 

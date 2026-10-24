@@ -7,6 +7,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import { usePlantStore } from '@/store/plantStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
 import { BadgeSticker } from '@/components/BadgeSticker';
@@ -22,7 +23,7 @@ export default function MeScreen() {
   const router = useRouter();
   const pad = useTabPadding(16);
   const c = useColors();
-  const { profile, setProfile, events, plants } = usePlantStore();
+  const { profile, setProfile, events, plants } = usePlantStore(useShallow((s) => ({ profile: s.profile, setProfile: s.setProfile, events: s.events, plants: s.plants })));
   const living = plants.filter((p) => !p.archivedAt);
   const livingIds = new Set(living.map((p) => p.id));
   const checks = events.filter((e) => e.type === 'check' && livingIds.has(e.plantId));

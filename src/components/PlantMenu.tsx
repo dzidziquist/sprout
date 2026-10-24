@@ -19,14 +19,18 @@ export const ARCHIVE_COPY: Record<'gifted' | 'died', { title: string; done: stri
 /** Everything you can do to a plant from a menu, shared by the iOS context menu, the fallback sheet and Edit. */
 export function usePlantActions(plant: Plant | undefined, opts: { onDeleted?: () => void } = {}) {
   const router = useRouter();
-  const { plants, takeCutting, archivePlant, deletePlant, restorePlant } = usePlantStore();
+  // One selector per action, so a row doesn't re-render whenever anything in the store changes.
+  const takeCutting = usePlantStore((s) => s.takeCutting);
+  const archivePlant = usePlantStore((s) => s.archivePlant);
+  const deletePlant = usePlantStore((s) => s.deletePlant);
+  const restorePlant = usePlantStore((s) => s.restorePlant);
   if (!plant) return null;
   return {
     log: () => router.push(`/log/${plant.id}`),
     edit: () => router.push(`/edit/${plant.id}`),
     open: () => router.push(`/plant/${plant.id}`),
     cutting: () => {
-      const n = plants.filter((p) => p.parentId === plant.id).length + 1;
+      const n = usePlantStore.getState().plants.filter((p) => p.parentId === plant.id).length + 1;
       const child = takeCutting(plant.id, `${plant.name} baby ${n}`, 'water');
       haptics.success();
       if (child) router.push(`/plant/${child.id}`);
@@ -64,13 +68,32 @@ export function confirmDelete(name: string, onConfirm: () => void) {
 /**
  * Wraps a plant card. Tap opens the plant. On iOS, press-and-hold shows the native context menu
  * with a live preview; on Android and web, a long-press opens an equivalent action sheet.
+ *
+ * `label` is what VoiceOver reads for the card (name plus what the card shows, like its status).
+ * A card with its own buttons inside (Today's water answers) passes `hasControls`: the wrapper then
+ * isn't one VoiceOver element, so those buttons stay reachable, and the card marks its own name block
+ * as the way in to the details.
  */
-export function PlantMenu({ plant, children, style, onDeleted }: { plant: Plant; children: React.ReactNode; style?: StyleProp<ViewStyle>; onDeleted?: () => void }) {
+export function PlantMenu({
+  plant,
+  children,
+  style,
+  onDeleted,
+  label: given,
+  hasControls,
+}: {
+  plant: Plant;
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+  onDeleted?: () => void;
+  label?: string;
+  hasControls?: boolean;
+}) {
   const actions = usePlantActions(plant, { onDeleted });
   const [open, setOpen] = useState(false);
   const router = useRouter();
   if (!actions) return null;
-  const label = `${plant.name} details`;
+  const label = given ?? `${plant.name} details`;
   const hint = 'Press and hold for more actions';
 
   if (Platform.OS === 'ios') {
@@ -96,7 +119,7 @@ export function PlantMenu({ plant, children, style, onDeleted }: { plant: Plant;
     return (
       <Link href={`/plant/${plant.id}`} asChild>
         <Link.Trigger>
-          <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityHint={hint} style={style}>
+          <Pressable accessible={!hasControls} accessibilityRole="button" accessibilityLabel={label} accessibilityHint={hint} style={style}>
             {children}
           </Pressable>
         </Link.Trigger>
@@ -113,6 +136,7 @@ export function PlantMenu({ plant, children, style, onDeleted }: { plant: Plant;
   return (
     <>
       <Pressable
+        accessible={!hasControls}
         accessibilityRole="button"
         accessibilityLabel={label}
         accessibilityHint={hint}

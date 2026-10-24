@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   sticker: { borderWidth: 2, borderRadius: radius.card },
   title: { fontFamily: fonts.display, fontSize: 30, lineHeight: 34 },
   label: { fontFamily: fonts.bodyHeavy, fontSize: 14 },
-  chip: { borderWidth: 2, height: 32, paddingHorizontal: 12, borderRadius: 16, justifyContent: 'center', alignSelf: 'flex-start' },
+  chip: { borderWidth: 2, minHeight: 32, paddingVertical: 4, paddingHorizontal: 12, borderRadius: 16, justifyContent: 'center', alignSelf: 'flex-start' },
   chipText: { fontFamily: fonts.bodyHeavy, fontSize: 12 },
   button: { borderWidth: 2, minHeight: 44, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
   buttonText: { fontFamily: fonts.displaySemi, fontSize: 15 },
