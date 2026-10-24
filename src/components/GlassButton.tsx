@@ -1,12 +1,13 @@
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useColors } from '../theme/theme';
+import { useReducedTransparency } from '../hooks/useReducedTransparency';
 
 const liquidGlass = Platform.OS === 'ios' && isLiquidGlassAvailable();
 
 /**
- * Round toolbar button. On iOS 26+ it is real Liquid Glass; elsewhere a frosted
- * translucent stand-in so the layout matches.
+ * Round toolbar button. On iOS 26+ it is real Liquid Glass (which follows Reduce Transparency itself);
+ * elsewhere a frosted translucent stand-in so the layout matches, solid with Reduce Transparency on.
  */
 export function GlassButton({
   onPress,
@@ -20,7 +21,10 @@ export function GlassButton({
   style?: StyleProp<ViewStyle>;
 }) {
   const c = useColors();
-  const frosted = c.scheme === 'dark'
+  const solid = useReducedTransparency();
+  const frosted = solid
+    ? { backgroundColor: c.card, borderColor: c.line, boxShadow: 'none' }
+    : c.scheme === 'dark'
     ? { backgroundColor: 'rgba(40,38,62,0.8)', borderColor: 'rgba(255,255,255,0.14)', boxShadow: '0px 6px 18px rgba(0,0,0,0.4)' }
     : { backgroundColor: 'rgba(255,255,255,0.75)', borderColor: 'rgba(27,27,47,0.08)', boxShadow: '0px 6px 18px rgba(27,27,47,0.12)' };
   return (

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -67,9 +67,9 @@ export default function BadgeScreen() {
       return;
     }
     if (Math.abs(dx) < 4 && Math.abs(vx) < 100) {
-      // A tap: one full twirl.
+      // A tap: one full twirl. No momentum went in, so it settles without overshoot (only flicks bounce).
       haptics.tap();
-      Animated.timing(x, { toValue: Math.round(now / FULL) * FULL + FULL, duration: 700, easing: Easing.out(Easing.back(1.2)), useNativeDriver: true }).start();
+      Animated.spring(x, { toValue: Math.round(now / FULL) * FULL + FULL, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
       return;
     }
     if (Math.abs(vx) > 300) haptics.tap();
