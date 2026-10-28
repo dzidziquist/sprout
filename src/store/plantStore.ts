@@ -7,7 +7,7 @@ import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS,
 import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
-import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Plant, Accent, WishItem } from '../types';
+import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Light, Plant, Accent, WishItem } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
 
@@ -131,6 +131,11 @@ interface PlantState {
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
   /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
   setArchivedAt: (plantId: string, at: Date) => void;
+  /**
+   * Keep a camera light reading for where the plant sits, and set its light to what the readings say for
+   * this time of year (which re-plans the next check when that changed). The last 6 readings are kept.
+   */
+  addLightReading: (plantId: string, reading: NonNullable<Plant['lightReadings']>[number], light?: Light, now?: Date) => void;
   /** Undo an archive just made: back as it was, schedule and all (unlike restorePlant, which is a return). */
   undoArchive: (plantId: string) => void;
   /** Back from In memory: due for a check now, and the time away doesn't count against the streak. */
@@ -489,6 +494,12 @@ export const usePlantStore = create<PlantState>()(
           undo: withoutUndo(s.undo, [plantId]),
           events: [...s.events, { id: uid(), plantId, type: 'archived', note: reason, at }],
         }));
+      },
+
+      addLightReading: (plantId, reading, light, now = new Date()) => {
+        set((s) => ({ plants: s.plants.map((p) => (p.id === plantId ? { ...p, lightReadings: [...(p.lightReadings ?? []), reading].slice(-6) } : p)) }));
+        const plant = get().plants.find((p) => p.id === plantId);
+        if (light && plant && plant.light !== light) get().updatePlant(plantId, { light }, now);
       },
 
       undoArchive: (plantId) => {

@@ -227,6 +227,8 @@ export interface Plant {
   /** Set when a plant dies or is given away. It leaves the round but stays in Offshoots as a memory. */
   archivedAt?: string;
   archivedReason?: 'died' | 'gifted' | 'composted';
+  /** Camera light meter readings where it sits, oldest first (the last few are kept). */
+  lightReadings?: { at: string; lux: number; share: number; sunny: boolean }[];
 }
 
 export type CareEventType =
