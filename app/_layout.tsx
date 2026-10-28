@@ -102,6 +102,7 @@ export default function RootLayout() {
         <Stack.Screen name="wishlist" options={{ presentation: 'modal' }} />
         <Stack.Screen name="photos/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="away" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="measure/[id]" options={{ presentation: 'fullScreenModal', contentStyle: { backgroundColor: c.bg } }} />
         <Stack.Screen name="doctor/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="grow" />
         <Stack.Screen name="help" />
