@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePlantStore } from '@/store/plantStore';
 import { SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearFit, windowName } from '@/engine/light';
-import { spotShare, yearBands, yearWords } from '@/engine/lightMeter';
+import { readingsHere, spotShare, yearBands, yearWords } from '@/engine/lightMeter';
 import { useForecast } from '@/lib/weather';
 import { useSite } from '@/hooks/useSite';
 import { LineIcon } from '@/components/LineIcon';
@@ -36,10 +36,12 @@ export function LightCard({ plant }: { plant: Plant }) {
   const now = new Date();
   // Camera readings, when there are any, beat the estimate from the windows: the share of outdoor light
   // they found, carried through each month (see engine/lightMeter).
-  const share = spotShare(plant.lightReadings);
-  const bands = share === null ? null : yearBands(share, site, now.getFullYear(), (plant.lightReadings ?? []).some((r) => r.sunny));
+  // Readings from another spot (before a move) don't count here.
+  const readings = readingsHere(plant);
+  const share = spotShare(readings);
+  const bands = share === null ? null : yearBands(share, site, now.getFullYear(), readings.some((r) => r.sunny));
   const measuredFit = bands ? suits(bands[now.getMonth()], lightNeed(plant)) : null;
-  const lastReading = plant.lightReadings?.[plant.lightReadings.length - 1];
+  const lastReading = readings[readings.length - 1];
   const measuredOn = lastReading ? new Date(lastReading.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
   const verdictOf = (fit: 'ok' | 'dim' | 'harsh', growLight = false) => (fit === 'dim' ? (growLight ? 'Short on light' : 'May need a brighter spot') : fit === 'harsh' ? 'May get too much sun' : 'Good spot');
   const measureButton = (

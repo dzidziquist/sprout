@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bandOf, exposureFromExif, hoursFromNoon, luxFromExposure, middayLux, outdoorLux, readingFrom, spotShare, sunElevation, yearBands, yearWords, type LightReading } from './lightMeter';
+import { bandOf, exposureFromExif, hoursFromNoon, luxFromExposure, readingPlace, readingsHere, middayLux, outdoorLux, readingFrom, spotShare, sunElevation, yearBands, yearWords, type LightReading } from './lightMeter';
 import { MODEL_CLEARNESS } from '../lib/site';
 
 const seattle = { lat: 47.61, lon: -122.33 };
@@ -127,6 +127,31 @@ describe('time of day', () => {
     const r9 = readingFrom(share * outdoorLux(sunElevation(seattle.lat, seattle.lon, at9), 1), at9, seattle, 1)!;
     const r1 = readingFrom(share * outdoorLux(sunElevation(seattle.lat, seattle.lon, at1), 1), at1, seattle, 1)!;
     expect(r9.share).toBeCloseTo(r1.share, 3);
+  });
+});
+
+describe('three or more bands in a year', () => {
+  it('names every band, so the words match the month strip', () => {
+    const shoulders = ['medium', 'medium', 'bright', 'bright', 'direct', 'direct', 'direct', 'direct', 'bright', 'bright', 'medium', 'medium'] as const;
+    expect(yearWords([...shoulders])).toBe('Direct sun from May to August, bright from March to April and from September to October, and some light the rest of the year.');
+  });
+  it('a very bright Seattle spot: each band in the words covers exactly its months', () => {
+    const bands = yearBands(0.2, site, 2026, true);
+    const words = yearWords(bands);
+    for (const level of new Set(bands)) expect(words.toLowerCase()).toContain({ low: 'shady', medium: 'some light', bright: 'bright', direct: 'direct sun' }[level]);
+  });
+});
+
+describe('readings follow the plant', () => {
+  const base = { placement: 'indoor' as const, room: 'Kitchen', windowId: 'w1', windowSpot: 'near' as const };
+  it('only counts readings from where the plant sits now', () => {
+    const here = { at: '2026-10-01T20:00:00Z', lux: 1, share: 0.05, sunny: false, place: readingPlace(base) };
+    const before = { at: '2026-09-01T20:00:00Z', lux: 1, share: 0.01, sunny: false, place: readingPlace({ ...base, room: 'Bedroom' }) };
+    expect(readingsHere({ ...base, lightReadings: [before, here] })).toEqual([here]);
+    // Moved back: the old spot's reading counts again.
+    expect(readingsHere({ ...base, room: 'Bedroom', lightReadings: [before, here] })).toEqual([before]);
+    // Same room, other side of the room: a different spot.
+    expect(readingsHere({ ...base, windowSpot: 'far', lightReadings: [here] })).toEqual([]);
   });
 });
 

@@ -6,7 +6,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { File } from 'expo-file-system';
 import { usePlantStore } from '@/store/plantStore';
 import { forecastToday, lightNeed, placeOf, roomsInUse, skyFactor, spotLight, suits, typicalSky } from '@/engine/light';
-import { exposureFromExif, luxFromExposure, readingFrom, spotShare, yearBands, yearWords, type LightReading } from '@/engine/lightMeter';
+import { exposureFromExif, luxFromExposure, readingFrom, readingPlace, readingsHere, spotShare, yearBands, yearWords, type LightReading } from '@/engine/lightMeter';
 import { coordsFor, useForecast } from '@/lib/weather';
 import { useSite } from '@/hooks/useSite';
 import { GlassButton } from '@/components/GlassButton';
@@ -61,7 +61,7 @@ export default function MeasureLight() {
     haptics.tap();
     setPhase({ kind: 'measuring' });
     try {
-      const shot = await camera.current.takePictureAsync({ exif: true, quality: 0.05, skipProcessing: true, shutterSound: false });
+      const shot = await camera.current.takePictureAsync({ exif: true, quality: 0.05, shutterSound: false });
       // Only the exposure is wanted: the photo itself goes straight away.
       if (shot?.uri && Platform.OS !== 'web') {
         try {
@@ -76,7 +76,7 @@ export default function MeasureLight() {
       const reading = readingFrom(luxFromExposure(exposure), now, coordsFor(climate), sky);
       if (!reading) return setPhase({ kind: 'problem', text: 'The sun is too low to measure fairly right now. Try again in daylight, ideally around midday.' });
       haptics.success();
-      setPhase({ kind: 'result', reading });
+      setPhase({ kind: 'result', reading: { ...reading, place: readingPlace(plant) } });
     } catch {
       setPhase({ kind: 'problem', text: 'The camera couldn’t take a reading. Try again.' });
     }
@@ -85,7 +85,8 @@ export default function MeasureLight() {
   if (phase.kind === 'result') {
     const { reading } = phase;
     const now = new Date(reading.at);
-    const all = [...(plant.lightReadings ?? []), reading];
+    // Only readings from where it sits now: after a move, the old spot's don't count.
+    const all = [...readingsHere(plant), reading];
     const share = spotShare(all);
     const sunReaches = all.some((r) => r.sunny);
     const bands = share === null ? null : yearBands(share, site, now.getFullYear(), sunReaches);

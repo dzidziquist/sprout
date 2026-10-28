@@ -133,7 +133,8 @@ interface PlantState {
   setArchivedAt: (plantId: string, at: Date) => void;
   /**
    * Keep a camera light reading for where the plant sits, and set its light to what the readings say for
-   * this time of year (which re-plans the next check when that changed). The last 6 readings are kept.
+   * this time of year (which re-plans the next check when that changed). The last 12 readings are kept,
+   * across the spots it has been in.
    */
   addLightReading: (plantId: string, reading: NonNullable<Plant['lightReadings']>[number], light?: Light, now?: Date) => void;
   /** Undo an archive just made: back as it was, schedule and all (unlike restorePlant, which is a return). */
@@ -497,7 +498,7 @@ export const usePlantStore = create<PlantState>()(
       },
 
       addLightReading: (plantId, reading, light, now = new Date()) => {
-        set((s) => ({ plants: s.plants.map((p) => (p.id === plantId ? { ...p, lightReadings: [...(p.lightReadings ?? []), reading].slice(-6) } : p)) }));
+        set((s) => ({ plants: s.plants.map((p) => (p.id === plantId ? { ...p, lightReadings: [...(p.lightReadings ?? []), reading].slice(-12) } : p)) }));
         const plant = get().plants.find((p) => p.id === plantId);
         if (light && plant && plant.light !== light) get().updatePlant(plantId, { light }, now);
       },

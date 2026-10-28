@@ -1,4 +1,4 @@
-import type { Light } from '../types';
+import type { Light, Plant } from '../types';
 import { typicalSky, type Site } from './light';
 
 /*
@@ -32,7 +32,18 @@ export interface LightReading {
   sunny: boolean;
   /** Taken early or late in the day (over 3 hours from solar noon): rougher, so it counts for less. */
   offPeak?: 'early' | 'late';
+  /** Where it was taken (see readingPlace): once the plant moves, readings from the old spot stop counting. */
+  place?: string;
 }
+
+/** Where a plant sits, as far as its light goes: room, window and spot. Readings are kept per place. */
+export function readingPlace(plant: Pick<Plant, 'placement' | 'room' | 'windowId' | 'windowSpot'>): string {
+  return [plant.placement, (plant.room ?? '').trim().toLowerCase(), plant.windowId ?? '', plant.windowSpot ?? ''].join('|');
+}
+
+/** The readings taken where the plant sits now. */
+export const readingsHere = (plant: Pick<Plant, 'placement' | 'room' | 'windowId' | 'windowSpot' | 'lightReadings'>): LightReading[] =>
+  (plant.lightReadings ?? []).filter((r) => r.place === undefined || r.place === readingPlace(plant));
 
 /** Readings further than this from solar noon are rougher: a low sun's light depends a lot on the window's direction. */
 export const PEAK_HOURS = 3;
@@ -145,25 +156,40 @@ export function yearBands(share: number, site: Site, year: number, sunReaches: b
 const MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const WORD: Record<Light, string> = { low: 'Shady', medium: 'Some light', bright: 'Bright', direct: 'Direct sun' };
 
-/** "Bright from March to October and Some light the rest of the year." from the year's bands. */
+/** Runs of consecutive months (the year wraps, so a winter run can cross January), as [first, last]. */
+function runsOf(on: boolean[]): [number, number][] {
+  if (on.every(Boolean)) return [[0, 11]];
+  const out: [number, number][] = [];
+  for (let m = 0; m < 12; m++) {
+    if (!on[m] || on[(m + 11) % 12]) continue;
+    let end = m;
+    while (on[(end + 1) % 12]) end = (end + 1) % 12;
+    out.push([m, end]);
+  }
+  return out.sort((a, b) => a[0] - b[0]);
+}
+
+const listed = (parts: string[]) => (parts.length < 2 ? parts.join('') : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`);
+
+/**
+ * The year in words, brightest first, every band named: "Direct sun from May to August, bright from March
+ * to April and from September to October, and some light the rest of the year." The last band says "the rest
+ * of the year" unless it's only a month or two.
+ */
 export function yearWords(bands: Light[]): string {
-  const levels = [...new Set(bands)];
-  if (levels.length === 1) return `${WORD[levels[0]]} all year.`;
-  // The best band and the run of months it covers (the year wraps, so a winter run can cross January).
   const rank: Record<Light, number> = { low: 0, medium: 1, bright: 2, direct: 3 };
-  const top = levels.reduce((a, b) => (rank[b] > rank[a] ? b : a));
-  const on = bands.map((b) => rank[b] >= rank[top]);
-  const start = on.findIndex((v, i) => v && !on[(i + 11) % 12]);
-  let end = start;
-  while (on[(end + 1) % 12] && (end + 1) % 12 !== start) end = (end + 1) % 12;
-  const rest = bands.filter((_, i) => !on[i]);
-  const restLevel = rest.reduce((a, b) => (rank[b] < rank[a] ? b : a), rest[0]);
-  const span = start === end ? `in ${MONTH[start]}` : `from ${MONTH[start]} to ${MONTH[end]}`;
-  // The other months are one run too (the top run is), so name them when they're few.
-  const restStart = (end + 1) % 12;
-  const restEnd = (start + 11) % 12;
-  const restSpan = rest.length === 1 ? `in ${MONTH[restStart]}` : rest.length === 2 ? `in ${MONTH[restStart]} and ${MONTH[restEnd]}` : 'the rest of the year';
-  return `${WORD[top]} ${span} and ${WORD[restLevel].toLowerCase()} ${restSpan}.`;
+  const levels = [...new Set(bands)].sort((a, b) => rank[b] - rank[a]);
+  if (levels.length === 1) return `${WORD[levels[0]]} all year.`;
+  const parts = levels.map((level, i) => {
+    const months = bands.map((b) => b === level);
+    const runs = runsOf(months);
+    const count = months.filter(Boolean).length;
+    const last = i === levels.length - 1;
+    const span = last && count > 2 ? 'the rest of the year' : listed(runs.map(([a, b]) => (a === b ? `in ${MONTH[a]}` : `from ${MONTH[a]} to ${MONTH[b]}`)));
+    const word = i === 0 ? WORD[level] : WORD[level].toLowerCase();
+    return `${word} ${span}`;
+  });
+  return `${parts.length > 2 ? `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}` : parts.join(' and ')}.`;
 }
 
 /**
