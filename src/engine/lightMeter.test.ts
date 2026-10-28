@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bandOf, exposureFromExif, luxFromExposure, middayLux, outdoorLux, readingFrom, spotShare, sunElevation, yearBands, yearWords, type LightReading } from './lightMeter';
+import { bandOf, exposureFromExif, hoursFromNoon, luxFromExposure, middayLux, outdoorLux, readingFrom, spotShare, sunElevation, yearBands, yearWords, type LightReading } from './lightMeter';
 import { MODEL_CLEARNESS } from '../lib/site';
 
 const seattle = { lat: 47.61, lon: -122.33 };
@@ -100,6 +100,33 @@ describe('exposureFromExif', () => {
   it('gives null when something is missing', () => {
     expect(exposureFromExif({ ExposureTime: 0.01 })).toBeNull();
     expect(exposureFromExif(undefined)).toBeNull();
+  });
+});
+
+describe('time of day', () => {
+  it('knows solar noon from the clock, daylight saving and all', () => {
+    // Seattle in late October (PDT): the sun is highest around 12:58 pm local.
+    expect(Math.abs(hoursFromNoon(seattle.lon, new Date('2026-10-28T19:58:00Z')))).toBeLessThan(0.25);
+  });
+  it('flags early and late readings, which count half as much', () => {
+    const morning = readingFrom(800, new Date('2026-10-28T16:30:00Z'), seattle, 1)!; // 9:30 am
+    const noon = readingFrom(2500, new Date('2026-10-28T20:00:00Z'), seattle, 1)!;
+    const evening = readingFrom(500, new Date('2026-10-28T23:30:00Z'), seattle, 1)!; // 4:30 pm
+    expect(morning.offPeak).toBe('early');
+    expect(noon.offPeak).toBeUndefined();
+    expect(evening.offPeak).toBe('late');
+    // Same time of entry order: an off-peak reading after a midday one pulls the average less than the reverse.
+    const a = { at: '2026-10-01T20:00:00Z', lux: 1, share: 0.02, sunny: false };
+    const b = { at: '2026-10-02T20:00:00Z', lux: 1, share: 0.08, sunny: false };
+    expect(spotShare([a, { ...b, offPeak: 'early' as const }])!).toBeLessThan(spotShare([a, b])!);
+  });
+  it('a morning and a midday reading of the same spot land close together', () => {
+    const at9 = new Date('2026-06-21T16:00:00Z');
+    const at1 = new Date('2026-06-21T20:00:00Z');
+    const share = 0.05;
+    const r9 = readingFrom(share * outdoorLux(sunElevation(seattle.lat, seattle.lon, at9), 1), at9, seattle, 1)!;
+    const r1 = readingFrom(share * outdoorLux(sunElevation(seattle.lat, seattle.lon, at1), 1), at1, seattle, 1)!;
+    expect(r9.share).toBeCloseTo(r1.share, 3);
   });
 });
 

@@ -30,8 +30,12 @@ export interface LightReading {
   share: number;
   /** Sun was shining right on the spot: kept as a note, not used for the level. */
   sunny: boolean;
+  /** Taken early or late in the day (over 3 hours from solar noon): rougher, so it counts for less. */
+  offPeak?: 'early' | 'late';
 }
 
+/** Readings further than this from solar noon are rougher: a low sun's light depends a lot on the window's direction. */
+export const PEAK_HOURS = 3;
 /** Below this, the sun is too low (or down) to measure fairly: dawn, dusk and night. */
 export const MIN_SUN_DEG = 8;
 /** Indoors away from a sunbeam, a spot rarely gets more than this share of the light outside. */
@@ -44,16 +48,28 @@ export function luxFromExposure({ exposureTime, iso, fNumber }: Exposure): numbe
   return 2.5 * 2 ** ev100;
 }
 
-/** The sun's height above the horizon in degrees, for a place and moment (NOAA's simplified equations). */
-export function sunElevation(lat: number, lon: number, at: Date): number {
+/** Where the sun is for a place and moment (NOAA's simplified equations): declination and solar time. */
+function solar(lon: number, at: Date) {
   const start = Date.UTC(at.getUTCFullYear(), 0, 1);
   const doy = Math.floor((at.getTime() - start) / DAY);
   const hours = at.getUTCHours() + at.getUTCMinutes() / 60 + at.getUTCSeconds() / 3600;
   const g = ((2 * Math.PI) / 365) * (doy + (hours - 12) / 24);
   const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
   const eqTime = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
-  const solarMinutes = hours * 60 + eqTime + 4 * lon;
-  const hourAngle = (solarMinutes / 4 - 180) * RAD;
+  // Solar time in hours: 12 is when the sun is highest, whatever the clock or daylight saving says.
+  const solarHour = ((((hours * 60 + eqTime + 4 * lon) / 60) % 24) + 24) % 24;
+  return { decl, solarHour };
+}
+
+/** Hours from solar noon (negative in the morning). */
+export function hoursFromNoon(lon: number, at: Date): number {
+  return solar(lon, at).solarHour - 12;
+}
+
+/** The sun's height above the horizon in degrees, for a place and moment. */
+export function sunElevation(lat: number, lon: number, at: Date): number {
+  const { decl, solarHour } = solar(lon, at);
+  const hourAngle = (solarHour - 12) * 15 * RAD;
   const phi = lat * RAD;
   const sinEl = Math.sin(phi) * Math.sin(decl) + Math.cos(phi) * Math.cos(decl) * Math.cos(hourAngle);
   return Math.asin(Math.max(-1, Math.min(1, sinEl))) / RAD;
@@ -75,12 +91,15 @@ export function readingFrom(lux: number, at: Date, place: { lat: number; lon: nu
   const el = sunElevation(place.lat, place.lon, at);
   if (!Number.isFinite(lux) || lux <= 0 || el < MIN_SUN_DEG) return null;
   const share = lux / outdoorLux(el, sky);
-  return { at: at.toISOString(), lux: Math.round(lux), share: Math.min(1, share), sunny: share > SUNNY_SHARE };
+  const fromNoon = hoursFromNoon(place.lon, at);
+  const offPeak = Math.abs(fromNoon) > PEAK_HOURS ? (fromNoon < 0 ? 'early' : 'late') : undefined;
+  return { at: at.toISOString(), lux: Math.round(lux), share: Math.min(1, share), sunny: share > SUNNY_SHARE, ...(offPeak ? { offPeak } : {}) };
 }
 
 /**
  * The spot's share of outdoor light from its readings: shade readings only (a sunbeam isn't the spot),
- * newer ones counting double the one before. Null with no shade reading yet.
+ * newer ones counting double the one before, and early or late ones half as much as midday ones.
+ * Null with no shade reading yet.
  */
 export function spotShare(readings: LightReading[] | undefined): number | null {
   const shade = (readings ?? []).filter((r) => !r.sunny).sort((a, b) => a.at.localeCompare(b.at));
@@ -88,7 +107,7 @@ export function spotShare(readings: LightReading[] | undefined): number | null {
   let sum = 0;
   let weight = 0;
   shade.forEach((r, i) => {
-    const w = 2 ** i;
+    const w = 2 ** i * (r.offPeak ? 0.5 : 1);
     sum += Math.log(r.share) * w;
     weight += w;
   });

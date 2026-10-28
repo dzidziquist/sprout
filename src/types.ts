@@ -228,7 +228,7 @@ export interface Plant {
   archivedAt?: string;
   archivedReason?: 'died' | 'gifted' | 'composted';
   /** Camera light meter readings where it sits, oldest first (the last few are kept). */
-  lightReadings?: { at: string; lux: number; share: number; sunny: boolean }[];
+  lightReadings?: { at: string; lux: number; share: number; sunny: boolean; offPeak?: 'early' | 'late' }[];
 }
 
 export type CareEventType =

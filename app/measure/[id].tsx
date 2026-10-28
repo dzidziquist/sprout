@@ -160,6 +160,11 @@ export default function MeasureLight() {
         )}
 
         {reading.sunny && bands && <Text style={[styles.note, { color: c.inkMuted }]}>The sun reaches this spot around {now.toLocaleTimeString('en-US', { hour: 'numeric' })}. That’s noted; the year comes from your shade readings.</Text>}
+        {reading.offPeak && !reading.sunny && (
+          <Text style={[styles.note, { color: c.inkMuted }]}>
+            {reading.offPeak === 'early' ? 'Early reading' : 'Late reading'}: with the sun low, the light here depends a lot on which way the window faces. Measure again around midday to be sure; this one counts for less.
+          </Text>
+        )}
         {cloudy && !reading.sunny && <Text style={[styles.note, { color: c.inkMuted }]}>It’s cloudy right now, so today reads lower than a clear day. The share of light stays the same.</Text>}
         {estimate && bands && estimate !== level && (
           <Text style={[styles.note, { color: c.inkMuted }]}>
@@ -189,6 +194,7 @@ export default function MeasureLight() {
       <Sticker style={[styles.tip, { top: insets.top + 64 }]}>
         <Text style={[styles.head, { color: c.ink }]}>Hold it where the plant sits</Text>
         <Text style={[styles.body, { color: c.ink }]}>Screen facing the window, at leaf height. Keep your shadow out of the way.</Text>
+        <Text style={[styles.note, { color: c.inkMuted, marginTop: 4 }]}>Best around midday, between about 10 and 3.</Text>
       </Sticker>
       <View style={[styles.camFoot, { backgroundColor: c.bg, borderColor: c.line, paddingBottom: insets.bottom + 20 }]}>
         {!permission ? (
