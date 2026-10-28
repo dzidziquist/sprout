@@ -1,4 +1,4 @@
-import { awayRanges, subtractRanges, type Trip } from './away';
+import { activeTrip, awayRanges, subtractRanges, type Trip } from './away';
 import { checkIntervalDays, recheckDays } from './careEngine';
 import { speciesOf } from '../data/species';
 import { localizeClimateText, modelOf, shiftOf } from '../lib/climate';
@@ -63,6 +63,11 @@ export interface StreakResult {
   weeks: WeekRecord[];
   /** When the best streak first reached each length (index = length - 1), for badges. */
   reachedAt: string[];
+  /**
+   * Plants due before today and still unchecked, but inside their grace days, so nothing has slipped yet.
+   * `graceEnds` is when the first of them would slip (ISO). Absent when nobody is late.
+   */
+  late?: { count: number; graceEnds: string };
 }
 
 export interface StreakInput {
@@ -216,7 +221,20 @@ export function computeStreak({ plants, events, climate, now, trips }: StreakInp
   const checkedThisWeek = checkedIn(thisMonday.getTime(), now.getTime() + 1);
   if (thisWeek !== 'open' && checkedThisWeek) bump(now);
   // An open current week doesn't break the run yet; it just isn't counted.
-  return { started: true, checkedThisWeek, current: run, best, thisWeek, freezesLeft: left, weeks, reachedAt };
+  return { started: true, checkedThisWeek, current: run, best, thisWeek, freezesLeft: left, weeks, reachedAt, late: lateNow(plants, now, trips) };
+}
+
+/** Plants a day or more past due but not yet past their grace days (none while away). */
+function lateNow(plants: Plant[], now: Date, trips: Trip[] | undefined): StreakResult['late'] {
+  if (activeTrip(trips, now)) return undefined;
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const ends = plants
+    .filter((p) => !p.rooting && !p.archivedAt)
+    .map((p) => new Date(p.nextCheckAt).getTime())
+    .filter((due) => due < today.getTime() && due + GRACE_DAYS * DAY_MS > now.getTime())
+    .map((due) => due + GRACE_DAYS * DAY_MS);
+  return ends.length ? { count: ends.length, graceEnds: new Date(Math.min(...ends)).toISOString() } : undefined;
 }
 
 /* ---------------------------------------------------------------- badges */

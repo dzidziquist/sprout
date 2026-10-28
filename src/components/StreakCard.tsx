@@ -14,7 +14,19 @@ const FREEZE = 'M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5
 function copyFor(s: StreakResult): string {
   if (s.thisWeek === 'covered') return 'A week saver has this week covered. No stress.';
   if (s.thisWeek === 'open') return 'Someone’s overdue and this month’s savers are used. Check them to grow a new streak.';
+  if (s.late) {
+    // "Late" on the help screen means past the grace days, so this says "past its check date" instead.
+    const who = s.late.count === 1 ? '1 plant is past its check date' : `${s.late.count} plants are past their check date`;
+    return `${who}. Check by ${byWhen(new Date(s.late.graceEnds))} to keep this week.`;
+  }
   return s.checkedThisWeek ? 'Everyone got checked in time this week.' : 'Nothing overdue. Your next check adds this week.';
+}
+
+/** "tonight", "tomorrow", or the weekday the grace runs out. */
+function byWhen(end: Date, now = new Date()): string {
+  const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = Math.round((day(end) - day(now)) / 86400000);
+  return days <= 0 ? 'tonight' : days === 1 ? 'tomorrow' : end.toLocaleDateString('en-US', { weekday: 'long' });
 }
 
 /** "Oct 13": the Monday a week box stands for, so nobody reads the boxes as days. */

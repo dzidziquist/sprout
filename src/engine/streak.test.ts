@@ -253,3 +253,21 @@ describe('review fixes', () => {
     expect(lapsesFor({ ...p, nextCheckAt: '2026-08-01T09:00:00' }, events, 'seattle', new Date(next.getTime() + 3600000))).toEqual([]);
   });
 });
+
+describe('late plants inside their grace days', () => {
+  const events = [check('x', '2026-06-01T10:00:00')];
+  it('counts plants due before today and says when the first would slip', () => {
+    const a = plant('a', { nextCheckAt: '2026-06-09T09:00:00' });
+    const b = plant('b', { nextCheckAt: '2026-06-09T18:00:00' });
+    const today = plant('c', { nextCheckAt: '2026-06-10T08:00:00' });
+    const s = computeStreak({ plants: [a, b, today], events, climate: 'seattle', now: new Date('2026-06-10T12:00:00') });
+    expect(s.thisWeek).toBe('clean');
+    expect(s.late).toEqual({ count: 2, graceEnds: new Date('2026-06-11T09:00:00').toISOString() });
+  });
+  it('is gone once the grace has run out (a saver takes over) and while away', () => {
+    const a = plant('a', { nextCheckAt: '2026-06-09T09:00:00' });
+    expect(computeStreak({ plants: [a], events, climate: 'seattle', now: new Date('2026-06-12T12:00:00') }).late).toBeUndefined();
+    const trips = [{ from: '2026-06-09T00:00:00', to: '2026-06-15T00:00:00' }];
+    expect(computeStreak({ plants: [a], events, climate: 'seattle', now: new Date('2026-06-10T12:00:00'), trips }).late).toBeUndefined();
+  });
+});
