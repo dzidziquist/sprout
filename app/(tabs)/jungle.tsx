@@ -1,5 +1,6 @@
 import { memo, useDeferredValue, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View, Image } from 'react-native';
+import { FlatList, Platform, Pressable, StyleSheet, Text, View, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useDay } from '@/hooks/useDay';
 import { useTabPadding } from '@/hooks/useTabPadding';
@@ -22,6 +23,7 @@ import { textOn, useColors, type Palette } from '@/theme/theme';
 import { fonts, type, space } from '@/theme/tokens';
 import type { Mood, Plant, WishItem } from '@/types';
 import { Glyph } from '@/components/Glyph';
+import { UndoHost } from '@/components/UndoToast';
 
 /** One shared empty list, so the store selector doesn't hand back a new array every render. */
 const NO_WISHES: WishItem[] = [];
@@ -146,6 +148,7 @@ function linesOf(plants: Plant[], view: JungleView, prefix: string, faded?: bool
 
 export default function JungleScreen() {
   const pad = useTabPadding(8);
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const c = useColors();
   const plants = usePlantStore((s) => s.plants);
@@ -301,6 +304,7 @@ export default function JungleScreen() {
   );
 
   return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
     <FlatList
       data={lines}
       keyExtractor={(l) => l.key}
@@ -348,6 +352,9 @@ export default function JungleScreen() {
       contentInsetAdjustmentBehavior={pad.contentInsetAdjustmentBehavior}
       contentContainerStyle={[styles.page, { paddingTop: pad.paddingTop, paddingBottom: pad.paddingBottom }]}
     />
+    {/* An archive from a plant's menu: Undo, just above the tab bar. */}
+    <UndoHost bottom={insets.bottom + (Platform.OS === 'ios' ? 64 : 96)} />
+    </View>
   );
 }
 

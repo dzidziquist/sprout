@@ -18,7 +18,8 @@ import { GoldSparkles, goldFrame } from '@/components/GoldSparkles';
 import { ART, SEASON_ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
-import { UndoToast } from '@/components/UndoToast';
+import { UndoHost } from '@/components/UndoToast';
+import { showUndo } from '@/lib/undo';
 import { GlassButton } from '@/components/GlassButton';
 import { TodayAnswerButtons } from '@/components/TodayAnswerButtons';
 import { TodayProgress } from '@/components/TodayProgress';
@@ -79,8 +80,6 @@ export default function TodayScreen() {
   const router = useRouter();
   const c = useColors();
   const { plants, profile, events, logCheck, undoLastCheck } = usePlantStore(useShallow((s) => ({ plants: s.plants, profile: s.profile, events: s.events, logCheck: s.logCheck, undoLastCheck: s.undoLastCheck })));
-  // The last check, with its Undo, until the bar times out. A checked plant leaves the list straight away.
-  const [toast, setToast] = useState<{ key: string; plantId: string; text: string } | null>(null);
   const insets = useSafeAreaInsets();
   const coaching = useCoach();
   const [howOpen, setHowOpen] = useState(false);
@@ -122,7 +121,8 @@ export default function TodayScreen() {
     const p = plants.find((x) => x.id === id);
     const fresh = p && r === 'dry' && isRefreshDue(p, now) ? ' Fresh water + nutrients are due too: use Log care.' : '';
     const text = `${p?.name ?? 'Logged'}: ${logCheck(id, r)}${fresh}`;
-    setToast({ key: `${id}-${Date.now()}`, plantId: id, text });
+    // A checked plant leaves the list straight away; the Undo bar is the way back.
+    showUndo(text, () => undoLastCheck(id));
     if (left === 1) haptics.success();
     else haptics.answer();
   };
@@ -312,20 +312,8 @@ export default function TodayScreen() {
           </Pressable>
         )}
       </ScrollView>
-      {toast && (
-        <UndoToast
-          id={toast.key}
-          text={toast.text}
-          // Just above the tab bar: iOS's system bar, or the floating sticker bar elsewhere.
-          bottom={insets.bottom + (Platform.OS === 'ios' ? 64 : 96)}
-          onUndo={() => {
-            haptics.tap();
-            undoLastCheck(toast.plantId);
-            setToast(null);
-          }}
-          onDone={() => setToast((t) => (t?.key === toast.key ? null : t))}
-        />
-      )}
+      {/* Just above the tab bar: iOS's system bar, or the floating sticker bar elsewhere. */}
+      <UndoHost bottom={insets.bottom + (Platform.OS === 'ios' ? 64 : 96)} />
     </View>
   );
 }

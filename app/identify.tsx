@@ -1,7 +1,7 @@
 import { usePlantStore } from '@/store/plantStore';
 import { useShallow } from 'zustand/react/shallow';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
@@ -204,11 +204,49 @@ export default function IdentifyScreen() {
               <Text style={[styles.sectionTitle, { color: c.ink }]}>Here's who we think it is</Text>
               <Text style={[styles.body, { color: c.inkMuted }]}>Tap the one that looks right. Photo ID can be wrong, so check the leaves match.</Text>
             </View>
+            {/* Tapping a match opens the side-by-side check right under it, in place of a pop-up over the list. */}
             {phase.matches.map((m) => (
-              <MatchCard key={m.speciesId} match={m} c={c} onPress={() => {
-                haptics.tap();
-                setConfirm(m);
-              }} />
+              <View key={m.speciesId} style={{ gap: 8 }}>
+                <MatchCard match={m} c={c} open={confirm?.speciesId === m.speciesId} onPress={() => {
+                  haptics.tap();
+                  setConfirm(confirm?.speciesId === m.speciesId ? null : m);
+                }} />
+                {confirm?.speciesId === m.speciesId && (
+                  <Sticker bg={c.mint} drop={0} style={styles.confirm}>
+                    <Text style={[styles.sectionTitle, { color: c.ink, textAlign: 'center' }]}>Is this your plant?</Text>
+                    <View style={styles.compare}>
+                      {photo && (
+                        <View style={[styles.compareTile, { borderColor: c.line, backgroundColor: c.cloud }]}>
+                          <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel="Your photo" />
+                        </View>
+                      )}
+                      <View style={[styles.compareTile, { borderColor: c.line, backgroundColor: c.potTint[getSpecies(m.speciesId).artPot], alignItems: 'center', justifyContent: 'center' }]}>
+                        <PlantBuddy speciesId={m.speciesId} size={104} />
+                      </View>
+                    </View>
+                    <Button
+                      title="Yes, add it"
+                      raised
+                      onPress={() => {
+                        haptics.success();
+                        router.replace(`/add?species=${m.speciesId}`);
+                      }}
+                      style={styles.bigBtn}
+                      textStyle={styles.bigBtnText}
+                    />
+                    <Button
+                      title="Read about it or save for later"
+                      bg={c.butter}
+                      onPress={() => {
+                        haptics.tap();
+                        router.push(`/species/${m.speciesId}`);
+                      }}
+                      style={{ minHeight: 48 }}
+                    />
+                    <Button title="Not quite" bg={c.card} onPress={() => setConfirm(null)} style={{ minHeight: 48 }} />
+                  </Sticker>
+                )}
+              </View>
             ))}
             {unlistedLeads && topUnlisted && (
               <Button title={`It's ${topUnlisted.commonNames[0] ?? topUnlisted.latinName}: add as itself`} bg={c.mint} onPress={() => addAsItself(topUnlisted)} style={{ minHeight: 50 }} />
@@ -255,58 +293,11 @@ export default function IdentifyScreen() {
         <Text style={[styles.credit, { color: c.inkMuted }]}>Photo ID powered by Pl@ntNet</Text>
       </ScrollView>
 
-      <Modal visible={!!confirm} transparent animationType="fade" onRequestClose={() => setConfirm(null)}>
-        <View style={styles.scrim}>
-          {confirm && (
-            <Sticker style={[styles.confirm, { marginBottom: insets.bottom + 16 }]}>
-              <Text style={[styles.sectionTitle, { color: c.ink, textAlign: 'center' }]}>Is this your plant?</Text>
-              <View style={styles.compare}>
-                {photo && (
-                  <View style={[styles.compareTile, { borderColor: c.line, backgroundColor: c.cloud }]}>
-                    <Image source={{ uri: photo }} style={StyleSheet.absoluteFill} contentFit="cover" accessibilityLabel="Your photo" />
-                  </View>
-                )}
-                <View style={[styles.compareTile, { borderColor: c.line, backgroundColor: c.potTint[getSpecies(confirm.speciesId).artPot], alignItems: 'center', justifyContent: 'center' }]}>
-                  <PlantBuddy speciesId={confirm.speciesId} size={104} />
-                </View>
-              </View>
-              <View style={{ alignItems: 'center', gap: 2 }}>
-                <Text style={[styles.matchName, { color: c.ink }]}>{getSpecies(confirm.speciesId).commonName}</Text>
-                <Text style={[styles.latin, { color: c.inkMuted }]}>{getSpecies(confirm.speciesId).latinName}</Text>
-              </View>
-              <Button
-                title="Yes, add it"
-                raised
-                onPress={() => {
-                  haptics.success();
-                  const id = confirm.speciesId;
-                  setConfirm(null);
-                  router.replace(`/add?species=${id}`);
-                }}
-                style={styles.bigBtn}
-                textStyle={styles.bigBtnText}
-              />
-              <Button
-                title="Read about it or save for later"
-                bg={c.butter}
-                onPress={() => {
-                  haptics.tap();
-                  const id = confirm.speciesId;
-                  setConfirm(null);
-                  router.push(`/species/${id}`);
-                }}
-                style={{ minHeight: 48 }}
-              />
-              <Button title="Not quite" bg={c.card} onPress={() => setConfirm(null)} style={{ minHeight: 48 }} />
-            </Sticker>
-          )}
-        </View>
-      </Modal>
     </View>
   );
 }
 
-function MatchCard({ match, c, onPress }: { match: CatalogueMatch; c: Palette; onPress: () => void }) {
+function MatchCard({ match, c, open, onPress }: { match: CatalogueMatch; c: Palette; open: boolean; onPress: () => void }) {
   const sp = getSpecies(match.speciesId);
   const fill = confidenceFill(match.confidence, c);
   const pct = Math.round(match.score * 100);
@@ -314,6 +305,7 @@ function MatchCard({ match, c, onPress }: { match: CatalogueMatch; c: Palette; o
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`${sp.commonName}, ${match.confidence}, ${pct} percent`}
+      accessibilityState={{ expanded: open }}
       onPress={onPress}
       style={({ pressed }) => [styles.card, { backgroundColor: c.card, borderColor: c.line, boxShadow: `0px ${pressed ? 1 : 4}px 0px ${c.drop}` }, pressed && { transform: [{ translateY: 3 }] }]}
     >
@@ -372,7 +364,6 @@ const styles = StyleSheet.create({
   barFill: { height: '100%', borderRadius: 4 },
   pct: { fontFamily: fonts.bodyHeavy, ...type.caption, minWidth: 34, textAlign: 'right' },
   credit: { fontFamily: fonts.body, ...type.caption, textAlign: 'center', marginTop: 4 },
-  scrim: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end', paddingHorizontal: 16 },
   confirm: { padding: 18, gap: 12 },
   compare: { flexDirection: 'row', gap: 10, justifyContent: 'center' },
   compareTile: { width: 140, height: 140, borderRadius: 22, borderWidth: 2, overflow: 'hidden' },

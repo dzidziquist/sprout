@@ -482,7 +482,8 @@ export default function AddPlantScreen() {
         <View style={{ gap: 10 }}>
           <Label>What kind of plant is it?</Label>
           <TextInput value={customName} onChangeText={setCustomName} placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Kind of plant" autoCapitalize="words" returnKeyType="next" />
-          <TextInput value={customLatin} onChangeText={setCustomLatin} placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Latin name" autoCapitalize="words" autoCorrect={false} returnKeyType="done" />
+          <Label>Latin name (optional)</Label>
+          <TextInput value={customLatin} onChangeText={setCustomLatin} placeholder="e.g. Ceropegia woodii" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Latin name" autoCapitalize="words" autoCorrect={false} returnKeyType="done" />
           <Label>How does it like its water?</Label>
           <View style={{ gap: 8 }}>
             {CARE_TYPES.map((t) => {
@@ -694,7 +695,8 @@ export default function AddPlantScreen() {
             </>
           )}
 
-          <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" autoCapitalize="words" returnKeyType="done" />
+          <Label>Room (optional)</Label>
+          <TextInput value={room} onChangeText={setRoom} placeholder="e.g. Living room" placeholderTextColor={c.inkMuted} style={inputStyle} accessibilityLabel="Room" autoCapitalize="words" returnKeyType="done" />
 
         </View>
       )}
