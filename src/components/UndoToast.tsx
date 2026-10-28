@@ -3,6 +3,9 @@ import { AccessibilityInfo, Animated, Platform, Pressable, StyleSheet, Text } fr
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fonts, type } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
+import { useIsFocused } from '@react-navigation/native';
+import { useUndoBar } from '@/lib/undo';
+import * as haptics from '@/lib/haptics';
 
 const SHOW_MS = 6000;
 // VoiceOver users need time to hear the message and find Undo.
@@ -65,3 +68,26 @@ const styles = StyleSheet.create({
   undo: { minHeight: 40, minWidth: 64, borderWidth: 2, borderRadius: 20, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
   undoText: { fontFamily: fonts.display, ...type.body },
 });
+
+/** Shows the current Undo bar (see `showUndo`) on this screen, `bottom` points up from the screen's foot. */
+export function UndoHost({ bottom }: { bottom: number }) {
+  const current = useUndoBar((s) => s.current);
+  const clear = useUndoBar((s) => s.clear);
+  // Today and Jungle stay mounted behind each other and behind sheets: only the screen in front shows it.
+  const focused = useIsFocused();
+  if (!current || !focused) return null;
+  return (
+    <UndoToast
+      id={current.key}
+      text={current.text}
+      bottom={bottom}
+      onUndo={() => {
+        haptics.tap();
+        current.undo();
+        clear(current.key);
+      }}
+      onDone={() => clear(current.key)}
+    />
+  );
+}
+

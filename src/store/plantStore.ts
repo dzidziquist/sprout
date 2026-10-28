@@ -125,10 +125,14 @@ interface PlantState {
   saveWish: (item: Omit<WishItem, 'id' | 'savedAt'>, now?: Date) => WishItem;
   updateWish: (id: string, patch: Pick<WishItem, 'note'>) => void;
   removeWish: (id: string) => void;
+  /** Put back a wish that was just removed (Undo), as it was. */
+  restoreWish: (wish: WishItem) => void;
   /** Plants are never hard-deleted from lineage: archived plants leave the round but stay in Offshoots. */
   archivePlant: (plantId: string, reason: NonNullable<Plant['archivedReason']>, now?: Date) => void;
   /** "Gifted it months ago": move the day a plant left (and its diary entry) to an earlier date. */
   setArchivedAt: (plantId: string, at: Date) => void;
+  /** Undo an archive just made: back as it was, schedule and all (unlike restorePlant, which is a return). */
+  undoArchive: (plantId: string) => void;
   /** Back from In memory: due for a check now, and the time away doesn't count against the streak. */
   restorePlant: (plantId: string, now?: Date) => void;
   /** Hard delete (mistakes only). Children keep their lineage by pointing to the grandparent. */
@@ -456,6 +460,14 @@ export const usePlantStore = create<PlantState>()(
 
       removeWish: (id) => set((s) => ({ profile: { ...s.profile, wishlist: (s.profile.wishlist ?? []).filter((w) => w.id !== id) } })),
 
+      restoreWish: (wish) =>
+        set((s) => {
+          const list = s.profile.wishlist ?? [];
+          if (list.some((w) => w.id === wish.id || wishKey(w) === wishKey(wish))) return s;
+          // Back in its place: the list is in the order things were saved.
+          return { profile: { ...s.profile, wishlist: [...list, wish].sort((a, b) => a.savedAt.localeCompare(b.savedAt)) } };
+        }),
+
       updatePlant: (plantId, patch, now = new Date()) => {
         const climate = get().profile.climate;
         set((s) => {
@@ -477,6 +489,18 @@ export const usePlantStore = create<PlantState>()(
           undo: withoutUndo(s.undo, [plantId]),
           events: [...s.events, { id: uid(), plantId, type: 'archived', note: reason, at }],
         }));
+      },
+
+      undoArchive: (plantId) => {
+        set((s) => {
+          const plant = s.plants.find((p) => p.id === plantId);
+          if (!plant?.archivedAt) return s;
+          const entry = [...s.events].reverse().find((e) => e.plantId === plantId && e.type === 'archived');
+          return {
+            plants: s.plants.map((p) => (p.id === plantId ? { ...p, archivedAt: undefined, archivedReason: undefined } : p)),
+            events: entry ? s.events.filter((e) => e !== entry) : s.events,
+          };
+        });
       },
 
       restorePlant: (plantId, now = new Date()) => {

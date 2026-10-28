@@ -251,7 +251,8 @@ export default function EditPlantScreen() {
         <View style={{ gap: 10 }}>
           <Label>What kind of plant is it?</Label>
           <TextInput value={kind} onChangeText={setKind} style={input} accessibilityLabel="Kind of plant" autoCapitalize="words" returnKeyType="next" placeholder="e.g. Hindu rope plant" placeholderTextColor={c.inkMuted} />
-          <TextInput value={latin} onChangeText={setLatin} style={input} accessibilityLabel="Latin name" placeholder="Latin name (optional)" placeholderTextColor={c.inkMuted} autoCorrect={false} autoCapitalize="words" returnKeyType="done" />
+          <Label>Latin name (optional)</Label>
+          <TextInput value={latin} onChangeText={setLatin} style={input} accessibilityLabel="Latin name" placeholder="e.g. Ceropegia woodii" placeholderTextColor={c.inkMuted} autoCorrect={false} autoCapitalize="words" returnKeyType="done" />
           <Label>How does it like its water?</Label>
           <View style={styles.wrap}>
             {(Object.keys(OTHER) as SpeciesGroup[]).map((g) => (
@@ -387,7 +388,8 @@ export default function EditPlantScreen() {
           ? 'Its light comes from the lamp, so it isn’t in the Light view.'
           : 'Windowsills and shelves count as Indoors. How sunny the spot is tells them apart.'}
       </Text>
-      <TextInput value={room} onChangeText={setRoom} placeholder="Room (optional), e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" autoCapitalize="words" returnKeyType="done" />
+      <Label>Room (optional)</Label>
+      <TextInput value={room} onChangeText={setRoom} placeholder="e.g. Living room" placeholderTextColor={c.inkMuted} style={input} accessibilityLabel="Room" autoCapitalize="words" returnKeyType="done" />
       <Text style={[styles.note, { color: c.inkMuted }]}>Changing light, soil, pot or spot re-plans the next check.</Text>
 
       <Button title="Save changes" raised onPress={save} style={{ minHeight: 56, marginTop: 6 }} textStyle={{ ...type.headline, fontFamily: fonts.display }} />

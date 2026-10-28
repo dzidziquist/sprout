@@ -486,3 +486,28 @@ describe('tickGrowTask', () => {
   });
 });
 
+
+describe('undo for archive and wishlist', () => {
+  it('undoArchive puts the plant back exactly as it was, unlike a restore', () => {
+    usePlantStore.setState({ profile: DEFAULT_PROFILE, plants: [], events: [], onboarded: true, undo: {} });
+    const s = usePlantStore.getState();
+    const now = new Date('2026-07-10T12:00:00.000Z');
+    const p = s.addPlant({ ...base, name: 'Monty' }, now, { firstCheck: 'scheduled' });
+    s.archivePlant(p.id, 'gifted', now);
+    expect(usePlantStore.getState().plants[0].archivedAt).toBeTruthy();
+    usePlantStore.getState().undoArchive(p.id);
+    const back = usePlantStore.getState();
+    expect(back.plants[0]).toEqual(p);
+    expect(back.events.some((e) => e.type === 'archived' || e.type === 'restored')).toBe(false);
+  });
+  it('restoreWish puts a removed wish back in its place, once', () => {
+    usePlantStore.setState({ profile: DEFAULT_PROFILE, plants: [], events: [], onboarded: true, undo: {} });
+    const s = usePlantStore.getState();
+    const a = s.saveWish({ speciesId: 'monstera' }, new Date('2026-07-01T00:00:00Z'));
+    s.saveWish({ speciesId: 'pothos' }, new Date('2026-07-02T00:00:00Z'));
+    s.removeWish(a.id);
+    usePlantStore.getState().restoreWish(a);
+    usePlantStore.getState().restoreWish(a);
+    expect(usePlantStore.getState().profile.wishlist?.map((w) => w.speciesId)).toEqual(['monstera', 'pothos']);
+  });
+});

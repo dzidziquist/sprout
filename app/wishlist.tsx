@@ -16,6 +16,8 @@ import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import type { WishItem } from '@/types';
 import { Glyph } from '@/components/Glyph';
+import { UndoHost } from '@/components/UndoToast';
+import { showUndo } from '@/lib/undo';
 
 /** One shared empty list, so the store selector doesn't hand back a new array every render. */
 const NO_WISHES: WishItem[] = [];
@@ -29,6 +31,7 @@ export default function WishlistScreen() {
   const close = () => (router.canGoBack() ? router.back() : router.replace('/jungle'));
 
   return (
+    <View style={{ flex: 1 }}>
     <ScrollView
       automaticallyAdjustKeyboardInsets
       keyboardShouldPersistTaps="handled"
@@ -53,6 +56,8 @@ export default function WishlistScreen() {
         [...wishlist].reverse().map((w) => <WishCard key={w.id} wish={w} />)
       )}
     </ScrollView>
+    <UndoHost bottom={insets.bottom + 16} />
+    </View>
   );
 }
 
@@ -64,6 +69,7 @@ function WishCard({ wish }: { wish: WishItem }) {
   const site = useSite();
   const updateWish = usePlantStore((s) => s.updateWish);
   const removeWish = usePlantStore((s) => s.removeWish);
+  const restoreWish = usePlantStore((s) => s.restoreWish);
   const [note, setNote] = useState(wish.note ?? '');
   // Closing the list (or tapping Add) mid-edit unmounts the card without a blur: save what was typed then too.
   const typed = useRef(note);
@@ -81,6 +87,13 @@ function WishCard({ wish }: { wish: WishItem }) {
   const title = other ? names.common : sp.commonName;
   const home = homeFor(wish.speciesId, roomsInUse(rooms, plants), site, new Date());
   const homeLine = !home ? null : home.suits ? `Would suit your ${home.suits.toLowerCase()}` : 'No great spot in your rooms yet';
+  // Removing is one tap, so it can be taken back: the wish returns as it was, with any note just typed.
+  const remove = () => {
+    haptics.tap();
+    const kept = { ...wish, note: typed.current.trim() || undefined };
+    removeWish(wish.id);
+    showUndo(`${title} is off your wishlist.`, () => restoreWish(kept));
+  };
   const open = () => router.push(speciesHref(wish.speciesId, wish.custom) as never);
   const add = () => {
     router.replace(addHref(wish.speciesId, wish.custom, wish.id) as never);
@@ -95,8 +108,7 @@ function WishCard({ wish }: { wish: WishItem }) {
         accessibilityActions={[{ name: 'remove', label: `Remove ${title} from wishlist` }]}
         onAccessibilityAction={(e) => {
           if (e.nativeEvent.actionName !== 'remove') return;
-          haptics.tap();
-          removeWish(wish.id);
+          remove();
         }}
         onPress={open}
         style={({ pressed }) => [styles.head, pressed && { opacity: 0.75 }]}
@@ -114,8 +126,7 @@ function WishCard({ wish }: { wish: WishItem }) {
           accessibilityLabel={`Remove ${title} from wishlist`}
           hitSlop={10}
           onPress={() => {
-            haptics.tap();
-            removeWish(wish.id);
+            remove();
           }}
           style={[styles.remove, { borderColor: c.line }]}
         >

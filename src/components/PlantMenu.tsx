@@ -8,6 +8,7 @@ import * as haptics from '@/lib/haptics';
 import { useColors } from '@/theme/theme';
 import { fonts, type } from '@/theme/tokens';
 import type { Plant } from '@/types';
+import { showUndo } from '@/lib/undo';
 
 type ArchiveReason = NonNullable<Plant['archivedReason']>;
 
@@ -24,6 +25,7 @@ export function usePlantActions(plant: Plant | undefined, opts: { onDeleted?: ()
   const archivePlant = usePlantStore((s) => s.archivePlant);
   const deletePlant = usePlantStore((s) => s.deletePlant);
   const restorePlant = usePlantStore((s) => s.restorePlant);
+  const undoArchive = usePlantStore((s) => s.undoArchive);
   if (!plant) return null;
   return {
     log: () => router.push(`/log/${plant.id}`),
@@ -38,6 +40,8 @@ export function usePlantActions(plant: Plant | undefined, opts: { onDeleted?: ()
     archive: (reason: ArchiveReason) => {
       archivePlant(plant.id, reason);
       haptics.success();
+      // From a list the plant just disappears, so offer the way back right there.
+      showUndo(`${plant.name}: ${ARCHIVE_COPY[reason === 'gifted' ? 'gifted' : 'died'].done}.`, () => undoArchive(plant.id));
     },
     restore: () => {
       restorePlant(plant.id);
