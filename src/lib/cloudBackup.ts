@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import { create } from 'zustand';
 import { BACKUPS_DIR, PHOTOS_DIR, backupDue, backupName, newChain, photoNames, sortEntries, toPrune, type BackupEntry } from '../engine/cloudBackup';
 import { computeStreak } from '../engine/streak';
-import { DEFAULT_PROFILE, usePlantStore } from '../store/plantStore';
+import { DEFAULT_PROFILE, usePlantStore, withShared } from '../store/plantStore';
 import { buildExportJson, parseBackup, type BackupData, type ExportSource } from './export';
 
 /*
@@ -139,7 +139,8 @@ export async function runCloudBackup({ force = false } = {}): Promise<'saved' | 
   const aside = st0.profile.household?.role === 'member' ? st0.profile.household.aside : undefined;
   const plants = aside ? aside.plants : st0.plants;
   const events = aside ? aside.events : st0.events;
-  const profile = aside ? { ...st0.profile, ...aside.shared } : st0.profile;
+  // Their own settings whole: anything they didn't have (trips, rooms…) is cleared, not the household's.
+  const profile = aside ? withShared(st0.profile, aside.shared) : st0.profile;
   const cb = st0.profile.cloudBackup ?? {};
   if (cb.off || !onboarded || !plants.length) return 'skipped';
   if (!force && !backupDue(cb.lastAt, new Date())) return 'skipped';
