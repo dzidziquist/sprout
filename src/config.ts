@@ -4,12 +4,6 @@ import Constants from 'expo-constants';
 /** App-wide links and contact details. Fill these in before the App Store submission. */
 export const APP_VERSION = Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? '0.1.0';
 
-/** The build number TestFlight and the App Store show next to the version ("45"); null on web. */
-export const APP_BUILD = Application.nativeBuildVersion;
-
-/** Version as Settings shows it: "1.0.0 (45)", so you can tell which TestFlight build you're on. */
-export const VERSION_LABEL = APP_BUILD ? `${APP_VERSION} (${APP_BUILD})` : APP_VERSION;
-
 /** Where people reach a human. TODO(founder): set a support address before launch; the contact row hides while empty. */
 export const SUPPORT_EMAIL = '';
 
