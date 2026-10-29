@@ -57,7 +57,7 @@ export default function RootLayout() {
         const { plants, events, profile } = usePlantStore.getState();
         rescheduleRounds(plants, events, profile.round, profile.photos ?? 'monthly', profile.trips).catch(() => {});
         // The Home Screen widget shows the same round.
-        syncWidget(plants, profile.trips);
+        syncWidget(plants, profile.trips, profile.faces);
       }, 400);
     };
     sync();
@@ -76,7 +76,7 @@ export default function RootLayout() {
     };
     sunlight();
     const unsub = usePlantStore.subscribe((s, prev) => {
-      if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos || s.profile.trips !== prev.profile.trips) sync();
+      if (s.plants !== prev.plants || s.profile.round !== prev.profile.round || s.profile.photos !== prev.profile.photos || s.profile.trips !== prev.profile.trips || s.profile.faces !== prev.profile.faces) sync();
       if (s.profile.climate !== prev.profile.climate) sunlight();
     });
     return () => {

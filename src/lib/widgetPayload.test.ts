@@ -21,4 +21,12 @@ describe('widgetPayload', () => {
       { f: '2026-12-20T00:00:00.000Z', t: '2027-01-02T00:00:00.000Z' },
     ]);
   });
+  it('adds when each plant was last checked and which cartoon it is, and the no-worried-faces wish', () => {
+    const out = JSON.parse(widgetPayload([plant('Rubber', { speciesId: 'rubber-plant' as Plant['speciesId'], lastCheckAt: '2026-10-22T09:00:00.000Z' }), plant('New')], [], new Date('2026-10-28T12:00:00Z'), { artKey: (id) => `art-${id}`, gentle: true }));
+    expect(out.plants).toEqual([
+      { n: 'Rubber', d: '2026-10-29T09:00:00.000Z', l: '2026-10-22T09:00:00.000Z', a: 'art-rubber-plant' },
+      { n: 'New', d: '2026-10-29T09:00:00.000Z', a: 'art-pothos' },
+    ]);
+    expect(out.g).toBe(true);
+  });
 });
