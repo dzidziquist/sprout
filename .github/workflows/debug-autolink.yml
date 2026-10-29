@@ -1,0 +1,30 @@
+name: Debug native modules (Mac)
+
+# Reproduces the iOS module linking step on a GitHub Mac without a full build, to see why the household
+# module (modules/household) isn't linked. Safe to delete once that's settled.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: What Expo finds
+        run: |
+          ls -la node_modules/household modules/household modules/household/ios
+          npx expo-modules-autolinking search -p apple | grep -i -A12 household || echo "search: household NOT FOUND"
+          npx expo-modules-autolinking resolve -p apple --json > resolved.json
+          node -e "const d=require('./resolved.json');const m=d.modules.filter(x=>/house/.test(x.packageName));console.log(m.length?JSON.stringify(m,null,1):'resolve: household NOT FOUND', d.modules.length)"
+      - name: Prebuild and pod install, as the build does
+        run: |
+          CI=1 npx expo prebuild -p ios --no-install
+          cd ios
+          node --no-warnings --eval "require('expo/bin/autolinking')" expo-modules-autolinking resolve --platform apple --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const d=JSON.parse(s);console.log('from ios/:',d.modules.filter(x=>/house/.test(x.packageName)).map(x=>x.packageName), d.modules.length)})"
+          pod install 2>&1 | tee pod.log | grep -i -E "household|Installing Ext|Pod installation complete|error|warn" || true
