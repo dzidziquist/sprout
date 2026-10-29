@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { usePlantStore } from '@/store/plantStore';
 import { useColors } from '@/theme/theme';
 import { rescheduleRounds, roundAllowed, useNotificationRoute } from '@/lib/notifications';
+import { syncWidget } from '@/lib/widget';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 import { refreshSunlight } from '@/lib/site';
@@ -52,6 +53,8 @@ export default function RootLayout() {
       timer = setTimeout(() => {
         const { plants, events, profile } = usePlantStore.getState();
         rescheduleRounds(plants, events, profile.round, profile.photos ?? 'monthly', profile.trips).catch(() => {});
+        // The Home Screen widget shows the same round.
+        syncWidget(plants, profile.trips);
       }, 400);
     };
     sync();

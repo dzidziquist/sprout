@@ -10,6 +10,9 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.dzidziquist.plantfam",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.dzidziquist.plantfam"]
+      },
       "icon": {
         "light": "./assets/icons/icon-default.png",
         "dark": "./assets/icons/icon-default-dark.png",
@@ -68,6 +71,7 @@
           "resizeMode": "contain"
         }
       ],
+      "@bacons/apple-targets",
       [
         "expo-camera",
         {

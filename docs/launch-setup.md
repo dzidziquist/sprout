@@ -30,6 +30,15 @@ Access tokens) as the repository secret `EXPO_TOKEN`, then Actions → **TestFli
 It runs the typecheck and tests, then builds and submits on EAS. `.easignore` keeps the art originals,
 design boards and docs out of the upload.
 
+**New targets or capabilities (the widget, later iCloud): signing from GitHub, no Mac.** A change that
+adds one needs new Apple signing once. developer.apple.com → Identifiers → **+** → App Groups →
+`group.com.dzidziquist.plantfam` (done). Repository secrets: `ASC_KEY_P8` (contents of the .p8 from App
+Store Connect → Users and Access → Integrations → App Store Connect API, Admin role), `ASC_KEY_ID`,
+`ASC_ISSUER_ID`, `APPLE_TEAM_ID` (developer.apple.com → Membership). Then Actions → **Set up signing (one
+time)** → Run workflow (pick the account type from Membership → Entity type), and after it passes,
+Actions → **TestFlight** as usual. If it ever stops on an Apple login, the key secrets are wrong; the
+fallback is one interactive `npx eas-cli build -p ios --profile production` from a Mac.
+
 ## 2. Environment variables (EAS → Project → Environment variables, "production")
 | Variable | What for | Where to get it |
 |---|---|---|

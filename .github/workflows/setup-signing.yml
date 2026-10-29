@@ -1,0 +1,61 @@
+name: Set up signing (one time)
+
+# Creates the Apple signing for parts of the app that don't have it yet (the Home Screen widget, and
+# later iCloud), so builds can carry on from GitHub with no Mac. Run it once from the Actions tab after a
+# change adds a new target or capability, then run TestFlight as usual.
+#
+# It runs Expo's interactive `eas credentials:configure-build`, signing in to Apple with the App Store
+# Connect API key instead of an Apple ID (no password, no two-factor code), and accepts its defaults.
+#
+# Needs these repository secrets: EXPO_TOKEN, ASC_KEY_P8 (the .p8 file's contents), ASC_KEY_ID,
+# ASC_ISSUER_ID and APPLE_TEAM_ID. The App Group (group.com.dzidziquist.plantfam) must already be
+# registered at developer.apple.com.
+on:
+  workflow_dispatch:
+    inputs:
+      team_type:
+        description: Account type (developer.apple.com → Membership → Entity type)
+        type: choice
+        options: [INDIVIDUAL, COMPANY_OR_ORGANIZATION]
+        default: INDIVIDUAL
+
+jobs:
+  signing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install expect (answers the setup's questions)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq expect
+
+      - name: Write the App Store Connect key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc.p8"
+          grep -q "BEGIN PRIVATE KEY" "$RUNNER_TEMP/asc.p8" || { echo "ASC_KEY_P8 doesn't look like a .p8 key (no BEGIN PRIVATE KEY line)"; exit 1; }
+
+      - name: Set up signing for the app and its widget
+        env:
+          EXPO_ASC_API_KEY_PATH: ${{ runner.temp }}/asc.p8
+          EXPO_ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          EXPO_APPLE_TEAM_TYPE: ${{ inputs.team_type }}
+        run: expect .github/scripts/configure-signing.exp
+
+      - name: Remove the key file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/asc.p8"
