@@ -8,7 +8,7 @@ import { Glyph } from '@/components/Glyph';
 import { Row, Section } from '@/components/SettingsList';
 import { Button, Sticker, Title } from '@/components/ui';
 import { initial } from '@/engine/household';
-import { leave, people as fetchPeople, removePerson, startAndInvite, stopSharing, syncHousehold, useHouseholdStatus } from '@/lib/household';
+import { leave, people as fetchPeople, removePerson, renameMe, startAndInvite, stopSharing, syncHousehold, useHouseholdStatus } from '@/lib/household';
 import type { Person } from '../modules/household';
 import * as haptics from '@/lib/haptics';
 import { fonts, type, space } from '@/theme/tokens';
@@ -169,10 +169,7 @@ export default function HouseholdScreen() {
         <Button
           title="Save name"
           bg={c.butter}
-          onPress={() => {
-            usePlantStore.getState().setProfile({ household: { ...household, name: name.trim() } });
-            void syncHousehold();
-          }}
+          onPress={() => void renameMe(name)}
           style={{ minHeight: 48 }}
         />
       )}

@@ -51,6 +51,8 @@ interface HouseholdNative {
   savePhoto(owner: string | null, name: string, fileUri: string): Promise<void>;
   fetchChanges(owner: string | null, token: string | null, diaryDir: string): Promise<Changes>;
   invite(title: string): Promise<void>;
+  /** Owner: renames the share, so invites already sent show the new name. */
+  rename(title: string): Promise<void>;
   people(owner: string | null): Promise<Person[]>;
   remove(personId: string): Promise<void>;
   stopSharing(): Promise<void>;
