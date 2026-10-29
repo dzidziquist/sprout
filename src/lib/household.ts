@@ -265,3 +265,12 @@ export function watchChanges(): () => void {
   const sub = Native.addListener('onChange', () => void syncHousehold());
   return () => sub.remove();
 }
+
+/** Under "Household" in Settings: an offer to share, or whose jungle it is and how many look after it. */
+export function householdLine(h: Household | undefined): string {
+  if (!h) return 'Look after your plants together: share your jungle';
+  const names = Object.values(h.members ?? {});
+  const ownerName = h.role === 'owner' ? h.name : (h.owner && h.members?.[h.owner]?.name) || 'Shared';
+  const people = Math.max(names.length, 1);
+  return `${ownerName}’s jungle · ${people} ${people === 1 ? 'person' : 'people'}`;
+}
