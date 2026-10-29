@@ -239,6 +239,30 @@
       "height": 384,
       "bytes": 20630,
       "sha256": "47466a1dbe20910e1477aa3c52c978beed726953a0623a7b4727cc4bfe17684f"
+    },
+    {
+      "filename": "symptom-yellow-veins.png",
+      "title": "Yellow between the veins",
+      "width": 384,
+      "height": 384,
+      "bytes": 65260,
+      "sha256": "bd26dcd4540ec09f1d1caeb3e0a6a979d42fba4cec01afef555912a003c2ebd6"
+    },
+    {
+      "filename": "symptom-purple-leaves.png",
+      "title": "Purple tinge on leaves",
+      "width": 384,
+      "height": 384,
+      "bytes": 68864,
+      "sha256": "953b87ce195b6419264c441589ec6425af29e3ccbce7ddf6aba05d15e2645d3c"
+    },
+    {
+      "filename": "symptom-leafy-no-fruit.png",
+      "title": "Lots of leaves, little fruit",
+      "width": 384,
+      "height": 384,
+      "bytes": 69174,
+      "sha256": "36bb5f3cb43fd4b532ebaf1c744b22d8962c75d50da015e1f0dce8148d341a16"
     }
   ]
 }

@@ -90,6 +90,32 @@ describe('plant doctor', () => {
     expect(s.has('dryChecks')).toBe(false);
   });
 
+  it('reads the fresh mix and the feeds: fresh fertilised mix isn\u2019t hunger, a spent one with no feed is', () => {
+    const at = new Date('2026-11-20T12:00:00');
+    const tomato = (mixAt: string, extra: Partial<Plant> = {}) => plant({ speciesId: 'tomato', soil: 'veg_mix', stage: 'fruiting', mix: { name: 'FoxFarm Ocean Forest', fertiliser: 'yes', kind: 'organic', pottedAt: mixAt }, ...extra });
+    const fresh = tomato('2026-11-10T12:00:00');
+    const freshSignals = signalsFor({ plant: fresh, events: [], climate: 'seattle', now: at });
+    expect(freshSignals.has('freshMix')).toBe(true);
+    expect(freshSignals.has('unfed')).toBe(false);
+    expect(diagnose('yellow-lower', { plant: fresh, events: [], climate: 'seattle', now: at }).map((d) => d.cause.id)).not.toContain('hungry');
+
+    const spent = tomato('2026-10-01T12:00:00');
+    expect(signalsFor({ plant: spent, events: [], climate: 'seattle', now: at }).has('mixSpent')).toBe(true);
+    const why = diagnose('yellow-lower', { plant: spent, events: [], climate: 'seattle', now: at }).find((d) => d.cause.id === 'hungry')?.why;
+    expect(why).toContain('The food in its fresh mix has likely run out, and no feed is logged since.');
+
+    // Fed on top of fresh mix: too much fertiliser comes up for crispy tips.
+    const fed: CareEvent = { id: 'f', plantId: 'a', type: 'feed', at: '2026-11-15T12:00:00' };
+    expect(signalsFor({ plant: fresh, events: [fed], climate: 'seattle', now: at }).has('overFed')).toBe(true);
+    expect(diagnose('brown-tips', { plant: fresh, events: [fed], climate: 'seattle', now: at })[0].cause.id).toBe('overfed');
+  });
+
+  it('names feeding problems on fruiting crops', () => {
+    const tomato = plant({ speciesId: 'tomato', soil: 'veg_mix', stage: 'fruiting' });
+    expect(diagnose('yellow-veins', { plant: tomato, events: [], climate: 'seattle', now })[0].cause.id).toBe('magnesium');
+    expect(diagnose('leafy-no-fruit', { plant: tomato, events: [], climate: 'seattle', now })[0].cause.id).toBe('too-much-nitrogen');
+  });
+
   it('shows fruit problems for edibles only', () => {
     expect(symptomsFor({ speciesId: 'pothos', soil: 'potting_mix' }).some((s) => s.area === 'fruit')).toBe(false);
     expect(symptomsFor({ speciesId: 'tomato', soil: 'veg_mix' }).some((s) => s.id === 'fruit-rot-end')).toBe(true);

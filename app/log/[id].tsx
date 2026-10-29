@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts, type, space } from '@/theme/tokens';
 import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 import { Glyph } from '@/components/Glyph';
-import { MixFields, type MixDraft } from '@/components/MixFields';
+import { MixFields, mixOf, type MixDraft } from '@/components/MixFields';
 
 type Tint = 'ice' | 'lavender' | 'butter' | 'peach' | 'mint' | 'blush';
 
@@ -124,7 +124,7 @@ export default function LogCareSheet() {
     if (rest.includes('repot') && mix) {
       updatePlant(plant.id, {
         ...(mix.soil !== 'unsure' && mix.soil !== plant.soil ? { soil: mix.soil } : {}),
-        mix: { ...(mix.name.trim() ? { name: mix.name.trim() } : {}), fertiliser: mix.fertiliser, ...(mix.fertiliser === 'yes' && mix.bagMonths ? { bagMonths: mix.bagMonths } : {}), pottedAt: new Date().toISOString() },
+        mix: mixOf({ ...mix, pottedAt: new Date().toISOString() }),
       });
     }
     else if (!photoUri) {
@@ -209,8 +209,8 @@ export default function LogCareSheet() {
 
       {sel.has('repot') && !hydro && (
         <MixFields
-          draft={mix ?? { soil: plant.soil, name: '', fertiliser: 'unsure', potted: 'week' }}
-          onChange={(patch) => setMix((m) => ({ ...(m ?? { soil: plant.soil, name: '', fertiliser: 'unsure', potted: 'week' }), ...patch }))}
+          draft={mix ?? { soil: plant.soil, name: '', fertiliser: 'unsure', pottedAt: new Date().toISOString() }}
+          onChange={(patch) => setMix((m) => ({ ...(m ?? { soil: plant.soil, name: '', fertiliser: 'unsure', pottedAt: new Date().toISOString() }), ...patch }))}
           speciesId={plant.speciesId}
           askSoil
         />

@@ -34,7 +34,11 @@ export type Signal =
   | 'smallPot'
   | 'tapSensitive' // reacts to the salts and chlorine in tap water
   | 'reservoir' // LECA or water
-  | 'unfed' // no feed logged in two months
+  | 'unfed' // no feed logged (and no fresh fertilised mix) in two months
+  | 'freshMix' // potted into mix with fertiliser in it, still feeding it (engine/mix)
+  | 'mixSpent' // that mix's food has run out and no feed has been logged since
+  | 'fedRecently' // a feed logged in the last three weeks
+  | 'overFed' // fed on top of fresh fertilised mix, or three or more feeds in six weeks
   | 'pestLogged'; // a pest check logged in the last month
 
 /** A care change the app can make for you when a cause is confirmed. */
@@ -181,7 +185,55 @@ export const CAUSES: Record<string, Cause> = {
     summary: 'The plant has used up the nutrients in its mix. Older leaves turn pale yellow first, as it moves food to new growth.',
     check: ['Is the yellowing even across the whole leaf, starting with the oldest ones?', 'When did you last feed it, or give it fresh mix?'],
     fix: ['Feed with a balanced fertiliser at half strength while it’s growing.', 'Repot into fresh mix if it’s been more than a year.', 'Don’t feed a dry plant: water first, then feed.'],
-    signals: [{ signal: 'unfed', weight: 1.6, why: 'No feed logged in a couple of months.' }, { signal: 'oldMix', weight: 1.7, why: 'Its mix is over a year old.' }, { signal: 'edible', weight: 1.5, why: 'Edibles are hungry growers.' }, { signal: 'fruiting', weight: 1.5, why: 'Making fruit takes a lot of food.' }, { signal: 'reservoir', weight: 1.3, why: 'Water and LECA plants need all their food from you.' }, { signal: 'slowSeason', weight: 0.7, why: '' }],
+    signals: [{ signal: 'unfed', weight: 1.6, why: 'No feed logged in a couple of months.' }, { signal: 'mixSpent', weight: 1.8, why: 'The food in its fresh mix has likely run out, and no feed is logged since.' }, { signal: 'freshMix', weight: 0.3, why: '' }, { signal: 'fedRecently', weight: 0.5, why: '' }, { signal: 'oldMix', weight: 1.7, why: 'Its mix is over a year old.' }, { signal: 'edible', weight: 1.5, why: 'Edibles are hungry growers.' }, { signal: 'fruiting', weight: 1.5, why: 'Making fruit takes a lot of food.' }, { signal: 'reservoir', weight: 1.3, why: 'Water and LECA plants need all their food from you.' }, { signal: 'slowSeason', weight: 0.7, why: '' }],
+  },
+  overfed: {
+    id: 'overfed',
+    title: 'Too much fertiliser',
+    summary: 'Food added on top of a rich mix, or too often, leaves salts in the pot that burn the roots. Tips brown, leaves wilt even in wet soil, and a white crust can form.',
+    check: ['Was it fed while its mix was still fresh, or more than once in a couple of weeks?', 'Is there a white crust on the soil or the pot rim?', 'Do the brown edges start at the tips of older leaves?'],
+    fix: ['Flush the pot: run plenty of plain water through it, let it drain fully, and repeat once.', 'Skip feeding for a few weeks.', 'From then on, feed at half strength and only while it’s growing.'],
+    signals: [{ signal: 'overFed', weight: 3, why: 'It’s been fed on top of fresh mix, or several times lately.' }, { signal: 'freshMix', weight: 1.6, why: 'Its fresh mix still carries plenty of food.' }, { signal: 'fedRecently', weight: 1.5, why: 'It was fed recently.' }, { signal: 'slowSeason', weight: 1.3, why: 'Slow winter growth uses little food, so it builds up.' }, { signal: 'unfed', weight: 0.2, why: '' }, { signal: 'mixSpent', weight: 0.4, why: '' }],
+  },
+  'too-much-nitrogen': {
+    id: 'too-much-nitrogen',
+    title: 'Too much nitrogen',
+    summary: 'Lots of lush, dark leaves but few flowers or fruit. Rich mixes and general-purpose feeds push leaves at the expense of fruit.',
+    check: ['Is the plant big and very green, with few flowers?', 'Is it being fed a general or leafy-greens feed rather than a tomato feed?'],
+    fix: ['Switch to a tomato (high-potash) feed once flowers appear.', 'Hold off on general-purpose feed and extra compost.', 'Give it the brightest spot you have: low light also means leaves over fruit.'],
+    signals: [{ signal: 'freshMix', weight: 1.6, why: 'Rich fresh mixes are high in nitrogen.' }, { signal: 'fedRecently', weight: 1.3, why: 'It’s been fed lately.' }, { signal: 'fruiting', weight: 1.4, why: '' }, { signal: 'lowLight', weight: 1.3, why: 'Low light also pushes leaves over fruit.' }],
+  },
+  magnesium: {
+    id: 'magnesium',
+    title: 'Short of magnesium',
+    summary: 'The leaf yellows between the veins while the veins stay green, starting on older leaves. Common on tomatoes and peppers, especially when fed only a high-potash feed.',
+    check: ['Do the veins stay green while the leaf between them yellows?', 'Is it the older, lower leaves first?'],
+    fix: ['Use a feed that lists magnesium (Mg); many tomato feeds do.', 'Or add a magnesium supplement made for plants, following its label.', 'Keep watering even: dry roots take up less.'],
+    signals: [{ signal: 'fruiting', weight: 1.8, why: 'Fruiting crops use a lot of magnesium.' }, { signal: 'edible', weight: 1.3, why: '' }, { signal: 'mixSpent', weight: 1.4, why: 'The food in its fresh mix has likely run out.' }, { signal: 'unfed', weight: 1.3, why: 'No feed logged in a couple of months.' }, { signal: 'freshMix', weight: 0.6, why: '' }],
+  },
+  potassium: {
+    id: 'potassium',
+    title: 'Short of potassium',
+    summary: 'Older leaves yellow at the edges, then the edges brown and crisp. Fruit can ripen unevenly. Fruiting crops need lots of potassium once fruit sets.',
+    check: ['Do the edges of older leaves yellow first, then brown?', 'Is it fruiting, and when did it last get a tomato feed?'],
+    fix: ['Feed with a tomato (high-potash) feed at half strength.', 'Keep it up every 2 weeks while fruit is swelling.'],
+    signals: [{ signal: 'fruiting', weight: 2, why: 'Swelling fruit takes a lot of potassium.' }, { signal: 'mixSpent', weight: 1.5, why: 'The food in its fresh mix has likely run out.' }, { signal: 'unfed', weight: 1.4, why: 'No feed logged in a couple of months.' }, { signal: 'freshMix', weight: 0.5, why: '' }, { signal: 'fedRecently', weight: 0.6, why: '' }],
+  },
+  'purple-cold': {
+    id: 'purple-cold',
+    title: 'Cold roots (short of phosphorus)',
+    summary: 'A purple tinge, often under the leaves or along the veins. Cold roots can’t take up phosphorus, so it shows in cool spells and on cold windowsills more than from a lack of food.',
+    check: ['Has it been cold at night, or is the pot against cold glass?', 'Is it mostly on the undersides and older leaves?'],
+    fix: ['Move it off cold glass or raise the pot off a cold sill.', 'Wait for warmer days before feeding much; it usually greens up by itself.', 'If it’s warm and still purple, give a balanced feed at half strength.'],
+    signals: [{ signal: 'slowSeason', weight: 1.8, why: 'It’s the cool season.' }, { signal: 'outdoor', weight: 1.3, why: 'Cold nights outside.' }, { signal: 'unfed', weight: 1.2, why: 'No feed logged in a couple of months.' }, { signal: 'freshMix', weight: 0.6, why: '' }],
+  },
+  'heat-stress': {
+    id: 'heat-stress',
+    title: 'Too hot',
+    summary: 'Leaves curl, flop or scorch when it’s very hot: a sunny window in summer, a hot balcony, or too close to a grow light.',
+    check: ['Is it in hot afternoon sun, right against glass, or close under a lamp?', 'Does it perk up in the evening?'],
+    fix: ['Give it shade in the hottest hours, or move it back from the glass or lamp.', 'Keep the soil evenly moist in hot spells.'],
+    signals: [{ signal: 'hotSeason', weight: 2, why: 'It’s the hot season.' }, { signal: 'directSun', weight: 1.6, why: 'It sits in direct sun.' }, { signal: 'slowSeason', weight: 0.4, why: '' }],
   },
   'old-leaves': {
     id: 'old-leaves',
@@ -346,14 +398,16 @@ export const CAUSES: Record<string, Cause> = {
 
 export const SYMPTOMS: Symptom[] = [
   // Leaves
-  { id: 'yellow-lower', area: 'leaves', label: 'Lower leaves turning yellow', hint: 'Older leaves near the bottom go yellow', causes: [{ cause: 'stale-water', prior: 3 }, { cause: 'overwatering', prior: 4 }, { cause: 'old-leaves', prior: 2.5 }, { cause: 'hungry', prior: 2 }, { cause: 'low-light', prior: 1.5 }, { cause: 'underwatering', prior: 1.5 }, { cause: 'root-rot', prior: 1 }] },
+  { id: 'yellow-lower', area: 'leaves', label: 'Lower leaves turning yellow', hint: 'Older leaves near the bottom go yellow', causes: [{ cause: 'stale-water', prior: 3 }, { cause: 'overwatering', prior: 4 }, { cause: 'old-leaves', prior: 2.5 }, { cause: 'hungry', prior: 2 }, { cause: 'magnesium', prior: 0.8 }, { cause: 'potassium', prior: 0.8 }, { cause: 'low-light', prior: 1.5 }, { cause: 'underwatering', prior: 1.5 }, { cause: 'root-rot', prior: 1 }] },
   { id: 'yellow-pale', area: 'leaves', label: 'Pale or yellow all over', hint: 'New and old leaves look washed out', causes: [{ cause: 'hungry', prior: 3 }, { cause: 'low-light', prior: 2.5 }, { cause: 'overwatering', prior: 2 }, { cause: 'sunburn', prior: 1 }, { cause: 'spider-mites', prior: 1 }] },
-  { id: 'brown-tips', area: 'leaves', label: 'Brown, crispy tips or edges', hint: 'Just the ends or edges dry out', causes: [{ cause: 'low-water', prior: 1.5 }, { cause: 'dry-air', prior: 3 }, { cause: 'underwatering', prior: 2.5 }, { cause: 'tap-water', prior: 2.5 }, { cause: 'overwatering', prior: 1 }, { cause: 'pot-bound', prior: 1 }] },
+  { id: 'brown-tips', area: 'leaves', label: 'Brown, crispy tips or edges', hint: 'Just the ends or edges dry out', causes: [{ cause: 'low-water', prior: 1.5 }, { cause: 'overfed', prior: 1.5 }, { cause: 'potassium', prior: 0.8 }, { cause: 'dry-air', prior: 3 }, { cause: 'underwatering', prior: 2.5 }, { cause: 'tap-water', prior: 2.5 }, { cause: 'overwatering', prior: 1 }, { cause: 'pot-bound', prior: 1 }] },
   { id: 'brown-spots', area: 'leaves', label: 'Brown or black spots', hint: 'Spots in the middle of the leaf', causes: [{ cause: 'leaf-spot', prior: 3 }, { cause: 'overwatering', prior: 2 }, { cause: 'sunburn', prior: 1.5 }, { cause: 'cold', prior: 1.2 }, { cause: 'root-rot', prior: 1 }] },
-  { id: 'bleached', area: 'leaves', label: 'Pale, bleached or scorched patches', hint: 'Faded or crispy patches on the sunny side', causes: [{ cause: 'sunburn', prior: 4 }, { cause: 'underwatering', prior: 1.2 }, { cause: 'thrips', prior: 1 }] },
-  { id: 'drooping', area: 'leaves', label: 'Drooping or wilting', hint: 'Leaves hang limp', causes: [{ cause: 'low-water', prior: 3 }, { cause: 'stale-water', prior: 2 }, { cause: 'underwatering', prior: 3.5 }, { cause: 'overwatering', prior: 2 }, { cause: 'root-rot', prior: 1.5 }, { cause: 'shock', prior: 1.5 }, { cause: 'cold', prior: 1 }] },
-  { id: 'curling', area: 'leaves', label: 'Leaves curling', hint: 'Edges roll up or cup', causes: [{ cause: 'underwatering', prior: 2.5 }, { cause: 'sunburn', prior: 1.5 }, { cause: 'aphids', prior: 1.5 }, { cause: 'dry-air', prior: 1.5 }, { cause: 'spider-mites', prior: 1 }] },
+  { id: 'bleached', area: 'leaves', label: 'Pale, bleached or scorched patches', hint: 'Faded or crispy patches on the sunny side', causes: [{ cause: 'sunburn', prior: 4 }, { cause: 'heat-stress', prior: 1 }, { cause: 'underwatering', prior: 1.2 }, { cause: 'thrips', prior: 1 }] },
+  { id: 'drooping', area: 'leaves', label: 'Drooping or wilting', hint: 'Leaves hang limp', causes: [{ cause: 'low-water', prior: 3 }, { cause: 'stale-water', prior: 2 }, { cause: 'underwatering', prior: 3.5 }, { cause: 'overwatering', prior: 2 }, { cause: 'root-rot', prior: 1.5 }, { cause: 'shock', prior: 1.5 }, { cause: 'cold', prior: 1 }, { cause: 'overfed', prior: 0.8 }, { cause: 'heat-stress', prior: 1 }] },
+  { id: 'curling', area: 'leaves', label: 'Leaves curling', hint: 'Edges roll up or cup', causes: [{ cause: 'underwatering', prior: 2.5 }, { cause: 'heat-stress', prior: 1.5 }, { cause: 'sunburn', prior: 1.5 }, { cause: 'aphids', prior: 1.5 }, { cause: 'dry-air', prior: 1.5 }, { cause: 'spider-mites', prior: 1 }] },
   { id: 'dropping', area: 'leaves', label: 'Leaves falling off', hint: 'Healthy-looking leaves drop', causes: [{ cause: 'stale-water', prior: 1.5 }, { cause: 'shock', prior: 3 }, { cause: 'overwatering', prior: 2 }, { cause: 'underwatering', prior: 2 }, { cause: 'low-light', prior: 1.5 }, { cause: 'cold', prior: 1.5 }] },
+  { id: 'yellow-veins', area: 'leaves', label: 'Yellow between the veins', hint: 'Veins stay green, the leaf between them yellows', causes: [{ cause: 'magnesium', prior: 4 }, { cause: 'hungry', prior: 2 }, { cause: 'overwatering', prior: 1 }, { cause: 'overfed', prior: 1 }, { cause: 'tap-water', prior: 0.8 }] },
+  { id: 'purple-leaves', area: 'leaves', label: 'Purple tinge on leaves', hint: 'Undersides or veins go purplish', causes: [{ cause: 'purple-cold', prior: 4 }, { cause: 'hungry', prior: 1 }, { cause: 'sunburn', prior: 0.6 }] },
   { id: 'speckled', area: 'leaves', label: 'Tiny speckles or silvery streaks', hint: 'Dusty-looking dots or scratches', causes: [{ cause: 'spider-mites', prior: 3 }, { cause: 'thrips', prior: 2.5 }, { cause: 'sunburn', prior: 0.6 }] },
   { id: 'holes', area: 'leaves', label: 'Holes or chewed edges', hint: 'Bits missing from the leaves', causes: [{ cause: 'pests-chewing', prior: 4 }, { cause: 'leaf-spot', prior: 0.8 }] },
   { id: 'white-powder', area: 'leaves', label: 'White powder on leaves', hint: 'Looks like a dusting of flour', causes: [{ cause: 'powdery-mildew', prior: 4 }, { cause: 'mealybugs', prior: 1 }, { cause: 'tap-water', prior: 0.6 }] },
@@ -364,7 +418,7 @@ export const SYMPTOMS: Symptom[] = [
   { id: 'bolting', area: 'stems', label: 'Shooting up a flower stalk', hint: 'Greens or herbs going to seed', edibleOnly: true, causes: [{ cause: 'bolting', prior: 5 }] },
   // Soil
   { id: 'soil-fuzz', soilOnly: true, area: 'soil', label: 'White fuzz on the soil', hint: 'Cottony mould on top', causes: [{ cause: 'surface-mold', prior: 4 }, { cause: 'mealybugs', prior: 0.8 }, { cause: 'tap-water', prior: 0.8 }] },
-  { id: 'soil-crust', area: 'soil', label: 'White crust on the soil or pot', hint: 'Hard, chalky layer', waterLabel: 'White crust on the LECA or container', causes: [{ cause: 'tap-water', prior: 4 }, { cause: 'hungry', prior: 0.5 }] },
+  { id: 'soil-crust', area: 'soil', label: 'White crust on the soil or pot', hint: 'Hard, chalky layer', waterLabel: 'White crust on the LECA or container', causes: [{ cause: 'tap-water', prior: 4 }, { cause: 'overfed', prior: 2.5 }, { cause: 'hungry', prior: 0.5 }] },
   { id: 'soil-smell', area: 'soil', label: 'Soil smells bad or stays wet', hint: 'Sour or rotten smell', waterLabel: 'Water smells bad or looks cloudy', waterHint: 'Sour smell, slime or murky water', causes: [{ cause: 'stale-water', prior: 5 }, { cause: 'root-rot', prior: 3.5 }, { cause: 'overwatering', prior: 3 }] },
   { id: 'soil-dry', soilOnly: true, area: 'soil', label: 'Water runs straight through', hint: 'Soil shrinks from the pot sides', causes: [{ cause: 'underwatering', prior: 3 }, { cause: 'pot-bound', prior: 2.5 }] },
   // Bugs
@@ -377,7 +431,8 @@ export const SYMPTOMS: Symptom[] = [
   { id: 'white-flies', area: 'bugs', label: 'White specks fly up', hint: 'A little cloud when you brush it', causes: [{ cause: 'whitefly', prior: 5 }, { cause: 'fungus-gnats', prior: 0.6 }] },
   // Flowers & fruit
   { id: 'fruit-rot-end', area: 'fruit', label: 'Dark patch on the bottom of fruit', hint: 'Sunken spot opposite the stem', edibleOnly: true, causes: [{ cause: 'blossom-end-rot', prior: 5 }, { cause: 'leaf-spot', prior: 0.5 }] },
-  { id: 'flower-drop', area: 'fruit', label: 'Flowers drop, no fruit', hint: 'Blooms fall off before fruit sets', edibleOnly: true, causes: [{ cause: 'flower-drop', prior: 4 }, { cause: 'underwatering', prior: 1.2 }, { cause: 'hungry', prior: 0.8 }] },
+  { id: 'flower-drop', area: 'fruit', label: 'Flowers drop, no fruit', hint: 'Blooms fall off before fruit sets', edibleOnly: true, causes: [{ cause: 'flower-drop', prior: 4 }, { cause: 'underwatering', prior: 1.2 }, { cause: 'hungry', prior: 0.8 }, { cause: 'too-much-nitrogen', prior: 0.8 }] },
+  { id: 'leafy-no-fruit', area: 'fruit', label: 'Lots of leaves, little fruit', hint: 'Big and green, but few flowers or fruit', edibleOnly: true, causes: [{ cause: 'too-much-nitrogen', prior: 4 }, { cause: 'low-light', prior: 2.5 }, { cause: 'flower-drop', prior: 1.5 }, { cause: 'hungry', prior: 0.5 }] },
   { id: 'fruit-split', area: 'fruit', label: 'Fruit splitting or cracking', hint: 'Skin cracks as it ripens', edibleOnly: true, causes: [{ cause: 'splitting', prior: 5 }] },
   { id: 'fruit-holes', area: 'fruit', label: 'Holes in fruit', hint: 'Something has been nibbling', edibleOnly: true, causes: [{ cause: 'pests-chewing', prior: 5 }] },
 ];

@@ -9,6 +9,7 @@ import { archiveFloor, canDeleteEvent, usePlantStore } from '@/store/plantStore'
 import { useShallow } from 'zustand/react/shallow';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
 import { mixLine, mixWaitText } from '@/engine/mix';
+import { withNextFeed } from '@/engine/feeding';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { edibleGuide } from '@/data/edibles';
@@ -367,7 +368,7 @@ export default function PlantDetail() {
             ).concat([
               ['Light', LIGHT_LABEL[plant.light]],
               [hydro ? 'Grows in' : 'Soil', [SOIL_LABEL[plant.soil], !hydro && mixLine(plant)].filter(Boolean).join('\n')],
-              ['Feed', feed],
+              ['Feed', withNextFeed(feed, plant.id, events, now)],
               ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
             ]).map(([k, v], i, all) => (
               <View key={k} style={[styles.row, i < all.length - 1 && { borderBottomWidth: 2, borderColor: c.cloud }]}>

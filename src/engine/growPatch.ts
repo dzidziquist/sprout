@@ -2,6 +2,7 @@ import { fmtRain, fmtTemp, type Units } from '../lib/units';
 import { climateDate, localizeClimateText, modelOf } from '../lib/climate';
 import { CALENDAR, edibleGuide, supportFor, type CalendarTask, type FeedWindow, type TaskKind, type TaskWindow } from '../data/edibles';
 import { isFeedingPaused } from './careEngine';
+import { fedWithin } from './feeding';
 import { mixFeedsUntil, mixStillFeeds, mixWaitText } from './mix';
 import type { CareEvent, ClimateProfile, EdibleStage, Placement, Plant } from '../types';
 
@@ -63,6 +64,16 @@ export function edibleFeedingPaused(plant: Pick<Plant, 'placement' | 'stage' | '
   return isFeedingPaused(climate, plant.placement, date);
 }
 
+/**
+ * Indoors (not under a grow light) in a climate's dark season, when houseplant feeding pauses: a fruiting
+ * crop still eats, but slowly, so its feed goes to half strength every 2 weeks.
+ */
+export function darkIndoor(plant: Pick<Plant, 'placement'>, climate: ClimateProfile, date: Date): boolean {
+  return !OUTSIDE.includes(plant.placement) && isFeedingPaused(climate, plant.placement, date);
+}
+
+const DARK_POTASH = 'Half-strength tomato feed every 2 weeks';
+
 /** What to feed right now, in a few words. */
 export function feedingAdvice(plant: Plant, climate: ClimateProfile, date: Date): string {
   const guide = edibleGuide(plant.speciesId);
@@ -79,7 +90,11 @@ export function feedingAdvice(plant: Plant, climate: ClimateProfile, date: Date)
     return 'Feeding paused for winter';
   }
   // Fresh mix with fertiliser in it: feeding waits (engine/mix).
-  return mixWaitText(plant, date) ?? info.feed;
+  const wait = mixWaitText(plant, date);
+  if (wait) return wait;
+  const cropping = plant.stage === 'flowering' || plant.stage === 'fruiting' || plant.stage === 'harvesting';
+  if (cropping && guide?.fruitingFeed && darkIndoor(plant, climate, date)) return DARK_POTASH;
+  return info.feed;
 }
 
 /** Tasks ----------------------------------------------------------------------------------- */
@@ -98,6 +113,13 @@ export interface GrowTask {
   /** Feed tasks: plants left out because their fresh mix still feeds them, and until about when. */
   waiting?: { plantIds: string[]; until: string };
 }
+
+/** Grow jobs that are feeds (ticking one logs a feed for its plants), with how long a tick lasts. */
+export const FEED_TASKS = new Map<string, number | undefined>([
+  ['stage-potash', 10],
+  ['stage-potash-slow', 14],
+  ...Object.values(CALENDAR).flatMap((tasks) => tasks.filter((t) => t.kind === 'feed').map((t) => [t.id, t.repeatDays] as [string, number | undefined])),
+]);
 
 /** When each grow task was last ticked off (task id → ISO time). */
 export type GrowTicks = Record<string, string>;
@@ -123,6 +145,12 @@ export function isTicked(task: Pick<GrowTask, 'id' | 'repeatDays'>, ticks: GrowT
  * leaving nothing to untick when it was a mis-tap.
  */
 export function withTickedSupport(events: CareEvent[], plants: Plant[], ticks: GrowTicks, now: Date): CareEvent[] {
+  // Same for feeds logged by ticking a feed job: they'd drop the plants from it, leaving nothing to untick.
+  const fedSince = Object.entries(ticks)
+    .filter(([id]) => FEED_TASKS.has(id) && isTicked({ id, repeatDays: FEED_TASKS.get(id) }, ticks, now))
+    .map(([, at]) => at)
+    .sort()[0];
+  if (fedSince) events = events.filter((e) => !(e.type === 'feed' && e.at >= fedSince));
   const since: Partial<Record<'stake' | 'trellis', string>> = {};
   for (const kind of ['stake', 'trellis'] as const) if (isTicked({ id: `stage-${kind}` }, ticks, now)) since[kind] = ticks[`stage-${kind}`];
   if (!since.stake && !since.trellis) return events;
@@ -218,8 +246,14 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Dat
   // Stage triggers, driven by guide flags.
   const guide = (p: Plant) => edibleGuide(p.speciesId);
   const swelling = mine.filter((p) => (p.stage === 'fruiting' || p.stage === 'harvesting') && guide(p)?.fruitingFeed && !edibleFeedingPaused(p, climate, realDate));
-  if (swelling.length) {
-    out.push({ id: 'stage-potash', repeatDays: 10, kind: 'feed', title: 'High-potash feed', body: 'Fruit is swelling: switch to a tomato feed every 10–14 days.', plantIds: swelling.map((p) => p.id), thisWeek: true });
+  // Indoors through the dark season they grow slowly, so half strength, half as often.
+  const slow = swelling.filter((p) => darkIndoor(p, climate, realDate));
+  const fast = swelling.filter((p) => !slow.includes(p));
+  if (fast.length) {
+    out.push({ id: 'stage-potash', repeatDays: 10, kind: 'feed', title: 'High-potash feed', body: 'Fruit is swelling: switch to a tomato feed every 10–14 days.', plantIds: fast.map((p) => p.id), thisWeek: true });
+  }
+  if (slow.length) {
+    out.push({ id: 'stage-potash-slow', repeatDays: 14, kind: 'feed', title: 'High-potash feed', body: 'Half-strength tomato feed every 2 weeks while fruit swells. Short days mean slow growth, so go easy.', plantIds: slow.map((p) => p.id), thisWeek: true });
   }
   // Plants a calendar pollination task already covers this month don't need a second reminder.
   const pollinated = new Set(out.filter((t) => t.id.includes('pollinate')).flatMap((t) => t.plantIds));
@@ -237,14 +271,14 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Dat
     out.push({ id: 'stage-basil', repeatDays: 7, kind: 'harvest', title: 'Pinch basil flowers', body: 'Nip the flower spikes so the leaves stay sweet.', plantIds: basilFlowers.map((p) => p.id), thisWeek: true });
   }
 
-  return withMixWaits(out, mine, realDate).sort((a, b) => Number(b.thisWeek) - Number(a.thisWeek) || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
+  return withFeedWaits(out, mine, events, realDate).sort((a, b) => Number(b.thisWeek) - Number(a.thisWeek) || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 }
 
 /**
- * Feed tasks leave out plants still fed by a fresh mix with fertiliser in it (engine/mix), saying so,
- * and wait altogether when every plant does.
+ * Feed tasks leave out plants fed lately (a feed logged within the task's repeat) and plants still fed by
+ * a fresh mix with fertiliser in it (engine/mix), saying so, and wait altogether when every plant does.
  */
-function withMixWaits(tasks: GrowTask[], plants: Plant[], now: Date): GrowTask[] {
+function withFeedWaits(tasks: GrowTask[], plants: Plant[], events: CareEvent[], now: Date): GrowTask[] {
   const byId = new Map(plants.map((p) => [p.id, p]));
   const fed = (id: string) => {
     const p = byId.get(id);
@@ -252,6 +286,9 @@ function withMixWaits(tasks: GrowTask[], plants: Plant[], now: Date): GrowTask[]
   };
   return tasks.flatMap((t) => {
     if (t.kind !== 'feed') return [t];
+    const recent = t.plantIds.filter((id) => fedWithin(id, events, t.repeatDays ?? 14, now));
+    if (recent.length) t = { ...t, plantIds: t.plantIds.filter((id) => !recent.includes(id)) };
+    if (!t.plantIds.length) return [];
     const waiting = t.plantIds.filter(fed);
     if (!waiting.length) return [t];
     const left = t.plantIds.filter((id) => !fed(id));
