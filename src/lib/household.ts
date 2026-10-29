@@ -11,8 +11,8 @@ import { deletePhoto } from './photos';
  * are in engine/household; the CloudKit calls in modules/household.
  */
 
-/** Household sharing works on this phone (iPhone, a build with the native module). */
-export const householdSupported = Platform.OS === 'ios' && !!Native;
+/** Household sharing works on this phone (iPhone on iOS 16 or later, a build with the native module). */
+export const householdSupported = Platform.OS === 'ios' && !!Native && Native.supported !== false;
 
 /** Sync's state for the screens while the app is open. Not saved. */
 export const useHouseholdStatus = create<{ syncing: boolean; error: string | null; set: (p: Partial<{ syncing: boolean; error: string | null }>) => void }>((set) => ({
