@@ -53,6 +53,10 @@ describe('plant doctor knowledge', () => {
     }
   });
 
+  it('cites real sources where it gives them (docs/knowledge.md)', () => {
+    for (const c of Object.values(CAUSES)) for (const src of c.sources ?? []) expect(src.trim().length, c.id).toBeGreaterThan(10);
+  });
+
   it('never gives pesticide doses', () => {
     const text = JSON.stringify(CAUSES).toLowerCase();
     expect(text).not.toMatch(/\bml\b|per litre|per gallon|neem|insecticide|pesticide/);

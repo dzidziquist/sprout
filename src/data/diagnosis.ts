@@ -62,6 +62,8 @@ export interface Cause {
   soilOnly?: boolean;
   /** Only for LECA or water plants. */
   waterOnly?: boolean;
+  /** Where the advice comes from (extension service pages and the like), added by the weekly knowledge task. */
+  sources?: string[];
 }
 
 export interface Symptom {
