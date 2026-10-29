@@ -216,21 +216,37 @@ public class HouseholdModule: Module {
 
   private func invite(title: String) async throws {
     let db = container.privateCloudDatabase
-    let shareID = CKRecord.ID(recordName: CKRecordNameZoneWideShare, zoneID: zoneID(owner: nil))
+    let zone = zoneID(owner: nil)
+    let shareID = CKRecord.ID(recordName: CKRecordNameZoneWideShare, zoneID: zone)
     let share: CKShare
     if let existing = (try? await db.record(for: shareID)) as? CKShare {
       share = existing
     } else {
-      let fresh = CKShare(recordZoneID: zoneID(owner: nil))
+      // The zone first, in case it isn't there (saving one that is changes nothing).
+      _ = try await db.modifyRecordZones(saving: [CKRecordZone(zoneID: zone)], deleting: [])
+      let fresh = CKShare(recordZoneID: zone)
       fresh[CKShare.SystemFieldKey.title] = title as CKRecordValue
       fresh.publicPermission = .none
       let saved = try await db.modifyRecords(saving: [fresh], deleting: [], savePolicy: .ifServerRecordUnchanged)
-      guard case .success(let record)? = saved.saveResults[shareID], let made = record as? CKShare else {
-        throw Exception(name: "ShareFailed", description: "Couldn’t set up sharing. Try again in a moment.")
+      switch saved.saveResults[shareID] {
+      case .success(let record)?:
+        guard let made = record as? CKShare else { throw shareError(nil) }
+        share = made
+      case .failure(let error)?:
+        // Made meanwhile (a second tap, or the owner's other device): use that one.
+        guard let ck = error as? CKError, ck.code == .serverRecordChanged, let server = ck.serverRecord as? CKShare else { throw shareError(error) }
+        share = server
+      case nil:
+        throw shareError(nil)
       }
-      share = made
     }
     try await presentSharing(share: share, title: title)
+  }
+
+  /// Sharing couldn't be set up, with iCloud's own reason, so a screenshot says what went wrong.
+  private func shareError(_ error: Error?) -> Exception {
+    let reason = (error as? CKError).map { "\($0.code.rawValue) \($0.localizedDescription)" } ?? error?.localizedDescription ?? "no answer"
+    return Exception(name: "ShareFailed", description: "Couldn’t set up sharing. Try again in a moment. (iCloud: \(reason))")
   }
 
   @MainActor
