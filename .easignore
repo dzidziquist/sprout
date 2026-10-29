@@ -6,7 +6,7 @@ web-build/
 expo-env.d.ts
 *.log
 .DS_Store
-ios/
+/ios/
 android/
 
 # Not part of the app: full-size art originals (the app ships the resized copies in assets/art and

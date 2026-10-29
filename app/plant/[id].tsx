@@ -35,6 +35,7 @@ import * as haptics from '@/lib/haptics';
 import { textOn, useColors } from '@/theme/theme';
 import { fonts, space, type } from '@/theme/tokens';
 import type { CareEvent, Plant } from '@/types';
+import { nameOf } from '@/engine/household';
 import { Glyph } from '@/components/Glyph';
 
 /** Watering can, for Log care. */
@@ -148,6 +149,9 @@ export default function PlantDetail() {
   const nextCheck = nextDays <= 0 ? 'Today' : nextDays === 1 ? 'Tomorrow' : nextDays < 7 ? `In ${nextDays} days` : new Date(plant.nextCheckAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
   // A dry check already says "watered", so the watering it logged alongside isn't listed twice.
   const checkedAt = new Set(mine.filter((e) => e.type === 'check' && e.result === 'dry').map((e) => e.at));
+  // In a household, who did each thing (others only: your own entries need no name).
+  const household = profile.household;
+  const byWho = (e: CareEvent) => (household && e.by && e.by !== household.me ? ` · ${nameOf(household.members ?? {}, e.by)}` : '');
   const history = mine.filter((e) => !(e.type === 'water' && checkedAt.has(e.at))).slice(-6).reverse();
   const photos = mine.filter((e) => e.type === 'photo' && e.photoUri).reverse();
   const heroPhoto = showPhoto && plant.photoUri;
@@ -389,7 +393,7 @@ export default function PlantDetail() {
                 // Notes and captions open to edit; entries logged by mistake get a trash can right on the row.
                 <CareRow
                   key={e.id}
-                  label={describe(e, plants, hydro)}
+                  label={describe(e, plants, hydro) + byWho(e)}
                   when={daysAgo(e.at, now)}
                   lines={e.note && e.type !== 'cutting' ? 4 : 1}
                   onOpen={e.type === 'note' || e.type === 'photo' ? () => router.push(`/note/${e.id}`) : undefined}

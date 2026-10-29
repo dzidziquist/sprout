@@ -272,5 +272,7 @@ export interface CareEvent {
   nextAt?: string;
   /** For checks: the plant's schedule and learned rhythm just before, so deleting the latest check can put them back. */
   before?: { k: number; nextCheckAt: string; lastCheckAt?: string; lastResult?: CheckResult };
+  /** Household sharing: who did it (their household id). Unset outside a household. */
+  by?: string;
   at: string;
 }

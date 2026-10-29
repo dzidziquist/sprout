@@ -72,6 +72,7 @@
         }
       ],
       "@bacons/apple-targets",
+      "./plugins/withHousehold",
       [
         "react-native-cloud-storage",
         {

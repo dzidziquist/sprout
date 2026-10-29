@@ -44,6 +44,15 @@ step above: developer.apple.com → Identifiers → **+** → iCloud Containers 
 then Identifiers → `com.dzidziquist.plantfam` → tick **iCloud** (with CloudKit support) → Configure → pick that
 container → Save. The signing step then makes profiles that include it.
 
+**Household sharing (CloudKit).** Same container, through CloudKit (tick "Include CloudKit support" on
+the App ID's iCloud setting above). CloudKit only lets a TestFlight or App Store build save record types
+that already exist in its Production schema, so once: icloud.developer.apple.com → CloudKit Database →
+`iCloud.com.dzidziquist.plantfam` → Development → Schema → Record Types → **+**:
+- `Item`: fields `kind` (String), `json` (String), `at` (Int(64))
+- `Photo`: field `file` (Asset)
+
+Then **Deploy Schema Changes…** to Production. Testing needs two iPhones signed in to different Apple IDs.
+
 ## 2. Environment variables (EAS → Project → Environment variables, "production")
 | Variable | What for | Where to get it |
 |---|---|---|

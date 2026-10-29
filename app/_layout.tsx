@@ -13,6 +13,7 @@ import { useColors } from '@/theme/theme';
 import { rescheduleRounds, roundAllowed, useNotificationRoute } from '@/lib/notifications';
 import { syncWidget } from '@/lib/widget';
 import { runCloudBackup } from '@/lib/cloudBackup';
+import { householdSupported, syncHousehold, watchInvites } from '@/lib/household';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 import { refreshSunlight } from '@/lib/site';
@@ -95,7 +96,38 @@ export default function RootLayout() {
     };
   }, [hydrated]);
 
+  // Household sharing: sync on opening, on coming back to the front, a moment after any change here,
+  // and every minute while open, so a check on one phone shows on the others.
+  useEffect(() => {
+    if (!hydrated || !householdSupported) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const soon = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => void syncHousehold(), 1500);
+    };
+    void syncHousehold();
+    const tick = setInterval(() => AppState.currentState === 'active' && void syncHousehold(), 60000);
+    const sub = AppState.addEventListener('change', (st) => st === 'active' && void syncHousehold());
+    const unsub = usePlantStore.subscribe((st, prev) => {
+      if (!st.profile.household) return;
+      if (st.plants !== prev.plants || st.events !== prev.events || st.profile.rooms !== prev.profile.rooms || st.profile.trips !== prev.profile.trips || st.profile.wishlist !== prev.profile.wishlist || st.profile.growTicks !== prev.profile.growTicks || st.profile.climate !== prev.profile.climate) soon();
+    });
+    return () => {
+      clearTimeout(timer);
+      clearInterval(tick);
+      sub.remove();
+      unsub();
+    };
+  }, [hydrated]);
+
   const ready = hydrated && !!(fontsLoaded || fontError);
+
+  // Someone tapped a household invite: ask whether to join. Waits for the screens to exist, since an
+  // invite can be what opened the app.
+  useEffect(() => {
+    if (!ready || !householdSupported) return;
+    return watchInvites(() => router.push('/join'));
+  }, [ready, router]);
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
@@ -118,6 +150,7 @@ export default function RootLayout() {
         <Stack.Screen name="wishlist" options={{ presentation: 'modal' }} />
         <Stack.Screen name="photos/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="away" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="join" options={{ presentation: 'modal' }} />
         <Stack.Screen name="measure/[id]" options={{ presentation: 'fullScreenModal', contentStyle: { backgroundColor: c.bg } }} />
         <Stack.Screen name="doctor/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="grow" />

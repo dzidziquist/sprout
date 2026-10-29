@@ -1,0 +1,7 @@
+{
+  "name": "household",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PlantFam's household sharing: a thin CloudKit bridge (zone-wide share, records, photos).",
+  "main": "index.ts"
+}
