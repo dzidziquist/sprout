@@ -83,7 +83,12 @@ async function cleanPhotos(c: Cloud, now: Date): Promise<void> {
   const used = new Set<string>();
   for (const chain of await c.readdir(BACKUPS_DIR)) {
     const files = await c.readdir(`${BACKUPS_DIR}/${chain}`).catch(() => null);
-    if (!files) continue; // not a folder
+    if (!files) {
+      // A stray file is fine to pass over; a folder that couldn't be listed means not knowing what it uses.
+      const st = await c.stat(`${BACKUPS_DIR}/${chain}`).catch(() => null);
+      if (st?.isFile()) continue;
+      return;
+    }
     for (const file of files.filter((f) => f.endsWith('.json'))) {
       const parsed = parseBackup(await c.readFile(`${BACKUPS_DIR}/${chain}/${file}`));
       if (!parsed.ok) return;
