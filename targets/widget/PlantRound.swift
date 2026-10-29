@@ -260,7 +260,15 @@ struct RoundView: View {
     .accessibilityElement(children: .combine)
   }
 
-  @ViewBuilder private var background: some View {
+  /// The art, or a flat sticker colour, with the sticker's ink outline traced along the widget's own corners.
+  private var background: some View {
+    ZStack {
+      fill
+      ContainerRelativeShape().strokeBorder(ink, lineWidth: 3)
+    }
+  }
+
+  @ViewBuilder private var fill: some View {
     if family == .systemMedium {
       Image("mediumBackground").resizable().scaledToFill()
     } else if entry.due.isEmpty {
