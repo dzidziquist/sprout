@@ -120,13 +120,14 @@ export default function RootLayout() {
     };
   }, [hydrated]);
 
-  // Someone tapped a household invite: ask whether to join.
-  useEffect(() => {
-    if (!hydrated || !householdSupported) return;
-    return watchInvites(() => router.push('/join'));
-  }, [hydrated, router]);
-
   const ready = hydrated && !!(fontsLoaded || fontError);
+
+  // Someone tapped a household invite: ask whether to join. Waits for the screens to exist, since an
+  // invite can be what opened the app.
+  useEffect(() => {
+    if (!ready || !householdSupported) return;
+    return watchInvites(() => router.push('/join'));
+  }, [ready, router]);
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);

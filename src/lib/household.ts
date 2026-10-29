@@ -111,6 +111,8 @@ async function round() {
 /** The household is gone (stopped by the owner, or this person was removed): keep a copy, give back their own plants. */
 function ended(h: Household) {
   const st = usePlantStore.getState();
+  // Already left or stopped on this phone while this round was waiting: that already put things right.
+  if (st.profile.household?.me !== h.me || st.profile.household.owner !== h.owner) return;
   const aside = h.aside;
   const ownerName = (h.owner && h.members?.[h.owner]?.name) || 'The owner';
   st.setJungle({ plants: [...st.plants, ...(aside?.plants ?? [])], events: [...st.events, ...(aside?.events ?? [])], shared: {} }, true);
