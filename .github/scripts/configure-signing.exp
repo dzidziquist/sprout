@@ -10,8 +10,9 @@ log_user 1
 # GitHub sets CI=true, which would make EAS refuse to ask anything; this run is meant to answer.
 spawn env -u CI eas credentials:configure-build --platform ios --profile production
 
+# Real login questions only: EAS also prints notes like "...not using Cookies (username/password)".
 expect {
-  -re {(?i)apple id|password|two-factor|6 digit} {
+  -re {Apple ID:|Password \(for|\? Apple ID|two-factor authentication code|6 digit code} {
     send_user "\n\n>>> EAS asked for an Apple login: check the ASC_KEY_ID, ASC_ISSUER_ID and ASC_KEY_P8 secrets.\n"
     exit 2
   }
