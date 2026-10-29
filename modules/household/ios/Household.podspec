@@ -6,7 +6,8 @@ Pod::Spec.new do |s|
   s.author         = ''
   s.homepage       = 'https://github.com/dzidziquist/sprout'
   s.license        = { :type => 'MIT' }
-  s.platforms      = { :ios => '17.0' }
+  # Must not ask for a newer iOS than the app (Podfile: 15.1), or Expo quietly leaves the pod out.
+  s.platforms      = { :ios => '15.1' }
   s.source         = { :git => '' }
   s.static_framework = true
   s.dependency 'ExpoModulesCore'
