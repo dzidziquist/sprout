@@ -8,23 +8,27 @@ import { WIDGET_ART_DIR, WIDGET_GROUP, WIDGET_KEY, widgetPayload } from './widge
 let last: string | null = null;
 /** Cartoons already in the widget's folder this launch, so each is looked for once. */
 const copied = new Set<string>();
+/** One copy pass at a time: two at once would race to write the same file. */
+let copying: Promise<unknown> = Promise.resolve();
 const MOODS: Mood[] = ['happy', 'thirsty', 'snoozing'];
 
 /** Hands the widget the latest round, and asks iOS to redraw it, when something it shows has changed. */
 export function syncWidget(plants: Plant[], trips: Trip[] | undefined, faces: FaceStyle = 'full', now = new Date()): void {
   if (Platform.OS !== 'ios') return;
-  const payload = widgetPayload(plants, trips, now, { artKey: (id) => buddyArt(id).key, gentle: faces !== 'full' });
-  if (payload === last) return;
   try {
     // Native, iOS only: loaded here so web and tests never touch it.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { ExtensionStorage } = require('@bacons/apple-targets') as typeof import('@bacons/apple-targets');
-    new ExtensionStorage(WIDGET_GROUP).set(WIDGET_KEY, payload);
-    ExtensionStorage.reloadWidget();
-    last = payload;
-    // The widget shows each plant's own cartoon from the App Group (its stand-in until they're there),
-    // so a plant added today has its picture by the next redraw.
-    copyArt(plants)
+    const payload = widgetPayload(plants, trips, now, { artKey: (id) => buddyArt(id).key, gentle: faces !== 'full' });
+    if (payload !== last) {
+      new ExtensionStorage(WIDGET_GROUP).set(WIDGET_KEY, payload);
+      ExtensionStorage.reloadWidget();
+      last = payload;
+    }
+    // The widget shows each plant's own cartoon from the App Group (its stand-in until they're there).
+    // Every sync, not just when the round changed, so a copy that failed last time is tried again.
+    copying = copying
+      .then(() => copyArt(plants))
       .then((added) => added && ExtensionStorage.reloadWidget())
       .catch(() => {});
   } catch {
@@ -47,15 +51,21 @@ async function copyArt(plants: Plant[]): Promise<boolean> {
     if (p.archivedAt || p.rooting) continue;
     const { key, images } = buddyArt(p.speciesId);
     if (copied.has(key)) continue;
+    let complete = true;
     for (const mood of MOODS) {
       const to = new File(dir, `${key}-${mood}.png`);
       if (to.exists) continue;
-      const [asset] = await Asset.loadAsync(images[mood] as number);
-      if (!asset?.localUri) continue;
-      new File(asset.localUri).copy(to);
-      added = true;
+      try {
+        const [asset] = await Asset.loadAsync(images[mood] as number);
+        if (!asset?.localUri) throw new Error('no file');
+        new File(asset.localUri).copy(to);
+        added = true;
+      } catch {
+        // This one waits for the next sync; the others still go.
+        complete = false;
+      }
     }
-    copied.add(key);
+    if (complete) copied.add(key);
   }
   return added;
 }

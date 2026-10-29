@@ -50,6 +50,7 @@ that already exist in its Production schema, so once: icloud.developer.apple.com
 `iCloud.com.dzidziquist.plantfam` → Development → Schema → Record Types → **+**:
 - `Item`: fields `kind` (String), `json` (String), `at` (Int(64))
 - `Photo`: field `file` (Asset)
+- `cloudkit.share`: iCloud's own type for the household share. Add it by name with **+** (no fields to add: it brings its own). Without it, Invite fails with "Cannot create new type cloudkit.share in production schema".
 
 Then **Deploy Schema Changes…** to Production. Testing needs two iPhones signed in to different Apple IDs.
 
