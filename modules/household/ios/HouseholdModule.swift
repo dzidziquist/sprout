@@ -286,7 +286,7 @@ public class HouseholdModule: Module {
 
   private func pendingInvite() async throws -> [String: Any]? {
     guard let link = UserDefaults.standard.string(forKey: inviteKey), let url = URL(string: link) else { return nil }
-    let metadata = try await container.shareMetadata(for: url, shouldFetchRootRecord: false)
+    let metadata = try await container.shareMetadata(for: url)
     let names = PersonNameComponentsFormatter()
     let title: String = metadata.share[CKShare.SystemFieldKey.title] as? String ?? ""
     let owner: String = metadata.share.recordID.zoneID.ownerName
@@ -296,7 +296,7 @@ public class HouseholdModule: Module {
 
   private func acceptInvite(link: String) async throws -> String {
     guard let url = URL(string: link) else { throw Exception(name: "BadInvite", description: "That invite link doesn’t work.") }
-    let metadata = try await container.shareMetadata(for: url, shouldFetchRootRecord: false)
+    let metadata = try await container.shareMetadata(for: url)
     _ = try await container.accept(metadata)
     UserDefaults.standard.removeObject(forKey: inviteKey)
     return metadata.share.recordID.zoneID.ownerName
