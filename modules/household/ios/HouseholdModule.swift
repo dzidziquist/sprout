@@ -80,7 +80,10 @@ public class HouseholdModule: Module {
       guard let url = URL(string: fileUri), FileManager.default.fileExists(atPath: url.path) else { return }
       let record = CKRecord(recordType: "Photo", recordID: CKRecord.ID(recordName: "p-\(name)", zoneID: self.zoneID(owner: owner)))
       record["file"] = CKAsset(fileURL: url)
-      _ = try await self.modify(owner: owner, saving: [record], deleting: [])
+      // A failed upload throws, so JavaScript doesn't count the photo as sent and tries again next round.
+      if !(try await self.modify(owner: owner, saving: [record], deleting: [])).isEmpty {
+        throw Exception(name: "PhotoNotSaved", description: "Couldn’t send a photo to iCloud.")
+      }
     }
 
     /*
@@ -104,6 +107,8 @@ public class HouseholdModule: Module {
             if record.recordType == "Photo" {
               if let asset = record["file"] as? CKAsset, let from = asset.fileURL {
                 let name = String(record.recordID.recordName.dropFirst(2))
+                // Only a plain file name lands in the diary folder: nothing from iCloud can point elsewhere.
+                guard isPlainFileName(name) else { continue }
                 let to = URL(fileURLWithPath: diaryDir).appendingPathComponent(name)
                 try? FileManager.default.createDirectory(atPath: diaryDir, withIntermediateDirectories: true)
                 if !FileManager.default.fileExists(atPath: to.path) { try? FileManager.default.copyItem(at: from, to: to) }
@@ -274,6 +279,11 @@ public class HouseholdModule: Module {
     guard let data = Data(base64Encoded: text) else { return nil }
     return try? NSKeyedUnarchiver.unarchivedObject(ofClass: CKServerChangeToken.self, from: data)
   }
+}
+
+/// A diary photo's name as the app makes them: no folders, no "..", nothing hidden.
+private func isPlainFileName(_ name: String) -> Bool {
+  !name.isEmpty && name.count <= 120 && !name.hasPrefix(".") && !name.contains("/") && !name.contains("\\") && name.range(of: "^[A-Za-z0-9._-]+$", options: .regularExpression) != nil
 }
 
 /// Apple's sharing sheet wants a delegate for its title and errors.

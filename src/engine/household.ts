@@ -1,4 +1,5 @@
 import type { Profile } from '../store/plantStore';
+import { photoNames } from './cloudBackup';
 import type { CareEvent, Plant } from '../types';
 
 /*
@@ -189,11 +190,8 @@ export function signEvents(events: CareEvent[], me: string): { events: CareEvent
   return { events: signed ? out : events, signed };
 }
 
-/** Photo file names a jungle's diary points at (only photos in the diary folder travel). */
-export function diaryPhotos(j: Pick<Jungle, 'plants' | 'events'>): string[] {
-  const refs = [...j.plants.map((p) => p.photoUri), ...j.events.map((e) => e.photoUri)];
-  return [...new Set(refs.filter((r): r is string => !!r && /^diary\/[^/]+$/.test(r)).map((r) => r.slice(6)))];
-}
+/** Photo file names a jungle's diary points at (the same rule as the iCloud backup's). */
+export const diaryPhotos = (j: Pick<Jungle, 'plants' | 'events'>): string[] => photoNames(j.plants, j.events);
 
 /** "Ama", or "Someone" for a person whose name hasn't arrived yet. */
 export function nameOf(members: Record<string, Member>, id: string | undefined): string {

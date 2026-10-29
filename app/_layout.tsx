@@ -14,6 +14,7 @@ import { rescheduleRounds, roundAllowed, useNotificationRoute } from '@/lib/noti
 import { syncWidget } from '@/lib/widget';
 import { runCloudBackup } from '@/lib/cloudBackup';
 import { householdSupported, syncHousehold, watchInvites } from '@/lib/household';
+import { SHARED_PROFILE_KEYS } from '@/engine/household';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 import { refreshSunlight } from '@/lib/site';
@@ -110,7 +111,7 @@ export default function RootLayout() {
     const sub = AppState.addEventListener('change', (st) => st === 'active' && void syncHousehold());
     const unsub = usePlantStore.subscribe((st, prev) => {
       if (!st.profile.household) return;
-      if (st.plants !== prev.plants || st.events !== prev.events || st.profile.rooms !== prev.profile.rooms || st.profile.trips !== prev.profile.trips || st.profile.wishlist !== prev.profile.wishlist || st.profile.growTicks !== prev.profile.growTicks || st.profile.climate !== prev.profile.climate) soon();
+      if (st.plants !== prev.plants || st.events !== prev.events || SHARED_PROFILE_KEYS.some((k) => st.profile[k] !== prev.profile[k])) soon();
     });
     return () => {
       clearTimeout(timer);

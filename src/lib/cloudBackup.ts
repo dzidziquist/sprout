@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import { create } from 'zustand';
 import { BACKUPS_DIR, PHOTOS_DIR, backupDue, backupName, newChain, photoNames, sortEntries, toPrune, type BackupEntry } from '../engine/cloudBackup';
 import { computeStreak } from '../engine/streak';
-import { DEFAULT_PROFILE, usePlantStore } from '../store/plantStore';
+import { DEFAULT_PROFILE, usePlantStore, withShared } from '../store/plantStore';
 import { buildExportJson, parseBackup, type BackupData, type ExportSource } from './export';
 
 /*
@@ -132,8 +132,16 @@ let running = false;
  */
 export async function runCloudBackup({ force = false } = {}): Promise<'saved' | 'waiting' | 'skipped' | 'failed'> {
   if (!cloudSupported || running) return 'skipped';
-  const { plants, events, profile, onboarded, dataEpoch } = usePlantStore.getState();
-  const cb = profile.cloudBackup ?? {};
+  const st0 = usePlantStore.getState();
+  const { onboarded, dataEpoch } = st0;
+  // A household member backs up their own jungle, put aside while they're in the household: the
+  // household's plants are the owner's, and backed up from the owner's phone.
+  const aside = st0.profile.household?.role === 'member' ? st0.profile.household.aside : undefined;
+  const plants = aside ? aside.plants : st0.plants;
+  const events = aside ? aside.events : st0.events;
+  // Their own settings whole: anything they didn't have (trips, rooms…) is cleared, not the household's.
+  const profile = aside ? withShared(st0.profile, aside.shared) : st0.profile;
+  const cb = st0.profile.cloudBackup ?? {};
   if (cb.off || !onboarded || !plants.length) return 'skipped';
   if (!force && !backupDue(cb.lastAt, new Date())) return 'skipped';
   const status = useCloudStatus.getState();
@@ -164,9 +172,8 @@ export async function runCloudBackup({ force = false } = {}): Promise<'saved' | 
 }
 
 /**
- * Brings an iCloud backup back onto this phone, photos and all, and carries on its chain (so this phone's
- * weekly backups continue that line instead of starting a new one). Gives back what was on the phone
- * before, for Undo.
+ * Brings an iCloud backup back onto this phone, photos and all. This phone then starts its own chain
+ * (the backup's stays as it is). Gives back what was on the phone before, for Undo.
  */
 export async function restoreFromCloud(entry: BackupEntry, onPhoto?: (done: number, total: number) => void) {
   const data = await fetchCloudBackup(entry, onPhoto);
@@ -174,6 +181,8 @@ export async function restoreFromCloud(entry: BackupEntry, onPhoto?: (done: numb
   const snap = { profile: before.profile, plants: before.plants, events: before.events };
   before.restoreBackup(data);
   const after = usePlantStore.getState();
-  after.setProfile({ cloudBackup: { ...after.profile.cloudBackup, chain: entry.chain, lastAt: entry.at } });
+  // A new chain from here on: the restored one may belong to a phone that's still in use, and two
+  // phones sharing a chain would overwrite and prune each other's backups.
+  after.setProfile({ cloudBackup: { ...after.profile.cloudBackup, chain: undefined, lastAt: entry.at } });
   return { data, snap };
 }

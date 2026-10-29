@@ -125,8 +125,13 @@ function ended(h: Household) {
   if (st.profile.household?.me !== h.me || st.profile.household.owner !== h.owner) return;
   const aside = h.aside;
   const ownerName = (h.owner && h.members?.[h.owner]?.name) || 'The owner';
-  st.setJungle({ plants: [...st.plants, ...(aside?.plants ?? [])], events: [...st.events, ...(aside?.events ?? [])], shared: pickShared(st.profile) }, true);
+  // Their own settings come back too (city, climate, trips…), keeping the household's rooms next to
+  // their own so the copied plants still have a room to stand in.
+  const now = pickShared(st.profile);
+  const shared = aside ? { ...now, ...aside.shared, rooms: { ...(now.rooms ?? {}), ...(aside.shared.rooms ?? {}) } } : now;
+  st.setJungle({ plants: [...st.plants, ...(aside?.plants ?? [])], events: [...st.events, ...(aside?.events ?? [])], shared }, true);
   usePlantStore.getState().setProfile({ household: undefined });
+  useHouseholdStatus.getState().set({ error: null });
   if (h.role === 'member') Alert.alert('The household has ended', `${ownerName} stopped sharing, or took you out. You keep a copy of the plants as they were${aside?.plants.length ? ', and your own plants are back' : ''}.`);
 }
 
@@ -181,10 +186,13 @@ export function dismissInvite() {
 export async function leave(): Promise<void> {
   const h = usePlantStore.getState().profile.household;
   if (!Native || !h || h.role !== 'member' || !h.owner) return;
+  // Take this person's name out of the household first, so the others stop showing them.
+  await Native.save(h.owner, [], [`mb-${h.me}`]).catch(() => {});
   await Native.leave(h.owner);
   const st = usePlantStore.getState();
   st.setJungle({ plants: h.aside?.plants ?? [], events: h.aside?.events ?? [], shared: h.aside?.shared ?? {} }, true);
   usePlantStore.getState().setProfile({ household: undefined });
+  useHouseholdStatus.getState().set({ error: null });
 }
 
 /** The owner ends the household: every plant stays here; members keep a copy. */
@@ -193,6 +201,7 @@ export async function stopSharing(): Promise<void> {
   if (!Native || !h || h.role !== 'owner') return;
   await Native.stopSharing();
   usePlantStore.getState().setProfile({ household: undefined });
+  useHouseholdStatus.getState().set({ error: null });
 }
 
 /** Everyone in the household, with names from the household where people chose one. */
@@ -208,6 +217,13 @@ export async function people(): Promise<Person[]> {
 export async function removePerson(id: string): Promise<void> {
   if (!Native) return;
   await Native.remove(id);
+  // Their name goes too: dropped here, the next round deletes it from the household.
+  const h = usePlantStore.getState().profile.household;
+  if (h?.members?.[id]) {
+    const { [id]: _gone, ...members } = h.members;
+    usePlantStore.getState().setProfile({ household: { ...h, members } });
+    void syncHousehold();
+  }
 }
 
 /** Calls `onInvite` when someone taps a household invite (now, or one that opened the app). */

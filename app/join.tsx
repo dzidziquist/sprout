@@ -54,7 +54,8 @@ export default function JoinScreen() {
     );
   }
 
-  if (!invite || household) {
+  // While joining, the household is already saved but the first sync is still running: keep this screen.
+  if (!invite || (household && !busy)) {
     return (
       <View style={[styles.center, { backgroundColor: c.bg, padding: space.xl, gap: space.lg }]}>
         <Title style={{ textAlign: 'center' }}>{household ? 'Already in a household' : 'No invite here'}</Title>
