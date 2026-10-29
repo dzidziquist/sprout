@@ -1,10 +1,9 @@
 import { PlacePicker } from '@/components/PlacePicker';
 import { resolveUnits } from '@/lib/units';
-import { useState } from 'react';
-import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, AppState, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 import { usePlantStore, type FaceStyle, type Profile } from '@/store/plantStore';
 import { useShallow } from 'zustand/react/shallow';
 import { GlassButton } from '@/components/GlassButton';
@@ -17,12 +16,15 @@ import { SPOTS } from '@/lib/spots';
 import { ensureRoundPermission } from '@/lib/notifications';
 import { activeTrip, upcomingTrip } from '@/engine/away';
 import { deleteAllPhotos } from '@/lib/photos';
+import { cloudReady, cloudSupported, runCloudBackup, useCloudStatus } from '@/lib/cloudBackup';
+import { savedWords } from '@/engine/cloudBackup';
 import * as haptics from '@/lib/haptics';
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts, type, space } from '@/theme/tokens';
-import { ACCENTS, useColors } from '@/theme/theme';
+import { ACCENTS, textOn, useColors } from '@/theme/theme';
 import type { Accent } from '@/types';
 import { Dropdown } from '@/components/Dropdown';
+import { Row, Section } from '@/components/SettingsList';
 import { StickerSwitch } from '@/components/StickerSwitch';
 import { Glyph } from '@/components/Glyph';
 
@@ -61,42 +63,6 @@ const PHOTO_NOTE = {
   off: 'No photo nudges. You can still add photos from any plant’s page.',
 } as const;
 
-function Section({ title, children, footer }: { title: string; children: React.ReactNode; footer?: string }) {
-  const c = useColors();
-  return (
-    <View style={{ gap: 8 }}>
-      <Text style={[styles.sectionTitle, { color: c.inkMuted }]} accessibilityRole="header">
-        {title.toUpperCase()}
-      </Text>
-      <View style={[styles.group, { backgroundColor: c.card, borderColor: c.line }]}>{children}</View>
-      {footer ? <Text style={[styles.footer, { color: c.inkMuted }]}>{footer}</Text> : null}
-    </View>
-  );
-}
-
-function Row({ label, value, onPress, last, danger, chevron = true }: { label: string; value?: string; onPress?: () => void; last?: boolean; danger?: boolean; chevron?: boolean }) {
-  const c = useColors();
-  return (
-    <Pressable
-      accessibilityRole={onPress ? 'button' : 'text'}
-      disabled={!onPress}
-      onPress={() => {
-        haptics.tap();
-        onPress?.();
-      }}
-      style={({ pressed }) => [styles.row, !last && { borderBottomWidth: 1.5, borderColor: c.cloud }, pressed && { backgroundColor: c.cloud }]}
-    >
-      <Text style={[styles.rowLabel, { color: danger ? c.warn : c.ink }]}>{label}</Text>
-      {value ? <Text style={[styles.rowValue, { color: c.inkMuted }]}>{value}</Text> : null}
-      {onPress && chevron ? (
-        <Svg width={16} height={16} viewBox="0 0 24 24">
-          <Path d="m9 6 6 6-6 6" stroke={c.inkMuted} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        </Svg>
-      ) : null}
-    </Pressable>
-  );
-}
-
 /** A setting whose control sits under its label (segmented pickers). */
 function Field({ label, note, children, last }: { label: string; note?: string; children: React.ReactNode; last?: boolean }) {
   const c = useColors();
@@ -110,12 +76,15 @@ function Field({ label, note, children, last }: { label: string; note?: string; 
 }
 
 /** An on/off setting with PlantFam's sticker switch, its label read with it. */
-function SwitchField({ label, value, onChange, note, last, children }: { label: string; value: boolean; onChange: (on: boolean) => void; note?: string; last?: boolean; children?: React.ReactNode }) {
+function SwitchField({ label, sub, value, onChange, note, last, children }: { label: string; sub?: string; value: boolean; onChange: (on: boolean) => void; note?: string; last?: boolean; children?: React.ReactNode }) {
   const c = useColors();
   return (
     <View style={[styles.field, !last && { borderBottomWidth: 1.5, borderColor: c.cloud }]}>
       <View style={styles.switchRow}>
-        <Text style={[styles.rowLabel, { color: c.ink, flex: 1 }]}>{label}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.rowLabel, { color: c.ink }]}>{label}</Text>
+          {sub ? <Text style={[styles.sub, { color: c.inkMuted }]}>{sub}</Text> : null}
+        </View>
         <StickerSwitch label={label} value={value} onChange={onChange} />
       </View>
       {children}
@@ -131,6 +100,41 @@ export default function SettingsScreen() {
   const { profile, setProfile, plants, eraseEverything } = usePlantStore(useShallow((s) => ({ profile: s.profile, setProfile: s.setProfile, plants: s.plants, eraseEverything: s.eraseEverything })));
   const rewards = useRewards();
   const data = useDataActions();
+  const cloudOn = cloudSupported && !profile.cloudBackup?.off;
+  const cloudState = useCloudStatus((s) => s.state);
+  // Whether iCloud Drive is on for this phone: asked when Settings opens and when the backup is turned on.
+  const [icloud, setIcloud] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!cloudOn) return;
+    const check = () => cloudReady().then(setIcloud);
+    check();
+    // Back from turning iCloud Drive on in the iPhone's Settings: the note goes and the backup runs.
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && check());
+    return () => sub.remove();
+  }, [cloudOn]);
+  const cloudWaiting = cloudOn && (icloud === false || cloudState === 'waiting');
+  const [cloudMsg, setCloudMsg] = useState<{ text: string; bad?: boolean } | null>(null);
+  const cloudSub = !cloudOn
+    ? 'Off'
+    : cloudWaiting
+      ? 'Waiting for iCloud Drive'
+      : cloudState === 'saving'
+        ? 'Saving…'
+        : profile.cloudBackup?.lastAt
+          ? `Weekly · ${savedWords(profile.cloudBackup.lastAt, new Date())}`
+          : 'Weekly · first one soon';
+  // With iCloud on and ready, "Back up now" saves there; otherwise it hands over a file as before.
+  const backUpNow = async () => {
+    if (!cloudOn || cloudWaiting) return data.backup();
+    setCloudMsg(null);
+    const res = await runCloudBackup({ force: true });
+    if (res === 'saved') {
+      haptics.success();
+      setCloudMsg({ text: 'Saved to iCloud.' });
+    } else if (res === 'failed') setCloudMsg({ text: 'Couldn’t reach iCloud just now. It tries again next time you open PlantFam.', bad: true });
+    else if (res === 'waiting') setIcloud(false);
+    else if (!plants.length) setCloudMsg({ text: 'Add a plant first: there’s nothing to save yet.' });
+  };
   const idle = (fn: () => void) => () => {
     if (!data.busy) fn();
   };
@@ -271,13 +275,41 @@ export default function SettingsScreen() {
 
       <Section
         title="Your data"
-        footer={data.stale ? 'No recent backup. A quick one keeps your fam safe if you lose or switch phones.' : 'Your plants live only on this phone: no account, no tracking.'}
+        footer={
+          cloudOn
+            ? 'Once a week PlantFam saves your plants, care diary and photos to your iCloud, keeping the last four weeks. A new or lost phone gets your fam back. Only you can see it.'
+            : data.stale
+              ? 'No recent backup. A quick one keeps your fam safe if you lose or switch phones.'
+              : 'Your plants live only on this phone: no account, no tracking.'
+        }
       >
-        <Row label="Back up now" value={data.busy === 'backup' ? 'Saving…' : data.last ? `Last: ${data.last}` : 'Never'} onPress={idle(data.backup)} />
-        <Row label="Restore from a backup" value={data.busy === 'restore' ? 'Opening…' : undefined} onPress={idle(data.restore)} />
+        {cloudSupported && (
+          <SwitchField
+            label="iCloud backup"
+            sub={cloudSub}
+            value={cloudOn}
+            onChange={(on) => {
+              setCloudMsg(null);
+              setProfile({ cloudBackup: { ...profile.cloudBackup, off: !on } });
+              if (on) runCloudBackup().catch(() => {});
+            }}
+          >
+            {cloudWaiting && (
+              <Text style={[styles.warning, { backgroundColor: c.butter, borderColor: c.line, color: textOn(c.butter, c) }]}>
+                iCloud Drive is off on this iPhone. Turn it on in Settings → your name → iCloud, and backups start by themselves.
+              </Text>
+            )}
+          </SwitchField>
+        )}
+        <Row
+          label="Back up now"
+          value={data.busy === 'backup' || cloudState === 'saving' ? 'Saving…' : cloudOn && !cloudWaiting ? undefined : cloudOn ? 'Save a file' : data.last ? `Last: ${data.last}` : 'Never'}
+          onPress={cloudState === 'saving' ? undefined : idle(backUpNow)}
+        />
+        <Row label="Restore from a backup" value={data.busy === 'restore' ? 'Opening…' : undefined} onPress={cloudSupported ? () => router.push('/restore') : idle(data.restore)} />
         <Row label="Export care diary" value={data.busy === 'csv' ? 'Exporting…' : 'Spreadsheet'} onPress={data.hasPlants ? idle(data.spreadsheet) : undefined} last />
       </Section>
-      {data.msg && <Text style={[styles.footer, { color: data.msg.bad ? c.warn : c.good, marginTop: -12 }]}>{data.msg.text}</Text>}
+      {(cloudMsg ?? data.msg) && <Text style={[styles.footer, { color: (cloudMsg ?? data.msg)!.bad ? c.warn : c.good, marginTop: -12 }]}>{(cloudMsg ?? data.msg)!.text}</Text>}
 
       <Section title="Support PlantFam" footer="PlantFam is free for everyone. Rate it, share it, or send an idea, and see the gifts your fam grows into.">
         <Row label="Support PlantFam" value={`${rewards.earned} milestones`} onPress={() => router.push('/support')} last />
@@ -317,6 +349,8 @@ const styles = StyleSheet.create({
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   field: { padding: 14, gap: 10 },
   note: { fontFamily: fonts.bodyHeavy, ...type.caption },
+  sub: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  warning: { fontFamily: fonts.bodyHeavy, ...type.footnote, borderWidth: 2, borderRadius: 12, padding: 10, overflow: 'hidden' },
   footer: { fontFamily: fonts.bodyHeavy, ...type.caption, paddingHorizontal: 4 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { borderWidth: 2, borderRadius: 16, paddingHorizontal: 12, minHeight: 36, justifyContent: 'center' },

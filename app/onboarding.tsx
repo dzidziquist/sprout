@@ -1,5 +1,5 @@
 import { PlacePicker } from '@/components/PlacePicker';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,9 @@ import * as haptics from '@/lib/haptics';
 import { fonts, type, space } from '@/theme/tokens';
 import { light, textOn, useColors, type Palette, selectedFill } from '@/theme/theme';
 import { LineIcon } from '@/components/LineIcon';
+import { BUDDY_IMAGES } from '@/data/buddyImages';
+import { backupDay, type BackupEntry } from '@/engine/cloudBackup';
+import { cloudSupported, listCloudBackups, restoreFromCloud } from '@/lib/cloudBackup';
 
 
 const TIMES = [
@@ -50,6 +53,20 @@ export default function Onboarding() {
   // The welcome screen is a bright brand moment in both themes.
   const w = useMemo(() => makeStyles(light), []);
 
+  // A phone that's new to PlantFam but not to iCloud: offer the newest backup before setting up.
+  const [found, setFound] = useState<BackupEntry | null>(null);
+  const [fresh, setFresh] = useState(false);
+  useEffect(() => {
+    if (!cloudSupported) return;
+    let live = true;
+    listCloudBackups()
+      .then((all) => live && all[0] && setFound(all[0]))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
+
   const finishing = useRef(false);
   const finish = async (demo: boolean) => {
     // Waiting on the permission prompt: a second tap (or the other button) mustn't run this twice.
@@ -65,6 +82,8 @@ export default function Onboarding() {
     router.replace('/');
     if (!demo) setTimeout(() => router.push('/add'), 50);
   };
+
+  if (step === 0 && found && !fresh) return <WelcomeBack entry={found} onFresh={() => setFresh(true)} />;
 
   if (step === 0) {
     return (
@@ -169,6 +188,62 @@ export default function Onboarding() {
         <Button title="Look around with a demo fam" bg={c.white} onPress={() => finish(true)} style={{ minHeight: 48 }} />
       </View>
     </ScrollView>
+  );
+}
+
+/** "Welcome back!": the newest iCloud backup, ready to bring back, or start fresh (which leaves it be). */
+function WelcomeBack({ entry, onFresh }: { entry: BackupEntry; onFresh: () => void }) {
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const w = useMemo(() => makeStyles(light), []);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const stats = [
+    { n: String(entry.plants), label: entry.plants === 1 ? 'plant' : 'plants' },
+    { n: String(entry.photos), label: entry.photos === 1 ? 'photo' : 'photos' },
+    ...(entry.streak ? [{ n: `${entry.streak} ${entry.streak === 1 ? 'week' : 'weeks'}`, label: 'streak' }] : []),
+  ];
+
+  const bringBack = async () => {
+    if (busy) return;
+    setError(null);
+    setBusy('Opening your backup…');
+    try {
+      await restoreFromCloud(entry, (done, total) => setBusy(`Bringing back photos: ${done} of ${total}`));
+      // The round comes back on if it was on; this new phone still has to be allowed to send it.
+      const { profile, setProfile } = usePlantStore.getState();
+      if (profile.round.enabled) setProfile({ round: { ...profile.round, enabled: await ensureRoundPermission().catch(() => false) } });
+      haptics.success();
+      router.replace('/');
+    } catch (e) {
+      setError((e as Error)?.message || 'Couldn’t open the backup. Try again in a moment.');
+      setBusy(null);
+    }
+  };
+
+  return (
+    <View style={[w.welcome, { backgroundColor: light.mint, justifyContent: 'center', gap: space.lg, paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
+      <Image source={BUDDY_IMAGES.calathea.happy} style={{ width: 180, height: 180, alignSelf: 'center' }} resizeMode="contain" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+      <View style={{ gap: 8 }}>
+        <Title size="largeTitle" style={{ color: light.ink, textAlign: 'center' }}>Welcome back!</Title>
+        <Text style={[w.lede, { textAlign: 'center' }]}>We found your PlantFam backup in iCloud, saved {backupDay(entry.at)}.</Text>
+      </View>
+      <Sticker drop={3} bg={light.white} style={{ flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 14 }}>
+        {stats.map((x) => (
+          <View key={x.label} style={{ alignItems: 'center' }} accessible accessibilityLabel={`${x.n} ${x.label}`}>
+            <Text style={{ fontFamily: fonts.display, ...type.title2, color: light.ink }}>{x.n}</Text>
+            <Text style={w.choiceSub}>{x.label}</Text>
+          </View>
+        ))}
+      </Sticker>
+      <View style={{ gap: 10, marginTop: space.md }}>
+        <Button title={busy ? 'Bringing them back…' : 'Bring back my fam'} raised bg={light.leaf} onPress={bringBack} style={{ minHeight: 56 }} />
+        <Button title="Start fresh" bg={light.white} onPress={busy ? () => {} : onFresh} style={{ minHeight: 50 }} />
+        <Text style={[w.choiceSub, { textAlign: 'center', color: error ? light.warn : light.inkMuted }]} accessibilityLiveRegion="polite">
+          {error ?? busy ?? 'Your backup stays in iCloud: you can restore it from Settings any time. Starting fresh never overwrites it.'}
+        </Text>
+      </View>
+    </View>
   );
 }
 

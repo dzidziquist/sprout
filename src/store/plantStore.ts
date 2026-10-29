@@ -58,6 +58,11 @@ export interface Profile {
   growTicks: Record<string, string>;
   /** When the user last saved a backup file. */
   lastBackupAt?: string;
+  /**
+   * The weekly iCloud backup (iPhone): on unless turned off. `chain` is this phone's line of backups
+   * (see engine/cloudBackup), `lastAt` the last one saved. Stays on the phone: never inside a backup.
+   */
+  cloudBackup?: { off?: boolean; chain?: string; lastAt?: string };
   /** Temperatures and rain: 'auto' follows the climate (Seattle °F, Accra °C). */
   units: 'auto' | 'imperial' | 'metric';
   /** Photo IDs used today on this phone (free, with a small daily allowance). */
@@ -174,6 +179,8 @@ interface PlantState {
   removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
   restoreBackup: (data: { profile: Partial<Profile>; plants: Plant[]; events: CareEvent[] }) => void;
+  /** Puts back exactly what was on the phone before a restore (its Undo). */
+  restoreSnapshot: (snap: { profile: Profile; plants: Plant[]; events: CareEvent[] }) => void;
   /** Erase every plant, diary entry and setting on this phone and start onboarding again. Purchases stay with the Apple ID. */
   eraseEverything: () => void;
 }
@@ -717,7 +724,7 @@ export const usePlantStore = create<PlantState>()(
       restoreBackup: (data) => {
         // A tip travels with the backup (consumable tips can't be restored from the App Store), so the
         // thank-you gifts follow someone to a new phone. A tip on this phone is never undone by a restore.
-        const { supporter: tipped, supporterSince: since, streakFreezes: _f, lastBackupAt: _b, plus: _p, ...profile } = data.profile as Partial<Profile> & { plus?: boolean };
+        const { supporter: tipped, supporterSince: since, streakFreezes: _f, lastBackupAt: _b, cloudBackup: _c, plus: _p, ...profile } = data.profile as Partial<Profile> & { plus?: boolean };
         const supporter = get().profile.supporter || tipped === true;
         const supporterSince = [get().profile.supporterSince, tipped === true ? since : undefined].filter((d): d is string => !!d).sort()[0];
         set((s) => ({
@@ -727,6 +734,10 @@ export const usePlantStore = create<PlantState>()(
           onboarded: true,
           profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, supporter, supporterSince: supporter ? supporterSince ?? new Date().toISOString() : undefined, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
         }));
+      },
+
+      restoreSnapshot: (snap) => {
+        set({ plants: snap.plants, events: snap.events, profile: snap.profile, undo: {} });
       },
 
       eraseEverything: () => {

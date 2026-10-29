@@ -19,7 +19,7 @@ export interface ExportSource {
 }
 
 /** Profile fields that are app plumbing rather than the user's data. `supporter` stays so a tip's thank-you moves phones. */
-const INTERNAL_PROFILE_KEYS = ['plus', 'streakFreezes', 'lastBackupAt'] as const;
+const INTERNAL_PROFILE_KEYS = ['plus', 'streakFreezes', 'lastBackupAt', 'cloudBackup'] as const;
 
 export function buildExportJson(src: ExportSource, now = new Date()): string {
   // `plus` is the old (pre tip jar) name of `supporter`, still dropped from older profiles.

@@ -73,6 +73,12 @@
       ],
       "@bacons/apple-targets",
       [
+        "react-native-cloud-storage",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "PlantFam uses the camera so you can snap your plants for their photo diary, identify them, check a problem or measure the light where they sit.",
