@@ -65,3 +65,8 @@ sources. Unset means never reviewed, which counts as oldest.
 7. Open one PR titled `Knowledge: <topic> + review`, with three parts: the topic's changes, the review
    (each entry checked, what changed or "still right"), and anything that needs a human look. Every
    change with its source. Never merge it.
+
+## Review before merging
+
+Codex (OpenAI), connected to this repo, reviews every pull request automatically. The owner reads the
+PR and Codex's findings, asks for fixes where needed, and merges only advice they're happy to ship.
