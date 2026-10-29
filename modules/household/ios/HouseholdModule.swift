@@ -225,7 +225,8 @@ public class HouseholdModule: Module {
     let shareID = CKRecord.ID(recordName: CKRecordNameZoneWideShare, zoneID: zone)
     let share: CKShare
     if let existing = (try? await db.record(for: shareID)) as? CKShare {
-      share = try await retitled(existing, title)
+      // A rename that doesn't go through is no reason not to invite.
+      share = (try? await retitled(existing, title)) ?? existing
     } else {
       // The zone first, in case it isn't there (saving one that is changes nothing).
       _ = try await db.modifyRecordZones(saving: [CKRecordZone(zoneID: zone)], deleting: [])
