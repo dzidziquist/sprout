@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePlantStore } from '@/store/plantStore';
-import { SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearFit, windowName } from '@/engine/light';
+import { FIT_LABEL, SPOT_LABEL, hasWindow, lightNeed, lightTip, placeOf, roomsInUse, spotLight, suits, yearFit, windowName } from '@/engine/light';
 import { readingsHere, spotShare, yearBands, yearWords } from '@/engine/lightMeter';
 import { useForecast } from '@/lib/weather';
 import { useSite } from '@/hooks/useSite';
@@ -43,7 +43,8 @@ export function LightCard({ plant }: { plant: Plant }) {
   const measuredFit = bands ? suits(bands[now.getMonth()], lightNeed(plant)) : null;
   const lastReading = readings[readings.length - 1];
   const measuredOn = lastReading ? new Date(lastReading.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-  const verdictOf = (fit: 'ok' | 'dim' | 'harsh', growLight = false) => (fit === 'dim' ? (growLight ? 'Short on light' : 'May need a brighter spot') : fit === 'harsh' ? 'May get too much sun' : 'Good spot');
+  // The spot sheet's words, so both say the same thing; a grow-light plant that's dim is short on light, not in the wrong spot.
+  const verdictOf = (fit: 'ok' | 'dim' | 'harsh', growLight = false) => (fit === 'dim' && growLight ? 'Short on light' : FIT_LABEL[fit]);
   const measureButton = (
     <Button title={bands ? 'Measure again' : 'Measure with camera'} bg={c.butter} onPress={measure} style={{ minHeight: 48 }} />
   );

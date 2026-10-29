@@ -447,8 +447,8 @@ export function roomToday(room: AnyRoomLight, lat: number, now: Date, today?: Da
   return `About ${Math.round(hours)} h of sun today${weather}`;
 }
 
-/** How well a spot suits a plant, as the app says it. */
-export const FIT_LABEL: Record<'ok' | 'dim' | 'harsh', string> = { ok: 'Likely suitable', dim: 'Likely too dark', harsh: 'Likely too sunny' };
+/** How well a spot suits a plant, in the same words everywhere (plant page, spot sheet, jungle light view). */
+export const FIT_LABEL: Record<'ok' | 'dim' | 'harsh', string> = { ok: 'Good spot', dim: 'Too dark', harsh: 'Too sunny' };
 
 const cap = (t: string) => `${t[0].toUpperCase()}${t.slice(1)}`;
 
