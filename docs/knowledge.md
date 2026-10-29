@@ -38,12 +38,30 @@ Put sources in the entry's `sources` (doctor causes) or `source` (mixes), and li
 - Feeding advice says half strength when in doubt.
 - Match the existing style: British spelling ("fertiliser", "colour"), curly apostrophes (’).
 
+## Reviewing what's already there
+
+Knowledge goes stale and mistakes slip in, so every run also re-checks old entries, not just new ones.
+Doctor causes and mixes carry `reviewed: 'YYYY-MM'`, the month they were last checked against their
+sources. Unset means never reviewed, which counts as oldest.
+
+- Each run reviews the **5 doctor causes and 3 mixes with the oldest (or no) `reviewed`** month, besides
+  its topic.
+- Reviewing means: open each source, confirm the advice still matches (the summary, the checks, the
+  fixes), correct anything that doesn't, add a source where there's none, and set `reviewed` to this
+  month. Only stamp an entry after actually checking it, and only once it has a source.
+- Anything you're unsure about: don't change it, list it in the PR as "needs a human look".
+- Once a year (each January run), also go through `src/data/edibles.ts` feeding and calendar lines for
+  both climates, as the topic for that week.
+
 ## Each run
 
 1. Read this file and `docs/knowledge-topics.md`; take the first unticked topic.
 2. Research it from the sources above. Compare with what the files say now.
 3. Make small, careful changes: fix what's wrong or out of date, fill real gaps. Fewer, well-sourced
    changes beat many shaky ones. If nothing needs changing, say so.
-4. Run `npm run ts:check` and `npm test`. Both must pass.
-5. Tick the topic off, with the date and the PR.
-6. Open one PR titled `Knowledge: <topic>`, listing each change, why, and its source. Never merge it.
+4. Review the oldest entries (above) and stamp them.
+5. Run `npm run ts:check` and `npm test`. Both must pass.
+6. Tick the topic off, with the date and the PR.
+7. Open one PR titled `Knowledge: <topic> + review`, with three parts: the topic's changes, the review
+   (each entry checked, what changed or "still right"), and anything that needs a human look. Every
+   change with its source. Never merge it.

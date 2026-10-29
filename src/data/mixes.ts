@@ -19,6 +19,8 @@ export interface MixBrand {
   name: string;
   kind: MixKind | 'none';
   source: string;
+  /** When it was last checked against the maker's label, as YYYY-MM (docs/knowledge.md). */
+  reviewed?: string;
 }
 
 export const MIX_BRANDS: MixBrand[] = [

@@ -55,6 +55,14 @@ describe('plant doctor knowledge', () => {
 
   it('cites real sources where it gives them (docs/knowledge.md)', () => {
     for (const c of Object.values(CAUSES)) for (const src of c.sources ?? []) expect(src.trim().length, c.id).toBeGreaterThan(10);
+    // Review stamps are YYYY-MM, not in the future, and only on entries with sources to check against.
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    for (const c of Object.values(CAUSES)) {
+      if (!c.reviewed) continue;
+      expect(c.reviewed, c.id).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
+      expect(c.reviewed <= thisMonth, c.id).toBe(true);
+      expect(c.sources?.length, `${c.id} is marked reviewed but has no sources`).toBeGreaterThan(0);
+    }
   });
 
   it('never gives pesticide doses', () => {
