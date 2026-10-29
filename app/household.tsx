@@ -44,11 +44,14 @@ export default function HouseholdScreen() {
     setError(null);
     try {
       await fn();
-      refresh();
     } catch (e) {
-      setError((e as Error)?.message || 'Couldn’t reach iCloud. Try again in a moment.');
+      // Native errors arrive wrapped ("Calling the 'invite' function has failed → Caused by: …"): just the reason.
+      const message = ((e as Error)?.message ?? '').split('Caused by:').pop()?.trim();
+      setError(message || 'Couldn’t reach iCloud. Try again in a moment.');
     } finally {
       setBusy(false);
+      // Even after a failure: starting the household may have worked before the sharing sheet didn't.
+      refresh();
     }
   };
 
