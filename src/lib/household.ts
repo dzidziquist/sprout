@@ -166,7 +166,19 @@ export async function startAndInvite(name: string): Promise<void> {
     usePlantStore.getState().setProfile({ household: { ...st.profile.household, name: name.trim() } });
     void syncHousehold();
   }
-  await Native.invite(name.trim() ? `${name.trim()}’s jungle` : 'Our jungle');
+  await Native.invite(jungleTitle(name));
+}
+
+/** What the share is called in invites: "Dzifa’s jungle". */
+const jungleTitle = (name: string) => (name.trim() ? `${name.trim()}’s jungle` : 'Our jungle');
+
+/** A new name for this person; the owner's also renames the share, invites already sent included. */
+export async function renameMe(name: string): Promise<void> {
+  const h = usePlantStore.getState().profile.household;
+  if (!h || !name.trim()) return;
+  usePlantStore.getState().setProfile({ household: { ...h, name: name.trim() } });
+  void syncHousehold();
+  if (h.role === 'owner') await Native?.rename(jungleTitle(name)).catch(() => {});
 }
 
 /** The invite waiting to be answered (someone tapped a link), if any. */

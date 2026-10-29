@@ -98,6 +98,11 @@ public class HouseholdModule: Module {
       try await self.people(owner: owner)
     }
 
+    /// Owner: renames the share ("Dzifa’s jungle"), so invites already sent show the new name too.
+    AsyncFunction("rename") { (title: String) async throws in
+      try await self.rename(title: title)
+    }
+
     /// Owner: takes someone out of the household.
     AsyncFunction("remove") { (personId: String) async throws in
       try await self.remove(personId: personId)
@@ -220,12 +225,13 @@ public class HouseholdModule: Module {
     let shareID = CKRecord.ID(recordName: CKRecordNameZoneWideShare, zoneID: zone)
     let share: CKShare
     if let existing = (try? await db.record(for: shareID)) as? CKShare {
-      share = existing
+      share = try await retitled(existing, title)
     } else {
       // The zone first, in case it isn't there (saving one that is changes nothing).
       _ = try await db.modifyRecordZones(saving: [CKRecordZone(zoneID: zone)], deleting: [])
       let fresh = CKShare(recordZoneID: zone)
       fresh[CKShare.SystemFieldKey.title] = title as CKRecordValue
+      if let icon = await MainActor.run(body: { appIconData() }) { fresh[CKShare.SystemFieldKey.thumbnailImageData] = icon as CKRecordValue }
       fresh.publicPermission = .none
       let saved = try await db.modifyRecords(saving: [fresh], deleting: [], savePolicy: .ifServerRecordUnchanged)
       switch saved.saveResults[shareID] {
@@ -241,6 +247,25 @@ public class HouseholdModule: Module {
       }
     }
     try await presentSharing(share: share, title: title)
+  }
+
+  private func rename(title: String) async throws {
+    guard let share = try await self.share(owner: nil) else { return }
+    _ = try await retitled(share, title)
+  }
+
+  /// The share with this title (and the app's icon as its picture), saved when either changed.
+  private func retitled(_ share: CKShare, _ title: String) async throws -> CKShare {
+    let icon = await MainActor.run(body: { appIconData() })
+    let sameTitle = share[CKShare.SystemFieldKey.title] as? String == title
+    let hasIcon = share[CKShare.SystemFieldKey.thumbnailImageData] != nil || icon == nil
+    if sameTitle && hasIcon { return share }
+    share[CKShare.SystemFieldKey.title] = title as CKRecordValue
+    if let icon { share[CKShare.SystemFieldKey.thumbnailImageData] = icon as CKRecordValue }
+    let saved = try await container.privateCloudDatabase.modifyRecords(saving: [share], deleting: [], savePolicy: .changedKeys)
+    if case .success(let record)? = saved.saveResults[share.recordID], let updated = record as? CKShare { return updated }
+    // Not saved (changed elsewhere meanwhile): carry on with the share as it was; the next invite tries again.
+    return share
   }
 
   /// Sharing couldn't be set up, with iCloud's own reason, so a screenshot says what went wrong.
@@ -420,11 +445,30 @@ private func isPlainFileName(_ name: String) -> Bool {
 }
 
 /// Apple's sharing sheet wants a delegate for its title and errors.
+@MainActor
 private class SharingDelegate: NSObject, UICloudSharingControllerDelegate {
   let title: String
   init(title: String) { self.title = title }
 
   func itemTitle(for csc: UICloudSharingController) -> String? { title }
 
+  /// The app's icon (the one chosen in Settings), instead of Apple's generic document picture.
+  func itemThumbnailData(for csc: UICloudSharingController) -> Data? { appIconData() }
+
   func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {}
+}
+
+/// The app's current Home Screen icon as PNG (an alternate one when chosen), for the share's picture.
+@MainActor
+private func appIconData() -> Data? {
+  let icons = Bundle.main.infoDictionary?["CFBundleIcons"] as? [String: Any]
+  let set: [String: Any]?
+  if let alternate = UIApplication.shared.alternateIconName {
+    set = (icons?["CFBundleAlternateIcons"] as? [String: Any])?[alternate] as? [String: Any]
+  } else {
+    set = icons?["CFBundlePrimaryIcon"] as? [String: Any]
+  }
+  let names = (set?["CFBundleIconFiles"] as? [String]) ?? []
+  let image = names.reversed().lazy.compactMap { UIImage(named: $0) }.first ?? UIImage(named: "AppIcon60x60") ?? UIImage(named: "AppIcon")
+  return image?.pngData()
 }
