@@ -5,11 +5,36 @@ import WidgetKit
 private let appGroup = "group.com.dzidziquist.plantfam"
 private let roundKey = "round"
 
-// PlantFam's sticker colours, fixed: the widget art is drawn for a light card.
-private let ink = Color(red: 27 / 255, green: 27 / 255, blue: 47 / 255)
-private let inkMuted = Color(red: 85 / 255, green: 85 / 255, blue: 107 / 255)
-private let mint = Color(red: 215 / 255, green: 249 / 255, blue: 228 / 255)
-private let ice = Color(red: 214 / 255, green: 238 / 255, blue: 255 / 255)
+/// PlantFam's colours, in the Home Screen's light and dark looks (dark is the navy of the dark app icon).
+private struct Palette {
+  let ink: Color
+  let muted: Color
+  let due: Color
+  let done: Color
+  let calm: Color
+  let chip: Color
+  let chipEdge: Color
+
+  static func of(_ scheme: ColorScheme) -> Palette {
+    scheme == .dark
+      ? Palette(
+        ink: Color(red: 0.95, green: 0.95, blue: 0.97),
+        muted: Color(red: 0.70, green: 0.72, blue: 0.82),
+        due: Color(red: 0.06, green: 0.11, blue: 0.29),
+        done: Color(red: 0.05, green: 0.16, blue: 0.20),
+        calm: Color(red: 0.06, green: 0.12, blue: 0.28),
+        chip: Color(red: 0.14, green: 0.19, blue: 0.38),
+        chipEdge: Color(red: 0.95, green: 0.95, blue: 0.97).opacity(0.35))
+      : Palette(
+        ink: Color(red: 27 / 255, green: 27 / 255, blue: 47 / 255),
+        muted: Color(red: 85 / 255, green: 85 / 255, blue: 107 / 255),
+        due: Color(red: 1.0, green: 0.95, blue: 0.80),
+        done: Color(red: 215 / 255, green: 249 / 255, blue: 228 / 255),
+        calm: Color(red: 214 / 255, green: 238 / 255, blue: 255 / 255),
+        chip: .white,
+        chipEdge: Color(red: 27 / 255, green: 27 / 255, blue: 47 / 255))
+  }
+}
 
 // MARK: - Data from the app
 
@@ -139,43 +164,70 @@ private func rounded(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font {
 
 // MARK: - Views
 
+/// A plant from the app's art, standing clear of the widget's edge. Greyed in the tinted Home Screen look.
+private struct PlantArt: View {
+  @Environment(\.widgetRenderingMode) private var mode
+  let name: String
+  let height: CGFloat
+
+  var body: some View {
+    let image = Image(name).resizable()
+    Group {
+      if #available(iOS 18.0, *) {
+        image.widgetAccentedRenderingMode(.desaturated)
+      } else {
+        image
+      }
+    }
+    .scaledToFit()
+    .frame(height: height)
+    .opacity(mode == .accented ? 0.6 : 1)
+    .accessibilityHidden(true)
+  }
+}
+
 /// "PLANT ROUND" over everything, in the app's small-caps eyebrow style.
 private struct Eyebrow: View {
   let text: String
+  let color: Color
   var body: some View {
-    Text(text).tracking(0.3).font(rounded(11, .bold)).foregroundStyle(inkMuted)
+    Text(text).tracking(0.3).font(rounded(11, .bold)).foregroundStyle(color)
   }
 }
 
 struct SmallView: View {
+  @Environment(\.colorScheme) private var scheme
   let entry: RoundEntry
 
   var body: some View {
-    if !entry.due.isEmpty {
-      // The art fills the right side, so the words keep to a narrow left column.
+    let c = Palette.of(scheme)
+    ZStack(alignment: .bottomTrailing) {
+      PlantArt(name: art, height: 62)
+        .padding(.trailing, 10)
+        .padding(.bottom, 10)
       VStack(alignment: .leading, spacing: 0) {
-        Eyebrow(text: "PLANT ROUND")
-        Text("\(entry.due.count)").font(rounded(46)).foregroundStyle(ink).padding(.top, 2)
-        Text(entry.due.count == 1 ? "check\ntoday" : "checks\ntoday").font(rounded(14, .bold)).foregroundStyle(ink)
-        Spacer(minLength: 4)
-        Text("Next up").font(rounded(11, .bold)).foregroundStyle(inkMuted)
-        Text(entry.due[0]).font(rounded(13, .heavy)).foregroundStyle(ink).lineLimit(1)
+        Eyebrow(text: "PLANT ROUND", color: c.muted)
+        if !entry.due.isEmpty {
+          Text("\(entry.due.count)").font(rounded(42)).foregroundStyle(c.ink).widgetAccentable()
+          Text(entry.due.count == 1 ? "check today" : "checks today").font(rounded(13, .bold)).foregroundStyle(c.ink)
+          Spacer(minLength: 4)
+          Text("Next up").font(rounded(11, .bold)).foregroundStyle(c.muted)
+          Text(entry.due[0]).font(rounded(13, .heavy)).foregroundStyle(c.ink).lineLimit(1)
+            .frame(maxWidth: 82, alignment: .leading)
+        } else {
+          Text(headline).font(rounded(entry.empty ? 20 : 24)).foregroundStyle(c.ink).minimumScaleFactor(0.8).widgetAccentable()
+            .padding(.top, 2)
+          Text(subline).font(rounded(13, .bold)).foregroundStyle(c.ink)
+        }
       }
-      .frame(width: 96, alignment: .leading)
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
       .padding(14)
-    } else {
-      ZStack(alignment: .bottomTrailing) {
-        Image("doneBuddy").resizable().scaledToFit().frame(width: 92).offset(x: 6, y: 6).accessibilityHidden(true)
-        VStack(alignment: .leading, spacing: 2) {
-          Eyebrow(text: "PLANT ROUND")
-          Text(headline).font(rounded(entry.empty ? 20 : 26)).foregroundStyle(ink).minimumScaleFactor(0.8)
-          Text(subline).font(rounded(13, .bold)).foregroundStyle(ink)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(14)
-      }
     }
+  }
+
+  private var art: String {
+    if !entry.due.isEmpty { return "plantThirsty" }
+    return entry.away != nil ? "plantSnoozing" : "plantHappy"
   }
 
   private var headline: String {
@@ -186,34 +238,45 @@ struct SmallView: View {
 
   private var subline: String {
     if entry.empty { return "Open PlantFam\nto start" }
-    if let away = entry.away { return "Back \(shortDate(away)).\nReminders\npaused." }
+    if let away = entry.away { return "Back \(shortDate(away))" }
     if let next = entry.next { return "Next check\n\(dayWord(next, from: entry.date))" }
     return "Nothing due"
   }
 }
 
 struct MediumView: View {
+  @Environment(\.colorScheme) private var scheme
   let entry: RoundEntry
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 4) {
-      Eyebrow(text: "PLANT ROUND · \(weekday(entry.date))")
-      Text(title).font(rounded(22)).foregroundStyle(ink)
-      if !entry.due.isEmpty {
-        HStack(spacing: 5) {
-          ForEach(Array(entry.due.prefix(3).enumerated()), id: \.offset) { item in
-            Chip(text: item.element)
-          }
-          if entry.due.count > 3 { Chip(text: "+\(entry.due.count - 3)") }
-        }
-        .padding(.top, 2)
-      } else if let line = subline {
-        Text(line).font(rounded(13, .bold)).foregroundStyle(ink)
+    let c = Palette.of(scheme)
+    ZStack(alignment: .bottomTrailing) {
+      HStack(alignment: .bottom, spacing: 6) {
+        PlantArt(name: entry.away != nil ? "plantSnoozing" : entry.due.isEmpty ? "plantHappy" : "plantThirsty", height: 62)
+        PlantArt(name: "plantTomato", height: 58)
+        PlantArt(name: "plantSnake", height: 62)
       }
+      .padding(.trailing, 14)
+      .padding(.bottom, 10)
+      VStack(alignment: .leading, spacing: 4) {
+        Eyebrow(text: "PLANT ROUND · \(weekday(entry.date))", color: c.muted)
+        Text(title).font(rounded(22)).foregroundStyle(c.ink).widgetAccentable()
+        if !entry.due.isEmpty {
+          HStack(spacing: 5) {
+            ForEach(Array(entry.due.prefix(3).enumerated()), id: \.offset) { item in
+              Chip(text: item.element, palette: c)
+            }
+            if entry.due.count > 3 { Chip(text: "+\(entry.due.count - 3)", palette: c) }
+          }
+          .padding(.top, 2)
+        } else if let line = subline {
+          Text(line).font(rounded(13, .bold)).foregroundStyle(c.ink)
+        }
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+      .padding(.horizontal, 16)
+      .padding(.top, 14)
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .padding(.horizontal, 16)
-    .padding(.top, 12)
   }
 
   private var title: String {
@@ -231,51 +294,37 @@ struct MediumView: View {
   }
 }
 
-/// A plant's name on a white sticker pill.
+/// A plant's name on a sticker pill.
 private struct Chip: View {
   let text: String
+  let palette: Palette
   var body: some View {
     Text(text)
       .font(rounded(12, .heavy))
-      .foregroundStyle(ink)
+      .foregroundStyle(palette.ink)
       .lineLimit(1)
       .padding(.horizontal, 8)
       .padding(.vertical, 3)
-      .background(Capsule().fill(Color.white))
-      .overlay(Capsule().stroke(ink, lineWidth: 2))
+      .background(Capsule().fill(palette.chip))
+      .overlay(Capsule().stroke(palette.chipEdge, lineWidth: 1.5))
       .frame(maxWidth: 110)
   }
 }
 
 struct RoundView: View {
   @Environment(\.widgetFamily) private var family
+  @Environment(\.colorScheme) private var scheme
   let entry: RoundEntry
 
   var body: some View {
+    let c = Palette.of(scheme)
     Group {
       if family == .systemMedium { MediumView(entry: entry) } else { SmallView(entry: entry) }
     }
     .widgetURL(URL(string: "plantfam:///"))
-    .containerBackground(for: .widget) { background }
+    // A plain colour: iOS draws the widget's own rounded edge, and swaps it out in the tinted look.
+    .containerBackground(for: .widget) { entry.empty || entry.away != nil ? c.calm : entry.due.isEmpty ? c.done : c.due }
     .accessibilityElement(children: .combine)
-  }
-
-  /// The art, or a flat sticker colour, with the sticker's ink outline traced along the widget's own corners.
-  private var background: some View {
-    ZStack {
-      fill
-      ContainerRelativeShape().strokeBorder(ink, lineWidth: 3)
-    }
-  }
-
-  @ViewBuilder private var fill: some View {
-    if family == .systemMedium {
-      Image("mediumBackground").resizable().scaledToFill()
-    } else if entry.due.isEmpty {
-      entry.empty || entry.away != nil ? ice : mint
-    } else {
-      Image("smallBackground").resizable().scaledToFill()
-    }
   }
 }
 

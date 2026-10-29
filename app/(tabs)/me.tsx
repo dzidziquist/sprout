@@ -75,6 +75,15 @@ export default function MeScreen() {
         </Sticker>
       </View>
 
+      {householdSupported && (
+        <Pressable accessibilityRole="button" accessibilityLabel="Household" onPress={() => router.push('/household')}>
+          <Sticker drop={0} bg={c.mint} style={styles.settingsRow}>
+            <Text style={[styles.settingsText, { color: c.ink }]}>Household</Text>
+            <Text style={[styles.settingsSub, { color: c.inkMuted }]}>{householdLine(profile.household)}</Text>
+          </Sticker>
+        </Pressable>
+      )}
+
       <View style={{ gap: 10 }}>
         <View style={styles.rowBetween}>
           <Label>Milestones</Label>
@@ -97,15 +106,6 @@ export default function MeScreen() {
       </View>
 
       <SupportCard />
-
-      {householdSupported && (
-        <Pressable accessibilityRole="button" accessibilityLabel="Household" onPress={() => router.push('/household')}>
-          <Sticker drop={0} bg={c.mint} style={styles.settingsRow}>
-            <Text style={[styles.settingsText, { color: c.ink }]}>Household</Text>
-            <Text style={[styles.settingsSub, { color: c.inkMuted }]}>{householdLine(profile.household)}</Text>
-          </Sticker>
-        </Pressable>
-      )}
 
       <Pressable accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => router.push('/settings')}>
         <Sticker drop={0} bg={c.cloud} style={styles.settingsRow}>

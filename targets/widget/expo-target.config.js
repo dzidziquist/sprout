@@ -15,8 +15,10 @@ module.exports = (config) => ({
     'com.apple.security.application-groups': config.ios.entitlements['com.apple.security.application-groups'],
   },
   images: {
-    smallBackground: '../../assets/widgets/widget-small-bg.png',
-    mediumBackground: '../../assets/widgets/widget-medium-bg.png',
-    doneBuddy: '../../assets/widgets/widget-buddy.png',
+    plantThirsty: '../../assets/widgets/widget-monstera-thirsty.png',
+    plantHappy: '../../assets/widgets/widget-monstera.png',
+    plantSnoozing: '../../assets/widgets/widget-monstera-snoozing.png',
+    plantTomato: '../../assets/widgets/widget-tomato.png',
+    plantSnake: '../../assets/widgets/widget-snake.png',
   },
 });
