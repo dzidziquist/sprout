@@ -6,7 +6,8 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import Svg, { Circle, Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
 import { useTabPadding } from '@/hooks/useTabPadding';
-import { usePlantStore } from '@/store/plantStore';
+import { usePlantStore, type Household } from '@/store/plantStore';
+import { householdSupported } from '@/lib/household';
 import { useShallow } from 'zustand/react/shallow';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
@@ -97,6 +98,15 @@ export default function MeScreen() {
 
       <SupportCard />
 
+      {householdSupported && (
+        <Pressable accessibilityRole="button" accessibilityLabel="Household" onPress={() => router.push('/household')}>
+          <Sticker drop={0} bg={c.mint} style={styles.settingsRow}>
+            <Text style={[styles.settingsText, { color: c.ink }]}>Household</Text>
+            <Text style={[styles.settingsSub, { color: c.inkMuted }]}>{householdLine(profile.household)}</Text>
+          </Sticker>
+        </Pressable>
+      )}
+
       <Pressable accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => router.push('/settings')}>
         <Sticker drop={0} bg={c.cloud} style={styles.settingsRow}>
           <Text style={[styles.settingsText, { color: c.ink }]}>Settings</Text>
@@ -105,6 +115,15 @@ export default function MeScreen() {
       </Pressable>
     </ScrollView>
   );
+}
+
+/** Under "Household" on Me: an offer to share, or whose jungle it is and how many look after it. */
+function householdLine(h: Household | undefined): string {
+  if (!h) return 'Look after your plants together: share your jungle';
+  const names = Object.values(h.members ?? {});
+  const ownerName = h.role === 'owner' ? h.name : (h.owner && h.members?.[h.owner]?.name) || 'Shared';
+  const people = Math.max(names.length, 1);
+  return `${ownerName}’s jungle · ${people} ${people === 1 ? 'person' : 'people'}`;
 }
 
 const styles = StyleSheet.create({

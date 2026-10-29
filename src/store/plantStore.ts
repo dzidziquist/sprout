@@ -7,6 +7,7 @@ import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS,
 import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
+import type { Member, SharedProfile, Synced } from '../engine/household';
 import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Light, Plant, Accent, WishItem } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
@@ -63,12 +64,34 @@ export interface Profile {
    * (see engine/cloudBackup), `lastAt` the last one saved. Stays on the phone: never inside a backup.
    */
   cloudBackup?: { off?: boolean; chain?: string; lastAt?: string };
+  /** Household sharing (see engine/household): this phone's place in it. Never inside a backup. */
+  household?: Household;
   /** Temperatures and rain: 'auto' follows the climate (Seattle °F, Accra °C). */
   units: 'auto' | 'imperial' | 'metric';
   /** Photo IDs used today on this phone (free, with a small daily allowance). */
   idUsage: { day: string; count: number };
   /** Away-mode trips, past and planned. Past ones stay so the streak keeps forgiving them. */
   trips?: Trip[];
+}
+
+export interface Household {
+  role: 'owner' | 'member';
+  /** Members: the owner's id, which is where the shared jungle lives. */
+  owner?: string;
+  /** This person's household id. */
+  me: string;
+  /** What the household calls this person. */
+  name: string;
+  /** Change token for the next sync. */
+  token?: string;
+  /** Each record as it was when this phone and iCloud last agreed. */
+  synced?: Synced;
+  /** Everyone's names, by household id. */
+  members?: Record<string, Member>;
+  /** Diary photos already in iCloud (sent from here or fetched). */
+  photos?: string[];
+  /** Members: their own jungle from before joining, given back when they leave. */
+  aside?: { plants: Plant[]; events: CareEvent[]; shared: Partial<SharedProfile> };
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -186,6 +209,11 @@ interface PlantState {
   restoreBackup: (data: { profile: Partial<Profile>; plants: Plant[]; events: CareEvent[] }) => void;
   /** Puts back exactly what was on the phone before a restore (its Undo). */
   restoreSnapshot: (snap: { profile: Profile; plants: Plant[]; events: CareEvent[] }) => void;
+  /**
+   * Household sharing: puts in the jungle as the household has it (plants, diary and the shared settings).
+   * `swap` is for joining or leaving, when it's a different jungle altogether (see dataEpoch).
+   */
+  setJungle: (j: { plants: Plant[]; events: CareEvent[]; shared: Partial<SharedProfile> }, swap?: boolean) => void;
   /** Erase every plant, diary entry and setting on this phone and start onboarding again. Purchases stay with the Apple ID. */
   eraseEverything: () => void;
 }
@@ -730,7 +758,7 @@ export const usePlantStore = create<PlantState>()(
       restoreBackup: (data) => {
         // A tip travels with the backup (consumable tips can't be restored from the App Store), so the
         // thank-you gifts follow someone to a new phone. A tip on this phone is never undone by a restore.
-        const { supporter: tipped, supporterSince: since, streakFreezes: _f, lastBackupAt: _b, cloudBackup: _c, plus: _p, ...profile } = data.profile as Partial<Profile> & { plus?: boolean };
+        const { supporter: tipped, supporterSince: since, streakFreezes: _f, lastBackupAt: _b, cloudBackup: _c, household: _h, plus: _p, ...profile } = data.profile as Partial<Profile> & { plus?: boolean };
         const supporter = get().profile.supporter || tipped === true;
         const supporterSince = [get().profile.supporterSince, tipped === true ? since : undefined].filter((d): d is string => !!d).sort()[0];
         set((s) => ({
@@ -740,6 +768,15 @@ export const usePlantStore = create<PlantState>()(
           dataEpoch: s.dataEpoch + 1,
           onboarded: true,
           profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, supporter, supporterSince: supporter ? supporterSince ?? new Date().toISOString() : undefined, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
+        }));
+      },
+
+      setJungle: (j, swap = false) => {
+        set((s) => ({
+          plants: j.plants,
+          events: j.events,
+          profile: { ...s.profile, ...j.shared },
+          ...(swap ? { undo: {}, dataEpoch: s.dataEpoch + 1 } : {}),
         }));
       },
 

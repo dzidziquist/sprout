@@ -50,8 +50,14 @@ export default function RestoreScreen() {
     }
   };
 
+  const inHousehold = () => {
+    if (!usePlantStore.getState().profile.household) return false;
+    Alert.alert('You’re in a household', 'Restoring would replace the household’s plants for everyone. Leave the household (Me → Household) first, then restore.');
+    return true;
+  };
+
   const pick = (entry: BackupEntry) => {
-    if (busy) return;
+    if (busy || inHousehold()) return;
     if (!here) return bringBack(entry);
     Alert.alert(
       `Restore ${count(entry.plants, 'plant')}?`,
@@ -88,7 +94,7 @@ export default function RestoreScreen() {
       )}
 
       <Section title="Other" footer={busy ?? error ?? 'Restoring replaces the plants on this phone. You can undo it straight after.'}>
-        <Row label="Choose a backup file" value={data.busy === 'restore' ? 'Opening…' : undefined} onPress={busy || data.busy ? undefined : data.restore} last />
+        <Row label="Choose a backup file" value={data.busy === 'restore' ? 'Opening…' : undefined} onPress={busy || data.busy ? undefined : () => !inHousehold() && data.restore()} last />
       </Section>
       {data.msg && <Text style={[styles.note, { color: data.msg.bad ? c.warn : c.good }]}>{data.msg.text}</Text>}
     </ScrollView>

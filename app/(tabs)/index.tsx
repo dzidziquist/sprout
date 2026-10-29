@@ -19,6 +19,7 @@ import { ART, SEASON_ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { UndoHost } from '@/components/UndoToast';
+import { HouseholdCard } from '@/components/HouseholdCard';
 import { showUndo } from '@/lib/undo';
 import { GlassButton } from '@/components/GlassButton';
 import { TodayAnswerButtons } from '@/components/TodayAnswerButtons';
@@ -257,6 +258,8 @@ export default function TodayScreen() {
             })}
           </View>
         )}
+
+        <HouseholdCard now={now} />
 
         {!trip && nextTrip && (
           <Pressable accessibilityRole="button" onPress={() => router.push('/away')} style={[styles.banner, { backgroundColor: c.ice, borderColor: c.line, flexDirection: 'row', alignItems: 'center', gap: 10 }]}>

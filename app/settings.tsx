@@ -18,6 +18,7 @@ import { activeTrip, upcomingTrip } from '@/engine/away';
 import { deleteAllPhotos } from '@/lib/photos';
 import { cloudReady, cloudSupported, runCloudBackup, useCloudStatus } from '@/lib/cloudBackup';
 import { savedWords } from '@/engine/cloudBackup';
+import { leave, stopSharing } from '@/lib/household';
 import * as haptics from '@/lib/haptics';
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts, type, space } from '@/theme/tokens';
@@ -163,6 +164,9 @@ export default function SettingsScreen() {
       'Delete everything',
     );
     if (!ok) return;
+    // In a household: end it (owner) or leave it (member) first, so this phone doesn't stay half in it.
+    const h = usePlantStore.getState().profile.household;
+    if (h) await (h.role === 'owner' ? stopSharing() : leave()).catch(() => {});
     deleteAllPhotos();
     eraseEverything();
     haptics.success();

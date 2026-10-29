@@ -56,6 +56,7 @@ export function useDataActions() {
 
   const restore = async () => {
     setMsg(null);
+    if (profile.household) return setMsg({ text: 'You’re in a household: leave it first (Me → Household), then restore.', bad: true });
     setBusy('restore');
     try {
       const text = await pickBackupText();
