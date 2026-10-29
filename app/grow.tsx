@@ -16,6 +16,7 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
 import { ALERT_ICON, GROW_ICON, Icon, alertTint, taskTint } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
+import { shortDay } from '@/engine/mix';
 import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { EdibleStage, Plant } from '@/types';
@@ -94,6 +95,7 @@ function AlertCard({ alert, c }: { alert: GrowAlert; c: Palette }) {
 function TaskRow({ task, done, onToggle, plants, c, last }: { task: GrowTask; done: boolean; onToggle: () => void; plants: Plant[]; c: Palette; last: boolean }) {
   const units = useUnits();
   const who = task.plantIds.map((id) => plants.find((p) => p.id === id)?.name).filter(Boolean).join(', ');
+  const waiting = task.waiting ? task.waiting.plantIds.map((id) => plants.find((p) => p.id === id)?.name).filter(Boolean) : [];
   return (
     <Pressable
       accessibilityRole="checkbox"
@@ -116,6 +118,11 @@ function TaskRow({ task, done, onToggle, plants, c, last }: { task: GrowTask; do
           ) : null}
           <Text style={[styles.taskWho, { color: c.inkMuted, flexShrink: 1 }]}>For {who}</Text>
         </View>
+        {task.waiting && waiting.length > 0 && (
+          <Text style={[styles.waiting, { backgroundColor: c.mint, color: textOn(c.mint, c) }]}>
+            Not yet for {andList(waiting)}: {waiting.length === 1 ? 'its fresh mix feeds it' : 'their fresh mix feeds them'} till about {shortDay(new Date(task.waiting.until))}.
+          </Text>
+        )}
       </View>
       <View style={[styles.check, { borderColor: c.line, backgroundColor: done ? c.leaf : c.card }]}>
         {done ? <Icon d={GROW_ICON.check} color={textOn(c.leaf, c)} size={16} width={3} /> : null}
@@ -356,7 +363,10 @@ export default function GrowPatch() {
   );
 }
 
+const andList = (names: (string | undefined)[]) => (names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`);
+
 const styles = StyleSheet.create({
+  waiting: { marginTop: 6, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 7, overflow: 'hidden', fontFamily: fonts.bodyHeavy, ...type.footnote },
   page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row', alignItems: 'center', minHeight: 44 },
   offline: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: 16 },

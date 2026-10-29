@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '@/store/plantStore';
 import { useRewards } from '@/hooks/useRewards';
-import { closestJoined, closestOption, CUT, daysAgo, JOINED, WATERED, type CutId, type JoinedId, type WateredId } from '@/lib/when';
+import { closestJoined, closestOption, CUT, daysAgo, JOINED, POTTED, WATERED, type CutId, type JoinedId, type WateredId } from '@/lib/when';
 import { isReservoir } from '@/engine/careEngine';
 import { speciesOf, OTHER, isOtherId } from '@/data/species';
 import { SOIL_LABEL } from '@/data/labels';
@@ -25,6 +25,7 @@ import { edibleGuide } from '@/data/edibles';
 import { useSheetTop } from '@/lib/sheetTop';
 import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 import { Glyph } from '@/components/Glyph';
+import { MixFields, type MixDraft } from '@/components/MixFields';
 
 const CARD_COLORS: { id: PotColor; label: string }[] = [
   { id: 'yellow', label: 'Butter' },
@@ -158,10 +159,13 @@ export default function EditPlantScreen() {
   const [kind, setKind] = useState(plant?.custom?.commonName ?? '');
   const [latin, setLatin] = useState(plant?.custom?.latinName ?? '');
   const [otherId, setOtherId] = useState(plant?.speciesId ?? '');
+  // The mix it's in: fertiliser or not, and when it went in (feeding waits while it's fresh).
+  const initialPotted = closestOption(POTTED, plant?.mix?.pottedAt ?? plant?.lastRepottedAt ?? plant?.acquiredAt ?? new Date().toISOString());
+  const [mix, setMix] = useState<MixDraft>({ soil: plant?.soil ?? 'potting_mix', name: plant?.mix?.name ?? '', fertiliser: plant?.mix?.fertiliser ?? 'unsure', bagMonths: plant?.mix?.bagMonths, potted: initialPotted });
   const [pets, setPets] = useState<'toxic' | 'safe' | 'unsure'>(plant?.custom?.petToxic === true ? 'toxic' : plant?.custom?.petToxic === false ? 'safe' : 'unsure');
 
   // Everything the form can change, to tell whether closing would lose anything.
-  const form = JSON.stringify([name, light, soil, size, selfWatering, material, placement, room, potColor, joined, cut, origin, watered, kind, latin, otherId, pets]);
+  const form = JSON.stringify([name, light, soil, size, selfWatering, material, placement, room, potColor, joined, cut, origin, watered, kind, latin, otherId, pets, mix]);
   const [pristine] = useState(form);
   const go = useDiscardGuard(form !== pristine);
 
@@ -173,6 +177,14 @@ export default function EditPlantScreen() {
   const colors = CARD_COLORS.filter((o) => o.id !== 'gold' || rewards.gold.unlocked || plant.potColor === 'gold');
   const archived = !!plant.archivedAt;
   const back = () => (router.canGoBack() ? router.back() : router.replace(`/plant/${plant.id}`));
+
+  // The mix as answered: nothing new when it was never set and still says "Not sure"; the date only
+  // moves when its choice changed, so an exact date from a logged repot isn't rounded away.
+  const mixPatch = () => {
+    if (isReservoir(soil) || (!plant.mix && mix.fertiliser === 'unsure' && !mix.name.trim())) return {};
+    const pottedAt = plant.mix && mix.potted === initialPotted ? plant.mix.pottedAt : daysAgo(POTTED.find((o) => o.id === mix.potted)?.days ?? 0).toISOString();
+    return { mix: { ...(mix.name.trim() ? { name: mix.name.trim() } : {}), fertiliser: mix.fertiliser, ...(mix.fertiliser === 'yes' && mix.bagMonths ? { bagMonths: mix.bagMonths } : {}), pottedAt } };
+  };
 
   // Writes the form. Archiving goes through here too, so edits made just before aren't lost.
   const commit = () => {
@@ -188,6 +200,7 @@ export default function EditPlantScreen() {
       placement,
       room: room.trim() || undefined,
       potColor,
+      ...mixPatch(),
       // Only move the date when the chip changed, so an exact date isn't rounded away.
       ...(joined !== initialJoined && !plant.rooting ? { acquiredAt: daysAgo(JOINED.find((j) => j.id === joined)?.days ?? 0).toISOString() } : {}),
       // A rooting cutting joined the day it was taken, so both dates move together.
@@ -344,6 +357,7 @@ export default function EditPlantScreen() {
         ))}
       </View>
       {soil === 'garden_soil' && placement !== 'ground' && <Text style={[styles.note, { color: c.warn }]}>Garden soil packs down and stays soggy in pots. Repot when you can.</Text>}
+      {!isReservoir(soil) && soil !== 'garden_soil' && !plant.rooting && <MixFields draft={mix} onChange={(patch) => setMix((m) => ({ ...m, ...patch }))} speciesId={plant.speciesId} askWhen />}
 
       <Label>Pot</Label>
       <View style={styles.wrap}>

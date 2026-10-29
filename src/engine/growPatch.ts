@@ -2,6 +2,7 @@ import { fmtRain, fmtTemp, type Units } from '../lib/units';
 import { climateDate, localizeClimateText, modelOf } from '../lib/climate';
 import { CALENDAR, edibleGuide, supportFor, type CalendarTask, type FeedWindow, type TaskKind, type TaskWindow } from '../data/edibles';
 import { isFeedingPaused } from './careEngine';
+import { mixFeedsUntil, mixStillFeeds, mixWaitText } from './mix';
 import type { CareEvent, ClimateProfile, EdibleStage, Placement, Plant } from '../types';
 
 /*
@@ -77,7 +78,8 @@ export function feedingAdvice(plant: Plant, climate: ClimateProfile, date: Date)
     if (m < w.from && m >= 1) return localizeClimateText(`No feed yet: starts in ${MONTH_NAMES[w.from]}`, climate);
     return 'Feeding paused for winter';
   }
-  return info.feed;
+  // Fresh mix with fertiliser in it: feeding waits (engine/mix).
+  return mixWaitText(plant, date) ?? info.feed;
 }
 
 /** Tasks ----------------------------------------------------------------------------------- */
@@ -93,6 +95,8 @@ export interface GrowTask {
   thisWeek: boolean;
   /** A repeating job: a tick lasts this many days. Without it, a tick lasts the rest of the month. */
   repeatDays?: number;
+  /** Feed tasks: plants left out because their fresh mix still feeds them, and until about when. */
+  waiting?: { plantIds: string[]; until: string };
 }
 
 /** When each grow task was last ticked off (task id → ISO time). */
@@ -233,7 +237,29 @@ export function tasksFor(plants: Plant[], climate: ClimateProfile, realDate: Dat
     out.push({ id: 'stage-basil', repeatDays: 7, kind: 'harvest', title: 'Pinch basil flowers', body: 'Nip the flower spikes so the leaves stay sweet.', plantIds: basilFlowers.map((p) => p.id), thisWeek: true });
   }
 
-  return out.sort((a, b) => Number(b.thisWeek) - Number(a.thisWeek) || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
+  return withMixWaits(out, mine, realDate).sort((a, b) => Number(b.thisWeek) - Number(a.thisWeek) || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
+}
+
+/**
+ * Feed tasks leave out plants still fed by a fresh mix with fertiliser in it (engine/mix), saying so,
+ * and wait altogether when every plant does.
+ */
+function withMixWaits(tasks: GrowTask[], plants: Plant[], now: Date): GrowTask[] {
+  const byId = new Map(plants.map((p) => [p.id, p]));
+  const fed = (id: string) => {
+    const p = byId.get(id);
+    return !!p && mixStillFeeds(p, now);
+  };
+  return tasks.flatMap((t) => {
+    if (t.kind !== 'feed') return [t];
+    const waiting = t.plantIds.filter(fed);
+    if (!waiting.length) return [t];
+    const left = t.plantIds.filter((id) => !fed(id));
+    if (!left.length) return [];
+    // The latest end, so "till about" is true for every plant named.
+    const until = waiting.map((id) => mixFeedsUntil(byId.get(id)!)!.getTime()).reduce((a, b) => Math.max(a, b));
+    return [{ ...t, plantIds: left, waiting: { plantIds: waiting, until: new Date(until).toISOString() } }];
+  });
 }
 
 /** Weather ---------------------------------------------------------------------------------- */

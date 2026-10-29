@@ -96,3 +96,13 @@ export function calendarDays(from: Date, to: Date): number {
   b.setHours(0, 0, 0, 0);
   return Math.round((b.getTime() - a.getTime()) / 86400000);
 }
+
+export type PottedId = 'week' | 'weeks' | 'month' | 'months' | 'older';
+/** When it went into its current mix. */
+export const POTTED: WhenOption<PottedId>[] = [
+  { id: 'week', label: 'This week', days: 3 },
+  { id: 'weeks', label: '2–3 weeks ago', days: 17 },
+  { id: 'month', label: 'About a month ago', days: 30 },
+  { id: 'months', label: 'About 2 months ago', days: 60 },
+  { id: 'older', label: '3+ months ago', days: 100 },
+];

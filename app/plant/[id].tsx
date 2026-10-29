@@ -8,6 +8,7 @@ import Svg, { Path } from 'react-native-svg';
 import { archiveFloor, canDeleteEvent, usePlantStore } from '@/store/plantStore';
 import { useShallow } from 'zustand/react/shallow';
 import { checkIntervalDays, isFeedingPaused, isReservoir, moodFor, refreshDueAt } from '@/engine/careEngine';
+import { mixLine, mixWaitText } from '@/engine/mix';
 import { speciesOf, petToxicKnown } from '@/data/species';
 import { SOIL_LABEL, LIGHT_LABEL } from '@/data/labels';
 import { edibleGuide } from '@/data/edibles';
@@ -141,7 +142,7 @@ export default function PlantDetail() {
       ? feedingAdvice(plant, profile.climate, now)
       : feedPaused
         ? 'Paused till spring'
-        : 'Monthly while growing';
+        : (mixWaitText(plant, now) ?? 'Monthly while growing');
   const refreshAt = refreshDueAt(plant);
   const refreshDays = refreshAt ? Math.round((new Date(refreshAt.toDateString()).getTime() - new Date(now.toDateString()).getTime()) / 86400000) : 0;
   const refresh = refreshDays <= 0 ? 'Due now' : refreshDays === 1 ? 'Tomorrow' : `In ${refreshDays} days`;
@@ -365,7 +366,7 @@ export default function PlantDetail() {
                   ]
             ).concat([
               ['Light', LIGHT_LABEL[plant.light]],
-              [hydro ? 'Grows in' : 'Soil', SOIL_LABEL[plant.soil]],
+              [hydro ? 'Grows in' : 'Soil', [SOIL_LABEL[plant.soil], !hydro && mixLine(plant)].filter(Boolean).join('\n')],
               ['Feed', feed],
               ['Pets', pets === undefined ? 'Not sure yet: check the ASPCA list' : pets ? 'Toxic to cats and dogs' : 'Pet-friendly'],
             ]).map(([k, v], i, all) => (
