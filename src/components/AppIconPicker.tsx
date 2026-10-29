@@ -29,7 +29,7 @@ export function AppIconPicker() {
               }}
               style={styles.option}
             >
-              <Image source={o.preview} style={[styles.preview, { borderColor: on ? c.leafDeep : c.line, borderWidth: on ? 3 : 1.5 }]} />
+              <Image source={c.scheme === 'dark' ? o.previewDark : o.preview} style={[styles.preview, { borderColor: on ? c.leafDeep : c.line, borderWidth: on ? 3 : 1.5 }]} />
               <Text style={[styles.label, { color: on ? c.ink : c.inkMuted }]}>{o.label}</Text>
             </Pressable>
           );

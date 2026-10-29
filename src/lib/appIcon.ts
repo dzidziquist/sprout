@@ -8,12 +8,13 @@ import { Platform } from 'react-native';
 
 export type AppIconId = 'Night' | 'Cactus' | 'Sunny' | 'Party';
 
-export const APP_ICONS: { id: AppIconId | null; label: string; preview: number }[] = [
-  { id: null, label: 'Classic', preview: require('../../assets/icons/icon-default.png') },
-  { id: 'Night', label: 'Night', preview: require('../../assets/icons/icon-night.png') },
-  { id: 'Cactus', label: 'Cactus', preview: require('../../assets/icons/icon-cactus.png') },
-  { id: 'Sunny', label: 'Sunny', preview: require('../../assets/icons/icon-sunny.png') },
-  { id: 'Party', label: 'Party', preview: require('../../assets/icons/icon-party.png') },
+/** Each icon with its light and dark looks: the picker shows the one the Home Screen shows in that mode. */
+export const APP_ICONS: { id: AppIconId | null; label: string; preview: number; previewDark: number }[] = [
+  { id: null, label: 'Classic', preview: require('../../assets/icons/icon-default.png'), previewDark: require('../../assets/icons/icon-default-dark.png') },
+  { id: 'Night', label: 'Night', preview: require('../../assets/icons/icon-night.png'), previewDark: require('../../assets/icons/icon-night-dark.png') },
+  { id: 'Cactus', label: 'Cactus', preview: require('../../assets/icons/icon-cactus.png'), previewDark: require('../../assets/icons/icon-cactus-dark.png') },
+  { id: 'Sunny', label: 'Sunny', preview: require('../../assets/icons/icon-sunny.png'), previewDark: require('../../assets/icons/icon-sunny-dark.png') },
+  { id: 'Party', label: 'Party', preview: require('../../assets/icons/icon-party.png'), previewDark: require('../../assets/icons/icon-party-dark.png') },
 ];
 
 type Mod = typeof import('expo-alternate-app-icons');
