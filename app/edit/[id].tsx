@@ -361,27 +361,17 @@ export default function EditPlantScreen() {
       </View>
 
       <Label>What's it potted in?</Label>
-      <View style={styles.wrap}>
-        {SOILS.map((s) => (
-          <Pill key={s.id} on={soil === s.id} bg={c.mint} label={SOIL_LABEL[s.id].replace(' (not ideal in pots)', '')} onPress={() => setSoil(s.id)}>
-            <View style={[styles.swatch, { backgroundColor: s.swatch, borderColor: c.line }]} />
-          </Pill>
-        ))}
-      </View>
+      <DropdownGroup>
+        <Dropdown label="Mix" value={soil} tint={c.mint} options={SOILS.map((s) => ({ id: s.id, label: SOIL_LABEL[s.id].replace(' (not ideal in pots)', ''), swatch: s.swatch }))} onChange={setSoil} last />
+      </DropdownGroup>
       {soil === 'garden_soil' && placement !== 'ground' && <Text style={[styles.note, { color: c.warn }]}>Garden soil packs down and stays soggy in pots. Repot when you can.</Text>}
       {!isReservoir(soil) && soil !== 'garden_soil' && !plant.rooting && <MixFields draft={mix} onChange={(patch) => setMix((m) => ({ ...m, ...patch }))} speciesId={plant.speciesId} askWhen edibles={otherEdibles.length} />}
 
       <Label>Pot</Label>
-      <View style={styles.wrap}>
-        {POT_SIZES.map((p) => (
-          <Pill key={p.label} on={size === p.cm} bg={c.mint} label={p.label} onPress={() => setSize(p.cm)} />
-        ))}
-      </View>
-      <View style={styles.wrap}>
-        {MATERIALS.map((m) => (
-          <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
-        ))}
-      </View>
+      <DropdownGroup>
+        <Dropdown label="Size" value={String(size)} tint={c.mint} options={POT_SIZES.map((o) => ({ id: String(o.cm), label: o.label }))} onChange={(v) => setSize(Number(v))} />
+        <Dropdown label="Material" value={material} tint={c.peach} options={MATERIALS} onChange={setMaterial} last />
+      </DropdownGroup>
       {!isReservoir(soil) && placement !== 'ground' && (
         <>
           <Label>Self-watering pot?</Label>
