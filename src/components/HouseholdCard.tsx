@@ -6,7 +6,7 @@ import { Sticker } from '@/components/ui';
 import { fonts, type } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 
-const AVATAR = ['butter', 'ice', 'peach', 'lavender', 'mint'] as const;
+export const AVATAR = ['butter', 'ice', 'peach', 'lavender', 'mint'] as const;
 
 /**
  * On Today, in a household: who's in, and what the others did lately ("Ama watered Monty and added a
