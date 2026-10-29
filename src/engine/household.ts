@@ -132,6 +132,9 @@ export function merge(local: Jungle, synced: Synced, remote: RemoteItem[], delet
 
   for (const r of remote) {
     const h = fingerprint(r.json);
+    // Exactly what both sides last agreed on (often this phone's own upload coming back): nothing new
+    // from there, so whatever this phone did since (an edit, a delete) stands.
+    if (synced[r.id]?.h === h) continue;
     if (changedHere(r.id) && synced[r.id]) {
       // Both phones changed it: this phone's version wins and goes up below.
       if (mine.has(r.id)) {

@@ -530,3 +530,16 @@ describe('swapping the whole jungle', () => {
     expect(usePlantStore.getState().profile.cloudBackup).toBeUndefined();
   });
 });
+
+describe('household settings', () => {
+  it('replaces the shared settings whole, clearing what the household doesn’t have, and keeps per-phone ones', () => {
+    const s = () => usePlantStore.getState();
+    s().setProfile({ trips: [{ from: '2026-12-20T00:00:00.000Z', to: '2027-01-02T00:00:00.000Z' }], wishlist: [], theme: 'dark', round: { enabled: true, hour: 18, minute: 30 } });
+    s().setJungle({ plants: [], events: [], shared: { city: 'Accra', climate: 'accra' } as never });
+    expect(s().profile.trips).toBeUndefined();
+    expect(s().profile.city).toBe('Accra');
+    expect(s().profile.grows).toEqual(DEFAULT_PROFILE.grows);
+    expect(s().profile.theme).toBe('dark');
+    expect(s().profile.round.hour).toBe(18);
+  });
+});

@@ -7,7 +7,7 @@ import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS,
 import { GRACE_DAYS } from '../engine/streak';
 import { speciesOf } from '../data/species';
 import type { Spot } from '../lib/spots';
-import type { Member, SharedProfile, Synced } from '../engine/household';
+import { SHARED_PROFILE_KEYS, type Member, type SharedProfile, type Synced } from '../engine/household';
 import type { CareEvent, CheckResult, ClimateProfile, EdibleStage, Light, Plant, Accent, WishItem } from '../types';
 
 export type FaceStyle = 'full' | 'gentle' | 'off';
@@ -92,6 +92,21 @@ export interface Household {
   photos?: string[];
   /** Members: their own jungle from before joining, given back when they leave. */
   aside?: { plants: Plant[]; events: CareEvent[]; shared: Partial<SharedProfile> };
+}
+
+/**
+ * A profile with its shared part (see engine/household) replaced by `shared`: anything the household
+ * doesn't have is cleared (or back to its default), so this phone's own trips or rooms don't linger and
+ * get sent to everyone. Per-phone settings stay as they are.
+ */
+export function withShared(profile: Profile, shared: Partial<SharedProfile>): Profile {
+  const out: Profile = { ...profile };
+  for (const k of SHARED_PROFILE_KEYS) {
+    if (shared[k] !== undefined) (out as unknown as Record<string, unknown>)[k] = shared[k];
+    else if (DEFAULT_PROFILE[k] !== undefined) (out as unknown as Record<string, unknown>)[k] = DEFAULT_PROFILE[k];
+    else delete out[k];
+  }
+  return out;
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -775,7 +790,7 @@ export const usePlantStore = create<PlantState>()(
         set((s) => ({
           plants: j.plants,
           events: j.events,
-          profile: { ...s.profile, ...j.shared },
+          profile: withShared(s.profile, j.shared),
           ...(swap ? { undo: {}, dataEpoch: s.dataEpoch + 1 } : {}),
         }));
       },

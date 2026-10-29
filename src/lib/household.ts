@@ -63,11 +63,15 @@ async function round() {
   status.set({ syncing: true });
   const owner = ownerOf(h);
   let changes = await Native.fetchChanges(owner, h.token ?? null, diaryDir());
-  let synced = h.synced ?? {};
+  const synced = h.synced ?? {};
   if (changes.reset) {
-    // Too long since the last sync: fetch everything, and agree on nothing, so all of it is compared afresh.
+    // Too long since the last sync: fetch everything. What was agreed still stands (so edits made here
+    // meanwhile win as usual), and anything agreed that iCloud no longer has was deleted elsewhere.
     changes = await Native.fetchChanges(owner, null, diaryDir());
-    synced = {};
+    if (!changes.gone && !changes.reset) {
+      const there = new Set((changes.items ?? []).map((i) => i.id));
+      changes = { ...changes, deleted: Object.keys(synced).filter((id) => !there.has(id)) };
+    }
   }
   if (changes.gone) return ended(h);
 
@@ -85,7 +89,13 @@ async function round() {
   if (r.changed || events !== st.events) st.setJungle(r.jungle);
 
   const failed = await Native.save(owner, r.save, r.remove);
-  for (const id of failed) delete r.synced[id];
+  const removing = new Set(r.remove);
+  for (const id of failed) {
+    // A failed save: forget it, so it goes up again. A failed delete: keep the old agreement, so the
+    // next round still sees it as deleted here and tries again.
+    if (removing.has(id) && synced[id]) r.synced[id] = synced[id];
+    else delete r.synced[id];
+  }
 
   // Photos: what arrived is already on the phone; send the ones iCloud doesn't have yet.
   const have = new Set([...(hh.photos ?? []), ...(changes.photos ?? [])]);
@@ -115,7 +125,7 @@ function ended(h: Household) {
   if (st.profile.household?.me !== h.me || st.profile.household.owner !== h.owner) return;
   const aside = h.aside;
   const ownerName = (h.owner && h.members?.[h.owner]?.name) || 'The owner';
-  st.setJungle({ plants: [...st.plants, ...(aside?.plants ?? [])], events: [...st.events, ...(aside?.events ?? [])], shared: {} }, true);
+  st.setJungle({ plants: [...st.plants, ...(aside?.plants ?? [])], events: [...st.events, ...(aside?.events ?? [])], shared: pickShared(st.profile) }, true);
   usePlantStore.getState().setProfile({ household: undefined });
   if (h.role === 'member') Alert.alert('The household has ended', `${ownerName} stopped sharing, or took you out. You keep a copy of the plants as they were${aside?.plants.length ? ', and your own plants are back' : ''}.`);
 }

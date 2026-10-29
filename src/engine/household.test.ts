@@ -97,6 +97,31 @@ describe('syncing', () => {
     expect(r.remove).toEqual([]);
   });
 
+  it('this phone’s own upload coming back doesn’t undo a delete made since', () => {
+    const here = jungle([plant('a')], [event('e1')]);
+    const r = merge(here, agreed(base), [remoteOf(base, 'pl-b', 1)], [], 100);
+    expect(r.jungle.plants.map((p) => p.id)).toEqual(['a']);
+    expect(r.remove).toEqual(['pl-b']);
+  });
+
+  it('this phone’s own upload coming back doesn’t undo an edit made since', () => {
+    const here = jungle([plant('a', { name: 'Ace' }), plant('b')], [event('e1')]);
+    const r = merge(here, agreed(base), [remoteOf(base, 'pl-a', 1)], [], 100);
+    expect(r.jungle.plants[0].name).toBe('Ace');
+    expect(r.save.map((s) => s.id)).toEqual(['pl-a']);
+  });
+
+  it('after a full re-fetch, offline edits still win and what vanished counts as deleted', () => {
+    // As the sync does when iCloud says the change token is too old: everything comes again, the old
+    // agreement is kept, and records iCloud no longer has are passed as deleted.
+    const here = jungle([plant('a', { name: 'Ace' }), plant('b')], [event('e1')]);
+    const all = [remoteOf(base, 'pl-a', 1), remoteOf(base, 'ev-e1', 1), remoteOf(base, 'jungle', 1)];
+    const r = merge(here, agreed(base), all, ['pl-b'], 100);
+    expect(r.jungle.plants.map((p) => p.name)).toEqual(['Ace']);
+    expect(r.save.map((s) => s.id)).toEqual(['pl-a']);
+    expect(r.remove).toEqual([]);
+  });
+
   it('a new member takes the household’s settings, not their own phone’s', () => {
     const mine = jungle([], [], { city: 'Accra' });
     const owners = jungle([plant('a')], [], { city: 'Seattle' });
