@@ -115,8 +115,9 @@ async function round() {
   }
 
   // Photos nothing points at any more (their diary entry or plant deleted on some phone): out of
-  // iCloud, and off this phone.
-  const orphans = orphanPhotos(have, r.jungle);
+  // iCloud, and off this phone. Not in a round where a save or delete failed: iCloud may still hold
+  // the entry that points at them, so they wait for a round where everything went through.
+  const orphans = failed.length ? [] : orphanPhotos(have, r.jungle);
   if (orphans.length) {
     const failed = new Set(await Native.save(owner, [], orphans.map((n) => `p-${n}`)).catch(() => orphans.map((n) => `p-${n}`)));
     for (const name of orphans) {
