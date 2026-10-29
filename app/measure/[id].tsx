@@ -33,7 +33,8 @@ const LIKES: Record<Light, string> = { low: 'a shady spot', medium: 'some light'
 type Phase = { kind: 'aim' } | { kind: 'measuring' } | { kind: 'result'; reading: LightReading } | { kind: 'problem'; text: string };
 
 /**
- * The camera light meter: hold the phone where the plant sits, screen facing the window, and tap Measure.
+ * The camera light meter: hold the phone where the plant sits, its back camera facing the window, and tap
+ * Measure. The back camera, so the screen (and the button) face you and you stand on the room side, out of the light.
  * The selfie camera's exposure gives the light there; the result is carried through the year (see
  * engine/lightMeter). The photo is only read for its exposure, then deleted.
  */
@@ -183,7 +184,7 @@ export default function MeasureLight() {
   const granted = permission?.granted;
   return (
     <View style={{ flex: 1, backgroundColor: '#000' }}>
-      {granted && <CameraView ref={camera} style={StyleSheet.absoluteFill} facing="front" animateShutter={false} />}
+      {granted && <CameraView ref={camera} style={StyleSheet.absoluteFill} facing="back" animateShutter={false} />}
       <View style={[styles.camTop, { top: insets.top + 8 }]}>
         <GlassButton accessibilityLabel="Close" onPress={close}>
           <Glyph name="close" size={16} color={c.ink} width={2.8} />
@@ -194,7 +195,7 @@ export default function MeasureLight() {
       </View>
       <Sticker style={[styles.tip, { top: insets.top + 64 }]}>
         <Text style={[styles.head, { color: c.ink }]}>Hold it where the plant sits</Text>
-        <Text style={[styles.body, { color: c.ink }]}>Screen facing the window, at leaf height. Keep your shadow out of the way.</Text>
+        <Text style={[styles.body, { color: c.ink }]}>Back of the phone facing the window, at leaf height, so the window fills the picture.</Text>
         <Text style={[styles.note, { color: c.inkMuted, marginTop: 4 }]}>Best around midday, between about 10 and 3.</Text>
       </Sticker>
       <View style={[styles.camFoot, { backgroundColor: c.bg, borderColor: c.line, paddingBottom: insets.bottom + 20 }]}>
