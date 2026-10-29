@@ -42,6 +42,8 @@ export interface Invite {
  * private zone) and the owner's id for members (the zone reached through sharing).
  */
 interface HouseholdNative {
+  /** False on iOS 15: reading the jungle's changes needs iOS 16. */
+  supported?: boolean;
   accountStatus(): Promise<'available' | 'noAccount' | 'restricted' | 'temporarilyUnavailable' | 'couldNotDetermine'>;
   myId(): Promise<string>;
   ensureZone(): Promise<void>;
