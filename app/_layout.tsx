@@ -13,7 +13,7 @@ import { useColors } from '@/theme/theme';
 import { rescheduleRounds, roundAllowed, useNotificationRoute } from '@/lib/notifications';
 import { syncWidget } from '@/lib/widget';
 import { runCloudBackup } from '@/lib/cloudBackup';
-import { householdSupported, syncHousehold, watchChanges, watchInvites } from '@/lib/household';
+import { householdSupported, syncHousehold, watchChanges, watchInvites, watchInvitesTooOld } from '@/lib/household';
 import { SHARED_PROFILE_KEYS } from '@/engine/household';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
@@ -125,11 +125,11 @@ export default function RootLayout() {
 
   const ready = hydrated && !!(fontsLoaded || fontError);
 
-  // Someone tapped a household invite: ask whether to join. Waits for the screens to exist, since an
-  // invite can be what opened the app.
+  // Someone tapped a household invite: ask whether to join (or, on iOS 15, say it needs iOS 16). Waits
+  // for the screens to exist, since an invite can be what opened the app.
   useEffect(() => {
-    if (!ready || !householdSupported) return;
-    return watchInvites(() => router.push('/join'));
+    if (!ready) return;
+    return householdSupported ? watchInvites(() => router.push('/join')) : watchInvitesTooOld();
   }, [ready, router]);
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});

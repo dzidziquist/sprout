@@ -34,7 +34,7 @@ public class HouseholdModule: Module {
     Events("onInvite", "onChange")
 
     // Reading the jungle's changes needs iOS 16; the app runs on 15.1 and up, so older phones go without.
-    Constants(["supported": HouseholdModule.supported])
+    Constant("supported") { HouseholdModule.supported }
 
     OnCreate {
       // The app delegate (plugins/withHousehold) keeps an accepted invite's link and posts this.

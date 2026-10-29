@@ -7,6 +7,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { GlassButton } from '@/components/GlassButton';
 import { useTabPadding } from '@/hooks/useTabPadding';
 import { usePlantStore } from '@/store/plantStore';
+import { householdSupported } from '@/lib/household';
 import { useShallow } from 'zustand/react/shallow';
 import { Label, Sticker, Title } from '@/components/ui';
 import { StreakCard } from '@/components/StreakCard';
@@ -100,7 +101,7 @@ export default function MeScreen() {
       <Pressable accessibilityRole="button" accessibilityLabel="Open settings" onPress={() => router.push('/settings')}>
         <Sticker drop={0} bg={c.cloud} style={styles.settingsRow}>
           <Text style={[styles.settingsText, { color: c.ink }]}>Settings</Text>
-          <Text style={[styles.settingsSub, { color: c.inkMuted }]}>Household, reminders, look, climate, backups</Text>
+          <Text style={[styles.settingsSub, { color: c.inkMuted }]}>{householdSupported ? 'Household, reminders, look, climate, backups' : 'Reminders, look, climate, backups, privacy'}</Text>
         </Sticker>
       </Pressable>
     </ScrollView>

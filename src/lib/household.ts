@@ -255,6 +255,24 @@ export function watchInvites(onInvite: () => void): () => void {
 }
 
 /**
+ * iOS 15 has the household module but can't sync (see `householdSupported`): an invite tapped there gets
+ * a word on why nothing happens, instead of silence, and is let go so it doesn't come back every launch.
+ */
+export function watchInvitesTooOld(): () => void {
+  if (!Native || householdSupported) return () => {};
+  let showing = false;
+  const tell = () => {
+    if (showing) return;
+    showing = true;
+    Native?.dismissInvite();
+    Alert.alert('Household sharing needs iOS 16', 'Someone invited you to look after their plants together. Update this iPhone to iOS 16 or later, then tap the invite again.', [{ text: 'OK', onPress: () => (showing = false) }]);
+  };
+  const sub = Native.addListener('onInvite', tell);
+  pendingInvite().then((i) => i && tell());
+  return () => sub.remove();
+}
+
+/**
  * Live updates: makes sure CloudKit pushes to this phone when the jungle changes (once per launch, as the
  * subscription can lapse), and syncs as soon as one arrives.
  */
