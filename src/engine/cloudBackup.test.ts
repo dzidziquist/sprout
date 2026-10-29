@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { backupDue, backupName, newChain, photoNames, savedWords, sortEntries, toPrune } from './cloudBackup';
+import { PHOTO_GRACE_MS, unusedPhotos, backupDue, backupName, newChain, photoNames, savedWords, sortEntries, toPrune } from './cloudBackup';
 import type { CareEvent, Plant } from '../types';
 
 describe('cloud backup schedule', () => {
@@ -40,5 +40,18 @@ describe('words', () => {
   it('lists backups newest first across phones', () => {
     const e = (chain: string, at: string) => ({ chain, file: 'x', at, plants: 1, photos: 0 });
     expect(sortEntries([e('a', '2026-10-12T00:00:00Z'), e('b', '2026-10-26T00:00:00Z'), e('a', '2026-10-19T00:00:00Z')]).map((x) => x.at.slice(5, 10))).toEqual(['10-26', '10-19', '10-12']);
+  });
+});
+
+describe('photo cleanup', () => {
+  const now = Date.UTC(2026, 9, 29);
+  it('deletes photos no kept backup uses, once they are a couple of days old', () => {
+    const stored = [
+      { name: 'kept.jpg', born: now - 10 * 86400000 },
+      { name: 'gone.jpg', born: now - 10 * 86400000 },
+      { name: 'just-sent.jpg', born: now - 3600000 },
+    ];
+    expect(unusedPhotos(stored, ['kept.jpg'], now)).toEqual(['gone.jpg']);
+    expect(unusedPhotos([{ name: 'edge.jpg', born: now - PHOTO_GRACE_MS }], [], now)).toEqual([]);
   });
 });

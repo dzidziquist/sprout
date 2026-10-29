@@ -17,26 +17,35 @@ private let containerID = "iCloud.com.dzidziquist.plantfam"
 private let zoneName = "Jungle"
 private let inviteKey = "plantfam.pendingShareURL"
 private let inviteNote = Notification.Name("PlantFamShareInvite")
+private let changedNote = Notification.Name("PlantFamJungleChanged")
+/// The silent push CloudKit sends when anything in the jungle changes (see HouseholdAppDelegate).
+private let subscriptionID = "plantfam-jungle"
+
 
 public class HouseholdModule: Module {
   private let container = CKContainer(identifier: containerID)
   private var sharingDelegate: SharingDelegate?
   private var observer: NSObjectProtocol?
+  private var changeObserver: NSObjectProtocol?
 
   public func definition() -> ModuleDefinition {
     Name("Household")
 
-    Events("onInvite")
+    Events("onInvite", "onChange")
 
     OnCreate {
       // The app delegate (plugins/withHousehold) keeps an accepted invite's link and posts this.
       self.observer = NotificationCenter.default.addObserver(forName: inviteNote, object: nil, queue: .main) { [weak self] _ in
         self?.sendEvent("onInvite", [:])
       }
+      self.changeObserver = NotificationCenter.default.addObserver(forName: changedNote, object: nil, queue: .main) { [weak self] _ in
+        self?.sendEvent("onChange", [:])
+      }
     }
 
     OnDestroy {
       if let observer = self.observer { NotificationCenter.default.removeObserver(observer) }
+      if let observer = self.changeObserver { NotificationCenter.default.removeObserver(observer) }
     }
 
     /// "available", "noAccount", "restricted", "temporarilyUnavailable" or "couldNotDetermine".
@@ -224,6 +233,27 @@ public class HouseholdModule: Module {
       return metadata.share.recordID.zoneID.ownerName
     }
 
+    /// Asks CloudKit for a silent push whenever the jungle changes (the owner's private database, or the
+    /// shared one for members), and registers this phone for it. Safe to call again.
+    AsyncFunction("subscribe") { (owner: String?) async throws in
+      let subscription = CKDatabaseSubscription(subscriptionID: subscriptionID)
+      let info = CKSubscription.NotificationInfo()
+      info.shouldSendContentAvailable = true
+      subscription.notificationInfo = info
+      _ = try await self.database(owner: owner).modifySubscriptions(saving: [subscription], deleting: [])
+      await MainActor.run { UIApplication.shared.registerForRemoteNotifications() }
+    }
+
+    /// Stops the pushes (leaving or ending the household).
+    AsyncFunction("unsubscribe") { (owner: String?) async throws in
+      _ = try await self.database(owner: owner).modifySubscriptions(saving: [], deleting: [subscriptionID])
+    }
+
+    /// A sync round finished: tells iOS the pushes that woke the app are handled.
+    Function("changeHandled") { () -> Void in
+      HouseholdPush.finish(.newData)
+    }
+
     /// Says no to the waiting invite.
     Function("dismissInvite") { () -> Void in
       UserDefaults.standard.removeObject(forKey: inviteKey)
@@ -278,6 +308,44 @@ public class HouseholdModule: Module {
   private func decodeToken(_ text: String) -> CKServerChangeToken? {
     guard let data = Data(base64Encoded: text) else { return nil }
     return try? NSKeyedUnarchiver.unarchivedObject(ofClass: CKServerChangeToken.self, from: data)
+  }
+}
+
+/// Takes CloudKit's silent "the jungle changed" pushes (registered in expo-module.config.json; Expo's
+/// app delegate passes remote notifications on to subscribers like this one).
+public class HouseholdAppDelegate: ExpoAppDelegateSubscriber {
+  public func application(
+    _ application: UIApplication,
+    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) {
+    guard let note = CKNotification(fromRemoteNotificationDictionary: userInfo), note.subscriptionID == subscriptionID else {
+      completionHandler(.noData)
+      return
+    }
+    HouseholdPush.received(completionHandler)
+  }
+}
+
+/// Pushes waiting for a sync to finish. iOS gives about 30 seconds; they're answered by then regardless.
+enum HouseholdPush {
+  private static var waiting: [(UIBackgroundFetchResult) -> Void] = []
+  private static let lock = NSLock()
+
+  static func received(_ done: @escaping (UIBackgroundFetchResult) -> Void) {
+    lock.lock()
+    waiting.append(done)
+    lock.unlock()
+    NotificationCenter.default.post(name: changedNote, object: nil)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 25) { finish(.newData) }
+  }
+
+  static func finish(_ result: UIBackgroundFetchResult) {
+    lock.lock()
+    let all = waiting
+    waiting = []
+    lock.unlock()
+    all.forEach { $0(result) }
   }
 }
 

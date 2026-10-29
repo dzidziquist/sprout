@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { diaryPhotos, fingerprint, fromItems, merge, nameOf, othersLately, signEvents, stableJson, toItems, type Jungle, type RemoteItem, type Synced } from './household';
+import { orphanPhotos, diaryPhotos, fingerprint, fromItems, merge, nameOf, othersLately, signEvents, stableJson, toItems, type Jungle, type RemoteItem, type Synced } from './household';
 import type { CareEvent, Plant } from '../types';
 
 const plant = (id: string, extra: Partial<Plant> = {}): Plant =>
@@ -160,5 +160,12 @@ describe('who did what', () => {
   });
   it('lists diary photos once', () => {
     expect(diaryPhotos({ plants: [plant('a', { photoUri: 'diary/x.jpg' })], events: [event('e', { photoUri: 'diary/x.jpg' }), event('f', { photoUri: 'diary/y.jpg' })] })).toEqual(['x.jpg', 'y.jpg']);
+  });
+});
+
+describe('household photo cleanup', () => {
+  it('lets go of photos no plant or diary entry points at any more', () => {
+    const j = { plants: [plant('a', { photoUri: 'diary/cover.jpg' })], events: [event('e', { photoUri: 'diary/kept.jpg' })] };
+    expect(orphanPhotos(['cover.jpg', 'kept.jpg', 'deleted.jpg', 'deleted.jpg'], j)).toEqual(['deleted.jpg']);
   });
 });

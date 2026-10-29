@@ -78,3 +78,15 @@ export function savedWords(at: string, now: Date): string {
   if (days < 7) return `saved ${d.toLocaleDateString('en-US', { weekday: 'long' })}`;
   return `saved ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 }
+
+/** Photos must be this old before they can be cleaned up: another phone may be mid-backup, its photos up and its file not yet. */
+export const PHOTO_GRACE_MS = 2 * 86400000;
+
+/**
+ * Photos in the shared photos folder that no kept backup (any phone's) uses any more and that are old
+ * enough to be sure nothing is about to: safe to delete.
+ */
+export function unusedPhotos(stored: { name: string; born: number }[], used: Iterable<string>, now: number): string[] {
+  const keep = new Set(used);
+  return stored.filter((p) => !keep.has(p.name) && now - p.born > PHOTO_GRACE_MS).map((p) => p.name);
+}

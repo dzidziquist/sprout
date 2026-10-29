@@ -13,7 +13,7 @@ import { useColors } from '@/theme/theme';
 import { rescheduleRounds, roundAllowed, useNotificationRoute } from '@/lib/notifications';
 import { syncWidget } from '@/lib/widget';
 import { runCloudBackup } from '@/lib/cloudBackup';
-import { householdSupported, syncHousehold, watchInvites } from '@/lib/household';
+import { householdSupported, syncHousehold, watchChanges, watchInvites } from '@/lib/household';
 import { SHARED_PROFILE_KEYS } from '@/engine/household';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
@@ -107,6 +107,7 @@ export default function RootLayout() {
       timer = setTimeout(() => void syncHousehold(), 1500);
     };
     void syncHousehold();
+    const unwatch = watchChanges();
     const tick = setInterval(() => AppState.currentState === 'active' && void syncHousehold(), 60000);
     const sub = AppState.addEventListener('change', (st) => st === 'active' && void syncHousehold());
     const unsub = usePlantStore.subscribe((st, prev) => {
@@ -118,6 +119,7 @@ export default function RootLayout() {
       clearInterval(tick);
       sub.remove();
       unsub();
+      unwatch();
     };
   }, [hydrated]);
 

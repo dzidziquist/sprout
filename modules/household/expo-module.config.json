@@ -1,6 +1,7 @@
 {
   "platforms": ["apple"],
   "apple": {
-    "modules": ["HouseholdModule"]
+    "modules": ["HouseholdModule"],
+    "appDelegateSubscribers": ["HouseholdAppDelegate"]
   }
 }

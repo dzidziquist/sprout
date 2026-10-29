@@ -1,8 +1,9 @@
 import { Alert, Platform } from 'react-native';
 import { create } from 'zustand';
 import { Household as Native, type Invite, type Person } from '../../modules/household';
-import { diaryPhotos, merge, pickShared, signEvents, type Jungle, type RemoteItem } from '../engine/household';
+import { diaryPhotos, merge, orphanPhotos, pickShared, signEvents, type Jungle, type RemoteItem } from '../engine/household';
 import { usePlantStore, type Household } from '../store/plantStore';
+import { deletePhoto } from './photos';
 
 /*
  * Household sharing, the running half: one sync round at a time (fetch what others changed, merge, send
@@ -47,6 +48,8 @@ export function syncHousehold(): Promise<void> {
     .finally(() => {
       running = null;
       useHouseholdStatus.getState().set({ syncing: false });
+      // Tells iOS a push that woke the app has been dealt with.
+      Native?.changeHandled();
       if (again) {
         again = false;
         void syncHousehold();
@@ -111,6 +114,19 @@ async function round() {
     }
   }
 
+  // Photos nothing points at any more (their diary entry or plant deleted on some phone): out of
+  // iCloud, and off this phone. Not in a round where a save or delete failed: iCloud may still hold
+  // the entry that points at them, so they wait for a round where everything went through.
+  const orphans = failed.length ? [] : orphanPhotos(have, r.jungle);
+  if (orphans.length) {
+    const failed = new Set(await Native.save(owner, [], orphans.map((n) => `p-${n}`)).catch(() => orphans.map((n) => `p-${n}`)));
+    for (const name of orphans) {
+      if (failed.has(`p-${name}`)) continue;
+      have.delete(name);
+      deletePhoto(`diary/${name}`);
+    }
+  }
+
   const now = usePlantStore.getState();
   const cur = now.profile.household;
   if (!cur || now.dataEpoch !== start.dataEpoch || cur.me !== h.me) return;
@@ -144,6 +160,7 @@ export async function startAndInvite(name: string): Promise<void> {
     await Native.ensureZone();
     const me = await Native.myId();
     usePlantStore.getState().setProfile({ household: { role: 'owner', me, name: name.trim() } });
+    await Native.subscribe(null).catch(() => {});
     await syncHousehold();
   } else if (st.profile.household.name !== name.trim() && name.trim()) {
     usePlantStore.getState().setProfile({ household: { ...st.profile.household, name: name.trim() } });
@@ -175,6 +192,7 @@ export async function join(invite: Invite, name: string): Promise<void> {
   // Everyone's names, the owner's included, arrive with the household's records on the first sync.
   after.setProfile({ household: { role: 'member', owner, me, name: name.trim() || 'Me', aside } });
   if (!after.onboarded) after.completeOnboarding();
+  await Native.subscribe(owner).catch(() => {});
   await syncHousehold();
 }
 
@@ -188,6 +206,7 @@ export async function leave(): Promise<void> {
   if (!Native || !h || h.role !== 'member' || !h.owner) return;
   // Take this person's name out of the household first, so the others stop showing them.
   await Native.save(h.owner, [], [`mb-${h.me}`]).catch(() => {});
+  await Native.unsubscribe(h.owner).catch(() => {});
   await Native.leave(h.owner);
   const st = usePlantStore.getState();
   st.setJungle({ plants: h.aside?.plants ?? [], events: h.aside?.events ?? [], shared: h.aside?.shared ?? {} }, true);
@@ -199,6 +218,7 @@ export async function leave(): Promise<void> {
 export async function stopSharing(): Promise<void> {
   const h = usePlantStore.getState().profile.household;
   if (!Native || !h || h.role !== 'owner') return;
+  await Native.unsubscribe(null).catch(() => {});
   await Native.stopSharing();
   usePlantStore.getState().setProfile({ household: undefined });
   useHouseholdStatus.getState().set({ error: null });
@@ -231,5 +251,17 @@ export function watchInvites(onInvite: () => void): () => void {
   if (!Native) return () => {};
   const sub = Native.addListener('onInvite', onInvite);
   pendingInvite().then((i) => i && onInvite());
+  return () => sub.remove();
+}
+
+/**
+ * Live updates: makes sure CloudKit pushes to this phone when the jungle changes (once per launch, as the
+ * subscription can lapse), and syncs as soon as one arrives.
+ */
+export function watchChanges(): () => void {
+  const h = usePlantStore.getState().profile.household;
+  if (!Native) return () => {};
+  if (h) Native.subscribe(ownerOf(h)).catch(() => {});
+  const sub = Native.addListener('onChange', () => void syncHousehold());
   return () => sub.remove();
 }
