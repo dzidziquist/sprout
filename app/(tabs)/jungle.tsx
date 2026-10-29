@@ -16,6 +16,7 @@ import { ART } from '@/data/art';
 import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
+import { HouseholdButton } from '@/components/HouseholdButton';
 import { LightRooms } from '@/components/LightRooms';
 import { JungleChips, JungleSearch, JungleViewToggle, type JungleChip, type JungleView } from '@/components/JungleControls';
 import * as haptics from '@/lib/haptics';
@@ -220,18 +221,22 @@ export default function JungleScreen() {
 
   const header = (
     <View style={styles.header}>
-      <View style={styles.toolbar}>
-        <View style={{ flex: 1 }}>
-          <Title size="largeTitle">My jungle</Title>
-          <Label muted>
-            {potted.length} {potted.length === 1 ? 'plant' : 'plants'}
-            {potRooms.size ? ` · ${potRooms.size} ${potRooms.size === 1 ? 'room' : 'rooms'}` : ''}
-            {rooting.length ? ` · ${rooting.length} rooting` : ''}
-          </Label>
+      <View>
+        {/* The count sits under the whole row, so the household pill never squeezes it onto two lines. */}
+        <View style={styles.toolbar}>
+          <Title size="largeTitle" style={{ flex: 1 }}>My jungle</Title>
+          <View style={styles.toolbarButtons}>
+            <HouseholdButton />
+            <GlassButton accessibilityLabel="Add a plant" onPress={() => router.push('/add')}>
+              <Glyph name="add" size={18} color={c.ink} width={2.6} />
+            </GlassButton>
+          </View>
         </View>
-        <GlassButton accessibilityLabel="Add a plant" onPress={() => router.push('/add')}>
-          <Glyph name="add" size={18} color={c.ink} width={2.6} />
-        </GlassButton>
+        <Label muted>
+          {potted.length} {potted.length === 1 ? 'plant' : 'plants'}
+          {potRooms.size ? ` · ${potRooms.size} ${potRooms.size === 1 ? 'room' : 'rooms'}` : ''}
+          {rooting.length ? ` · ${rooting.length} rooting` : ''}
+        </Label>
       </View>
 
       {edibles.length > 0 && (
@@ -361,6 +366,7 @@ export default function JungleScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: space.xl },
   header: { gap: 16, marginBottom: 16 },
+  toolbarButtons: { flexDirection: 'row', gap: 10 },
   line: { marginBottom: 12 },
   rowLine: { marginBottom: 8 },
   gridLine: { marginBottom: 12 },

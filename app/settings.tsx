@@ -190,12 +190,6 @@ export default function SettingsScreen() {
       </View>
       <Title>Settings</Title>
 
-      {householdSupported && (
-        <Section title="Household" footer="Look after the same plants together: everyone sees the jungle, the diary and the streak. Only the owner invites.">
-          <Row label="Household" sub={householdLine(profile.household)} onPress={() => router.push('/household')} last />
-        </Section>
-      )}
-
       <Section title="Reminders" footer="At most one reminder a day: when a plant is ready for a check, or on photo day. Nothing due means no notification.">
         <SwitchField label="Daily plant round" value={profile.round.enabled} onChange={(on) => setRound(on)}>
           {profile.round.enabled && (
@@ -301,6 +295,7 @@ export default function SettingsScreen() {
               : 'Your plants live only on this phone: no account, no tracking.'
         }
       >
+        {householdSupported && <Row label="Household" sub={householdLine(profile.household)} onPress={() => router.push('/household')} />}
         {cloudSupported && (
           <SwitchField
             label="iCloud backup"
