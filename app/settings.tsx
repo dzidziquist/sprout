@@ -166,7 +166,15 @@ export default function SettingsScreen() {
     if (!ok) return;
     // In a household: end it (owner) or leave it (member) first, so this phone doesn't stay half in it.
     const h = usePlantStore.getState().profile.household;
-    if (h) await (h.role === 'owner' ? stopSharing() : leave()).catch(() => {});
+    if (h) {
+      try {
+        await (h.role === 'owner' ? stopSharing() : leave());
+      } catch {
+        // Erasing without ending it would leave the household running in iCloud with this phone forgotten.
+        Alert.alert('Couldn’t reach iCloud', `Your phone needs to ${h.role === 'owner' ? 'stop sharing' : 'leave the household'} before everything is erased. Try again when you’re online.`);
+        return;
+      }
+    }
     deleteAllPhotos();
     eraseEverything();
     haptics.success();
@@ -345,11 +353,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   page: { paddingHorizontal: space.xl, gap: space.xl },
   header: { flexDirection: 'row' },
-  sectionTitle: { fontFamily: fonts.bodyHeavy, ...type.caption, letterSpacing: 0.6, paddingHorizontal: 4 },
-  group: { borderWidth: 2, borderRadius: 20, overflow: 'hidden' },
-  row: { minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14 },
   rowLabel: { flex: 1, fontFamily: fonts.displaySemi, ...type.body },
-  rowValue: { fontFamily: fonts.bodyHeavy, ...type.callout },
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   field: { padding: 14, gap: 10 },
   note: { fontFamily: fonts.bodyHeavy, ...type.caption },

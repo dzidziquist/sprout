@@ -7,8 +7,8 @@ import type { CareEvent, Plant } from '../types';
  *   backups/<chain>/<yyyy-mm-dd>.json   the same file as "Back up now", one per week, newest four kept
  *   photos/<name>                        every diary photo, uploaded once and shared by all backups
  *
- * A chain is one phone's line of backups. A phone that starts fresh gets a new chain, so it can never
- * overwrite the backup someone chose not to restore; a phone that restores carries on that chain.
+ * A chain is one phone's line of backups. Starting fresh or restoring begins a new chain, so a phone can
+ * never overwrite or prune another phone's backups (or the one someone chose not to restore).
  */
 
 export const BACKUPS_DIR = 'backups';
