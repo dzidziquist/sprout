@@ -28,7 +28,11 @@ const withHousehold = (config) => {
     };
     add('com.apple.developer.icloud-services', 'CloudKit');
     add('com.apple.developer.icloud-container-identifiers', CONTAINER);
-    if (!e['com.apple.developer.icloud-container-environment']) e['com.apple.developer.icloud-container-environment'] = 'Production';
+    // Production, unless a build asks for Development (CLOUDKIT_ENV, from the TestFlight workflow's choice):
+    // the one-off way to get a new system type such as cloudkit.share into the Development schema, to
+    // deploy from there. Runs after react-native-cloud-storage's plugin, which always says Production.
+    const env = process.env.CLOUDKIT_ENV;
+    e['com.apple.developer.icloud-container-environment'] = env === 'Development' ? 'Development' : e['com.apple.developer.icloud-container-environment'] || 'Production';
     return c;
   });
   config = withInfoPlist(config, (c) => {
