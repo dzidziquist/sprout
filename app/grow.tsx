@@ -7,7 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { daysInStage, ediblePlants, feedingAdvice, formatTotals, harvestStats, isTicked, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
+import { daysInStage, ediblePlants, FEED_TASKS, feedingAdvice, formatTotals, harvestStats, isTicked, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
 import { edibleGuide } from '@/data/edibles';
 import { speciesOf } from '@/data/species';
 import { useForecast } from '@/lib/weather';
@@ -17,6 +17,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { ALERT_ICON, GROW_ICON, Icon, alertTint, taskTint } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { shortDay } from '@/engine/mix';
+import { withNextFeed } from '@/engine/feeding';
 import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
 import type { EdibleStage, Plant } from '@/types';
@@ -177,6 +178,7 @@ function StageTrack({ plant, pending, onPick, c }: { plant: Plant; pending?: Edi
 }
 
 function CropCard({ plant, total, now }: { plant: Plant; total?: string; now: Date }) {
+  const events = usePlantStore((s) => s.events);
   const units = useUnits();
   const c = useColors();
   const router = useRouter();
@@ -250,7 +252,7 @@ function CropCard({ plant, total, now }: { plant: Plant; total?: string; now: Da
             <Text style={[styles.tip, { color: c.ink }]}>{info ? localizeTemps(info.tip, units) : 'Tap the stage it’s at now and we’ll tailor the tips.'}</Text>
             <View style={styles.metaRow}>
               <Icon d={GROW_ICON.feed} color={c.inkMuted} size={16} />
-              <Text style={[styles.meta, { color: c.inkMuted }]}>{localizeTemps(feedingAdvice(plant, climate, now), units)}</Text>
+              <Text style={[styles.meta, { color: c.inkMuted }]}>{localizeTemps(withNextFeed(feedingAdvice(plant, climate, now), plant.id, events, now), units)}</Text>
             </View>
             <View style={styles.metaRow}>
               <Icon d={GROW_ICON.harvest} color={c.inkMuted} size={16} />
@@ -279,6 +281,7 @@ export default function GrowPatch() {
   const ticks = usePlantStore((s) => s.profile.growTicks);
   const tickGrowTask = usePlantStore((s) => s.tickGrowTask);
   const setStaked = usePlantStore((s) => s.setStaked);
+  const setFed = usePlantStore((s) => s.setFed);
   const now = new Date();
 
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
@@ -300,6 +303,8 @@ export default function GrowPatch() {
     // One timestamp for both, so the staked events count as logged by this tick.
     const at = new Date();
     if (t.id === 'stage-stake' || t.id === 'stage-trellis') setStaked(t.plantIds, on, at);
+    // A feed job ticked is a feed logged for each plant (so the plant page knows when the next is due).
+    if (FEED_TASKS.has(t.id)) setFed(t.plantIds, on, at, ticks?.[t.id]);
     tickGrowTask(t.id, on, at);
   };
 

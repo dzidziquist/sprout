@@ -1,6 +1,7 @@
 import { CAUSES, SHADE_LOVERS, SPECIES_NOTES, SYMPTOMS, TAP_SENSITIVE, type Cause, type Signal, type Symptom } from '../data/diagnosis';
 import { speciesOf } from '../data/species';
 import { isReservoir, seasonMultiplier } from './careEngine';
+import { mixFeedsUntil } from './mix';
 import type { CareEvent, ClimateProfile, Plant } from '../types';
 
 /*
@@ -70,8 +71,18 @@ export function signalsFor({ plant, events, climate, now }: DiagnoseInput): Set<
   if (season >= 1.25) s.add('slowSeason');
   if (season <= 0.85) s.add('hotSeason');
 
-  const fed = mine.find((e) => e.type === 'feed');
-  if (!fed || now.getTime() - new Date(fed.at).getTime() > 60 * DAY) s.add('unfed');
+  // Food: feeds logged, and fresh mix with fertiliser in it (engine/mix).
+  const feeds = mine.filter((e) => e.type === 'feed');
+  const lastFeed = feeds[0] ? new Date(feeds[0].at).getTime() : undefined;
+  const mixUntil = mixFeedsUntil(plant)?.getTime();
+  const fresh = !!mixUntil && mixUntil > now.getTime();
+  if (fresh) s.add('freshMix');
+  if (mixUntil && !fresh && (!lastFeed || lastFeed < mixUntil)) s.add('mixSpent');
+  if (lastFeed && now.getTime() - lastFeed < 21 * DAY) s.add('fedRecently');
+  const recentFeeds = feeds.filter((e) => now.getTime() - new Date(e.at).getTime() < 42 * DAY).length;
+  if ((fresh && lastFeed && lastFeed > new Date(plant.mix!.pottedAt).getTime()) || recentFeeds >= 3) s.add('overFed');
+  const lastFood = Math.max(lastFeed ?? 0, Math.min(mixUntil ?? 0, now.getTime()));
+  if (!fresh && now.getTime() - lastFood > 60 * DAY) s.add('unfed');
   if (mine.some((e) => e.type === 'pest' && now.getTime() - new Date(e.at).getTime() < 30 * DAY)) s.add('pestLogged');
   return s;
 }

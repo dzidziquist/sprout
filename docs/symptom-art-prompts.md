@@ -266,6 +266,32 @@ File name: `symptom-fruit-holes.png`
 Draw a ripe red tomato, close up, with two small nibbled holes.
 ```
 
+## Added later (feeding problems)
+
+### 31. Yellow between the veins
+
+File name: `symptom-yellow-veins.png` (a recoloured stand-in is in place until this is drawn)
+
+```
+Draw a single leaf, close up, whose blade has turned yellow between the veins while every vein stays clearly green, like a green net on yellow.
+```
+
+### 32. Purple tinge on leaves
+
+File name: `symptom-purple-leaves.png` (a recoloured stand-in is in place until this is drawn)
+
+```
+Draw a young tomato plant in a pot whose lower leaves have a purple tinge on their undersides and along the veins; the top leaves stay green.
+```
+
+### 33. Lots of leaves, little fruit
+
+File name: `symptom-leafy-no-fruit.png` (a recoloured stand-in is in place until this is drawn)
+
+```
+Draw a big, very lush, dark green tomato plant in a pot, full of leaves, with only one small green tomato and no flowers.
+```
+
 ## Checklist
 
 | # | File name | Shows |
@@ -300,3 +326,6 @@ Draw a ripe red tomato, close up, with two small nibbled holes.
 | 28 | `symptom-flower-drop.png` | Flowers drop, no fruit |
 | 29 | `symptom-fruit-split.png` | Fruit splitting or cracking |
 | 30 | `symptom-fruit-holes.png` | Holes in fruit |
+| 31 | `symptom-yellow-veins.png` | Yellow between the veins |
+| 32 | `symptom-purple-leaves.png` | Purple tinge on leaves |
+| 33 | `symptom-leafy-no-fruit.png` | Lots of leaves, little fruit |

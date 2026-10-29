@@ -186,7 +186,7 @@ describe('tasksFor', () => {
 
   it('leaves plants out of feed tasks while their fresh mix still feeds them, saying until when', () => {
     const at = new Date(2026, 6, 10);
-    const fresh = { ...tommy, id: 'fresh', mix: { fertiliser: 'yes' as const, pottedAt: new Date(2026, 6, 1).toISOString() } };
+    const fresh = { ...tommy, id: 'fresh', mix: { fertiliser: 'yes' as const, kind: 'slow' as const, pottedAt: new Date(2026, 6, 1).toISOString() } };
     const potash = tasksFor([fresh, chili], 'seattle', at).find((t) => t.id === 'stage-potash')!;
     expect(potash.plantIds).toEqual([chili.id]);
     expect(potash.waiting?.plantIds).toEqual(['fresh']);
@@ -194,6 +194,28 @@ describe('tasksFor', () => {
     // Every plant waiting: no feed task at all. Once the mix is spent, back to normal.
     expect(tasksFor([fresh], 'seattle', at).map((t) => t.id)).not.toContain('stage-potash');
     expect(tasksFor([fresh], 'seattle', new Date(2026, 7, 28)).find((t) => t.id === 'stage-potash')?.waiting).toBeUndefined();
+  });
+
+  // The dark season starts Oct 15.
+  const lateOct = new Date(2026, 9, 20, 12);
+
+  it('indoors in the dark season, fruiting crops get half-strength feed every 2 weeks', () => {
+    const inside = { ...tommy, id: 'inside', placement: 'indoor' as const };
+    const tasks = tasksFor([inside, chili], 'seattle', lateOct);
+    const slow = tasks.find((t) => t.id === 'stage-potash-slow')!;
+    expect(slow.plantIds).toEqual(['inside']);
+    expect(slow.repeatDays).toBe(14);
+    expect(feedingAdvice(inside, 'seattle', lateOct)).toBe('Half-strength tomato feed every 2 weeks');
+    // Accra has no dark season: the usual feed.
+    expect(tasksFor([inside], 'accra', lateOct).map((t) => t.id)).toContain('stage-potash');
+  });
+
+  it('leaves out plants fed lately, and a feed logged by ticking the job keeps it on the list to untick', () => {
+    const inside = { ...tommy, id: 'inside', placement: 'indoor' as const };
+    const fed: CareEvent = { id: 'f', plantId: 'inside', type: 'feed', at: new Date(lateOct.getTime() - 3 * 86_400_000).toISOString() };
+    expect(tasksFor([inside], 'seattle', lateOct, [fed]).map((t) => t.id)).not.toContain('stage-potash-slow');
+    const ticks = { 'stage-potash-slow': fed.at };
+    expect(tasksFor([inside], 'seattle', lateOct, withTickedSupport([fed], [inside], ticks, lateOct)).map((t) => t.id)).toContain('stage-potash-slow');
   });
 
   it('suggests hand pollination for flowering fruit plants outside the summer window', () => {

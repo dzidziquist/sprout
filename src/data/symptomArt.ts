@@ -36,6 +36,9 @@ export const SYMPTOM_ART: Partial<Record<string, ImageSourcePropType>> = {
   'flower-drop': require('../../assets/symptoms/symptom-flower-drop.png'),
   'fruit-split': require('../../assets/symptoms/symptom-fruit-split.png'),
   'fruit-holes': require('../../assets/symptoms/symptom-fruit-holes.png'),
+  'yellow-veins': require('../../assets/symptoms/symptom-yellow-veins.png'),
+  'purple-leaves': require('../../assets/symptoms/symptom-purple-leaves.png'),
+  'leafy-no-fruit': require('../../assets/symptoms/symptom-leafy-no-fruit.png'),
 };
 
 /** Line icons (24×24 paths) for each area: the area tabs, and the fallback for a symptom with no picture. */

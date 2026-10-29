@@ -216,6 +216,8 @@ interface PlantState {
   logDiagnosis: (plantId: string, note: string, tweak?: 'slow-water' | 'more-water', now?: Date) => void;
   /** Mark plants as staked (or trellised), or take the mark back off. */
   setStaked: (plantIds: string[], on: boolean, now?: Date) => void;
+  /** Ticking a feed job in the grow patch logs a feed for its plants; unticking takes back the ones logged since `since`. */
+  setFed: (plantIds: string[], on: boolean, now?: Date, since?: string) => void;
   /** Tick a grow patch job off, or untick it. */
   tickGrowTask: (taskId: string, on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
@@ -747,6 +749,14 @@ export const usePlantStore = create<PlantState>()(
           const kept = Object.fromEntries(Object.entries(s.profile.growTicks ?? {}).filter(([id, at]) => id !== taskId && new Date(at).getTime() > cutoff));
           return { profile: { ...s.profile, growTicks: on ? { ...kept, [taskId]: now.toISOString() } : kept } };
         });
+      },
+      setFed: (plantIds, on, now = new Date(), since) => {
+        const ids = new Set(plantIds);
+        set((s) => ({
+          events: on
+            ? [...s.events, ...plantIds.map((plantId) => ({ id: uid(), plantId, type: 'feed' as const, at: now.toISOString() }))]
+            : s.events.filter((e) => !(e.type === 'feed' && ids.has(e.plantId) && (!since || e.at >= since))),
+        }));
       },
       setStaked: (plantIds, on, now = new Date()) => {
         const ids = new Set(plantIds);

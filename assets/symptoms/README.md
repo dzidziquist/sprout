@@ -38,5 +38,8 @@ This is an art-only drop. Resize/optimize the images and wire the paths into the
 | 28 | [symptom-flower-drop.png](symptom-flower-drop.png) | Flowers drop, no fruit |
 | 29 | [symptom-fruit-split.png](symptom-fruit-split.png) | Fruit splitting or cracking |
 | 30 | [symptom-fruit-holes.png](symptom-fruit-holes.png) | Holes in fruit |
+| 31 | [symptom-yellow-veins.png](symptom-yellow-veins.png) | Yellow between the veins (stand-in, recoloured from existing art) |
+| 32 | [symptom-purple-leaves.png](symptom-purple-leaves.png) | Purple tinge on leaves (stand-in, recoloured from existing art) |
+| 33 | [symptom-leafy-no-fruit.png](symptom-leafy-no-fruit.png) | Lots of leaves, little fruit (stand-in, recoloured from existing art) |
 
 Validation: all 30 requested files are present, unique, square 1254 × 1254 PNGs with transparent backgrounds. Reviewed individually and at 90-pixel tile size.
