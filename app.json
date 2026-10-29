@@ -100,7 +100,11 @@
         [
           {
             "name": "Night",
-            "ios": "./assets/icons/icon-night.png",
+            "ios": {
+              "light": "./assets/icons/icon-night.png",
+              "dark": "./assets/icons/icon-night-dark.png",
+              "tinted": "./assets/icons/icon-night-tinted.png"
+            },
             "android": {
               "foregroundImage": "./assets/icons/icon-night-foreground.png",
               "backgroundColor": "#0C1F4E"
@@ -108,7 +112,11 @@
           },
           {
             "name": "Cactus",
-            "ios": "./assets/icons/icon-cactus.png",
+            "ios": {
+              "light": "./assets/icons/icon-cactus.png",
+              "dark": "./assets/icons/icon-cactus-dark.png",
+              "tinted": "./assets/icons/icon-cactus-tinted.png"
+            },
             "android": {
               "foregroundImage": "./assets/icons/icon-cactus-foreground.png",
               "backgroundColor": "#FFD23F"
@@ -116,7 +124,11 @@
           },
           {
             "name": "Sunny",
-            "ios": "./assets/icons/icon-sunny.png",
+            "ios": {
+              "light": "./assets/icons/icon-sunny.png",
+              "dark": "./assets/icons/icon-sunny-dark.png",
+              "tinted": "./assets/icons/icon-sunny-tinted.png"
+            },
             "android": {
               "foregroundImage": "./assets/icons/icon-sunny-foreground.png",
               "backgroundColor": "#8CC8FF"
@@ -124,7 +136,11 @@
           },
           {
             "name": "Party",
-            "ios": "./assets/icons/icon-party.png",
+            "ios": {
+              "light": "./assets/icons/icon-party.png",
+              "dark": "./assets/icons/icon-party-dark.png",
+              "tinted": "./assets/icons/icon-party-tinted.png"
+            },
             "android": {
               "foregroundImage": "./assets/icons/icon-party-foreground.png",
               "backgroundColor": "#C9B8FF"
