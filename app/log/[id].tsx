@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts, type, space } from '@/theme/tokens';
 import { useDiscardGuard } from '@/hooks/useDiscardGuard';
 import { Glyph } from '@/components/Glyph';
+import { MixFields, type MixDraft } from '@/components/MixFields';
 
 type Tint = 'ice' | 'lavender' | 'butter' | 'peach' | 'mint' | 'blush';
 
@@ -46,10 +47,13 @@ export default function LogCareSheet() {
   const logCare = usePlantStore((s) => s.logCare);
   const addPhoto = usePlantStore((s) => s.addPhoto);
   const addNote = usePlantStore((s) => s.addNote);
+  const updatePlant = usePlantStore((s) => s.updatePlant);
   const faces = usePlantStore((s) => s.profile.faces);
   const [sel, setSel] = useState<Set<CareAction>>(new Set());
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [note, setNote] = useState('');
+  // A repot: which mix it went into, and whether there's fertiliser in it (feeding waits while it's fresh).
+  const [mix, setMix] = useState<MixDraft | null>(null);
   const [saved, setSaved] = useState(0);
   useDiscardGuard(saved === 0 && (sel.size > 0 || !!note.trim() || !!photoUri));
   // A picked photo is already copied into the diary folder; if it's dropped or never saved, remove it.
@@ -117,6 +121,12 @@ export default function LogCareSheet() {
     const rest = [...sel].filter((a) => a !== 'photo');
     let count = 0;
     if (rest.length) count += logCare(plant.id, rest, note);
+    if (rest.includes('repot') && mix) {
+      updatePlant(plant.id, {
+        ...(mix.soil !== 'unsure' && mix.soil !== plant.soil ? { soil: mix.soil } : {}),
+        mix: { ...(mix.name.trim() ? { name: mix.name.trim() } : {}), fertiliser: mix.fertiliser, ...(mix.fertiliser === 'yes' && mix.bagMonths ? { bagMonths: mix.bagMonths } : {}), pottedAt: new Date().toISOString() },
+      });
+    }
     else if (!photoUri) {
       addNote(plant.id, note);
       count += 1;
@@ -196,6 +206,15 @@ export default function LogCareSheet() {
           );
         })}
       </View>
+
+      {sel.has('repot') && !hydro && (
+        <MixFields
+          draft={mix ?? { soil: plant.soil, name: '', fertiliser: 'unsure', potted: 'week' }}
+          onChange={(patch) => setMix((m) => ({ ...(m ?? { soil: plant.soil, name: '', fertiliser: 'unsure', potted: 'week' }), ...patch }))}
+          speciesId={plant.speciesId}
+          askSoil
+        />
+      )}
 
       {photoUri && <Text style={[styles.hint, { color: c.ink, backgroundColor: c.butter, borderColor: c.line }]}>Photo ready for {plant.name}'s diary.</Text>}
 

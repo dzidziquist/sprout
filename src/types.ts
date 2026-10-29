@@ -209,6 +209,11 @@ export interface Plant {
   rooting?: { method: 'water' | 'moss' | 'soil' | 'leca'; startedAt: string };
   acquiredAt: string;
   lastRepottedAt?: string;
+  /**
+   * The mix it was last potted into, as far as the person said: its name, whether it has fertiliser in
+   * it (and how long the bag says that lasts), and when it went in. Feeding waits while it's fresh.
+   */
+  mix?: { name?: string; fertiliser: 'yes' | 'no' | 'unsure'; bagMonths?: number; pottedAt: string };
   /** LECA and water only: when the reservoir last got fresh water and nutrients (or a flush). */
   lastRefreshedAt?: string;
   /** Learned per-plant drying coefficient; 1 = matches the model. */

@@ -184,6 +184,18 @@ describe('tasksFor', () => {
     expect(tasksFor([tommy], 'accra', midOct).map((t) => t.id)).toContain('stage-potash');
   });
 
+  it('leaves plants out of feed tasks while their fresh mix still feeds them, saying until when', () => {
+    const at = new Date(2026, 6, 10);
+    const fresh = { ...tommy, id: 'fresh', mix: { fertiliser: 'yes' as const, pottedAt: new Date(2026, 6, 1).toISOString() } };
+    const potash = tasksFor([fresh, chili], 'seattle', at).find((t) => t.id === 'stage-potash')!;
+    expect(potash.plantIds).toEqual([chili.id]);
+    expect(potash.waiting?.plantIds).toEqual(['fresh']);
+    expect(new Date(potash.waiting!.until).getTime()).toBe(new Date(2026, 6, 1).getTime() + 8 * 7 * 86_400_000);
+    // Every plant waiting: no feed task at all. Once the mix is spent, back to normal.
+    expect(tasksFor([fresh], 'seattle', at).map((t) => t.id)).not.toContain('stage-potash');
+    expect(tasksFor([fresh], 'seattle', new Date(2026, 7, 28)).find((t) => t.id === 'stage-potash')?.waiting).toBeUndefined();
+  });
+
   it('suggests hand pollination for flowering fruit plants outside the summer window', () => {
     const flowering = plant({ stage: 'flowering' });
     expect(tasksFor([flowering], 'accra', new Date(2026, 1, 5)).map((t) => t.id)).toContain('stage-pollinate');
