@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dropdown, DropdownGroup } from '@/components/Dropdown';
 import { Label } from '@/components/ui';
 import { SOIL_LABEL } from '@/data/labels';
 import { mixBrand, type MixKind } from '@/data/mixes';
@@ -76,11 +77,9 @@ export function MixFields({ draft, onChange, speciesId, askSoil, askWhen, edible
       {askSoil && (
         <>
           <Label>Which mix?</Label>
-          <View style={styles.wrap}>
-            {MIXES.map((s) => (
-              <Choice key={s} on={draft.soil === s} bg={c.mint} label={SOIL_LABEL[s]} onPress={() => onChange({ soil: s })} />
-            ))}
-          </View>
+          <DropdownGroup>
+            <Dropdown label="Mix" value={draft.soil} tint={c.mint} options={MIXES.map((s) => ({ id: s, label: SOIL_LABEL[s] }))} onChange={(soil) => onChange({ soil })} last />
+          </DropdownGroup>
         </>
       )}
       <Label>Brand or name (optional)</Label>
@@ -136,11 +135,20 @@ export function MixFields({ draft, onChange, speciesId, askSoil, askWhen, edible
       {askWhen && draft.fertiliser === 'yes' && (
         <>
           <Label>Potted into it</Label>
-          <View style={styles.wrap}>
-            {QUICK.map((q) => (
-              <Choice key={q.label} on={Math.round((today.getTime() - potted.getTime()) / DAY) === q.days} bg={c.peach} label={q.label} onPress={() => setPotted(new Date(today.getTime() - q.days * DAY))} />
-            ))}
-          </View>
+          <DropdownGroup>
+            <Dropdown
+              label="Roughly"
+              value={QUICK.find((q) => Math.round((today.getTime() - potted.getTime()) / DAY) === q.days)?.label ?? null}
+              placeholder="Exact day below"
+              tint={c.peach}
+              options={QUICK.map((q) => ({ id: q.label, label: q.label }))}
+              onChange={(label) => {
+                const q = QUICK.find((x) => x.label === label);
+                if (q) setPotted(new Date(today.getTime() - q.days * DAY));
+              }}
+              last
+            />
+          </DropdownGroup>
           <View style={[styles.stepper, { borderColor: c.line, backgroundColor: c.card }]}>
             <Step label="A day earlier" glyph="−" onPress={() => setPotted(new Date(potted.getTime() - DAY))} />
             <Text style={[styles.date, { color: c.ink }]} accessibilityLiveRegion="polite">

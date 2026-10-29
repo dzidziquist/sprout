@@ -649,38 +649,25 @@ export default function AddPlantScreen() {
       {showMore && (
         <View style={{ gap: 12 }}>
           <Label>{placement === 'ground' ? "What's the soil like?" : "What's it potted in?"}</Label>
-          <View style={styles.wrap}>
-            {(profile.grows.hydro ? [...SOILS.filter((s) => isReservoir(s.id)), ...SOILS.filter((s) => !isReservoir(s.id))] : SOILS).map((s) => (
-              <Pressable
-                key={s.id}
-                accessibilityRole="button"
-                accessibilityState={{ selected: soil === s.id }}
-                onPress={() => {
-                  haptics.tap();
-                  setSoil(s.id);
-                }}
-                style={[styles.pill, styles.soilPill, { borderColor: c.line, backgroundColor: soil === s.id ? c.mint : c.card }, soil === s.id && { boxShadow: `0px 3px 0px ${c.drop}` }]}
-              >
-                <View style={[styles.swatch, { backgroundColor: s.swatch, borderColor: c.line }]} />
-                <Text style={[styles.pillText, { color: c.ink }]}>{SOIL_LABEL[s.id].replace(' (not ideal in pots)', '')}</Text>
-              </Pressable>
-            ))}
-          </View>
+          <DropdownGroup>
+            <Dropdown
+              label={placement === 'ground' ? 'Soil' : 'Mix'}
+              value={soil}
+              tint={c.mint}
+              options={(profile.grows.hydro ? [...SOILS.filter((s) => isReservoir(s.id)), ...SOILS.filter((s) => !isReservoir(s.id))] : SOILS).map((s) => ({ id: s.id, label: SOIL_LABEL[s.id].replace(' (not ideal in pots)', ''), swatch: s.swatch }))}
+              onChange={setSoil}
+              last
+            />
+          </DropdownGroup>
           {soilInfo && <Text style={[styles.note, { color: soil === 'garden_soil' ? c.warn : c.inkMuted }]}>{soilInfo.note}</Text>}
 
           {placement !== 'ground' && (
             <>
               <Label>Pot</Label>
-              <View style={styles.wrap}>
-                {POT_SIZES.map((p) => (
-                  <Pill key={p.label} on={size === p.cm} label={p.label} onPress={() => setSize(p.cm)} />
-                ))}
-              </View>
-              <View style={styles.wrap}>
-                {MATERIALS.map((m) => (
-                  <Pill key={m.id} on={material === m.id} bg={c.peach} label={m.label} onPress={() => setMaterial(m.id)} />
-                ))}
-              </View>
+              <DropdownGroup>
+                <Dropdown label="Size" value={String(size)} tint={c.mint} options={POT_SIZES.map((o) => ({ id: String(o.cm), label: o.label }))} onChange={(v) => setSize(Number(v))} />
+                <Dropdown label="Material" value={material} tint={c.peach} options={MATERIALS} onChange={setMaterial} last />
+              </DropdownGroup>
               {!isReservoir(soil) && (
                 <>
               <Label>Self-watering pot?</Label>
@@ -732,7 +719,6 @@ const styles = StyleSheet.create({
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pill: { minHeight: 44, paddingHorizontal: 14, borderRadius: 22, borderWidth: 2, justifyContent: 'center' },
   pillWithIcon: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  soilPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 6 },
   swatch: { width: 24, height: 24, borderRadius: 12, borderWidth: 2 },
   pillText: { fontFamily: fonts.bodyHeavy, ...type.callout },
   note: { fontFamily: fonts.bodyHeavy, ...type.footnote },
