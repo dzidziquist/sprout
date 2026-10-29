@@ -1,0 +1,34 @@
+#!/usr/bin/expect -f
+# Drives `eas credentials:configure-build` for the production iOS profile, accepting each default
+# (reuse the distribution certificate, generate the missing provisioning profiles). Used by
+# .github/workflows/setup-signing.yml. Stops instead of waiting if it ever asks for an Apple ID password,
+# which means the App Store Connect key wasn't picked up.
+
+set timeout 300
+log_user 1
+
+# GitHub sets CI=true, which would make EAS refuse to ask anything; this run is meant to answer.
+spawn env -u CI eas credentials:configure-build --platform ios --profile production
+
+expect {
+  -re {(?i)apple id|password|two-factor|6 digit} {
+    send_user "\n\n>>> EAS asked for an Apple login: check the ASC_KEY_ID, ASC_ISSUER_ID and ASC_KEY_P8 secrets.\n"
+    exit 2
+  }
+  -re {\(Y/n\)|\(y/N\)} {
+    send "\r"
+    exp_continue
+  }
+  -re {›} {
+    send "\r"
+    exp_continue
+  }
+  timeout {
+    send_user "\n\n>>> No output for 5 minutes; stopping.\n"
+    exit 3
+  }
+  eof
+}
+
+catch wait result
+exit [lindex $result 3]
