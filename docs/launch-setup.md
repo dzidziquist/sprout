@@ -39,6 +39,11 @@ time)** → Run workflow (pick the account type from Membership → Entity type)
 Actions → **TestFlight** as usual. If it ever stops on an Apple login, the key secrets are wrong; the
 fallback is one interactive `npx eas-cli build -p ios --profile production` from a Mac.
 
+**iCloud backup.** The weekly backup lives in the app's own iCloud container. Once, before the signing
+step above: developer.apple.com → Identifiers → **+** → iCloud Containers → `iCloud.com.dzidziquist.plantfam`;
+then Identifiers → `com.dzidziquist.plantfam` → tick **iCloud** (with CloudKit support) → Configure → pick that
+container → Save. The signing step then makes profiles that include it.
+
 ## 2. Environment variables (EAS → Project → Environment variables, "production")
 | Variable | What for | Where to get it |
 |---|---|---|

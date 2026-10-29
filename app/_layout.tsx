@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Appearance, Platform, View } from 'react-native';
+import { AppState, Appearance, Platform, View } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -12,6 +12,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { useColors } from '@/theme/theme';
 import { rescheduleRounds, roundAllowed, useNotificationRoute } from '@/lib/notifications';
 import { syncWidget } from '@/lib/widget';
+import { runCloudBackup } from '@/lib/cloudBackup';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 import { refreshSunlight } from '@/lib/site';
@@ -79,6 +80,18 @@ export default function RootLayout() {
     return () => {
       clearTimeout(timer);
       unsub();
+    };
+  }, [hydrated]);
+
+  // The weekly iCloud backup: looked at a few seconds after opening (iCloud needs a moment to sign in)
+  // and whenever the app comes back to the front. It only saves when a week has passed.
+  useEffect(() => {
+    if (!hydrated || Platform.OS !== 'ios') return;
+    const timer = setTimeout(() => runCloudBackup().catch(() => {}), 5000);
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && runCloudBackup().catch(() => {}));
+    return () => {
+      clearTimeout(timer);
+      sub.remove();
     };
   }, [hydrated]);
 

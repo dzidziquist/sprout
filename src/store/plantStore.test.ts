@@ -511,3 +511,22 @@ describe('undo for archive and wishlist', () => {
     expect(usePlantStore.getState().profile.wishlist?.map((w) => w.speciesId)).toEqual(['monstera', 'pothos']);
   });
 });
+
+describe('swapping the whole jungle', () => {
+  it('counts each restore, its undo and an erase, so a backup still saving can tell', () => {
+    const s = () => usePlantStore.getState();
+    const start = s().dataEpoch;
+    const snap = { profile: s().profile, plants: s().plants, events: s().events };
+    s().restoreBackup({ profile: {}, plants: [], events: [] });
+    s().restoreSnapshot(snap);
+    s().eraseEverything();
+    expect(s().dataEpoch).toBe(start + 3);
+  });
+  it('keeps this phone’s backup chain through a restore, and drops it on erase', () => {
+    usePlantStore.getState().setProfile({ cloudBackup: { chain: 'mine', lastAt: '2026-10-20T00:00:00Z' } });
+    usePlantStore.getState().restoreBackup({ profile: { cloudBackup: { chain: 'theirs' } }, plants: [], events: [] });
+    expect(usePlantStore.getState().profile.cloudBackup?.chain).toBe('mine');
+    usePlantStore.getState().eraseEverything();
+    expect(usePlantStore.getState().profile.cloudBackup).toBeUndefined();
+  });
+});

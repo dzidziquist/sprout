@@ -5,6 +5,7 @@ import { usePlantStore } from '@/store/plantStore';
 import { useShallow } from 'zustand/react/shallow';
 import { backupMyData, exportSpreadsheet, parseBackup, pickBackupText, type BackupData } from '@/lib/export';
 import * as haptics from '@/lib/haptics';
+import { showUndo } from '@/lib/undo';
 
 const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : undefined);
 
@@ -25,11 +26,12 @@ function confirm(title: string, body: string): Promise<boolean> {
  */
 export function useDataActions() {
   const router = useRouter();
-  const { profile, plants, events, setProfile, restoreBackup } = usePlantStore(useShallow((s) => ({ profile: s.profile, plants: s.plants, events: s.events, setProfile: s.setProfile, restoreBackup: s.restoreBackup })));
+  const { profile, plants, events, setProfile, restoreBackup, restoreSnapshot } = usePlantStore(useShallow((s) => ({ profile: s.profile, plants: s.plants, events: s.events, setProfile: s.setProfile, restoreBackup: s.restoreBackup, restoreSnapshot: s.restoreSnapshot })));
   const [busy, setBusy] = useState<'backup' | 'restore' | 'csv' | null>(null);
   const [msg, setMsg] = useState<{ text: string; bad?: boolean } | null>(null);
   const last = fmt(profile.lastBackupAt);
-  const stale = !profile.lastBackupAt || Date.now() - new Date(profile.lastBackupAt).getTime() > 30 * 86400000;
+  const newest = [profile.lastBackupAt, profile.cloudBackup?.lastAt].filter((d): d is string => !!d).sort().pop();
+  const stale = !newest || Date.now() - new Date(newest).getTime() > 30 * 86400000;
 
   const backup = async () => {
     setBusy('backup');
@@ -67,10 +69,12 @@ export function useDataActions() {
         `This replaces the ${plants.length} ${plants.length === 1 ? 'plant' : 'plants'} on this phone with the backup${when ? ` from ${when}` : ''}. Diary photos aren’t inside backups.`,
       );
       if (!ok) return;
+      const snap = { profile, plants, events };
       restoreBackup(data);
       haptics.success();
       setMsg({ text: `Welcome back, ${data.plants.length} ${data.plants.length === 1 ? 'plant' : 'plants'}! 🌿` });
       router.replace('/');
+      showUndo(`Restored ${data.plants.length} ${data.plants.length === 1 ? 'plant' : 'plants'}`, () => restoreSnapshot(snap));
     } catch (e) {
       setMsg({ text: (e as Error)?.message || 'Couldn’t read that file.', bad: true });
     } finally {
