@@ -18,7 +18,7 @@ import { activeTrip, upcomingTrip } from '@/engine/away';
 import { deleteAllPhotos } from '@/lib/photos';
 import { cloudReady, cloudSupported, runCloudBackup, useCloudStatus } from '@/lib/cloudBackup';
 import { savedWords } from '@/engine/cloudBackup';
-import { leave, stopSharing } from '@/lib/household';
+import { householdLine, householdSupported, leave, stopSharing } from '@/lib/household';
 import * as haptics from '@/lib/haptics';
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts, type, space } from '@/theme/tokens';
@@ -189,6 +189,12 @@ export default function SettingsScreen() {
         </GlassButton>
       </View>
       <Title>Settings</Title>
+
+      {householdSupported && (
+        <Section title="Household" footer="Look after the same plants together: everyone sees the jungle, the diary and the streak. Only the owner invites.">
+          <Row label="Household" sub={householdLine(profile.household)} onPress={() => router.push('/household')} last />
+        </Section>
+      )}
 
       <Section title="Reminders" footer="At most one reminder a day: when a plant is ready for a check, or on photo day. Nothing due means no notification.">
         <SwitchField label="Daily plant round" value={profile.round.enabled} onChange={(on) => setRound(on)}>
