@@ -4,6 +4,8 @@ import WidgetKit
 // The App Group the app writes to (src/lib/widget.ts) and the key it writes under.
 private let appGroup = "group.com.dzidziquist.plantfam"
 private let roundKey = "round"
+/// Where the app leaves each plant's cartoons (src/lib/widgetPayload.ts WIDGET_ART_DIR).
+private let artFolder = "widget-art-1"
 
 /// PlantFam's colours, in the Home Screen's light and dark looks (dark is the navy of the dark app icon).
 private struct Palette {
@@ -38,10 +40,13 @@ private struct Palette {
 
 // MARK: - Data from the app
 
-/// One plant: its name and when its next check falls due.
+/// One plant: its name, when its next check falls due, when it was last checked, and its cartoon (`a`, the
+/// name the app files its pictures under in the App Group).
 struct RoundPlant: Decodable {
   let n: String
   let d: Date
+  let l: Date?
+  let a: String?
 }
 
 /// A trip from away mode: from `f` until `t`.
@@ -54,6 +59,8 @@ struct RoundTrip: Decodable {
 struct RoundData: Decodable {
   let plants: [RoundPlant]
   let trips: [RoundTrip]?
+  /// No worried faces: the app's gentle (or face-free) look.
+  let g: Bool?
 }
 
 private func parseDate(_ text: String) -> Date? {
@@ -82,35 +89,44 @@ func loadRound() -> RoundData? {
 
 struct RoundEntry: TimelineEntry {
   let date: Date
-  /// Names due by the end of this entry's day, soonest first.
-  let due: [String]
+  /// Plants due by the end of this entry's day, soonest first.
+  let due: [RoundPlant]
+  /// The next few plants after today, soonest first: the shelf once the round is done, or while away.
+  let later: [RoundPlant]
   /// The next check after today, when nothing is due.
   let next: Date?
   /// End of a trip in progress.
   let away: Date?
   /// No plants shared yet (the app hasn't been opened since installing, or the jungle is empty).
   let empty: Bool
+  /// No worried faces.
+  let gentle: Bool
+
+  /// How plants on the shelf look: thirsty when due (happy in the gentle look), happy when done, asleep while away.
+  var mood: Mood { away != nil ? .snoozing : due.isEmpty || gentle ? .happy : .thirsty }
 }
 
 func entry(for day: Date, from data: RoundData?) -> RoundEntry {
   guard let data, !data.plants.isEmpty else {
-    return RoundEntry(date: day, due: [], next: nil, away: nil, empty: true)
+    return RoundEntry(date: day, due: [], later: [], next: nil, away: nil, empty: true, gentle: false)
   }
   let calendar = Calendar.current
   let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: day))!
+  let gentle = data.g ?? false
+  let sorted = data.plants.sorted { $0.d < $1.d }
   // Away for this entry's moment (a trip can start at one of the midnights ahead): no round, just when you're back.
   if let trip = data.trips?.first(where: { $0.f <= day && day < $0.t }) {
-    return RoundEntry(date: day, due: [], next: nil, away: trip.t, empty: false)
+    return RoundEntry(date: day, due: [], later: Array(sorted.prefix(3)), next: nil, away: trip.t, empty: false, gentle: gentle)
   }
-  let sorted = data.plants.sorted { $0.d < $1.d }
-  let due = sorted.filter { $0.d < endOfDay }.map(\.n)
-  let next = sorted.first { $0.d >= endOfDay }?.d
-  return RoundEntry(date: day, due: due, next: next, away: nil, empty: false)
+  let due = sorted.filter { $0.d < endOfDay }
+  let later = sorted.filter { $0.d >= endOfDay }
+  return RoundEntry(date: day, due: due, later: Array(later.prefix(3)), next: later.first?.d, away: nil, empty: false, gentle: gentle)
 }
 
 struct Provider: TimelineProvider {
   func placeholder(in context: Context) -> RoundEntry {
-    RoundEntry(date: Date(), due: ["Queenie", "Big Fig", "Cal", "Monty"], next: nil, away: nil, empty: false)
+    let sample = ["Queenie", "Big Fig", "Cal", "Monty"].map { RoundPlant(n: $0, d: Date(), l: nil, a: nil) }
+    return RoundEntry(date: Date(), due: sample, later: [], next: nil, away: nil, empty: false, gentle: false)
   }
 
   func getSnapshot(in context: Context, completion: @escaping (RoundEntry) -> Void) {
@@ -146,6 +162,19 @@ private func dayWord(_ date: Date, from now: Date) -> String {
   return formatter.string(from: date)
 }
 
+private func daysBetween(_ from: Date, _ to: Date) -> Int {
+  let calendar = Calendar.current
+  return calendar.dateComponents([.day], from: calendar.startOfDay(for: from), to: calendar.startOfDay(for: to)).day ?? 0
+}
+
+/// "today", "yesterday", "7 days ago".
+private func ago(_ date: Date, from now: Date) -> String {
+  let days = daysBetween(date, now)
+  if days <= 0 { return "today" }
+  if days == 1 { return "yesterday" }
+  return "\(days) days ago"
+}
+
 private func shortDate(_ date: Date) -> String {
   let formatter = DateFormatter()
   formatter.dateFormat = "MMM d"
@@ -164,14 +193,40 @@ private func rounded(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font {
 
 // MARK: - Views
 
-/// A plant from the app's art, standing clear of the widget's edge. Greyed in the tinted Home Screen look.
+enum Mood: String {
+  case happy, thirsty, snoozing
+
+  /// The Monstera bundled with the widget, for a plant whose own picture isn't in the App Group yet.
+  var standIn: String {
+    switch self {
+    case .happy: return "plantHappy"
+    case .thirsty: return "plantThirsty"
+    case .snoozing: return "plantSnoozing"
+    }
+  }
+}
+
+/// A plant's own cartoon in a mood, as the app left it in the App Group (src/lib/widget.ts); nil until it's there.
+private func plantImage(_ key: String?, _ mood: Mood) -> UIImage? {
+  guard let key,
+    let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)?
+      .appendingPathComponent("\(artFolder)/\(key)-\(mood.rawValue).png"),
+    let image = UIImage(contentsOfFile: url.path)
+  else { return nil }
+  // Decoded at widget size, not the app's 640 px: widgets have little memory to spare.
+  let scale = 220 / max(image.size.width, image.size.height, 1)
+  return image.preparingThumbnail(of: CGSize(width: image.size.width * scale, height: image.size.height * scale)) ?? image
+}
+
+/// A plant's cartoon (with its own see-through margin), or the bundled stand-in. Greyed in the tinted Home Screen look.
 private struct PlantArt: View {
   @Environment(\.widgetRenderingMode) private var mode
-  let name: String
+  let key: String?
+  let mood: Mood
   let height: CGFloat
 
   var body: some View {
-    let image = Image(name).resizable()
+    let image = (plantImage(key, mood).map { Image(uiImage: $0) } ?? Image(mood.standIn)).resizable()
     Group {
       if #available(iOS 18.0, *) {
         image.widgetAccentedRenderingMode(.desaturated)
@@ -201,33 +256,39 @@ struct SmallView: View {
 
   var body: some View {
     let c = Palette.of(scheme)
-    ZStack(alignment: .bottomTrailing) {
-      PlantArt(name: art, height: 62)
-        .padding(.trailing, 10)
-        .padding(.bottom, 10)
+    if let first = entry.due.first {
+      // Due: the count with the first plant's face beside it, its full name across the bottom.
       VStack(alignment: .leading, spacing: 0) {
         Eyebrow(text: "PLANT ROUND", color: c.muted)
-        if !entry.due.isEmpty {
-          Text("\(entry.due.count)").font(rounded(42)).foregroundStyle(c.ink).widgetAccentable()
-          Text(entry.due.count == 1 ? "check today" : "checks today").font(rounded(13, .bold)).foregroundStyle(c.ink)
-          Spacer(minLength: 4)
-          Text("Next up").font(rounded(11, .bold)).foregroundStyle(c.muted)
-          Text(entry.due[0]).font(rounded(13, .heavy)).foregroundStyle(c.ink).lineLimit(1)
-            .frame(maxWidth: 82, alignment: .leading)
-        } else {
+        HStack(alignment: .top, spacing: 0) {
+          VStack(alignment: .leading, spacing: 0) {
+            Text("\(entry.due.count)").font(rounded(42)).foregroundStyle(c.ink).widgetAccentable()
+            Text(entry.due.count == 1 ? "check today" : "checks today").font(rounded(13, .bold)).foregroundStyle(c.ink)
+          }
+          Spacer(minLength: 0)
+          PlantArt(key: first.a, mood: entry.mood, height: 80).padding(.top, -10).padding(.trailing, -6)
+        }
+        Spacer(minLength: 2)
+        Text("Next up").font(rounded(11, .bold)).foregroundStyle(c.muted)
+        Text(first.n).font(rounded(14, .heavy)).foregroundStyle(c.ink).lineLimit(2).minimumScaleFactor(0.85)
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+      .padding(14)
+    } else {
+      ZStack(alignment: .bottomTrailing) {
+        PlantArt(key: entry.later.first?.a, mood: entry.mood, height: 80)
+          .padding(.trailing, 4)
+          .padding(.bottom, 2)
+        VStack(alignment: .leading, spacing: 0) {
+          Eyebrow(text: "PLANT ROUND", color: c.muted)
           Text(headline).font(rounded(entry.empty ? 20 : 24)).foregroundStyle(c.ink).minimumScaleFactor(0.8).widgetAccentable()
             .padding(.top, 2)
           Text(subline).font(rounded(13, .bold)).foregroundStyle(c.ink)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(14)
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-      .padding(14)
     }
-  }
-
-  private var art: String {
-    if !entry.due.isEmpty { return "plantThirsty" }
-    return entry.away != nil ? "plantSnoozing" : "plantHappy"
   }
 
   private var headline: String {
@@ -250,34 +311,44 @@ struct MediumView: View {
 
   var body: some View {
     let c = Palette.of(scheme)
-    ZStack(alignment: .bottomTrailing) {
-      HStack(alignment: .bottom, spacing: 6) {
-        PlantArt(name: entry.away != nil ? "plantSnoozing" : entry.due.isEmpty ? "plantHappy" : "plantThirsty", height: 62)
-        PlantArt(name: "plantTomato", height: 58)
-        PlantArt(name: "plantSnake", height: 62)
+    VStack(alignment: .leading, spacing: 0) {
+      Eyebrow(text: "PLANT ROUND · \(weekday(entry.date))", color: c.muted)
+      Text(title).font(rounded(22)).foregroundStyle(c.ink).lineLimit(1).minimumScaleFactor(0.8).widgetAccentable()
+      if let text = line {
+        Text(text).font(rounded(13, .bold)).foregroundStyle(c.ink).lineLimit(1).minimumScaleFactor(0.85).padding(.top, 1)
       }
-      .padding(.trailing, 14)
-      .padding(.bottom, 10)
-      VStack(alignment: .leading, spacing: 4) {
-        Eyebrow(text: "PLANT ROUND · \(weekday(entry.date))", color: c.muted)
-        Text(title).font(rounded(22)).foregroundStyle(c.ink).widgetAccentable()
-        if !entry.due.isEmpty {
-          HStack(spacing: 5) {
-            ForEach(Array(entry.due.prefix(3).enumerated()), id: \.offset) { item in
-              Chip(text: item.element, palette: c)
-            }
-            if entry.due.count > 3 { Chip(text: "+\(entry.due.count - 3)", palette: c) }
+      Spacer(minLength: 0)
+      // A shelf: each plant's face over its name (due ones first), then how many more.
+      HStack(alignment: .bottom, spacing: 6) {
+        if shelf.isEmpty {
+          PlantArt(key: nil, mood: .happy, height: 66)
+        }
+        ForEach(Array(shelf.enumerated()), id: \.offset) { item in
+          VStack(spacing: -6) {
+            PlantArt(key: item.element.a, mood: entry.mood, height: 66)
+            Text(item.element.n).font(rounded(12, .heavy)).foregroundStyle(c.ink).lineLimit(1)
           }
-          .padding(.top, 2)
-        } else if let line = subline {
-          Text(line).font(rounded(13, .bold)).foregroundStyle(c.ink)
+          .frame(width: 92)
+        }
+        if more > 0 {
+          Text("+\(more)")
+            .font(rounded(13, .heavy))
+            .foregroundStyle(c.ink)
+            .frame(width: 34, height: 34)
+            .background(Circle().fill(c.chip))
+            .overlay(Circle().stroke(c.chipEdge, lineWidth: 1.5))
+            .padding(.bottom, 18)
         }
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-      .padding(.horizontal, 16)
-      .padding(.top, 14)
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    .padding(.horizontal, 16)
+    .padding(.top, 14)
+    .padding(.bottom, 10)
   }
+
+  private var shelf: [RoundPlant] { entry.due.isEmpty ? entry.later : Array(entry.due.prefix(3)) }
+  private var more: Int { max(entry.due.count - 3, 0) }
 
   private var title: String {
     if entry.empty { return "Add your first plant" }
@@ -286,28 +357,19 @@ struct MediumView: View {
     return entry.due.count == 1 ? "1 check left" : "\(entry.due.count) checks left"
   }
 
-  private var subline: String? {
+  /// Under the title: why the round matters today, or when it's next.
+  private var line: String? {
     if entry.empty { return "Open PlantFam to start your jungle." }
     if let away = entry.away { return "Back \(shortDate(away)). Your streak is safe." }
-    if let next = entry.next { return "Next check \(dayWord(next, from: entry.date))." }
-    return nil
-  }
-}
-
-/// A plant's name on a sticker pill.
-private struct Chip: View {
-  let text: String
-  let palette: Palette
-  var body: some View {
-    Text(text)
-      .font(rounded(12, .heavy))
-      .foregroundStyle(palette.ink)
-      .lineLimit(1)
-      .padding(.horizontal, 8)
-      .padding(.vertical, 3)
-      .background(Capsule().fill(palette.chip))
-      .overlay(Capsule().stroke(palette.chipEdge, lineWidth: 1.5))
-      .frame(maxWidth: 110)
+    if entry.due.isEmpty { return entry.next.map { "Next check \(dayWord($0, from: entry.date))." } }
+    if entry.due.count == 1 {
+      guard let last = entry.due[0].l else { return "First check. How’s the soil?" }
+      return "Last checked \(ago(last, from: entry.date)). How’s the soil?"
+    }
+    let checked = entry.due.compactMap { p in p.l.map { (p.n, $0) } }
+    guard let longest = checked.min(by: { $0.1 < $1.1 }) else { return "Feel the soil, then tap what you found." }
+    let days = max(daysBetween(longest.1, entry.date), 1)
+    return "\(longest.0) waited longest: \(days) \(days == 1 ? "day" : "days")."
   }
 }
 
