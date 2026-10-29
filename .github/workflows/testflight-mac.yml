@@ -11,6 +11,12 @@ name: TestFlight (GitHub Mac)
 # come from EAS, where they were set up by the first interactive build.
 on:
   workflow_dispatch:
+    inputs:
+      cloudkit:
+        description: iCloud (CloudKit) environment. Production for normal builds; Development only for a one-off build that adds a new record type to the Development schema, to deploy from there.
+        type: choice
+        options: [Production, Development]
+        default: Production
 
 jobs:
   build:
@@ -47,6 +53,8 @@ jobs:
         env:
           # Baked into the app at build time (photo ID). Optional: the app explains when it's missing.
           EXPO_PUBLIC_PLANTNET_KEY: ${{ secrets.EXPO_PUBLIC_PLANTNET_KEY }}
+          # Read by plugins/withHousehold.js.
+          CLOUDKIT_ENV: ${{ inputs.cloudkit || 'Production' }}
         run: eas build --platform ios --profile production --local --non-interactive --output "$RUNNER_TEMP/PlantFam.ipa"
 
       - name: Send to TestFlight
