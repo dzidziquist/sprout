@@ -56,7 +56,12 @@ interface HouseholdNative {
   pendingInvite(): Promise<Invite | null>;
   acceptInvite(url: string): Promise<string>;
   dismissInvite(): void;
-  addListener(event: 'onInvite', listener: () => void): EventSubscription;
+  /** Silent pushes when the jungle changes on another phone ('onChange'). */
+  subscribe(owner: string | null): Promise<void>;
+  unsubscribe(owner: string | null): Promise<void>;
+  /** A sync finished: lets iOS know the push that woke the app was handled. */
+  changeHandled(): void;
+  addListener(event: 'onInvite' | 'onChange', listener: () => void): EventSubscription;
 }
 
 /** Null on web, Android, tests and builds from before household sharing. */

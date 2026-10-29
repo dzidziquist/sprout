@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { create } from 'zustand';
-import { BACKUPS_DIR, PHOTOS_DIR, backupDue, backupName, newChain, photoNames, sortEntries, toPrune, type BackupEntry } from '../engine/cloudBackup';
+import { BACKUPS_DIR, PHOTOS_DIR, backupDue, backupName, newChain, photoNames, sortEntries, toPrune, unusedPhotos, type BackupEntry } from '../engine/cloudBackup';
 import { computeStreak } from '../engine/streak';
 import { DEFAULT_PROFILE, usePlantStore, withShared } from '../store/plantStore';
 import { buildExportJson, parseBackup, type BackupData, type ExportSource } from './export';
@@ -71,6 +71,32 @@ export async function saveToCloud(src: ExportSource, chain: string, now = new Da
   await ensureDir(c, dir);
   await c.writeFile(`${dir}/${backupName(now)}`, buildExportJson(src, now));
   for (const old of toPrune(await c.readdir(dir))) await c.unlink(`${dir}/${old}`).catch(() => {});
+  await cleanPhotos(c, now).catch(() => {});
+}
+
+/**
+ * Deletes photos no kept backup uses any more (a diary photo deleted in the app, then aged out of every
+ * phone's last four backups). Gives up without deleting anything if any backup can't be read, since
+ * then it can't be sure what's still used.
+ */
+async function cleanPhotos(c: Cloud, now: Date): Promise<void> {
+  const used = new Set<string>();
+  for (const chain of await c.readdir(BACKUPS_DIR)) {
+    const files = await c.readdir(`${BACKUPS_DIR}/${chain}`).catch(() => null);
+    if (!files) continue; // not a folder
+    for (const file of files.filter((f) => f.endsWith('.json'))) {
+      const parsed = parseBackup(await c.readFile(`${BACKUPS_DIR}/${chain}/${file}`));
+      if (!parsed.ok) return;
+      for (const name of photoNames(parsed.data.plants, parsed.data.events)) used.add(name);
+    }
+  }
+  const stored: { name: string; born: number }[] = [];
+  for (const name of await c.readdir(PHOTOS_DIR)) {
+    if (used.has(name)) continue;
+    const st = await c.stat(`${PHOTOS_DIR}/${name}`).catch(() => null);
+    if (st) stored.push({ name, born: st.birthtimeMs || st.mtimeMs });
+  }
+  for (const name of unusedPhotos(stored, used, now.getTime())) await c.unlink(`${PHOTOS_DIR}/${name}`).catch(() => {});
 }
 
 /** Every backup in iCloud, newest first. Empty when there's no iCloud or nothing saved yet. */

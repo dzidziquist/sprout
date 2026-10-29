@@ -193,6 +193,15 @@ export function signEvents(events: CareEvent[], me: string): { events: CareEvent
 /** Photo file names a jungle's diary points at (the same rule as the iCloud backup's). */
 export const diaryPhotos = (j: Pick<Jungle, 'plants' | 'events'>): string[] => photoNames(j.plants, j.events);
 
+/**
+ * Household photos (sent from here or fetched) that nothing in the jungle points at any more, now that
+ * the entry or plant that had them is gone everywhere: their iCloud copies and this phone's can go.
+ */
+export function orphanPhotos(known: Iterable<string>, j: Pick<Jungle, 'plants' | 'events'>): string[] {
+  const used = new Set(diaryPhotos(j));
+  return [...new Set(known)].filter((name) => !used.has(name));
+}
+
 /** "Ama", or "Someone" for a person whose name hasn't arrived yet. */
 export function nameOf(members: Record<string, Member>, id: string | undefined): string {
   return (id && members[id]?.name?.trim()) || 'Someone';

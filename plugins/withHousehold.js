@@ -33,6 +33,10 @@ const withHousehold = (config) => {
   });
   config = withInfoPlist(config, (c) => {
     c.modResults.CKSharingSupported = true;
+    // CloudKit's silent "the jungle changed" pushes can wake the app to sync.
+    const modes = Array.isArray(c.modResults.UIBackgroundModes) ? c.modResults.UIBackgroundModes : [];
+    if (!modes.includes('remote-notification')) modes.push('remote-notification');
+    c.modResults.UIBackgroundModes = modes;
     return c;
   });
   config = withAppDelegate(config, (c) => {
