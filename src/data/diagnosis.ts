@@ -64,6 +64,8 @@ export interface Cause {
   waterOnly?: boolean;
   /** Where the advice comes from (extension service pages and the like), added by the weekly knowledge task. */
   sources?: string[];
+  /** When it was last checked against its sources, as YYYY-MM (docs/knowledge.md). Unset: not reviewed yet. */
+  reviewed?: string;
 }
 
 export interface Symptom {

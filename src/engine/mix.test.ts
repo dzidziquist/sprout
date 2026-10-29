@@ -49,6 +49,9 @@ describe('mix brands', () => {
     expect(mixBrand('')).toBeUndefined();
   });
   it('gives every brand a source', () => {
-    for (const b of MIX_BRANDS) expect(b.source.length).toBeGreaterThan(10);
+    for (const b of MIX_BRANDS) {
+      expect(b.source.length).toBeGreaterThan(10);
+      if (b.reviewed) expect(b.reviewed, b.name).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
+    }
   });
 });
