@@ -19,10 +19,16 @@ struct RoundPlant: Decodable {
   let d: Date
 }
 
-/// What the app shares: every plant on the round, and the end of a trip in progress.
+/// A trip from away mode: from `f` until `t`.
+struct RoundTrip: Decodable {
+  let f: Date
+  let t: Date
+}
+
+/// What the app shares: every plant on the round, and every trip that isn't over yet.
 struct RoundData: Decodable {
   let plants: [RoundPlant]
-  let away: Date?
+  let trips: [RoundTrip]?
 }
 
 private func parseDate(_ text: String) -> Date? {
@@ -67,8 +73,9 @@ func entry(for day: Date, from data: RoundData?) -> RoundEntry {
   }
   let calendar = Calendar.current
   let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: day))!
-  if let away = data.away, away > day {
-    return RoundEntry(date: day, due: [], next: nil, away: away, empty: false)
+  // Away for this entry's moment (a trip can start at one of the midnights ahead): no round, just when you're back.
+  if let trip = data.trips?.first(where: { $0.f <= day && day < $0.t }) {
+    return RoundEntry(date: day, due: [], next: nil, away: trip.t, empty: false)
   }
   let sorted = data.plants.sorted { $0.d < $1.d }
   let due = sorted.filter { $0.d < endOfDay }.map(\.n)
