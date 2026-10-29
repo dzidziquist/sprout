@@ -103,6 +103,11 @@ interface PlantState {
    * events the check itself created (care logged alongside it stays). Not persisted.
    */
   undo: Record<string, CheckUndo>;
+  /**
+   * Goes up whenever the whole jungle is swapped (restore, its Undo, erase), so a backup that was
+   * already saving can tell its data is gone and not tie its chain to the new one. Not persisted.
+   */
+  dataEpoch: number;
   /** Changing the climate re-paces every upcoming check to the new seasons. */
   setProfile: (p: Partial<Profile>, now?: Date) => void;
   completeOnboarding: () => void;
@@ -320,6 +325,7 @@ export const usePlantStore = create<PlantState>()(
       events: [],
       onboarded: false,
       undo: {},
+      dataEpoch: 0,
 
       setProfile: (p, now = new Date()) =>
         set((s) => {
@@ -731,17 +737,18 @@ export const usePlantStore = create<PlantState>()(
           plants: data.plants,
           events: data.events,
           undo: {},
+          dataEpoch: s.dataEpoch + 1,
           onboarded: true,
           profile: { ...DEFAULT_PROFILE, ...s.profile, ...profile, supporter, supporterSince: supporter ? supporterSince ?? new Date().toISOString() : undefined, streakFreezes: s.profile.streakFreezes, coachDismissed: true },
         }));
       },
 
       restoreSnapshot: (snap) => {
-        set({ plants: snap.plants, events: snap.events, profile: snap.profile, undo: {} });
+        set((s) => ({ plants: snap.plants, events: snap.events, profile: snap.profile, undo: {}, dataEpoch: s.dataEpoch + 1 }));
       },
 
       eraseEverything: () => {
-        set({ plants: [], events: [], undo: {}, onboarded: false, profile: { ...DEFAULT_PROFILE, supporter: get().profile.supporter, supporterSince: get().profile.supporterSince } });
+        set((s) => ({ plants: [], events: [], undo: {}, dataEpoch: s.dataEpoch + 1, onboarded: false, profile: { ...DEFAULT_PROFILE, supporter: get().profile.supporter, supporterSince: get().profile.supporterSince } }));
       },
 
       seedDemo: (now = new Date()) => {

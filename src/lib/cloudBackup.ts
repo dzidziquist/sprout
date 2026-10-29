@@ -132,7 +132,7 @@ let running = false;
  */
 export async function runCloudBackup({ force = false } = {}): Promise<'saved' | 'waiting' | 'skipped' | 'failed'> {
   if (!cloudSupported || running) return 'skipped';
-  const { plants, events, profile, onboarded } = usePlantStore.getState();
+  const { plants, events, profile, onboarded, dataEpoch } = usePlantStore.getState();
   const cb = profile.cloudBackup ?? {};
   if (cb.off || !onboarded || !plants.length) return 'skipped';
   if (!force && !backupDue(cb.lastAt, new Date())) return 'skipped';
@@ -147,6 +147,11 @@ export async function runCloudBackup({ force = false } = {}): Promise<'saved' | 
     const chain = cb.chain ?? newChain();
     await saveToCloud({ profile, plants, events }, chain);
     const st = usePlantStore.getState();
+    // Erased or restored while this was saving: the chain belongs to data that's no longer here.
+    if (st.dataEpoch !== dataEpoch) {
+      status.set('idle');
+      return 'skipped';
+    }
     st.setProfile({ cloudBackup: { ...st.profile.cloudBackup, chain, lastAt: new Date().toISOString() } });
     status.set('idle');
     return 'saved';

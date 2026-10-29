@@ -1,6 +1,6 @@
 import { PlacePicker } from '@/components/PlacePicker';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AppState, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore, type FaceStyle } from '@/store/plantStore';
@@ -15,7 +15,7 @@ import { light, textOn, useColors, type Palette, selectedFill } from '@/theme/th
 import { LineIcon } from '@/components/LineIcon';
 import { BUDDY_IMAGES } from '@/data/buddyImages';
 import { backupDay, type BackupEntry } from '@/engine/cloudBackup';
-import { cloudSupported, listCloudBackups, restoreFromCloud } from '@/lib/cloudBackup';
+import { cloudReady, cloudSupported, listCloudBackups, restoreFromCloud } from '@/lib/cloudBackup';
 
 
 const TIMES = [
@@ -56,14 +56,30 @@ export default function Onboarding() {
   // A phone that's new to PlantFam but not to iCloud: offer the newest backup before setting up.
   const [found, setFound] = useState<BackupEntry | null>(null);
   const [fresh, setFresh] = useState(false);
+  // iCloud can take a while to sign in on a new phone, and longer to list what's in it: look again every
+  // few seconds for a minute, and whenever the app comes back to the front.
   useEffect(() => {
     if (!cloudSupported) return;
     let live = true;
-    listCloudBackups()
-      .then((all) => live && all[0] && setFound(all[0]))
-      .catch(() => {});
+    let tries = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const look = async () => {
+      clearTimeout(timer);
+      const all = (await cloudReady()) ? await listCloudBackups().catch(() => []) : [];
+      if (!live) return;
+      if (all[0]) return setFound(all[0]);
+      if (++tries < 20) timer = setTimeout(look, 3000);
+    };
+    look();
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st !== 'active') return;
+      tries = 0;
+      look();
+    });
     return () => {
       live = false;
+      clearTimeout(timer);
+      sub.remove();
     };
   }, []);
 
