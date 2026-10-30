@@ -184,11 +184,17 @@ public class HouseholdModule: Module {
     var items: [[String: Any]] = []
     var deleted: [String] = []
     var photos: [String] = []
+    // A record or photo that didn't come through this round: the token stays where it was, so the next
+    // round asks for these changes again instead of treating them as seen.
+    var incomplete = false
     do {
       while true {
         let changes = try await db.recordZoneChanges(inZoneWith: zone, since: since)
         for (_, result) in changes.modificationResultsByID {
-          guard case .success(let modification) = result else { continue }
+          guard case .success(let modification) = result else {
+            incomplete = true
+            continue
+          }
           let record = modification.record
           if record.recordType == "Photo" {
             if let asset = record["file"] as? CKAsset, let from = asset.fileURL {
@@ -196,9 +202,13 @@ public class HouseholdModule: Module {
               // Only a plain file name lands in the diary folder: nothing from iCloud can point elsewhere.
               guard isPlainFileName(name) else { continue }
               let to = URL(fileURLWithPath: diaryDir).appendingPathComponent(name)
-              try? FileManager.default.createDirectory(atPath: diaryDir, withIntermediateDirectories: true)
-              if !FileManager.default.fileExists(atPath: to.path) { try? FileManager.default.copyItem(at: from, to: to) }
-              photos.append(name)
+              do {
+                try FileManager.default.createDirectory(atPath: diaryDir, withIntermediateDirectories: true)
+                if !FileManager.default.fileExists(atPath: to.path) { try FileManager.default.copyItem(at: from, to: to) }
+                photos.append(name)
+              } catch {
+                incomplete = true
+              }
             }
             continue
           }
@@ -215,7 +225,7 @@ public class HouseholdModule: Module {
     } catch let error as CKError where error.code == .zoneNotFound || error.code == .userDeletedZone {
       return ["gone": true]
     }
-    let encoded: String? = since.flatMap { encodeToken($0) }
+    let encoded: String? = incomplete ? token : since.flatMap { encodeToken($0) }
     return ["items": items, "deleted": deleted, "photos": photos, "token": encoded as Any]
   }
 

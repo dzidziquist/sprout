@@ -128,7 +128,8 @@ export default function PlantDetail() {
   const goneFloor = archiveFloor(plant, events);
   const goneOptions = optionsSince(GONE, goneFloor, now);
   const rhythm = Math.round(checkIntervalDays({ group: species.group, plant, profile: profile.climate, at: now }));
-  const mine = events.filter((e) => e.plantId === plant.id);
+  // By date, not by the order they were logged in: a watering entered later for an earlier day is history, not the latest.
+  const mine = events.filter((e) => e.plantId === plant.id).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
   const lastWater = [...mine].reverse().find((e) => e.type === 'water');
   const parent = plants.find((p) => p.id === plant.parentId);
   const babies = plants.filter((p) => p.parentId === plant.id);

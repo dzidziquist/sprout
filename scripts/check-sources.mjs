@@ -45,10 +45,13 @@ for (const [url, list] of byUrl) {
   rows.push(`| ${status === 'ok' ? '✅' : status === 'check by hand' ? '👀' : '❌'} ${status} | ${url} | ${[...new Set(list.map((c) => c.entry))].join(", ")} | ${detail} |`);
 }
 
+const verified = rows.filter((r) => r.startsWith('| ✅')).length;
+const unverified = rows.filter((r) => r.startsWith('| 👀')).length;
 const report = [
   '## Knowledge sources',
   '',
-  `${byUrl.size} pages behind ${claims.length} claims. ${failed ? `**${failed} need fixing**` : 'All still say what we quote.'}`,
+  `${byUrl.size} pages behind ${claims.length} claims: ${verified} still say what we quote, ${unverified} could not be checked (check by hand), ${failed} need fixing.`,
+  ...(unverified && !failed ? ['', 'Nothing here was found wrong, but the pages above were **not** verified.'] : []),
   '',
   '| Result | Page | Backs | Detail |',
   '|---|---|---|---|',

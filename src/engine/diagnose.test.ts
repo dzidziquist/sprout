@@ -113,9 +113,16 @@ describe('plant doctor', () => {
   });
 
   it('works out the plant’s story', () => {
-    const s = signalsFor({ plant: plant({ light: 'low', potDiameterCm: 10, acquiredAt: '2025-01-01T00:00:00', lastRepottedAt: undefined }), events: checks('damp', 'damp'), climate: 'seattle', now });
+    const s = signalsFor({ plant: plant({ light: 'low', potDiameterCm: 10, acquiredAt: '2025-01-01T00:00:00', createdAt: '2025-01-01T00:00:00', lastRepottedAt: undefined }), events: checks('damp', 'damp'), climate: 'seattle', now });
     expect([...s]).toEqual(expect.arrayContaining(['wetChecks', 'lowLight', 'smallPot', 'oldMix', 'indoor', 'unfed']));
     expect(s.has('dryChecks')).toBe(false);
+  });
+
+  it('treats feeding from before the plant joined the app as unknown, not as missing', () => {
+    const since = (createdAt: string) => signalsFor({ plant: plant({ createdAt, acquiredAt: '2025-01-01T00:00:00' }), events: [], climate: 'seattle', now });
+    expect(since('2026-07-14T09:00:00').has('unfed')).toBe(false);
+    expect(since('2026-05-20T09:00:00').has('unfed')).toBe(false);
+    expect(since('2026-05-01T09:00:00').has('unfed')).toBe(true);
   });
 
   it('reads the fresh mix and the feeds: fresh fertilised mix isn\u2019t hunger, a spent one with no feed is', () => {

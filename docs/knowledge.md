@@ -91,6 +91,14 @@ The run is an orchestrator: it doesn't research or judge itself, it hands each s
    the review batch (each entry: changed or "still right"), the grader's table, proposed eval cases, and
    anything needing a person. Every change with its source. Never merge it.
 
+## How it reaches phones
+
+Knowledge is built into the app and ships with app releases: each release carries the knowledge merged
+before it, tested with that exact app. Merge knowledge PRs as they're reviewed and release at a pace a
+person can review (every few weeks), not every week. Wrong or unsafe advice goes out in an extra release
+straight away. Downloadable updates were considered and parked (branch `claude/kb-packs-parked`); they'd
+need signing first, and are only worth it if releases prove too slow (docs/reviews/2026-10-30).
+
 ## Review before merging
 
 Codex (OpenAI), connected to this repo, reviews every pull request automatically. The owner reads the
