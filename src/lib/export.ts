@@ -101,6 +101,32 @@ const PLANT_ENUMS: [string, (v: unknown) => boolean, unknown][] = [
 ];
 const PLANT_DATES = ['acquiredAt', 'createdAt', 'lastRepottedAt', 'lastCheckAt', 'archivedAt', 'stageAt', 'lastRefreshedAt'] as const;
 
+const RESULTS = ['dry', 'damp', 'soggy'] as const;
+const STAGES = ['seed', 'seedling', 'growing', 'flowering', 'fruiting', 'harvesting', 'resting'] as const;
+const opt = (ok: (v: unknown) => boolean) => (v: unknown) => v === undefined || ok(v);
+const isBool = (v: unknown): v is boolean => typeof v === 'boolean';
+const every = (ok: (v: unknown) => boolean) => (v: unknown) => Array.isArray(v) && v.every(ok);
+/** An object whose listed fields all pass (fields not listed are kept as they are). */
+const shape = (fields: Record<string, (v: unknown) => boolean>) => (v: unknown) => isObj(v) && Object.entries(fields).every(([k, ok]) => ok(v[k]));
+
+/** The optional plant fields, each checked all the way down when present: other code reads them without checking. */
+const PLANT_OPTIONAL: Record<string, (v: unknown) => boolean> = {
+  custom: shape({ commonName: isStr, latinName: opt(isStr), petToxic: opt(isBool) }),
+  selfWatering: oneOf(['always', 'away']),
+  room: isStr,
+  windowSpot: oneOf(['sill', 'below', 'near', 'far']),
+  windowId: isStr,
+  parentId: isStr,
+  rooting: shape({ method: oneOf(['water', 'moss', 'soil', 'leca']), startedAt: isDate }),
+  mix: shape({ name: opt(isStr), fertiliser: oneOf(['yes', 'no', 'unsure']), kind: opt(oneOf(['organic', 'slow'])), bagMonths: opt((v) => isNum(v) && v > 0), pottedAt: isDate }),
+  lastResult: oneOf(RESULTS),
+  stage: oneOf(STAGES),
+  regrowCount: (v) => isNum(v) && v >= 0,
+  photoUri: isStr,
+  archivedReason: oneOf(['died', 'gifted', 'composted']),
+};
+const isReading = shape({ at: isDate, lux: isNum, share: isNum, sunny: isBool, offPeak: opt(oneOf(['early', 'late'])), place: opt(isStr) });
+
 function readPlant(p: unknown): Plant | null {
   if (!isObj(p) || !isStr(p.id) || !p.id || !isStr(p.name) || !isStr(p.speciesId) || !p.speciesId || !isDate(p.nextCheckAt) || !isNum(p.k) || p.k <= 0) return null;
   const out: Record<string, unknown> = { ...p };
@@ -111,53 +137,87 @@ function readPlant(p: unknown): Plant | null {
   if (p.potDiameterCm === undefined) out.potDiameterCm = 15;
   else if (!isNum(p.potDiameterCm) || p.potDiameterCm <= 0) return null;
   for (const key of PLANT_DATES) if (p[key] !== undefined && !isDate(p[key])) return null;
+  for (const [key, ok] of Object.entries(PLANT_OPTIONAL)) if (p[key] !== undefined && !ok(p[key])) return null;
   const created = isDate(p.createdAt) ? p.createdAt : isDate(p.acquiredAt) ? p.acquiredAt : p.nextCheckAt;
   out.createdAt = created;
   out.acquiredAt = isDate(p.acquiredAt) ? p.acquiredAt : created;
-  if (p.mix !== undefined && !(isObj(p.mix) && isDate(p.mix.pottedAt) && oneOf(['yes', 'no', 'unsure'])(p.mix.fertiliser))) return null;
-  if (p.rooting !== undefined && !(isObj(p.rooting) && isDate(p.rooting.startedAt))) return null;
-  if (p.lightReadings !== undefined && !Array.isArray(p.lightReadings)) delete out.lightReadings;
+  // Light readings are only history: keep the good ones.
+  if (p.lightReadings !== undefined) {
+    const good = Array.isArray(p.lightReadings) ? p.lightReadings.filter(isReading) : [];
+    if (good.length) out.lightReadings = good;
+    else delete out.lightReadings;
+  }
   return out as unknown as Plant;
 }
 
+const EVENT_OPTIONAL: Record<string, (v: unknown) => boolean> = {
+  result: oneOf(RESULTS),
+  amount: isNum,
+  unit: isStr,
+  stage: oneOf(STAGES),
+  photoUri: isStr,
+  note: isStr,
+  nextAt: isDate,
+  before: shape({ k: (v) => isNum(v) && v > 0, nextCheckAt: isDate, lastCheckAt: opt(isDate), lastResult: opt(oneOf(RESULTS)) }),
+  by: isStr,
+};
+
+/** A damaged diary entry is dropped (the plant and the rest of its diary stay). */
 function readEvent(e: unknown, ids: Set<string>): CareEvent | null {
   if (!isObj(e) || !isStr(e.id) || !isStr(e.plantId) || !ids.has(e.plantId) || !oneOf(EVENT_TYPES)(e.type) || !isDate(e.at)) return null;
+  for (const [key, ok] of Object.entries(EVENT_OPTIONAL)) if (e[key] !== undefined && !ok(e[key])) return null;
   return e as unknown as CareEvent;
 }
 
+const isWindow = shape({ id: isStr, facing: opt(oneOf(['N', 'E', 'S', 'W'])), shade: oneOf(['none', 'sheer', 'outside']) });
+const isLegacyRoom = shape({ windows: every(oneOf(['N', 'E', 'S', 'W'])), shade: oneOf(['none', 'sheer', 'outside']), unsure: opt(isBool) });
+const isRoom = (v: unknown) => shape({ windows: every(isWindow) })(v) || isLegacyRoom(v);
+const isClimate = (v: unknown) =>
+  oneOf(['seattle', 'accra'])(v) ||
+  shape({
+    model: oneOf(['seattle', 'accra']),
+    shift: (x) => Number.isInteger(x) && Math.abs(x as number) <= 11,
+    place: isStr,
+    country: opt(isStr),
+    lat: (x) => isNum(x) && Math.abs(x) <= 90,
+    lon: (x) => isNum(x) && Math.abs(x) <= 180,
+    frost: isBool,
+  })(v);
+
 /**
- * The settings in a backup that other code reads without checking. A setting with the wrong shape is
- * left out (the phone keeps its own); the rest come through.
+ * The settings a backup may bring back, each checked all the way down. A setting with the wrong shape,
+ * or one a backup never carries (the household, iCloud backup state), is left out and the phone keeps
+ * its own.
  */
 const PROFILE_CHECKS: Record<string, (v: unknown) => boolean> = {
-  round: (v) => isObj(v) && typeof v.enabled === 'boolean' && isNum(v.hour) && isNum(v.minute),
-  grows: (v) => isObj(v) && typeof v.houseplants === 'boolean' && typeof v.edibles === 'boolean' && typeof v.cuttings === 'boolean',
+  climate: isClimate,
+  sunlight: shape({ key: isStr, clearness: (v) => Array.isArray(v) && v.length === 12 && v.every((x) => isNum(x) && x >= 0 && x <= 1), at: isDate }),
+  city: isStr,
+  faces: oneOf(['full', 'gentle', 'off']),
+  spots: every(oneOf(['indoors', 'window', 'balcony', 'garden', 'growlights'])),
+  grows: shape({ houseplants: isBool, edibles: isBool, cuttings: isBool, hydro: opt(isBool) }),
+  round: shape({ enabled: isBool, hour: (v) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 23, minute: (v) => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 59 }),
   photos: oneOf(['off', 'weekly', 'monthly']),
   theme: oneOf(['system', 'light', 'dark']),
-  faces: oneOf(['full', 'gentle', 'off']),
-  units: oneOf(['auto', 'imperial', 'metric']),
   accent: oneOf(['leaf', 'sky', 'grape', 'coral', 'bubblegum']),
   jungleView: oneOf(['grid', 'list', 'light']),
-  climate: (v) => isStr(v) || (isObj(v) && isStr(v.model) && isNum(v.shift) && isNum(v.lat) && isNum(v.lon) && typeof v.frost === 'boolean'),
-  city: isStr,
-  spots: Array.isArray,
-  wishlist: Array.isArray,
-  trips: Array.isArray,
-  rooms: isObj,
-  growTicks: isObj,
-  idUsage: (v) => isObj(v) && isStr(v.day) && isNum(v.count),
-  streakFreezes: isNum,
-  supporter: (v) => typeof v === 'boolean',
-  coachDismissed: (v) => typeof v === 'boolean',
+  rooms: (v) => isObj(v) && Object.values(v).every(isRoom),
+  lightTips: oneOf(['important', 'daily']),
+  aboutOpen: isBool,
+  wishlist: every(shape({ id: isStr, speciesId: isStr, custom: opt(shape({ commonName: isStr, latinName: opt(isStr) })), note: opt(isStr), savedAt: isDate })),
+  supporter: isBool,
+  supporterSince: isDate,
+  coachDismissed: isBool,
+  growTicks: (v) => isObj(v) && Object.values(v).every(isStr),
+  units: oneOf(['auto', 'imperial', 'metric']),
+  idUsage: shape({ day: isStr, count: isNum }),
+  trips: every(shape({ from: isDate, to: isDate, done: opt(every(isStr)) })),
 };
 
 function readProfile(raw: unknown): Partial<Profile> {
   if (!isObj(raw)) return {};
   const out: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(raw)) {
-    const check = PROFILE_CHECKS[key];
-    if (!check || check(value)) out[key] = value;
-  }
+  for (const [key, value] of Object.entries(raw)) if (PROFILE_CHECKS[key]?.(value)) out[key] = value;
   return out as Partial<Profile>;
 }
 

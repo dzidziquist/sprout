@@ -16,8 +16,10 @@ Only `src/data/diagnosis.ts`, `src/data/mixes.ts`, `src/data/edibles.ts`, `src/d
      claim, not a summary. If you can't find words that say it, you don't have a claim.
 3. New causes, symptoms and mixes go in with `status: 'draft'`; new species notes go in
    `SPECIES_NOTES_DRAFT`. Drafts never reach anyone.
-4. To correct a live entry, change it only where a claim backs the change, and list the before and after.
-5. Follow the house rules: plain words, "possible cause", common care mistakes before rare diseases, no
+4. Cover what the entry tells people to do, not only how to recognise the problem: the checks and the
+   fix steps need claims too. The app shows only the facts with claims as source-checked.
+5. To correct a live entry, change it only where a claim backs the change, and list the before and after.
+6. Follow the house rules: plain words, "possible cause", common care mistakes before rare diseases, no
    pesticide or chemical doses, British spelling, curly apostrophes.
 
 ## Hand over

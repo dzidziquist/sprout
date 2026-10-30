@@ -119,6 +119,17 @@ export interface MergeResult {
  * One round of syncing: takes in what other phones changed (`remote`, `deletedRemote`) and works out what
  * this phone sends up. `synced` is the agreed state from the last round.
  */
+/**
+ * After a full fetch (the token was too old): what this phone last agreed on but iCloud no longer has
+ * was deleted elsewhere. Only when the fetch was complete: a record that failed to come through is
+ * missing too, and reading that as a delete would wipe it here and its photos in iCloud.
+ */
+export function deletedSinceAgreed(synced: Synced, fetched: { id: string }[], incomplete: boolean | undefined): string[] {
+  if (incomplete) return [];
+  const there = new Set(fetched.map((i) => i.id));
+  return Object.keys(synced).filter((id) => !there.has(id));
+}
+
 export function merge(local: Jungle, synced: Synced, remote: RemoteItem[], deletedRemote: string[], now: number): MergeResult {
   const mine = toItems(local);
   const next: Synced = { ...synced };

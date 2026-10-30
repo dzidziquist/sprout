@@ -226,7 +226,7 @@ public class HouseholdModule: Module {
       return ["gone": true]
     }
     let encoded: String? = incomplete ? token : since.flatMap { encodeToken($0) }
-    return ["items": items, "deleted": deleted, "photos": photos, "token": encoded as Any]
+    return ["items": items, "deleted": deleted, "photos": photos, "token": encoded as Any, "incomplete": incomplete]
   }
 
   private func invite(title: String) async throws {

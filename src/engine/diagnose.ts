@@ -85,11 +85,11 @@ export function signalsFor({ plant, events, climate, now }: DiagnoseInput): Set<
   if (lastFeed && now.getTime() - lastFeed < 21 * DAY) s.add('fedRecently');
   const recentFeeds = feeds.filter((e) => now.getTime() - new Date(e.at).getTime() < 42 * DAY).length;
   if ((fresh && lastFeed && lastFeed > new Date(plant.mix!.pottedAt).getTime()) || recentFeeds >= 3) s.add('overFed');
-  // Only a diary that has been running for two months can say nothing was fed: before the plant joined
-  // the app its feeding is unknown, not absent.
-  const diarySince = new Date(plant.createdAt).getTime();
-  const lastFood = Math.max(lastFeed ?? 0, Math.min(mixUntil ?? 0, now.getTime()), Number.isNaN(diarySince) ? now.getTime() : diarySince);
-  if (!fresh && now.getTime() - lastFood > 60 * DAY) s.add('unfed');
+  // Unfed only when this diary records feeding (a feed logged here) and the last one was two months ago.
+  // A diary with no feeds says nothing: many people feed without logging it, so feeding stays unknown
+  // rather than counting as evidence. A fertilised mix that has run out is 'mixSpent' above.
+  const lastFood = Math.max(lastFeed ?? 0, Math.min(mixUntil ?? 0, now.getTime()));
+  if (lastFeed && !fresh && now.getTime() - lastFood > 60 * DAY) s.add('unfed');
   if (mine.some((e) => e.type === 'pest' && now.getTime() - new Date(e.at).getTime() < 30 * DAY)) s.add('pestLogged');
   return s;
 }

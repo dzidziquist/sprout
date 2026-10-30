@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { orphanPhotos, diaryPhotos, fingerprint, fromItems, merge, nameOf, othersLately, signEvents, stableJson, toItems, type Jungle, type RemoteItem, type Synced } from './household';
+import { deletedSinceAgreed, orphanPhotos, diaryPhotos, fingerprint, fromItems, merge, nameOf, othersLately, signEvents, stableJson, toItems, type Jungle, type RemoteItem, type Synced } from './household';
 import type { CareEvent, Plant } from '../types';
 
 const plant = (id: string, extra: Partial<Plant> = {}): Plant =>
@@ -167,5 +167,15 @@ describe('household photo cleanup', () => {
   it('lets go of photos no plant or diary entry points at any more', () => {
     const j = { plants: [plant('a', { photoUri: 'diary/cover.jpg' })], events: [event('e', { photoUri: 'diary/kept.jpg' })] };
     expect(orphanPhotos(['cover.jpg', 'kept.jpg', 'deleted.jpg', 'deleted.jpg'], j)).toEqual(['deleted.jpg']);
+  });
+});
+
+describe('a full fetch after a long gap', () => {
+  const synced = { a: { h: '1', at: 1 }, b: { h: '2', at: 1 }, c: { h: '3', at: 1 } };
+  it('reads what iCloud no longer has as deleted elsewhere', () => {
+    expect(deletedSinceAgreed(synced, [{ id: 'a' }, { id: 'b' }], false)).toEqual(['c']);
+  });
+  it('deletes nothing when some records didn’t come through', () => {
+    expect(deletedSinceAgreed(synced, [{ id: 'a' }], true)).toEqual([]);
   });
 });

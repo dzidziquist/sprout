@@ -121,4 +121,42 @@ describe('parseBackup', () => {
     const out = parseBackup(JSON.stringify({ ...good, events: [{ id: 'a', plantId: 'p1', type: 'check', at: 'x' }, { id: 'b', plantId: 'p1', type: 'dance', at: '2026-10-14T09:00:00.000Z' }, good.events[0]] }));
     expect(out.ok && out.data.events.map((e) => e.id)).toEqual(['e1']);
   });
+
+  it('checks nested values all the way down (the reviewers’ crash reproductions)', () => {
+    const bad = (patch: object) => parseBackup(JSON.stringify({ ...good, plants: [{ ...plant, ...patch }] })).ok;
+    expect(bad({ rooting: { method: 'air', startedAt: '2026-10-01T00:00:00Z' } })).toBe(false);
+    expect(bad({ rooting: { method: 'water' } })).toBe(false);
+    expect(bad({ mix: { fertiliser: 'yes', pottedAt: '2026-10-01T00:00:00Z', kind: 'rocket' } })).toBe(false);
+    expect(bad({ custom: { latinName: 'x' } })).toBe(false);
+    expect(bad({ stage: 'teenager' })).toBe(false);
+    expect(bad({ lastResult: 'wet' })).toBe(false);
+
+    const profile = (p: object) => {
+      const out = parseBackup(JSON.stringify({ ...good, profile: p }));
+      return out.ok ? out.data.profile : null;
+    };
+    // Climates the app can't work with are left out, so the phone keeps its own.
+    expect(profile({ climate: 'paris' })).toEqual({});
+    expect(profile({ climate: { model: 'mars', shift: 0, place: 'x', lat: 1, lon: 1, frost: false } })).toEqual({});
+    expect(profile({ climate: { model: 'seattle', shift: 1.5, place: 'x', lat: 1, lon: 1, frost: false } })).toEqual({});
+    expect(profile({ climate: { model: 'seattle', shift: 3, place: 'Toronto', lat: 43.7, lon: -79.4, frost: true } })).toHaveProperty('climate');
+    expect(profile({ climate: 'accra' })).toEqual({ climate: 'accra' });
+    expect(profile({ sunlight: { key: 'k', clearness: [0.5], at: '2026-01-01T00:00:00Z' } })).toEqual({});
+    expect(profile({ sunlight: { key: 'k', clearness: Array(12).fill(0.5), at: '2026-01-01T00:00:00Z' } })).toHaveProperty('sunlight');
+    expect(profile({ rooms: { Kitchen: { windows: [{ id: 'w', shade: 'lace' }] } } })).toEqual({});
+    expect(profile({ wishlist: [{ id: 'w' }] })).toEqual({});
+    expect(profile({ trips: [{ from: 'soon', to: 'later' }] })).toEqual({});
+    expect(profile({ round: { enabled: true, hour: 31, minute: 0 } })).toEqual({});
+    // Never part of a backup: a household or iCloud state in the file is ignored.
+    expect(profile({ household: { role: 'owner' }, cloudBackup: {}, made: 'up' })).toEqual({});
+  });
+
+  it('drops diary entries with damaged details, and keeps the good light readings', () => {
+    const at = '2026-10-14T09:00:00.000Z';
+    const out = parseBackup(JSON.stringify({ ...good, plants: [{ ...plant, lightReadings: [{ at, lux: 900, share: 0.4, sunny: false }, { lux: 'bright' }] }], events: [good.events[0], { id: 'r', plantId: 'p1', type: 'check', result: 'wet', at }, { id: 's', plantId: 'p1', type: 'undo', at }, { id: 'b', plantId: 'p1', type: 'check', at, before: { k: 1 } }] }));
+    expect(out.ok).toBe(true);
+    if (!out.ok) return;
+    expect(out.data.events.map((e) => e.id)).toEqual(['e1']);
+    expect(out.data.plants[0].lightReadings).toHaveLength(1);
+  });
 });

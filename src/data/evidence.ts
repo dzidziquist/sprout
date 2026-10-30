@@ -9,6 +9,8 @@ import { CAUSES, type Cause } from './diagnosis';
  */
 
 export interface Evidence {
+  /** What the source backs, in our words. */
+  claim: string;
   publisher: string;
   url: string;
   quote: string;
@@ -24,7 +26,7 @@ const publisher = (url: string) => {
 /** The supported claims behind a cause, one per quote. Empty for causes not yet source-checked. */
 export function evidenceFor(causeId: string): Evidence[] {
   if (CAUSES[causeId]?.status !== 'verified') return [];
-  return ledger.claims.filter((c) => c.entry === `cause:${causeId}` && c.verdict === 'supported').map((c) => ({ publisher: publisher(c.url), url: c.url, quote: c.quote }));
+  return ledger.claims.filter((c) => c.entry === `cause:${causeId}` && c.verdict === 'supported').map((c) => ({ claim: c.claim, publisher: publisher(c.url), url: c.url, quote: c.quote }));
 }
 
 /** "Oct 2026" for a cause checked against its sources, or undefined. */
