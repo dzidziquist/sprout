@@ -12,13 +12,17 @@ import type { CareEvent, ClimateProfile, Plant } from '../types';
 
 const DAY = 86400000;
 
-export type Likelihood = 'Likely' | 'Possible' | 'Less likely';
+/**
+ * Where a cause sits in the list. The scores are hand-set weights, good for ordering what to check, not
+ * odds: so the app says what to check first, never how likely a cause is (docs/reviews/2026-10-30).
+ */
+export type CheckOrder = 'Check this first' | 'Also possible';
 
 export interface Diagnosis {
   cause: Cause;
-  /** Share of the total score across the causes shown, 0..1. */
+  /** Share of the total score across the causes shown, 0..1. For ordering only: not a probability. */
   share: number;
-  likelihood: Likelihood;
+  order: CheckOrder;
   /** Why this plant's story points this way (only the reasons that apply). */
   why: string[];
 }
@@ -136,7 +140,7 @@ export function diagnose(symptomId: string, input: DiagnoseInput, limit = 3): Di
   const total = scored.reduce((n, x) => n + x.score, 0) || 1;
   return scored.map((x, i) => {
     const share = x.score / total;
-    const likelihood: Likelihood = i === 0 && share >= 0.4 ? 'Likely' : share >= 0.2 ? 'Possible' : 'Less likely';
-    return { cause: x.cause, share, likelihood, why: x.why };
+    const order: CheckOrder = i === 0 ? 'Check this first' : 'Also possible';
+    return { cause: x.cause, share, order, why: x.why };
   });
 }

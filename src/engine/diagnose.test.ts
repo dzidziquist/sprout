@@ -91,8 +91,18 @@ describe('plant doctor', () => {
   it('blames wet soil when the checks keep finding it wet', () => {
     const top = run('yellow-lower', plant(), checks('damp', 'soggy', 'damp'))[0];
     expect(top.cause.id).toBe('overwatering');
-    expect(top.likelihood).toBe('Likely');
+    expect(top.order).toBe('Check this first');
     expect(top.why.join(' ')).toMatch(/wet/);
+  });
+
+  it('labels causes by order only, the same however many are shown', () => {
+    const p = plant();
+    const ev = checks('damp', 'soggy', 'damp');
+    const three = run('yellow-lower', p, ev);
+    const one = diagnose('yellow-lower', { plant: p, events: ev, climate: 'seattle', now }, 1);
+    expect(three.map((r) => r.order)).toEqual(['Check this first', 'Also possible', 'Also possible']);
+    expect(one[0].order).toBe('Check this first');
+    expect(one[0].cause.id).toBe(three[0].cause.id);
   });
 
   it('blames thirst when the checks keep finding it bone dry', () => {

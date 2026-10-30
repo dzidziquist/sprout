@@ -7,7 +7,7 @@ import { shrinkPhoto } from '@/lib/shrinkPhoto';
 import { usePlantStore } from '@/store/plantStore';
 import { AREAS, CAUSES, type Cause, type SymptomArea } from '@/data/diagnosis';
 import { AREA_ICON, SYMPTOM_ART } from '@/data/symptomArt';
-import { diagnose, speciesNote, symptomsFor, type Likelihood } from '@/engine/diagnose';
+import { diagnose, speciesNote, symptomsFor, type CheckOrder } from '@/engine/diagnose';
 import { isReservoir } from '@/engine/careEngine';
 import { checkPlantHealth, plantHealthConfigured, type HealthResult } from '@/lib/plantHealth';
 import { PlantIdError } from '@/lib/plantId';
@@ -38,9 +38,9 @@ const PHOTO_ERRORS: Record<string, string> = {
   'camera-denied': 'The camera is switched off for PlantFam. Choose a photo from your library instead.',
 };
 
-const likelihoodFill = (l: Likelihood, c: Palette) => (l === 'Likely' ? c.coral : l === 'Possible' ? c.sun : c.cloud);
+const orderFill = (o: CheckOrder, c: Palette) => (o === 'Check this first' ? c.coral : c.cloud);
 
-/** The plant doctor: tap what you see, get the likely causes for this plant, what to check and what to do. */
+/** The plant doctor: tap what you see, get the possible causes for this plant in the order to check them, and what to do. */
 export default function DoctorScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -158,7 +158,7 @@ export default function DoctorScreen() {
 
       <View style={{ gap: 6 }}>
         <Title>What’s up with {plant.name}?</Title>
-        <Text style={[styles.sub, { color: c.inkMuted }]}>Tap what you see. We’ll use {plant.name}’s care history to work out the likely cause.</Text>
+        <Text style={[styles.sub, { color: c.inkMuted }]}>Tap what you see. We’ll use {plant.name}’s care history to work out what to check first.</Text>
       </View>
 
       {symptom ? (
@@ -266,7 +266,7 @@ export default function DoctorScreen() {
             <CauseCard
               key={r.cause.id}
               cause={r.cause}
-              likelihood={r.likelihood}
+              order={r.order}
               why={r.why}
               c={c}
               onSave={() => save(r.cause, symptom.label)}
@@ -343,21 +343,21 @@ export default function DoctorScreen() {
   );
 }
 
-function CauseCard({ cause, likelihood, why, c, onSave, onCutting }: { cause: Cause; likelihood?: Likelihood; why?: string[]; c: Palette; onSave: () => void; onCutting: () => void }) {
+function CauseCard({ cause, order, why, c, onSave, onCutting }: { cause: Cause; order?: CheckOrder; why?: string[]; c: Palette; onSave: () => void; onCutting: () => void }) {
   return (
     <Sticker drop={3} style={{ padding: 16, gap: 10 }}>
       <View style={styles.photoRow}>
-        {likelihood && (
+        {order && (
           <View
             style={[
               styles.pill,
               {
-                backgroundColor: likelihoodFill(likelihood, c),
+                backgroundColor: orderFill(order, c),
                 borderColor: c.line,
               },
             ]}
           >
-            <Text style={[styles.pillText, { color: likelihood === 'Less likely' ? c.ink : c.onBright }]}>{likelihood}</Text>
+            <Text style={[styles.pillText, { color: order === 'Also possible' ? c.ink : c.onBright }]}>{order}</Text>
           </View>
         )}
         <Text style={[styles.cardTitle, { color: c.ink, flex: 1 }]}>{cause.title}</Text>
@@ -365,7 +365,7 @@ function CauseCard({ cause, likelihood, why, c, onSave, onCutting }: { cause: Ca
       <Text style={[styles.body, { color: c.ink }]}>{cause.summary}</Text>
       {!!why?.length && (
         <View style={{ gap: 4 }}>
-          <Text style={[styles.small, { color: c.inkMuted }]}>WHY WE THINK SO</Text>
+          <Text style={[styles.small, { color: c.inkMuted }]}>WHY IT FITS</Text>
           {why.map((w) => (
             <Bullet key={w} text={w} c={c} />
           ))}
