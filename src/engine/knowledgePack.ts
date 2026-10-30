@@ -134,7 +134,8 @@ export function validatePack(raw: unknown, vocab: KbVocab, format: number, known
     if (c) causes.push(c);
     else dropped.push(`cause ${v.id}`);
   }
-  const causeIds = new Set([...known.causes, ...causes.filter((c) => c.status !== 'draft').map((c) => c.id)]);
+  // Withdrawn causes still count as references: the plant doctor skips drafts when it ranks.
+  const causeIds = new Set([...known.causes, ...causes.map((c) => c.id)]);
 
   const symptoms: KnowledgePack['symptoms'] = [];
   for (const v of list(raw.symptoms)) {
@@ -243,6 +244,16 @@ export function applyPack(pack: KnowledgePack): void {
   if (pack.mixes.length) MIX_BRANDS.splice(0, MIX_BRANDS.length, ...pack.mixes.map((m) => ({ ...m, match: new RegExp(m.match) })));
   for (const [id, s] of Object.entries(pack.species)) {
     const sp = SPECIES[id];
-    if (sp) Object.assign(sp, s);
+    if (!sp) continue;
+    // Back to the built-in values first, so a field a newer pack leaves out doesn't keep an older pack's value.
+    if (!builtInSpecies.has(id)) builtInSpecies.set(id, { tip: sp.tip, aliases: sp.aliases, petToxic: sp.petToxic });
+    const base = builtInSpecies.get(id)!;
+    sp.tip = base.tip;
+    sp.aliases = base.aliases;
+    sp.petToxic = base.petToxic!;
+    Object.assign(sp, s);
   }
 }
+
+/** The species fields as built into the app, kept the first time a pack changes them. */
+const builtInSpecies = new Map<string, PackSpecies>();

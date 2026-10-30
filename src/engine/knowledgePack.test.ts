@@ -59,6 +59,13 @@ describe('validatePack', () => {
     expect(pack.causes.length).toBe(Object.keys(CAUSES).length - 1);
   });
 
+  it('keeps symptoms that point at a withdrawn cause (the publish step knows only the pack)', () => {
+    const p = fresh();
+    p.causes = p.causes.map((c) => (c.id === 'overwatering' ? { id: 'overwatering', status: 'draft' as const } : c));
+    const { dropped } = validatePack(p, APP_VOCAB, KB_FORMAT, { causes: [], symptoms: [], species: Object.keys(SPECIES) });
+    expect(dropped).toEqual([]);
+  });
+
   it('accepts a withdrawal stub and rejects text that is too long', () => {
     const p = fresh();
     p.causes.push({ id: 'old-leaves', status: 'draft' });
@@ -92,6 +99,18 @@ describe('applyPack', () => {
     expect(mixBrand('fox farm ocean forest')?.name).toBe('FoxFarm Ocean Forest');
     expect(getSpecies('pothos').tip).toBe('A new pothos tip.');
     expect(getSpecies('pothos').commonName).toBe('Pothos');
+
+    // A newer pack that leaves a field out puts the built-in value back.
+    const builtInAliases = SPECIES.monstera.aliases;
+    const q = fresh();
+    q.species.monstera = { ...q.species.monstera, aliases: ['wrong name'] };
+    applyPack(validatePack(q, APP_VOCAB, KB_FORMAT, builtInIds()).pack);
+    expect(getSpecies('monstera').aliases).toEqual(['wrong name']);
+    const r = fresh();
+    delete r.species.monstera.aliases;
+    applyPack(validatePack(r, APP_VOCAB, KB_FORMAT, builtInIds()).pack);
+    expect(getSpecies('monstera').aliases).toEqual(builtInAliases);
+    applyPack(pack);
 
     // Applying it again (a "Check now" after startup) changes nothing.
     applyPack(pack);
