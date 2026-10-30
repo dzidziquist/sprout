@@ -1,0 +1,21 @@
+name: Knowledge sources (weekly)
+
+# Re-opens every page in knowledge/claims.json and checks it still loads and still says what we quote
+# (docs/knowledge.md). Fails, and GitHub emails the owner, when a page is gone or has changed; pages that
+# refuse robots are listed in the run summary for a person to check by hand. No secrets needed.
+on:
+  schedule:
+    - cron: '23 16 * * 1' # Mondays, 09:23 Seattle (summer) / 08:23 (winter)
+  workflow_dispatch:
+  pull_request:
+    paths: ['knowledge/claims.json']
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/check-sources.mjs

@@ -1,3 +1,4 @@
+import type { KnowledgeStatus } from './diagnosis';
 import type { Plant } from '../types';
 
 /*
@@ -21,6 +22,7 @@ export interface MixBrand {
   source: string;
   /** When it was last checked against the maker's label, as YYYY-MM (docs/knowledge.md). */
   reviewed?: string;
+  status?: KnowledgeStatus;
 }
 
 export const MIX_BRANDS: MixBrand[] = [
@@ -38,5 +40,5 @@ export const MIX_BRANDS: MixBrand[] = [
 /** The well-known mix this name refers to, if any. */
 export function mixBrand(name: string): MixBrand | undefined {
   const text = name.toLowerCase().replace(/\s+/g, ' ').trim();
-  return text ? MIX_BRANDS.find((b) => b.match.test(text)) : undefined;
+  return text ? MIX_BRANDS.find((b) => b.status !== 'draft' && b.match.test(text)) : undefined;
 }

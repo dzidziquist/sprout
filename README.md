@@ -67,13 +67,13 @@ Stack: Expo SDK 54, Expo Router, Zustand + AsyncStorage, react-native-svg, a loc
 
 ## Knowledge, kept up to date
 
-The app's advice comes from data files, so it stays free, private and offline. A **weekly scheduled Claude Code task** (Saturdays) keeps it growing and correct, following `docs/knowledge.md`:
+The app's advice comes from data files, so it stays free, private and offline. A **weekly scheduled Claude Code task** (Saturdays) grows and re-checks it, built so wrong data doesn't reach anyone (`docs/knowledge.md`):
 
-- takes the next topic from `docs/knowledge-topics.md` and adds well-sourced knowledge (extension services, the RHS, makers' labels; never blogs or AI answers);
-- re-reviews the entries checked longest ago, and stamps them `reviewed: 'YYYY-MM'`;
-- runs the tests and opens one pull request. It never merges.
-
-Every pull request also gets an automatic review from **Codex** (OpenAI), which is connected to this repo. A person reads both before merging.
+- **Separate agents** (`docs/agents/`): a researcher drafts; a fact-checker who sees only the claims opens every page itself; a safety editor reviews the diff; a grader grades the result.
+- **Claims ledger** (`knowledge/claims.json`): every fact behind a verified entry has a page from an approved site (`knowledge/sources.json`) and the exact words that support it.
+- **Drafts stay hidden**: entries are `draft` until they pass, and the app never shows drafts.
+- **Evals** (`evals/`, readable in `evals/CASES.md`): plant situations with the answer the app must give, run on every change (`npm test`). A weekly workflow re-opens every source page.
+- **Codex** (OpenAI, connected to this repo) reviews every pull request, and a person merges.
 
 ## Secrets
 

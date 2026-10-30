@@ -4,6 +4,21 @@ PlantFam gives its advice offline, from data files in the app: no AI or network 
 free and private. A weekly scheduled Claude Code task keeps that knowledge growing and correct, and
 each run opens **one pull request** for a human to review before it ships.
 
+Wrong advice is kept out four ways:
+
+1. **Separate agents**, each starting fresh with one job (`docs/agents/`): a researcher drafts, a
+   fact-checker who sees only the claims opens every page itself, a safety editor reviews the diff, and a
+   grader grades the result. Nobody checks their own work.
+2. **A claims ledger** (`knowledge/claims.json`): every fact behind a verified entry has a page from an
+   approved site (`knowledge/sources.json`) and the exact words that support it.
+3. **Drafts stay hidden.** Entries carry `status: 'draft' | 'verified'`; the app never shows drafts.
+   (Entries without a status were written and reviewed by hand before this pipeline.)
+4. **Evals** (`evals/`, readable list in `evals/CASES.md`): plant situations with the answer the app must
+   give. Every change runs them; a `must` case failing blocks it. A weekly workflow re-opens every source
+   page to catch dead links and pages that changed.
+
+Then Codex reviews the pull request, and a person merges it.
+
 ## What the task may change
 
 Only these knowledge files (and their tests):
@@ -55,16 +70,26 @@ sources. Unset means never reviewed, which counts as oldest.
 
 ## Each run
 
-1. Read this file and `docs/knowledge-topics.md`; take the first unticked topic.
-2. Research it from the sources above. Compare with what the files say now.
-3. Make small, careful changes: fix what's wrong or out of date, fill real gaps. Fewer, well-sourced
-   changes beat many shaky ones. If nothing needs changing, say so.
-4. Review the oldest entries (above) and stamp them.
-5. Run `npm run ts:check` and `npm test`. Both must pass.
-6. Tick the topic off, with the date and the PR.
-7. Open one PR titled `Knowledge: <topic> + review`, with three parts: the topic's changes, the review
-   (each entry checked, what changed or "still right"), and anything that needs a human look. Every
-   change with its source. Never merge it.
+The run is an orchestrator: it doesn't research or judge itself, it hands each step to a fresh agent
+(the Agent tool) with that agent's file from `docs/agents/` and only the inputs listed there.
+
+1. Read this file and `docs/knowledge-topics.md`; take the first unticked topic. Also pick the review
+   batch: the 5 causes and 3 mixes with the oldest (or no) `reviewed`.
+2. **Researcher** (`docs/agents/researcher.md`): drafts the topic's changes, and gathers claims for the
+   review batch. New entries go in as drafts; every fact as a pending claim with its exact quote.
+3. **Fact-checker** (`docs/agents/fact-checker.md`), given only the pending claims: opens every page and
+   sets each verdict.
+4. **Safety editor** (`docs/agents/safety-editor.md`), given only the diff: approves or flags each entry.
+5. **Grader** (`docs/agents/grader.md`): grades each changed entry and proposes `should` eval cases.
+6. **Promote**: an entry becomes `status: 'verified'` (and gets `reviewed` this month) only if all its
+   claims are `supported`, the safety editor approved it and the grader graded it `supported`. Anything
+   else stays a draft, and a correction to a live entry that doesn't pass is taken back out.
+7. Run `npm run ts:check`, `npm test` (ledger rules and evals) and `node scripts/check-sources.mjs`. All
+   must pass.
+8. Tick the topic off, with the date and the PR.
+9. Open one PR titled `Knowledge: <topic> + review` with: what was promoted, what stayed draft and why,
+   the review batch (each entry: changed or "still right"), the grader's table, proposed eval cases, and
+   anything needing a person. Every change with its source. Never merge it.
 
 ## Review before merging
 

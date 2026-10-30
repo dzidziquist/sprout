@@ -65,6 +65,22 @@ describe('plant doctor knowledge', () => {
     }
   });
 
+  it('never shows drafts: causes, symptoms or species notes waiting for verification', () => {
+    const symptom = SYMPTOMS.find((x) => x.id === 'yellow-lower')!;
+    CAUSES['draft-test'] = { id: 'draft-test', title: 'Draft', summary: 'Not checked yet.', check: ['x'], fix: ['y'], status: 'draft' };
+    symptom.causes.push({ cause: 'draft-test', prior: 1000 });
+    SYMPTOMS.push({ id: 'draft-symptom', area: 'leaves', label: 'Draft', hint: 'Draft', causes: [{ cause: 'hungry', prior: 1 }], status: 'draft' });
+    try {
+      expect(diagnose('yellow-lower', { plant: plant(), events: [], climate: 'seattle', now }).map((d) => d.cause.id)).not.toContain('draft-test');
+      expect(symptomsFor(plant()).map((x) => x.id)).not.toContain('draft-symptom');
+      expect(diagnose('draft-symptom', { plant: plant(), events: [], climate: 'seattle', now })).toEqual([]);
+    } finally {
+      symptom.causes.pop();
+      SYMPTOMS.pop();
+      delete CAUSES['draft-test'];
+    }
+  });
+
   it('never gives pesticide doses', () => {
     const text = JSON.stringify(CAUSES).toLowerCase();
     expect(text).not.toMatch(/\bml\b|per litre|per gallon|neem|insecticide|pesticide/);
