@@ -1,7 +1,7 @@
 import { Alert, Platform } from 'react-native';
 import { create } from 'zustand';
 import { Household as Native, type Invite, type Person } from '../../modules/household';
-import { diaryPhotos, merge, orphanPhotos, pickShared, signEvents, type Jungle, type RemoteItem } from '../engine/household';
+import { deletedSinceAgreed, diaryPhotos, merge, orphanPhotos, pickShared, signEvents, type Jungle, type RemoteItem } from '../engine/household';
 import { usePlantStore, type Household } from '../store/plantStore';
 import { deletePhoto } from './photos';
 
@@ -71,10 +71,7 @@ async function round() {
     // Too long since the last sync: fetch everything. What was agreed still stands (so edits made here
     // meanwhile win as usual), and anything agreed that iCloud no longer has was deleted elsewhere.
     changes = await Native.fetchChanges(owner, null, diaryDir());
-    if (!changes.gone && !changes.reset) {
-      const there = new Set((changes.items ?? []).map((i) => i.id));
-      changes = { ...changes, deleted: Object.keys(synced).filter((id) => !there.has(id)) };
-    }
+    if (!changes.gone && !changes.reset) changes = { ...changes, deleted: deletedSinceAgreed(synced, changes.items ?? [], changes.deleted ?? [], changes.incomplete) };
   }
   if (changes.gone) return ended(h);
 
@@ -116,8 +113,9 @@ async function round() {
 
   // Photos nothing points at any more (their diary entry or plant deleted on some phone): out of
   // iCloud, and off this phone. Not in a round where a save or delete failed: iCloud may still hold
-  // the entry that points at them, so they wait for a round where everything went through.
-  const orphans = failed.length ? [] : orphanPhotos(have, r.jungle);
+  // the entry that points at them, so they wait for a round where everything went through. Nor in a
+  // round where something didn't come down from iCloud: the entry pointing at them may be what's missing.
+  const orphans = failed.length || changes.incomplete ? [] : orphanPhotos(have, r.jungle);
   if (orphans.length) {
     const failed = new Set(await Native.save(owner, [], orphans.map((n) => `p-${n}`)).catch(() => orphans.map((n) => `p-${n}`)));
     for (const name of orphans) {

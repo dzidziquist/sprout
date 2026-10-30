@@ -19,6 +19,11 @@ export interface Changes {
   reset?: boolean;
   /** The household is gone: stopped by the owner, or this person was removed or left. */
   gone?: boolean;
+  /**
+   * Some records or photos didn't come through this time (the token stays put so they come again).
+   * What's missing from the items must not be read as deleted.
+   */
+  incomplete?: boolean;
 }
 
 export interface Person {

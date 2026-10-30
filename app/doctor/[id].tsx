@@ -405,7 +405,13 @@ function WhyThisAdvice({ cause, c }: { cause: Cause; c: Palette }) {
   return (
     <View style={{ gap: 10 }}>
       <View style={[styles.whyRow, { borderColor: c.cloud }]}>
-        {month ? <Text style={[styles.whyNote, { color: c.link, flex: 1 }]}>✓ Source checked {month}</Text> : <View style={{ flex: 1 }} />}
+        {month ? (
+          <Text style={[styles.whyNote, { color: c.link, flex: 1 }]}>
+            ✓ {evidence.length} {evidence.length === 1 ? 'fact' : 'facts'} source-checked {month}
+          </Text>
+        ) : (
+          <View style={{ flex: 1 }} />
+        )}
         <Pressable
           accessibilityRole="button"
           accessibilityState={{ expanded: open }}
@@ -423,11 +429,15 @@ function WhyThisAdvice({ cause, c }: { cause: Cause; c: Palette }) {
           <View style={{ gap: 8 }}>
             {evidence.map((e) => (
               <View key={e.quote} style={[styles.whyBox, { backgroundColor: c.mint }]}>
-                <Text style={[styles.whyTitle, { color: textOn(c.mint, c) }]}>{e.publisher}</Text>
-                <Text style={[styles.body, { color: textOn(c.mint, c) }]}>“{e.quote}”</Text>
+                <Text style={[styles.whyTitle, { color: textOn(c.mint, c) }]}>{e.claim}</Text>
+                <Text style={[styles.body, { color: textOn(c.mint, c) }]}>
+                  {e.publisher}: “{e.quote}”
+                </Text>
               </View>
             ))}
-            <Text style={[styles.whyNote, { color: c.inkMuted }]}>Checked against {evidence.length > 1 ? 'these sources' : 'this source'} in {checkedMonth(cause)}, then reviewed for safety before it shipped.</Text>
+            <Text style={[styles.whyNote, { color: c.inkMuted }]}>
+              Only {evidence.length > 1 ? 'these facts were' : 'this fact was'} checked against a source, in {checkedMonth(cause)}. The rest of the card, including what to do, is general care advice that hasn’t been checked fact by fact yet.
+            </Text>
             {[...new Set(evidence.map((e) => e.url))].map((url) => (
               <Button key={url} title={`Open the ${evidence.find((e) => e.url === url)!.publisher} page`} bg={c.cloud} onPress={() => Linking.openURL(url)} style={{ minHeight: 44 }} />
             ))}
