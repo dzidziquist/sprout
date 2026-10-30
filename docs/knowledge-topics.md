@@ -16,3 +16,17 @@ the date and its PR. Add topics anywhere; when the list is done, start again fro
 - [ ] Leafy greens in pots: bolting, tip burn, feeding
 - [ ] Citrus and figs in pots: feeding, leaf drop, overwintering
 - [ ] Pet safety: check the toxicity flags in the catalogue against the ASPCA list
+- [ ] Tomatoes and peppers: blossom drop, poor fruit set and pollination indoors
+- [ ] Watering by pot type: terracotta, plastic, fabric grow bags, self-watering pots
+- [ ] Repotting: when, pot size steps, transplant shock, root-bound signs
+- [ ] Monstera, philodendron and pothos: yellowing, browning, aerial roots, support
+- [ ] Fiddle-leaf fig and rubber plant: leaf drop, brown spots, moving shock
+- [ ] Orchids (phalaenopsis): watering, reblooming, root health
+- [ ] Snake plant, ZZ and other drought-tolerant plants: rot and winter care
+- [ ] Spring onions, garlic and leeks in pots: regrowing, bolting, feeding
+- [ ] Strawberries and blueberries in pots: soil acidity, feeding, winter
+- [ ] Hydroponic and LECA growing: nutrients, water changes, root rot
+- [ ] Grow lights: distance, hours, heat, light burn
+- [ ] Pests outdoors in Seattle: slugs, aphids, cabbage worms (non-chemical)
+- [ ] Ghana crops: garden egg, okra, kontomire, pepper (shito) in pots and beds
+- [ ] Potting mix catalogue round 2: UK and Ghana brands, peat-free mixes

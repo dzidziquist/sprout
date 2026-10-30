@@ -9,6 +9,16 @@
 
 export type SymptomArea = 'leaves' | 'stems' | 'soil' | 'bugs' | 'fruit';
 
+/**
+ * Where an entry is in the knowledge pipeline (docs/knowledge.md). Drafts are kept but never shown in
+ * the app; an entry becomes verified only after the fact-checker, the safety editor and the evals pass
+ * and the owner merges it. Unset: written and reviewed by hand before the pipeline existed.
+ */
+export type KnowledgeStatus = 'draft' | 'verified';
+
+/** Shown in the app: anything that isn't a draft. */
+export const isLive = (entry: { status?: KnowledgeStatus } | undefined): boolean => !!entry && entry.status !== 'draft';
+
 /** Facts the engine works out from the plant, its diary and the season. */
 export type Signal =
   | 'wetChecks' // two or more of the last three checks found the soil damp or soggy
@@ -66,6 +76,7 @@ export interface Cause {
   sources?: string[];
   /** When it was last checked against its sources, as YYYY-MM (docs/knowledge.md). Unset: not reviewed yet. */
   reviewed?: string;
+  status?: KnowledgeStatus;
 }
 
 export interface Symptom {
@@ -83,6 +94,7 @@ export interface Symptom {
   /** Wording for LECA or water plants, when it differs. */
   waterLabel?: string;
   waterHint?: string;
+  status?: KnowledgeStatus;
 }
 
 export const AREAS: { id: SymptomArea; label: string }[] = [
@@ -198,6 +210,9 @@ export const CAUSES: Record<string, Cause> = {
     check: ['Was it fed while its mix was still fresh, or more than once in a couple of weeks?', 'Is there a white crust on the soil or the pot rim?', 'Do the brown edges start at the tips of older leaves?'],
     fix: ['Flush the pot: run plenty of plain water through it, let it drain fully, and repeat once.', 'Skip feeding for a few weeks.', 'From then on, feed at half strength and only while it’s growing.'],
     signals: [{ signal: 'overFed', weight: 3, why: 'It’s been fed on top of fresh mix, or several times lately.' }, { signal: 'freshMix', weight: 1.6, why: 'Its fresh mix still carries plenty of food.' }, { signal: 'fedRecently', weight: 1.5, why: 'It was fed recently.' }, { signal: 'slowSeason', weight: 1.3, why: 'Slow winter growth uses little food, so it builds up.' }, { signal: 'unfed', weight: 0.2, why: '' }, { signal: 'mixSpent', weight: 0.4, why: '' }],
+    sources: ['https://ipm.ucanr.edu/home-and-landscape/nitrogen-excess/'],
+    reviewed: '2026-10',
+    status: 'verified',
   },
   'too-much-nitrogen': {
     id: 'too-much-nitrogen',
@@ -206,6 +221,9 @@ export const CAUSES: Record<string, Cause> = {
     check: ['Is the plant big and very green, with few flowers?', 'Is it being fed a general or leafy-greens feed rather than a tomato feed?'],
     fix: ['Switch to a tomato (high-potash) feed once flowers appear.', 'Hold off on general-purpose feed and extra compost.', 'Give it the brightest spot you have: low light also means leaves over fruit.'],
     signals: [{ signal: 'freshMix', weight: 1.6, why: 'Rich fresh mixes are high in nitrogen.' }, { signal: 'fedRecently', weight: 1.3, why: 'It’s been fed lately.' }, { signal: 'fruiting', weight: 1.4, why: '' }, { signal: 'lowLight', weight: 1.3, why: 'Low light also pushes leaves over fruit.' }],
+    sources: ['https://ipm.ucanr.edu/home-and-landscape/nitrogen-excess/'],
+    reviewed: '2026-10',
+    status: 'verified',
   },
   magnesium: {
     id: 'magnesium',
@@ -214,6 +232,9 @@ export const CAUSES: Record<string, Cause> = {
     check: ['Do the veins stay green while the leaf between them yellows?', 'Is it the older, lower leaves first?'],
     fix: ['Use a feed that lists magnesium (Mg); many tomato feeds do.', 'Or add a magnesium supplement made for plants, following its label.', 'Keep watering even: dry roots take up less.'],
     signals: [{ signal: 'fruiting', weight: 1.8, why: 'Fruiting crops use a lot of magnesium.' }, { signal: 'edible', weight: 1.3, why: '' }, { signal: 'mixSpent', weight: 1.4, why: 'The food in its fresh mix has likely run out.' }, { signal: 'unfed', weight: 1.3, why: 'No feed logged in a couple of months.' }, { signal: 'freshMix', weight: 0.6, why: '' }],
+    sources: ['https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies'],
+    reviewed: '2026-10',
+    status: 'verified',
   },
   potassium: {
     id: 'potassium',
@@ -222,6 +243,9 @@ export const CAUSES: Record<string, Cause> = {
     check: ['Do the edges of older leaves yellow first, then brown?', 'Is it fruiting, and when did it last get a tomato feed?'],
     fix: ['Feed with a tomato (high-potash) feed at half strength.', 'Keep it up every 2 weeks while fruit is swelling.'],
     signals: [{ signal: 'fruiting', weight: 2, why: 'Swelling fruit takes a lot of potassium.' }, { signal: 'mixSpent', weight: 1.5, why: 'The food in its fresh mix has likely run out.' }, { signal: 'unfed', weight: 1.4, why: 'No feed logged in a couple of months.' }, { signal: 'freshMix', weight: 0.5, why: '' }, { signal: 'fedRecently', weight: 0.6, why: '' }],
+    sources: ['https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies'],
+    reviewed: '2026-10',
+    status: 'verified',
   },
   'purple-cold': {
     id: 'purple-cold',
@@ -446,6 +470,12 @@ export const TAP_SENSITIVE = new Set(['calathea', 'calathea-medallion', 'calathe
 
 /** Shade lovers that scorch in direct sun. */
 export const SHADE_LOVERS = new Set(['calathea', 'maranta', 'peace-lily', 'boston-fern', 'maidenhair-fern', 'birds-nest-fern', 'kimberly-queen-fern', 'heart-fern', 'aglaonema', 'nerve-plant', 'african-violet', 'phalaenopsis', 'parlor-palm', 'zz', 'cast-iron-plant']);
+
+/**
+ * Species notes waiting for verification (docs/knowledge.md): kept here, never shown, until the pipeline
+ * moves them into SPECIES_NOTES.
+ */
+export const SPECIES_NOTES_DRAFT: Record<string, Partial<Record<string, string>>> = {};
 
 /** Short species notes that sharpen a symptom, shown above the causes. */
 export const SPECIES_NOTES: Record<string, Partial<Record<string, string>>> = {

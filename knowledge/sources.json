@@ -1,0 +1,28 @@
+{
+  "about": "Sites whose pages may back a fact in PlantFam's knowledge (docs/knowledge.md). A claim's link must be on one of these domains or a subdomain. Add a site only after a person agrees it's a primary, expert source.",
+  "domains": [
+    { "domain": "rhs.org.uk", "name": "Royal Horticultural Society", "kind": "society" },
+    { "domain": "ipm.ucanr.edu", "name": "UC Statewide IPM Program", "kind": "extension" },
+    { "domain": "ucanr.edu", "name": "University of California Agriculture and Natural Resources", "kind": "extension" },
+    { "domain": "extension.wsu.edu", "name": "Washington State University Extension", "kind": "extension" },
+    { "domain": "pubs.extension.wsu.edu", "name": "WSU Extension publications", "kind": "extension" },
+    { "domain": "extension.oregonstate.edu", "name": "Oregon State University Extension", "kind": "extension" },
+    { "domain": "extension.umn.edu", "name": "University of Minnesota Extension", "kind": "extension" },
+    { "domain": "hgic.clemson.edu", "name": "Clemson Home & Garden Information Center", "kind": "extension" },
+    { "domain": "edis.ifas.ufl.edu", "name": "UF/IFAS EDIS", "kind": "extension" },
+    { "domain": "ask.ifas.ufl.edu", "name": "UF/IFAS Ask IFAS", "kind": "extension" },
+    { "domain": "extension.psu.edu", "name": "Penn State Extension", "kind": "extension" },
+    { "domain": "extension.illinois.edu", "name": "University of Illinois Extension", "kind": "extension" },
+    { "domain": "extension.wisc.edu", "name": "University of Wisconsin–Madison Extension", "kind": "extension" },
+    { "domain": "extension.colostate.edu", "name": "Colorado State University Extension", "kind": "extension" },
+    { "domain": "extension.missouri.edu", "name": "University of Missouri Extension", "kind": "extension" },
+    { "domain": "ag.umass.edu", "name": "UMass Amherst Extension", "kind": "extension" },
+    { "domain": "aspca.org", "name": "ASPCA (pet safety)", "kind": "society" },
+    { "domain": "csir.org.gh", "name": "CSIR Ghana", "kind": "government" },
+    { "domain": "mofa.gov.gh", "name": "Ministry of Food and Agriculture, Ghana", "kind": "government" },
+    { "domain": "foxfarm.com", "name": "FoxFarm (their own products only)", "kind": "maker" },
+    { "domain": "miraclegro.com", "name": "Miracle-Gro (their own products only)", "kind": "maker" },
+    { "domain": "espoma.com", "name": "Espoma (their own products only)", "kind": "maker" },
+    { "domain": "coastofmaine.com", "name": "Coast of Maine (their own products only)", "kind": "maker" }
+  ]
+}

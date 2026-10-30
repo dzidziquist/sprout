@@ -1,4 +1,4 @@
-import { CAUSES, SHADE_LOVERS, SPECIES_NOTES, SYMPTOMS, TAP_SENSITIVE, type Cause, type Signal, type Symptom } from '../data/diagnosis';
+import { CAUSES, isLive, SHADE_LOVERS, SPECIES_NOTES, SYMPTOMS, TAP_SENSITIVE, type Cause, type Signal, type Symptom } from '../data/diagnosis';
 import { speciesOf } from '../data/species';
 import { isReservoir, seasonMultiplier } from './careEngine';
 import { mixFeedsUntil } from './mix';
@@ -94,13 +94,13 @@ export function signalsFor({ plant, events, climate, now }: DiagnoseInput): Set<
 export function symptomsFor(plant: Pick<Plant, 'speciesId' | 'custom' | 'soil'>): Symptom[] {
   const edible = speciesOf(plant).edible;
   const water = isReservoir(plant.soil);
-  return SYMPTOMS.filter((x) => (edible || !x.edibleOnly) && !(water && x.soilOnly)).map((x) =>
+  return SYMPTOMS.filter((x) => isLive(x) && (edible || !x.edibleOnly) && !(water && x.soilOnly)).map((x) =>
     water && (x.waterLabel || x.waterHint) ? { ...x, label: x.waterLabel ?? x.label, hint: x.waterHint ?? x.hint } : x,
   );
 }
 
 export function symptomById(id: string): Symptom | undefined {
-  return SYMPTOMS.find((x) => x.id === id);
+  return SYMPTOMS.find((x) => x.id === id && isLive(x));
 }
 
 /** A plant-specific note for this symptom, if we have one. */
@@ -115,7 +115,8 @@ export function diagnose(symptomId: string, input: DiagnoseInput, limit = 3): Di
   const signals = signalsFor(input);
   const water = signals.has('reservoir');
   const scored = symptom.causes
-    .filter(({ cause: id }) => (water ? !CAUSES[id].soilOnly : !CAUSES[id].waterOnly))
+    // Drafts never reach anyone (docs/knowledge.md).
+    .filter(({ cause: id }) => isLive(CAUSES[id]) && (water ? !CAUSES[id].soilOnly : !CAUSES[id].waterOnly))
     .map(({ cause: id, prior }) => {
       const cause = CAUSES[id];
       let score = prior;

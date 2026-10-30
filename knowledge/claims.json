@@ -1,0 +1,55 @@
+{
+  "about": "The claims ledger (docs/knowledge.md): each fact behind a verified knowledge entry, with the page and the exact words that support it. The fact-checker fills in verdict after opening the page itself; the weekly link check re-opens every page.",
+  "claims": [
+    {
+      "id": "magnesium-1",
+      "entry": "cause:magnesium",
+      "claim": "Short of magnesium shows as yellowing between the veins.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "Yellowing between the leaf veins, sometimes with reddish brown tints",
+      "verdict": "supported",
+      "checked": "2026-10-30",
+      "checkedBy": "fact-checker"
+    },
+    {
+      "id": "magnesium-2",
+      "entry": "cause:magnesium",
+      "claim": "Heavy high-potash feeding can bring on magnesium shortage.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "as plants take up potassium in preference to magnesium",
+      "verdict": "supported",
+      "checked": "2026-10-30",
+      "checkedBy": "fact-checker"
+    },
+    {
+      "id": "potassium-1",
+      "entry": "cause:potassium",
+      "claim": "Short of potassium shows as browning that starts at the edges of older leaves.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "Yellow or purple-red leaf tints with browning that begins at the edges of mature leaves",
+      "verdict": "supported",
+      "checked": "2026-10-30",
+      "checkedBy": "fact-checker"
+    },
+    {
+      "id": "too-much-nitrogen-1",
+      "entry": "cause:too-much-nitrogen",
+      "claim": "Too much nitrogen gives lots of leaves and less fruit.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/nitrogen-excess/",
+      "quote": "Excessive nitrogen causes fruiting plants to produce relatively more foliage, reducing their fruit production",
+      "verdict": "supported",
+      "checked": "2026-10-30",
+      "checkedBy": "fact-checker"
+    },
+    {
+      "id": "overfed-1",
+      "entry": "cause:overfed",
+      "claim": "Too much fertiliser browns leaf tips and edges.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/nitrogen-excess/",
+      "quote": "Overfertilization can cause leaves to turn brown, gray, dark green, or yellow at margins and tips or overall",
+      "verdict": "supported",
+      "checked": "2026-10-30",
+      "checkedBy": "fact-checker"
+    }
+  ]
+}
