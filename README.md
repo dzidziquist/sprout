@@ -29,7 +29,7 @@ No account, no tracking, no ads. Plants live on the phone. iCloud is only used f
 
 ## Run it
 
-Needs **Node 20.19.4 or newer** (Node 22 LTS recommended; `.nvmrc` says 22). Older Node breaks Metro with errors like `_DependencyGraph.default is not a constructor`.
+Needs **Node 22.12 or newer** (`.nvmrc` says 22; the test runner needs 22.12+). Older Node also breaks Metro with errors like `_DependencyGraph.default is not a constructor`.
 
 ```bash
 nvm use             # or install Node 22
