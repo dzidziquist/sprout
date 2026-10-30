@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -7,6 +7,7 @@ import { shrinkPhoto } from '@/lib/shrinkPhoto';
 import { usePlantStore } from '@/store/plantStore';
 import { AREAS, CAUSES, type Cause, type SymptomArea } from '@/data/diagnosis';
 import { AREA_ICON, SYMPTOM_ART } from '@/data/symptomArt';
+import { checkedMonth, evidenceFor } from '@/data/evidence';
 import { diagnose, speciesNote, symptomsFor, type CheckOrder } from '@/engine/diagnose';
 import { isReservoir } from '@/engine/careEngine';
 import { checkPlantHealth, plantHealthConfigured, type HealthResult } from '@/lib/plantHealth';
@@ -17,7 +18,7 @@ import { Icon } from '@/components/GrowTodayCard';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import * as haptics from '@/lib/haptics';
 import { fonts, type, space } from '@/theme/tokens';
-import { useColors, type Palette } from '@/theme/theme';
+import { textOn, useColors, type Palette } from '@/theme/theme';
 import { PlantGone } from '@/components/PlantGone';
 import { useSheetTop } from '@/lib/sheetTop';
 import { Glyph } from '@/components/Glyph';
@@ -387,7 +388,58 @@ function CauseCard({ cause, order, why, c, onSave, onCutting }: { cause: Cause; 
         <Button title="Save diagnosis" bg={c.leaf} onPress={onSave} style={{ flex: 1, minHeight: 44 }} />
         {cause.rescue && <Button title="Save a cutting" bg={c.lavender} onPress={onCutting} style={{ flex: 1, minHeight: 44 }} />}
       </View>
+      <WhyThisAdvice cause={cause} c={c} />
     </Sticker>
+  );
+}
+
+/**
+ * Where the advice comes from: a quiet "Source checked" line on causes checked against their sources,
+ * and, one tap away, the source and its exact words, or a plain note that an older cause hasn't been
+ * source-checked yet (docs/reviews/2026-10-30).
+ */
+function WhyThisAdvice({ cause, c }: { cause: Cause; c: Palette }) {
+  const [open, setOpen] = useState(false);
+  const month = checkedMonth(cause);
+  const evidence = evidenceFor(cause.id);
+  return (
+    <View style={{ gap: 10 }}>
+      <View style={[styles.whyRow, { borderColor: c.cloud }]}>
+        {month ? <Text style={[styles.whyNote, { color: c.link, flex: 1 }]}>✓ Source checked {month}</Text> : <View style={{ flex: 1 }} />}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: open }}
+          hitSlop={10}
+          onPress={() => {
+            haptics.tap();
+            setOpen(!open);
+          }}
+        >
+          <Text style={[styles.whyLink, { color: c.ink }]}>{open ? 'Hide' : 'Why this advice?'}</Text>
+        </Pressable>
+      </View>
+      {open &&
+        (evidence.length ? (
+          <View style={{ gap: 8 }}>
+            {evidence.map((e) => (
+              <View key={e.quote} style={[styles.whyBox, { backgroundColor: c.mint }]}>
+                <Text style={[styles.whyTitle, { color: textOn(c.mint, c) }]}>{e.publisher}</Text>
+                <Text style={[styles.body, { color: textOn(c.mint, c) }]}>“{e.quote}”</Text>
+              </View>
+            ))}
+            <Text style={[styles.whyNote, { color: c.inkMuted }]}>Checked against {evidence.length > 1 ? 'these sources' : 'this source'} in {checkedMonth(cause)}, then reviewed for safety before it shipped.</Text>
+            {[...new Set(evidence.map((e) => e.url))].map((url) => (
+              <Button key={url} title={`Open the ${evidence.find((e) => e.url === url)!.publisher} page`} bg={c.cloud} onPress={() => Linking.openURL(url)} style={{ minHeight: 44 }} />
+            ))}
+          </View>
+        ) : (
+          <View style={[styles.whyBox, { backgroundColor: c.butter }]}>
+            <Text style={[styles.body, { color: textOn(c.butter, c) }]}>
+              Written from widely used plant care advice before PlantFam started checking each fact against a named source. It’s on the list to check.
+            </Text>
+          </View>
+        ))}
+    </View>
   );
 }
 
@@ -401,6 +453,11 @@ function Bullet({ text, n, c }: { text: string; n?: number; c: Palette }) {
 }
 
 const styles = StyleSheet.create({
+  whyRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderTopWidth: 1.5, paddingTop: 10, marginTop: 2 },
+  whyLink: { fontFamily: fonts.bodyHeavy, ...type.footnote, textDecorationLine: 'underline' },
+  whyNote: { fontFamily: fonts.bodyHeavy, ...type.footnote },
+  whyBox: { borderRadius: 14, padding: 12, gap: 4 },
+  whyTitle: { fontFamily: fonts.bodyHeavy, ...type.callout },
   page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row' },
   sub: { fontFamily: fonts.bodyHeavy, ...type.body },
