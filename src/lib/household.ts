@@ -71,7 +71,7 @@ async function round() {
     // Too long since the last sync: fetch everything. What was agreed still stands (so edits made here
     // meanwhile win as usual), and anything agreed that iCloud no longer has was deleted elsewhere.
     changes = await Native.fetchChanges(owner, null, diaryDir());
-    if (!changes.gone && !changes.reset) changes = { ...changes, deleted: deletedSinceAgreed(synced, changes.items ?? [], changes.incomplete) };
+    if (!changes.gone && !changes.reset) changes = { ...changes, deleted: deletedSinceAgreed(synced, changes.items ?? [], changes.deleted ?? [], changes.incomplete) };
   }
   if (changes.gone) return ended(h);
 

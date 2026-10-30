@@ -124,10 +124,11 @@ export interface MergeResult {
  * was deleted elsewhere. Only when the fetch was complete: a record that failed to come through is
  * missing too, and reading that as a delete would wipe it here and its photos in iCloud.
  */
-export function deletedSinceAgreed(synced: Synced, fetched: { id: string }[], incomplete: boolean | undefined): string[] {
-  if (incomplete) return [];
+export function deletedSinceAgreed(synced: Synced, fetched: { id: string }[], reported: string[], incomplete: boolean | undefined): string[] {
+  // What iCloud reports as deleted always counts; only guessing from what's missing waits for a complete fetch.
+  if (incomplete) return [...reported];
   const there = new Set(fetched.map((i) => i.id));
-  return Object.keys(synced).filter((id) => !there.has(id));
+  return [...new Set([...reported, ...Object.keys(synced).filter((id) => !there.has(id))])];
 }
 
 export function merge(local: Jungle, synced: Synced, remote: RemoteItem[], deletedRemote: string[], now: number): MergeResult {

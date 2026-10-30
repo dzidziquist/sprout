@@ -173,9 +173,11 @@ describe('household photo cleanup', () => {
 describe('a full fetch after a long gap', () => {
   const synced = { a: { h: '1', at: 1 }, b: { h: '2', at: 1 }, c: { h: '3', at: 1 } };
   it('reads what iCloud no longer has as deleted elsewhere', () => {
-    expect(deletedSinceAgreed(synced, [{ id: 'a' }, { id: 'b' }], false)).toEqual(['c']);
+    expect(deletedSinceAgreed(synced, [{ id: 'a' }, { id: 'b' }], [], false)).toEqual(['c']);
+    expect(deletedSinceAgreed(synced, [{ id: 'a' }, { id: 'b' }], ['c', 'x'], false)).toEqual(['c', 'x']);
   });
-  it('deletes nothing when some records didn’t come through', () => {
-    expect(deletedSinceAgreed(synced, [{ id: 'a' }], true)).toEqual([]);
+  it('deletes only what iCloud reports as deleted when some records didn’t come through', () => {
+    expect(deletedSinceAgreed(synced, [{ id: 'a' }], [], true)).toEqual([]);
+    expect(deletedSinceAgreed(synced, [{ id: 'a' }], ['b'], true)).toEqual(['b']);
   });
 });
