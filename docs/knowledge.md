@@ -14,7 +14,8 @@ Wrong advice is kept out four ways:
 3. **Drafts stay hidden.** Entries carry `status: 'draft' | 'verified'`; the app never shows drafts.
    (Entries without a status were written and reviewed by hand before this pipeline.)
 4. **Evals** (`evals/`, readable list in `evals/CASES.md`): plant situations with the answer the app must
-   give. Every change runs them; a `must` case failing blocks it. A weekly workflow re-opens every source
+   give. Every change runs them; a `must` case failing blocks it, and so does a `should` case that passed
+   before (`evals/passing.json`, which only grows; changing or removing a case needs a person's OK). A weekly workflow re-opens every source
    page to catch dead links and pages that changed.
 
 Then Codex reviews the pull request, and a person merges it.
@@ -85,7 +86,7 @@ The run is an orchestrator: it doesn't research or judge itself, it hands each s
    claims are `supported`, the safety editor approved it and the grader graded it `supported`. Anything
    else stays a draft, and a correction to a live entry that doesn't pass is taken back out.
 7. Run `npm run ts:check`, `npm test` (ledger rules and evals) and `node scripts/check-sources.mjs`. All
-   must pass.
+   must pass. New `should` cases that pass are locked in with `UPDATE_PASSING=1 npx vitest run evals`.
 8. Tick the topic off, with the date and the PR.
 9. Open one PR titled `Knowledge: <topic> + review` with: what was promoted, what stayed draft and why,
    the review batch (each entry: changed or "still right"), the grader's table, proposed eval cases, and

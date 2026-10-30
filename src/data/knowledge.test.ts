@@ -48,11 +48,14 @@ describe('knowledge ledger', () => {
     for (const b of MIX_BRANDS) if (b.status === 'verified') expect(supported(`mix:${b.name}`), `mix ${b.name} is verified without a supported claim`).toBe(true);
   });
 
-  it('never keeps an unsupported claim on a verified entry', () => {
-    for (const c of claims.filter((x) => x.verdict === 'unsupported')) {
-      const [kind, id] = c.entry.split(':');
-      const status = kind === 'cause' ? CAUSES[id]?.status : kind === 'mix' ? MIX_BRANDS.find((b) => b.name === id)?.status : undefined;
-      expect(status, `${c.id}: ${c.entry} is verified but this claim was found unsupported`).not.toBe('verified');
+  it('lets an entry be verified only when every claim behind it is supported', () => {
+    const verified = (entry: string) => {
+      const [kind, id] = entry.split(':');
+      const status = kind === 'cause' ? CAUSES[id]?.status : kind === 'mix' ? MIX_BRANDS.find((b) => b.name === id)?.status : kind === 'symptom' ? SYMPTOMS.find((x) => x.id === id)?.status : undefined;
+      return status === 'verified';
+    };
+    for (const c of claims.filter((x) => x.verdict !== 'supported' && verified(x.entry))) {
+      expect.fail(`${c.id}: ${c.entry} is verified but this claim is ${c.verdict}. Every claim must be supported (or the entry stays a draft).`);
     }
   });
 
