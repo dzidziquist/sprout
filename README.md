@@ -25,7 +25,7 @@ A playful plant-care app for iPhone where plants have moods, care is a soil chec
 
 ### Privacy
 
-No account, no tracking, no ads. Plants live on the phone. iCloud is only used for the backup and household sharing, in the person's own iCloud. Photo ID sends the photo to Pl@ntNet only when asked. All advice is worked out on the phone from the app's own data: no AI service is called at run time. Once a day the app downloads the latest plant knowledge from this repo's GitHub Pages, a plain file download that sends nothing about the person.
+No account, no tracking, no ads. Plants live on the phone. iCloud is only used for the backup and household sharing, in the person's own iCloud. Photo ID sends the photo to Pl@ntNet only when asked. All advice is worked out on the phone from the app's own data: no AI service is called at run time. Once a day the app downloads the latest plant knowledge from GitHub Pages (the public `plantfam-knowledge` repo), a plain file download that sends nothing about the person.
 
 ## Run it
 
@@ -75,14 +75,14 @@ The app's advice comes from data files, so it stays free, private and offline. A
 - **Drafts stay hidden**: entries are `draft` until they pass, and the app never shows drafts.
 - **Evals** (`evals/`, readable in `evals/CASES.md`): plant situations with the answer the app must give, run on every change (`npm test`). A weekly workflow re-opens every source page.
 - **Codex** (OpenAI, connected to this repo) reviews every pull request, and a person merges.
-- **Over the air:** once merged, the plant doctor, mixes and species notes reach phones within a day as a *knowledge pack* on GitHub Pages (`.github/workflows/kb-publish.yml`), checked on the phone before use. App code still ships through TestFlight.
+- **Over the air:** once merged, the plant doctor, mixes and species notes reach phones within a day as a *knowledge pack* published to the public `plantfam-knowledge` repo's GitHub Pages (`.github/workflows/kb-publish.yml`), checked on the phone before use. App code still ships through TestFlight.
 - **Art** (new plant buddies, symptom pictures) is generated with Codex from the prompts in `docs/`.
 
 ## Secrets
 
 Nothing secret is in this repository, and none has ever been committed. Keep it that way:
 
-- **All credentials live in GitHub repository secrets** (Settings → Secrets and variables → Actions): `EXPO_TOKEN`, `ASC_KEY_P8`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `APPLE_TEAM_ID`, `EXPO_PUBLIC_PLANTNET_KEY`. Workflows read them at run time; the App Store Connect key is only written to the runner's temporary folder.
+- **All credentials live in GitHub repository secrets** (Settings → Secrets and variables → Actions): `EXPO_TOKEN`, `ASC_KEY_P8`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `APPLE_TEAM_ID`, `EXPO_PUBLIC_PLANTNET_KEY`, and `KB_DEPLOY_TOKEN` (a fine-grained token that can only write `dzidziquist/plantfam-knowledge`). Workflows read them at run time; the App Store Connect key is only written to the runner's temporary folder.
 - **Never paste a key, token or `.p8` file into the code, an issue, a pull request or a chat.** `.gitignore` refuses `.env` files and key files as a safety net.
 - `EXPO_PUBLIC_PLANTNET_KEY` ends up inside the app (anything `EXPO_PUBLIC_` does), so treat it as public: restrict it in the Pl@ntNet dashboard to the bundle id `com.dzidziquist.plantfam`.
 - The EAS project id in `app.json` and the App Store app id in `eas.json` are public identifiers, not secrets.

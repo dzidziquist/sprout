@@ -107,7 +107,8 @@ How it works:
 
 1. A merge to `main` that touches the knowledge runs `.github/workflows/kb-publish.yml`: tests and evals,
    then `scripts/build-kb-pack.ts`, which publishes `kb/v<format>/manifest.json`, the pack and any new
-   symptom pictures to this repo's GitHub Pages. The job summary lists anything left out.
+   symptom pictures to the public repo `dzidziquist/plantfam-knowledge`, whose GitHub Pages serves them
+   (only the packs are public; this repo can be private). The job summary lists anything left out.
 2. Once a day, when the app opens (or from Settings → Plant knowledge → Check now), the phone fetches the
    manifest. A newer pack is downloaded, every file checked against its MD5 and every entry checked against
    what that build understands (`src/engine/knowledgePack.ts`), then laid over the built-in knowledge.

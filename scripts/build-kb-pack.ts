@@ -65,6 +65,13 @@ for (const f of formats) {
   );
 }
 
-writeFileSync(join(out, 'index.html'), '<!doctype html><meta charset="utf-8"><title>PlantFam knowledge</title><p>Plant knowledge for the PlantFam app. Nothing to see here.</p>\n');
+// The public repo's own files: a placeholder page, a README, no search engines, no Jekyll.
+writeFileSync(join(out, 'index.html'), '<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>PlantFam knowledge</title><p>Plant knowledge for the PlantFam app. Nothing to see here.</p>\n');
+writeFileSync(join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+writeFileSync(join(out, '.nojekyll'), '');
+writeFileSync(
+  join(out, 'README.md'),
+  '# PlantFam knowledge\n\nKnowledge packs the PlantFam app downloads: the plant doctor, potting mixes and plant notes, as data. Published automatically after review; please don\'t edit by hand.\n',
+);
 console.log(summary.join('\n'));
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary.join('\n') + '\n');
