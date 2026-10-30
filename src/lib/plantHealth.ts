@@ -49,10 +49,18 @@ export function plantHealthConfigured(): boolean {
 
 let labels: Promise<Record<string, string>> | null = null;
 
-/** Pl@ntNet's EPPO code → name list, fetched once per app run. Failure just means codes without names. */
+/** How long the optional name list may hold up a result that is otherwise ready. */
+export const NAMES_WAIT_MS = 4000;
+
+/**
+ * Pl@ntNet's EPPO code → name list, fetched once per app run. Failure, or no answer within
+ * NAMES_WAIT_MS, just means codes without names; the next check tries again.
+ */
 function diseaseNames(key: string, doFetch: typeof fetch): Promise<Record<string, string>> {
   if (!labels) {
-    labels = doFetch(`${BASE}?api-key=${encodeURIComponent(key)}&lang=en`, { headers: { Accept: 'application/json' } })
+    const ctl = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const fetched = doFetch(`${BASE}?api-key=${encodeURIComponent(key)}&lang=en`, { headers: { Accept: 'application/json' }, signal: ctl.signal })
       .then((r) => {
         // A refused list (quota, server trouble) isn't kept: try again on the next check.
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -62,13 +70,35 @@ function diseaseNames(key: string, doFetch: typeof fetch): Promise<Record<string
         const out: Record<string, string> = {};
         if (Array.isArray(list)) for (const d of list as { name?: unknown; label?: unknown }[]) if (typeof d?.name === 'string' && typeof d?.label === 'string') out[d.name] = d.label;
         return out;
-      })
-      .catch(() => {
-        labels = null;
-        return {};
       });
+    const pending: Promise<Record<string, string>> = Promise.race([
+      fetched,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          ctl.abort();
+          reject(new Error('timeout'));
+        }, NAMES_WAIT_MS);
+      }),
+    ])
+      .catch(() => {
+        if (labels === pending) labels = null;
+        return {};
+      })
+      .finally(() => clearTimeout(timer));
+    labels = pending;
   }
   return labels;
+}
+
+/** Wait for `p`, but not past the caller giving up. */
+function unlessAborted<T>(p: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return p;
+  return new Promise<T>((resolve, reject) => {
+    const stop = () => reject(Object.assign(new Error('Aborted'), { name: 'AbortError' }));
+    if (signal.aborted) return stop();
+    signal.addEventListener('abort', stop, { once: true });
+    p.then(resolve, reject).finally(() => signal.removeEventListener('abort', stop));
+  });
 }
 
 /** Pull results out of a Pl@ntNet diseases answer, tolerating missing fields. */
@@ -123,5 +153,5 @@ export async function checkPlantHealth(uri: string, opts: { mimeType?: string; s
   } catch {
     throw new PlantIdError('server', 'Bad JSON');
   }
-  return parseHealth(body, await names);
+  return parseHealth(body, await unlessAborted(names, opts.signal));
 }

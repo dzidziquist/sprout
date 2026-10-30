@@ -97,4 +97,28 @@ describe('parseBackup', () => {
     expect(parseBackup(JSON.stringify({ ...good, format: 2 })).ok).toBe(false);
     expect(parseBackup(JSON.stringify({ ...good, plants: [{ id: 'x' }] })).ok).toBe(false);
   });
+
+  it('fills what an older backup never had, and drops settings with the wrong shape', () => {
+    const out = parseBackup(JSON.stringify({ ...good, profile: { city: 'Seattle', round: null, theme: 'neon', grows: { houseplants: true, edibles: false, cuttings: true } } }));
+    expect(out.ok).toBe(true);
+    if (!out.ok) return;
+    expect(out.data.plants[0]).toMatchObject({ soil: 'potting_mix', potMaterial: 'plastic', potDiameterCm: 15, placement: 'indoor', acquiredAt: plant.nextCheckAt });
+    expect(out.data.profile).toEqual({ city: 'Seattle', grows: { houseplants: true, edibles: false, cuttings: true } });
+  });
+
+  it('rejects a plant with a wrong value, a bad date or a repeated id', () => {
+    const bad = (patch: object) => parseBackup(JSON.stringify({ ...good, plants: [{ ...plant, ...patch }] })).ok;
+    expect(bad({ soil: 'lava' })).toBe(false);
+    expect(bad({ potDiameterCm: -3 })).toBe(false);
+    expect(bad({ nextCheckAt: 'tomorrow' })).toBe(false);
+    expect(bad({ lastRepottedAt: 'never' })).toBe(false);
+    expect(bad({ k: Number.NaN })).toBe(false);
+    expect(bad({ mix: { fertiliser: 'yes' } })).toBe(false);
+    expect(parseBackup(JSON.stringify({ ...good, plants: [plant, plant] })).ok).toBe(false);
+  });
+
+  it('drops events with an unknown type or an unreadable date', () => {
+    const out = parseBackup(JSON.stringify({ ...good, events: [{ id: 'a', plantId: 'p1', type: 'check', at: 'x' }, { id: 'b', plantId: 'p1', type: 'dance', at: '2026-10-14T09:00:00.000Z' }, good.events[0]] }));
+    expect(out.ok && out.data.events.map((e) => e.id)).toEqual(['e1']);
+  });
 });
