@@ -20,39 +20,42 @@ export type KnowledgeStatus = 'draft' | 'verified';
 export const isLive = (entry: { status?: KnowledgeStatus } | undefined): boolean => !!entry && entry.status !== 'draft';
 
 /** Facts the engine works out from the plant, its diary and the season. */
-export type Signal =
-  | 'wetChecks' // two or more of the last three checks found the soil damp or soggy
-  | 'soggy' // a soggy check in the last two weeks
-  | 'overdue' // the last check came late, or one is late now
-  | 'dryChecks' // recent checks keep finding it bone dry
-  | 'lowLight'
-  | 'directSun'
-  | 'shadeLover' // calathea, fern, peace lily and friends
-  | 'succulent'
-  | 'moistureLover'
-  | 'edible'
-  | 'fruiting' // an edible at the fruit or harvest stage
-  | 'outdoor'
-  | 'indoor'
-  | 'oldMix' // same mix for a year or more
-  | 'recentRepot' // repotted in the last three weeks
-  | 'newPlant' // joined in the last month
-  | 'slowSeason' // winter or the grey season: growth slows, soil stays wet longer
-  | 'hotSeason'
-  | 'plasticPot'
-  | 'terracotta'
-  | 'smallPot'
-  | 'tapSensitive' // reacts to the salts and chlorine in tap water
-  | 'reservoir' // LECA or water
-  | 'unfed' // no feed logged (and no fresh fertilised mix) in two months
-  | 'freshMix' // potted into mix with fertiliser in it, still feeding it (engine/mix)
-  | 'mixSpent' // that mix's food has run out and no feed has been logged since
-  | 'fedRecently' // a feed logged in the last three weeks
-  | 'overFed' // fed on top of fresh fertilised mix, or three or more feeds in six weeks
-  | 'pestLogged'; // a pest check logged in the last month
+export const SIGNALS = [
+  'wetChecks', // two or more of the last three checks found the soil damp or soggy
+  'soggy', // a soggy check in the last two weeks
+  'overdue', // the last check came late, or one is late now
+  'dryChecks', // recent checks keep finding it bone dry
+  'lowLight',
+  'directSun',
+  'shadeLover', // calathea, fern, peace lily and friends
+  'succulent',
+  'moistureLover',
+  'edible',
+  'fruiting', // an edible at the fruit or harvest stage
+  'outdoor',
+  'indoor',
+  'oldMix', // same mix for a year or more
+  'recentRepot', // repotted in the last three weeks
+  'newPlant', // joined in the last month
+  'slowSeason', // winter or the grey season: growth slows, soil stays wet longer
+  'hotSeason',
+  'plasticPot',
+  'terracotta',
+  'smallPot',
+  'tapSensitive', // reacts to the salts and chlorine in tap water
+  'reservoir', // LECA or water
+  'unfed', // no feed logged (and no fresh fertilised mix) in two months
+  'freshMix', // potted into mix with fertiliser in it, still feeding it (engine/mix)
+  'mixSpent', // that mix's food has run out and no feed has been logged since
+  'fedRecently', // a feed logged in the last three weeks
+  'overFed', // fed on top of fresh fertilised mix, or three or more feeds in six weeks
+  'pestLogged', // a pest check logged in the last month
+] as const;
+export type Signal = (typeof SIGNALS)[number];
 
 /** A care change the app can make for you when a cause is confirmed. */
-export type CareTweak = 'slow-water' | 'more-water';
+export const CARE_TWEAKS = ['slow-water', 'more-water'] as const;
+export type CareTweak = (typeof CARE_TWEAKS)[number];
 
 export interface Cause {
   id: string;

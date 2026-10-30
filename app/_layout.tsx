@@ -18,10 +18,14 @@ import { SHARED_PROFILE_KEYS } from '@/engine/household';
 import { configurePurchases } from '@/lib/purchases';
 import { TIPS_ENABLED } from '@/config';
 import { refreshSunlight } from '@/lib/site';
+import { checkForKnowledge, loadSavedKnowledge } from '@/lib/knowledgeUpdate';
 
 // Keep the launch screen up until saved plants and fonts are loaded, so it goes straight to the app
 // instead of launch screen, then a spinner, then the app.
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+// The latest downloaded plant knowledge, laid over the built-in copy before anything draws.
+loadSavedKnowledge();
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(() => usePlantStore.persist.hasHydrated());
@@ -91,6 +95,17 @@ export default function RootLayout() {
     if (!hydrated || Platform.OS !== 'ios') return;
     const timer = setTimeout(() => runCloudBackup().catch(() => {}), 5000);
     const sub = AppState.addEventListener('change', (s) => s === 'active' && runCloudBackup().catch(() => {}));
+    return () => {
+      clearTimeout(timer);
+      sub.remove();
+    };
+  }, [hydrated]);
+
+  // Fresh plant knowledge: looked for at most once a day, a moment after opening and on coming back.
+  useEffect(() => {
+    if (!hydrated) return;
+    const timer = setTimeout(() => void checkForKnowledge(), 8000);
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && void checkForKnowledge());
     return () => {
       clearTimeout(timer);
       sub.remove();

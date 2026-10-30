@@ -30,6 +30,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
         ? ['Tips (optional): Apple handles payment. RevenueCat records the tip with an anonymous app ID and your purchase receipt so the app can say thank you. Tips unlock no features. We never see your name, email or card.']
         : []),
       'Plant info: to show the About card on a plant’s page, the species name (for example “Goeppertia orbifolia”) is sent to Wikipedia to fetch its short summary. If you tap “Real photo”, the name of that photo’s file is sent to Wikimedia Commons to fetch the photo and its credit (who took it and its licence). Nothing about you or your plants goes with either, and the results are kept on your phone.',
+      'Plant knowledge: once a day, PlantFam downloads its latest plant doctor and care notes from GitHub Pages (GitHub’s free web hosting). It’s a plain file download: nothing about you or your plants is sent, and like any website, GitHub sees the request’s IP address.',
       'Reminders are scheduled on your phone. No notification server is involved.',
     ],
   },

@@ -1,0 +1,54 @@
+name: Publish knowledge pack
+
+# Builds the knowledge packs phones download (docs/knowledge.md, "Knowledge packs") and publishes them to
+# this repository's GitHub Pages, after the tests and evals pass. Runs when a merge to main changes the
+# knowledge; can also be run by hand from the Actions tab (to republish, or to roll back from an older
+# commit's run). Needs Settings → Pages → Source set to "GitHub Actions". No secrets.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/data/**'
+      - 'assets/symptoms/**'
+      - 'knowledge/**'
+      - 'src/engine/knowledgePack.ts'
+      - 'scripts/build-kb-pack.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: kb-publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run ts:check
+      - run: npm test
+      - name: Build the packs
+        run: npx vite-node scripts/build-kb-pack.ts -- --out dist-kb
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist-kb
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

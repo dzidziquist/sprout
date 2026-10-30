@@ -47,7 +47,10 @@ jobs:
         env:
           # Baked into the app at build time (photo ID). Optional: the app explains when it's missing.
           EXPO_PUBLIC_PLANTNET_KEY: ${{ secrets.EXPO_PUBLIC_PLANTNET_KEY }}
-        run: eas build --platform ios --profile production --local --non-interactive --output "$RUNNER_TEMP/PlantFam.ipa"
+        run: |
+          # When the built-in knowledge was merged: downloaded knowledge packs only apply when newer.
+          export EXPO_PUBLIC_KB_VERSION="$(git log -1 --format=%cI)"
+          eas build --platform ios --profile production --local --non-interactive --output "$RUNNER_TEMP/PlantFam.ipa"
 
       - name: Send to TestFlight
         run: eas submit --platform ios --profile production --path "$RUNNER_TEMP/PlantFam.ipa" --non-interactive

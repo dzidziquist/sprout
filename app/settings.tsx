@@ -20,6 +20,7 @@ import { cloudReady, cloudSupported, runCloudBackup, useCloudStatus } from '@/li
 import { savedWords } from '@/engine/cloudBackup';
 import { householdLine, householdSupported, leave, stopSharing } from '@/lib/household';
 import * as haptics from '@/lib/haptics';
+import { checkForKnowledge, useKnowledgeStatus, type CheckResult } from '@/lib/knowledgeUpdate';
 import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts, type, space } from '@/theme/tokens';
 import { ACCENTS, textOn, useColors } from '@/theme/theme';
@@ -339,6 +340,7 @@ export default function SettingsScreen() {
         ) : (
           <Row label="Contact and support" value={SUPPORT_URL.replace(/^https?:\/\//, '')} onPress={() => Linking.openURL(SUPPORT_URL)} />
         )}
+        <KnowledgeRow />
         <Row label="Version" value={APP_VERSION} last />
       </Section>
 
@@ -348,6 +350,30 @@ export default function SettingsScreen() {
 
       <Label muted style={{ textAlign: 'center' }}>Made with 🌱 in Seattle</Label>
     </ScrollView>
+  );
+}
+
+/** Which plant knowledge is in use, and a way to look for newer knowledge now (lib/knowledgeUpdate). */
+function KnowledgeRow() {
+  const kb = useKnowledgeStatus();
+  const [result, setResult] = useState<CheckResult | null>(null);
+  const day = kb.version ? new Date(kb.version).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
+  const sub =
+    result === 'updated' ? 'New knowledge added' : result === 'current' ? 'Up to date' : result === 'offline' ? 'Couldn’t check. Try again later.' : result === 'bad-pack' ? 'The update didn’t check out, so nothing changed' : day ? `Updated ${day}` : 'Built into the app';
+  return (
+    <Row
+      label="Plant knowledge"
+      sub={sub}
+      value={kb.checking ? 'Checking…' : 'Check now'}
+      onPress={
+        kb.checking
+          ? undefined
+          : () => {
+              setResult(null);
+              checkForKnowledge(true).then(setResult);
+            }
+      }
+    />
   );
 }
 

@@ -24,3 +24,4 @@ targets/*/Assets.xcassets/
 *.keystore
 *.jks
 credentials.json
+dist-kb/

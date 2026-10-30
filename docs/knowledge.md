@@ -1,8 +1,9 @@
 # Keeping PlantFam's knowledge up to date
 
-PlantFam gives its advice offline, from data files in the app: no AI or network at run time, so it stays
-free and private. A weekly scheduled Claude Code task keeps that knowledge growing and correct, and
-each run opens **one pull request** for a human to review before it ships.
+PlantFam gives its advice offline, from data files in the app: no AI at run time, so it stays free and
+private. A weekly scheduled Claude Code task keeps that knowledge growing and correct, and each run opens
+**one pull request** for a human to review before it ships. Once merged, the plant doctor, mixes and
+species notes reach phones within a day as a **knowledge pack**, without a new build (below).
 
 Wrong advice is kept out four ways:
 
@@ -30,6 +31,7 @@ Only these knowledge files (and their tests):
 | `src/data/edibles.ts` | Crop guides: stages, tips, feeding, the climate calendars |
 | `src/data/catalog/*.ts` | Species: care group, light, soil, pet safety, tips |
 | `docs/knowledge-topics.md` | The rotation of topics (tick off the one done) |
+| `knowledge/ids.json` | Every cause, symptom and species id ever shipped: add new ones, never remove any |
 
 Never app code, screens, the engine's scoring, build files or anything else. If a fix needs code, say
 so in the PR description instead.
@@ -90,6 +92,46 @@ The run is an orchestrator: it doesn't research or judge itself, it hands each s
 9. Open one PR titled `Knowledge: <topic> + review` with: what was promoted, what stayed draft and why,
    the review batch (each entry: changed or "still right"), the grader's table, proposed eval cases, and
    anything needing a person. Every change with its source. Never merge it.
+
+## Knowledge packs
+
+What ships over the air, without a new build, once a PR is merged:
+
+| In the pack | Ships only with a build |
+|---|---|
+| Plant doctor: symptoms, causes, checks, fixes, sources, species notes, symptom pictures | The doctor's scoring and the signals it reads |
+| Mix brands | Feeding and crop rules (`src/data/edibles.ts`, the engine) |
+| Species tips, aliases and pet safety for plants already in the app | New species (they need their art first), care groups, light, soil |
+
+How it works:
+
+1. A merge to `main` that touches the knowledge runs `.github/workflows/kb-publish.yml`: tests and evals,
+   then `scripts/build-kb-pack.ts`, which publishes `kb/v<format>/manifest.json`, the pack and any new
+   symptom pictures to this repo's GitHub Pages. The job summary lists anything left out.
+2. Once a day, when the app opens (or from Settings → Plant knowledge → Check now), the phone fetches the
+   manifest. A newer pack is downloaded, every file checked against its MD5 and every entry checked against
+   what that build understands (`src/engine/knowledgePack.ts`), then laid over the built-in knowledge.
+   Anything wrong and the phone keeps what it had. A build made after a pack ignores it (the TestFlight
+   workflow stamps each build with its commit time).
+3. Laid over, never removed: an entry missing from a pack keeps its built-in version. Drafts go in only as
+   `{ id, status: 'draft' }` stubs, which is also how a pack withdraws a live entry that turned out wrong.
+
+Rules the tests enforce:
+
+- **The format.** A pack can only use the signals, symptom areas, care tweaks and mix kinds in
+  `knowledge/formats/<n>.json`. An entry that needs something new (a new signal, say) is "needs an app
+  update": PRs say so, the publish step leaves it out of older formats, and it reaches phones with the next
+  build. When the app learns new vocabulary, raise `KB_FORMAT` and run `npx vite-node scripts/freeze-kb-format.ts`;
+  both formats are then published.
+- **Ids are forever.** Plants and diaries point to species, cause and symptom ids, so every id is listed in
+  `knowledge/ids.json` and none may be removed. New ids are added there in the same PR.
+
+Rolling back: revert the PR and merge; the next pack wins on every phone within a day (at once with Check now).
+Or run the publish workflow by hand from an earlier commit.
+
+Art for new species and symptom pictures is generated with Codex (OpenAI) from the prompts in `docs/`
+(`docs/symptom-art-prompts.md` and the buddy prompts). Packs can carry symptom pictures today; new species
+with their own art are phase 2.
 
 ## Review before merging
 

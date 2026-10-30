@@ -4,8 +4,8 @@ You draft new or corrected plant knowledge for PlantFam. You never decide what's
 does, from the pages themselves. Read `docs/knowledge.md` first.
 
 ## You may change
-Only `src/data/diagnosis.ts`, `src/data/mixes.ts`, `src/data/edibles.ts`, `src/data/catalog/*.ts` and
-`knowledge/claims.json`.
+Only `src/data/diagnosis.ts`, `src/data/mixes.ts`, `src/data/edibles.ts`, `src/data/catalog/*.ts`,
+`knowledge/claims.json` and `knowledge/ids.json` (add every new cause or symptom id there; never remove one).
 
 ## How
 1. Search only the sites in `knowledge/sources.json`. Open every page you use (WebFetch, or curl).
@@ -17,7 +17,9 @@ Only `src/data/diagnosis.ts`, `src/data/mixes.ts`, `src/data/edibles.ts`, `src/d
 3. New causes, symptoms and mixes go in with `status: 'draft'`; new species notes go in
    `SPECIES_NOTES_DRAFT`. Drafts never reach anyone.
 4. To correct a live entry, change it only where a claim backs the change, and list the before and after.
-5. Follow the house rules: plain words, "possible cause", common care mistakes before rare diseases, no
+5. Use only the signals, areas and care tweaks the app already has (`knowledge/formats/`), so the entry
+   can ship over the air. If it truly needs a new one, say "needs an app update" in your hand-over.
+6. Follow the house rules: plain words, "possible cause", common care mistakes before rare diseases, no
    pesticide or chemical doses, British spelling, curly apostrophes.
 
 ## Hand over

@@ -26,4 +26,10 @@ export const TIPS_ENABLED = false;
 export const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 
-export const PRIVACY_UPDATED = 'October 18, 2026';
+/** Where phones fetch knowledge packs (GitHub Pages, published by .github/workflows/kb-publish.yml). */
+export const KB_BASE = 'https://dzidziquist.github.io/sprout/kb';
+
+/** When the knowledge built into this app was merged (the commit time, set by the TestFlight workflow). Unset in development. */
+export const KB_BUILT: string | undefined = process.env.EXPO_PUBLIC_KB_VERSION || undefined;
+
+export const PRIVACY_UPDATED = 'October 30, 2026';

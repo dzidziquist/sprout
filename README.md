@@ -25,7 +25,7 @@ A playful plant-care app for iPhone where plants have moods, care is a soil chec
 
 ### Privacy
 
-No account, no tracking, no ads. Plants live on the phone. iCloud is only used for the backup and household sharing, in the person's own iCloud. Photo ID sends the photo to Pl@ntNet only when asked. All advice is worked out on the phone from the app's own data: no AI service is called at run time.
+No account, no tracking, no ads. Plants live on the phone. iCloud is only used for the backup and household sharing, in the person's own iCloud. Photo ID sends the photo to Pl@ntNet only when asked. All advice is worked out on the phone from the app's own data: no AI service is called at run time. Once a day the app downloads the latest plant knowledge from this repo's GitHub Pages, a plain file download that sends nothing about the person.
 
 ## Run it
 
@@ -54,7 +54,8 @@ Stack: Expo SDK 54, Expo Router, Zustand + AsyncStorage, react-native-svg, a loc
 | `targets/widget/` | Home Screen widget (SwiftUI) |
 | `plugins/` | Expo config plugins (iCloud, entitlements, deployment target) |
 | `docs/launch-setup.md` | One-time setup: Apple, App Store Connect, iCloud container, CloudKit schema |
-| `docs/knowledge.md` | How the knowledge is kept up to date (below) |
+| `docs/knowledge.md` | How the knowledge is kept up to date and shipped over the air (below) |
+| `knowledge/` | Claims ledger, approved sources, pack formats and the id list |
 | `docs/product-brief.md`, `docs/research/` | Vision, research report and raw notes |
 | `docs/*prompts*.md`, `design/` | Art prompts, design board and screen renders |
 
@@ -74,6 +75,8 @@ The app's advice comes from data files, so it stays free, private and offline. A
 - **Drafts stay hidden**: entries are `draft` until they pass, and the app never shows drafts.
 - **Evals** (`evals/`, readable in `evals/CASES.md`): plant situations with the answer the app must give, run on every change (`npm test`). A weekly workflow re-opens every source page.
 - **Codex** (OpenAI, connected to this repo) reviews every pull request, and a person merges.
+- **Over the air:** once merged, the plant doctor, mixes and species notes reach phones within a day as a *knowledge pack* on GitHub Pages (`.github/workflows/kb-publish.yml`), checked on the phone before use. App code still ships through TestFlight.
+- **Art** (new plant buddies, symptom pictures) is generated with Codex from the prompts in `docs/`.
 
 ## Secrets
 
