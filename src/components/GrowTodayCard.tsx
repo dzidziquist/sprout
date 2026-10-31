@@ -66,6 +66,7 @@ export function GrowTodayCard() {
   const events = usePlantStore((s) => s.events);
   const ticks = usePlantStore((s) => s.profile.growTicks);
   const hidden = usePlantStore((s) => s.profile.growHidden);
+  const skips = usePlantStore((s) => s.profile.growSkips);
   const setProfile = usePlantStore((s) => s.setProfile);
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
   const forecast = useForecast(climate, edibles.length > 0);
@@ -77,10 +78,10 @@ export function GrowTodayCard() {
     if (alert) return { key: `alert:${alert.id}`, days: 1, title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
     // The top job not already ticked off in the grow patch.
     const now = new Date();
-    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now));
+    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now) && !isTicked(t, skips ?? {}, now));
     if (task) return { key: `task:${task.id}`, days: 7, title: task.title, body: localizeTemps(task.body, units), icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
     return { key: 'quiet', days: 7, title: `${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing`, body: 'All quiet in the patch. Peek at stages and harvests.', icon: GROW_ICON.sow, tint: c.mint, eyebrow: 'Grow patch' };
-  }, [edibles, forecast, climate, c, units, events, ticks]);
+  }, [edibles, forecast, climate, c, units, events, ticks, skips]);
 
   if (!item) return null;
   // Put away from Today: gone until it's due again (a week for jobs, a day for weather), or until a

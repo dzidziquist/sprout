@@ -17,7 +17,7 @@ import type { CareEvent, Plant } from '../types';
  */
 
 /** Profile fields the household shares; everything else (reminder time, look, units…) stays per phone. */
-export const SHARED_PROFILE_KEYS = ['climate', 'city', 'sunlight', 'rooms', 'trips', 'grows', 'spots', 'wishlist', 'growTicks'] as const;
+export const SHARED_PROFILE_KEYS = ['climate', 'city', 'sunlight', 'rooms', 'trips', 'grows', 'spots', 'wishlist', 'growTicks', 'growSkips'] as const;
 export type SharedProfile = Pick<Profile, (typeof SHARED_PROFILE_KEYS)[number]>;
 
 export interface Member {
