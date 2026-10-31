@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '../store/plantStore';
-import { ediblePlants, isTicked, tasksFor, weatherAlerts, type AlertKind } from '../engine/growPatch';
+import { ediblePlants, isPutAway, isTicked, putAway, tasksFor, weatherAlerts, type AlertKind } from '../engine/growPatch';
 import { useForecast } from '../lib/weather';
 import { fonts, type } from '../theme/tokens';
 import { useColors, type Palette } from '../theme/theme';
@@ -76,7 +76,7 @@ export function GrowTodayCard() {
   const item = useMemo(() => {
     if (!edibles.length) return null;
     // What was put away (still within its time) is passed over, so the next item shows instead.
-    const away = (key: string) => hidden?.key === key && Date.now() < Date.parse(hidden.until);
+    const away = (key: string) => isPutAway(hidden, key, new Date());
     const alert = weatherAlerts(edibles, forecast, units).find((a) => !away(`alert:${a.id}`));
     if (alert) return { key: `alert:${alert.id}`, days: 1, title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
     // The top job not already ticked off in the grow patch.
@@ -88,10 +88,13 @@ export function GrowTodayCard() {
 
   if (!item) return null;
   // The "all quiet" card put away: nothing else to show.
-  if (hidden?.key === item.key && Date.now() < Date.parse(hidden.until)) return null;
+  if (isPutAway(hidden, item.key, new Date())) return null;
   // Put away from Today: gone until it's due again (a week for jobs, a day for weather); the next job
   // shows instead, and it's still in the Grow patch.
-  const putAway = () => setProfile({ growHidden: { key: item.key, until: new Date(Date.now() + item.days * 86_400_000).toISOString() } });
+  const hide = () => {
+    const now = new Date();
+    setProfile({ growHidden: putAway(hidden, item.key, new Date(now.getTime() + item.days * 86_400_000), now) });
+  };
 
   return (
     <Pressable
@@ -120,7 +123,7 @@ export function GrowTodayCard() {
         accessibilityRole="button"
         accessibilityLabel={item.days === 1 ? 'Hide for today' : 'Hide for this week'}
         hitSlop={8}
-        onPress={putAway}
+        onPress={hide}
         style={({ pressed }) => [styles.close, { borderColor: c.line, backgroundColor: c.card }, pressed && { opacity: 0.6 }]}
       >
         <Icon d={GROW_ICON.close} color={c.ink} size={14} width={2.8} />

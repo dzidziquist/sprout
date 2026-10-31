@@ -61,8 +61,8 @@ export interface Profile {
   growSkips?: Record<string, string>;
   /** Grow jobs turned off for this season ("not for my setup"): task id → until when (ISO). */
   growOffSeason?: Record<string, string>;
-  /** The grow card on Today, put away by the person: which item (`task:<id>`, `alert:<id>`), and until when (ISO). */
-  growHidden?: { key: string; until: string };
+  /** Grow cards put away from Today: item (`task:<id>`, `alert:<id>`, `quiet`) → until when (ISO). */
+  growHidden?: Record<string, string>;
   /** When the user last saved a backup file. */
   lastBackupAt?: string;
   /**
