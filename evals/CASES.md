@@ -4,7 +4,7 @@ What PlantFam must (or should) answer in each situation. Every knowledge change 
 (`npm test`); a **must** case failing blocks the change. Generated from `evals/cases.ts`: to change a case,
 edit that file, then run `UPDATE_CASES_MD=1 npx vitest run evals` to refresh this list.
 
-36 must, 12 should.
+36 must, 13 should.
 
 ## Plant doctor
 
@@ -223,6 +223,14 @@ Source: app rule · `purple-cold`
 Why: Blossom end rot comes from uneven watering stopping calcium reaching the fruit.
 
 Source: app rule · `ber-dry`
+
+### Pepper fruiting in a pot outside in summer, soil swinging between dry and soggy, dark patch on the bottom of fruit
+
+Should. Picks **Dark patch on the bottom of fruit**. First possible cause: **Blossom end rot**.
+
+Why: Blossom end rot hits peppers as well as tomatoes, and a root zone that dries out then stays soaked brings it on.
+
+Source: <https://ipm.ucanr.edu/home-and-landscape/blossom-end-rot/> · `ber-pepper-pot`
 
 ### Tomato fruit cracking after a dry spell
 

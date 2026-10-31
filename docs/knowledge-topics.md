@@ -3,7 +3,7 @@
 The weekly knowledge task (see `docs/knowledge.md`) takes the first unticked topic, then ticks it with
 the date and its PR. Add topics anywhere; when the list is done, start again from the top.
 
-- [ ] Feeding problems on tomatoes and peppers: magnesium, potassium, calcium, too much nitrogen, salt build-up
+- [x] Feeding problems on tomatoes and peppers: magnesium, potassium, calcium, too much nitrogen, salt build-up (2026-10-31; calcium/blossom end rot one claim short of verified, see the PR)
 - [ ] Potting mix catalogue: more well-known bags (US, UK, Ghana) and what food each carries
 - [ ] Fungus gnats, spider mites and thrips indoors: checks and non-chemical fixes
 - [ ] Tomato and pepper diseases common in Seattle (blight, leaf mould, powdery mildew)

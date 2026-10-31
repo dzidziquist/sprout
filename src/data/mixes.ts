@@ -26,9 +26,10 @@ export interface MixBrand {
 }
 
 export const MIX_BRANDS: MixBrand[] = [
-  { match: /ocean\s*forest/, name: 'FoxFarm Ocean Forest', kind: 'organic', source: 'FoxFarm Ocean Forest label: earthworm castings, bat guano, fish and crab meal' },
-  { match: /happy\s*frog/, name: 'FoxFarm Happy Frog', kind: 'organic', source: 'FoxFarm Happy Frog label: earthworm castings, bat guano, mycorrhizal fungi' },
-  { match: /coast\s*of\s*maine/, name: 'Coast of Maine', kind: 'organic', source: 'Coast of Maine potting soil labels: compost, kelp, lobster and crab shell' },
+  { match: /ocean\s*forest/, name: 'FoxFarm Ocean Forest', kind: 'organic', source: 'FoxFarm Ocean Forest (foxfarm.com/product/ocean-forest-potting-soil): earthworm castings, bat guano, fish emulsion and crab meal', reviewed: '2026-10', status: 'verified' },
+  { match: /happy\s*frog/, name: 'FoxFarm Happy Frog', kind: 'organic', source: 'FoxFarm Happy Frog (foxfarm.com/product/happy-frog-potting-soil): earthworm castings, bat guano, soil microbes', reviewed: '2026-10', status: 'verified' },
+  { match: /bar\s*harbor/, name: 'Coast of Maine Bar Harbor Blend', kind: 'organic', source: 'Coast of Maine Bar Harbor Blend (coastofmaine.com/products/bar-harbor-premium-potting-soil): composted manure, kelp meal, lobster and crab shell meal' },
+  { match: /acadia/, name: 'Coast of Maine Acadia Blend', kind: 'organic', source: 'Coast of Maine Acadia Blend (coastofmaine.com/products/acadia-blend-potting-soil): 100% plant-based, no peat or animal manures. What food it carries still needs checking.', status: 'draft' },
   { match: /espoma/, name: 'Espoma Organic Potting Mix', kind: 'organic', source: 'Espoma Organic Potting Mix label: earthworm castings, alfalfa meal, kelp meal' },
   { match: /dr\.?\s*earth/, name: 'Dr. Earth', kind: 'organic', source: 'Dr. Earth potting soil labels: organic fertilisers and compost' },
   { match: /kellogg/, name: 'Kellogg Garden Organics', kind: 'organic', source: 'Kellogg Garden Organics potting mix labels: organic plant food' },
