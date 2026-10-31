@@ -7,7 +7,7 @@ Apple account or a decision; everything else is done in the code.
 
 | | Item | State |
 |---|---|---|
-| **Owner** | **Privacy policy URL.** App Store Connect requires one. `PRIVACY_POLICY_URL` in `src/config.ts` is empty. | Publish `docs/legal/privacy-policy.md` (Notion "Publish to web", or a page on dzidziquist.github.io), then paste the URL into App Store Connect and `src/config.ts`. |
+| **Owner** | **Privacy policy URL.** Published on Notion: https://dzidziquist.notion.site/PlantFam-Privacy-Policy-3fabc232dc2181d59c4de6716ad9eb84. It's in `PRIVACY_POLICY_URL` and linked from the in-app Privacy page. | Paste the same URL into App Store Connect (App Privacy → Privacy Policy URL). |
 | **Owner** | **Screenshots.** None at App Store size yet. `design/screens/` are early mock-ups (390×844) and `assets/store/` holds only backgrounds (1290×2796). | Take them on an iPhone Pro Max (1320×2868, the 6.9″ slot): Today, plant page, Grow patch, plant doctor with "Why this advice?", Offshoots, Light. Use the demo fam for clean data. Apple needs them to show the real app. |
 | Done | **Privacy policy text was out of date.** It said diary photos are "not uploaded anywhere" and left out iCloud backup and household sharing. | Fixed in-app (`src/data/privacy.ts`) and in `docs/legal/privacy-policy.md`, dated 31 Oct 2026. |
 | Done | **Location permission strings.** The build declared "always" location with Expo's generic text ("Allow PlantFam to access your location"), which App Review flags. The app never uses background location. | Removed: only the compass "when in use" string remains. |

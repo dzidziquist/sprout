@@ -79,7 +79,7 @@ Without a key the app still works: Photo ID explains it isn't set up yet, and th
 - Add the three tip products. No entitlement or offering is needed: the app loads them by product id and checks past tips in the customer's purchase history.
 
 ## 5. Before public launch
-- Contact currently points to `SUPPORT_URL` (dzidziquist.com). Optionally set `SUPPORT_EMAIL`, and set `PRIVACY_POLICY_URL`, in `src/config.ts`. Host `docs/legal/privacy-policy.md` (fill in its contact line) and use that URL in App Store Connect. App Privacy answers are in `docs/legal/app-store-privacy.md`. Terms use Apple's standard EULA.
+- Contact currently points to `SUPPORT_URL` (dzidziquist.com). Optionally set `SUPPORT_EMAIL` in `src/config.ts`. The privacy policy is published on Notion (`PRIVACY_POLICY_URL`); use that URL in App Store Connect. App Privacy answers are in `docs/legal/app-store-privacy.md`. Terms use Apple's standard EULA.
 - Add the Pl@ntNet logo next to "Photo ID powered by Pl@ntNet" (free-tier terms).
 - Swap in high-res buddy illustrations (`assets/buddies/{species}-{mood}.png`, same filenames).
 
