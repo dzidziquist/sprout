@@ -230,6 +230,27 @@ export function putAway(hidden: HiddenCards | undefined, key: string, until: Dat
   return { ...kept, [key]: until.toISOString() };
 }
 
+/**
+ * What Today's grow card shows: the first weather alert, else the first open job (not ticked, skipped,
+ * off this season or put away). 'quiet' only when there's genuinely nothing to do; when everything
+ * left has been put away, nothing (the card stays away until one comes back).
+ */
+export function pickGrowCard(
+  alerts: GrowAlert[],
+  tasks: GrowTask[],
+  state: { ticks?: GrowTicks; skips?: GrowTicks; offSeason?: Record<string, string>; hidden?: HiddenCards },
+  now: Date,
+): { kind: 'alert'; alert: GrowAlert } | { kind: 'task'; task: GrowTask } | { kind: 'quiet' } | null {
+  const away = (key: string) => isPutAway(state.hidden, key, now);
+  const open = tasks.filter((t) => !isTicked(t, state.ticks ?? {}, now) && !isTicked(t, state.skips ?? {}, now) && !(state.offSeason?.[t.id] && Date.parse(state.offSeason[t.id]) > now.getTime()));
+  const alert = alerts.find((a) => !away(`alert:${a.id}`));
+  if (alert) return { kind: 'alert', alert };
+  const task = open.find((t) => !away(`task:${t.id}`));
+  if (task) return { kind: 'task', task };
+  if (alerts.length || open.length || away('quiet')) return null;
+  return { kind: 'quiet' };
+}
+
 /** Stages a staked or trellised crop needs its support by: once it's growing, until the season's done. */
 const NEEDS_SUPPORT: EdibleStage[] = ['growing', 'flowering', 'fruiting', 'harvesting'];
 

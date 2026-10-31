@@ -2,7 +2,7 @@
   "expo": {
     "name": "PlantFam",
     "slug": "plantfam",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -53,7 +53,9 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "PlantFam uses your phone’s compass to tell which way a window faces. Your location isn’t saved or shared."
+          "locationWhenInUsePermission": "PlantFam uses your phone’s compass to tell which way a window faces. Your location isn’t saved or shared.",
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false
         }
       ],
       [

@@ -1,6 +1,6 @@
 # PlantFam Privacy Policy
 
-_Last updated: October 18, 2026_
+_Last updated: October 31, 2026_
 
 Your plants live on your phone. No account, no ads, no tracking, and nothing is sold.
 
@@ -8,9 +8,15 @@ PlantFam is a plant-care app made by an independent developer. This policy is th
 
 ## What stays on your phone
 
-- Your plants, care diary, harvests, family trees, streaks and settings are saved only on this device.
-- Diary photos are copied into PlantFam’s own folder on your phone. They are not uploaded anywhere.
+- Your plants, care diary, harvests, family trees, streaks and settings are saved on this phone. Copies go to your own iCloud only if you turn on iCloud backup or a household (below).
+- Diary photos are copied into PlantFam’s own folder on your phone.
 - There is no PlantFam account and no PlantFam server holding your data. We can’t see your plants.
+
+## Your iCloud (only if you use it)
+
+- iCloud backup: once a week PlantFam saves a backup of your plants, diary, diary photos and settings to its own folder in your iCloud. It keeps the last four. Turn it off in Settings.
+- Household: if you start or join one, the shared plants, diary entries, diary photos, the shared settings (your city, rooms, trips away, wishlist and grow patch progress) and the name you choose are kept in the household owner’s iCloud and shared only with the people the owner invites.
+- Both are stored by Apple in iCloud under your Apple ID (or the household owner’s). The maker of PlantFam can’t see or reach any of it.
 
 ## What leaves your phone, and why
 
@@ -34,8 +40,9 @@ PlantFam is a plant-care app made by an independent developer. This policy is th
 
 ## Backups and deleting your data
 
-- A backup is a file you save and keep wherever you choose (Files, iCloud Drive, email). PlantFam never receives it. Diary photos aren’t included.
+- “Back up now” makes a file you save and keep wherever you choose (Files, iCloud Drive, email). PlantFam never receives it. Diary photos aren’t in that file; the weekly iCloud backup includes them.
 - Settings → Delete all my data erases every plant, diary entry, photo and setting on this phone. Deleting the app does the same.
+- iCloud backups stay in your iCloud until you remove them: iPhone Settings → your name → iCloud → Manage Storage → PlantFam. Leaving a household removes you from it; the owner stopping it ends the sharing.
 - Your iPhone’s own backups may include PlantFam’s data, the same as for other apps.
 
 ## Children

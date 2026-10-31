@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { usePlantStore } from '../store/plantStore';
-import { ediblePlants, isPutAway, isTicked, putAway, tasksFor, weatherAlerts, type AlertKind } from '../engine/growPatch';
+import { ediblePlants, pickGrowCard, putAway, tasksFor, weatherAlerts, type AlertKind } from '../engine/growPatch';
 import { useForecast } from '../lib/weather';
 import { fonts, type } from '../theme/tokens';
 import { useColors, type Palette } from '../theme/theme';
@@ -73,22 +73,26 @@ export function GrowTodayCard() {
   const forecast = useForecast(climate, edibles.length > 0);
   const units = useUnits();
 
+  // The day, so a card put away comes back on its own once its time is up (not only after some other change).
+  const today = new Date().toDateString();
   const item = useMemo(() => {
     if (!edibles.length) return null;
-    // What was put away (still within its time) is passed over, so the next item shows instead.
-    const away = (key: string) => isPutAway(hidden, key, new Date());
-    const alert = weatherAlerts(edibles, forecast, units).find((a) => !away(`alert:${a.id}`));
-    if (alert) return { key: `alert:${alert.id}`, days: 1, title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
-    // The top job not already ticked off in the grow patch.
     const now = new Date();
-    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now) && !isTicked(t, skips ?? {}, now) && !away(`task:${t.id}`) && !(offSeason?.[t.id] && Date.parse(offSeason[t.id]) > now.getTime()));
-    if (task) return { key: `task:${task.id}`, days: 7, title: task.title, body: localizeTemps(task.body, units), icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
+    const pick = pickGrowCard(weatherAlerts(edibles, forecast, units), tasksFor(edibles, climate, now, events), { ticks, skips, offSeason, hidden }, now);
+    if (!pick) return null;
+    if (pick.kind === 'alert') {
+      const a = pick.alert;
+      return { key: `alert:${a.id}`, days: 1, title: a.title, body: a.body, icon: ALERT_ICON[a.kind], tint: alertTint(a.kind, c), eyebrow: 'Grow patch · weather' };
+    }
+    if (pick.kind === 'task') {
+      const t = pick.task;
+      return { key: `task:${t.id}`, days: 7, title: t.title, body: localizeTemps(t.body, units), icon: GROW_ICON[t.kind], tint: taskTint(t.kind, c), eyebrow: t.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
+    }
     return { key: 'quiet', days: 7, title: `${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing`, body: 'All quiet in the patch. Peek at stages and harvests.', icon: GROW_ICON.sow, tint: c.mint, eyebrow: 'Grow patch' };
-  }, [edibles, forecast, climate, c, units, events, ticks, skips, offSeason, hidden]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [edibles, forecast, climate, c, units, events, ticks, skips, offSeason, hidden, today]);
 
   if (!item) return null;
-  // The "all quiet" card put away: nothing else to show.
-  if (isPutAway(hidden, item.key, new Date())) return null;
   // Put away from Today: gone until it's due again (a week for jobs, a day for weather); the next job
   // shows instead, and it's still in the Grow patch.
   const hide = () => {
