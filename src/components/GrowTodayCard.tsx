@@ -27,6 +27,7 @@ export const GROW_ICON = {
   protect: 'M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9zM12 12v6a2 2 0 0 0 4 0',
   scissors: 'M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12',
   check: 'm5 12 5 5 9-10',
+  close: 'M6 6l12 12M18 6 6 18',
 } as const;
 
 export const ALERT_ICON: Record<AlertKind, string> = {
@@ -64,22 +65,32 @@ export function GrowTodayCard() {
   const climate = usePlantStore((s) => s.profile.climate);
   const events = usePlantStore((s) => s.events);
   const ticks = usePlantStore((s) => s.profile.growTicks);
+  const hidden = usePlantStore((s) => s.profile.growHidden);
+  const skips = usePlantStore((s) => s.profile.growSkips);
+  const setProfile = usePlantStore((s) => s.setProfile);
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
   const forecast = useForecast(climate, edibles.length > 0);
   const units = useUnits();
 
   const item = useMemo(() => {
     if (!edibles.length) return null;
-    const alert = weatherAlerts(edibles, forecast, units)[0];
-    if (alert) return { title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
+    // What was put away (still within its time) is passed over, so the next item shows instead.
+    const away = (key: string) => hidden?.key === key && Date.now() < Date.parse(hidden.until);
+    const alert = weatherAlerts(edibles, forecast, units).find((a) => !away(`alert:${a.id}`));
+    if (alert) return { key: `alert:${alert.id}`, days: 1, title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
     // The top job not already ticked off in the grow patch.
     const now = new Date();
-    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now));
-    if (task) return { title: task.title, body: localizeTemps(task.body, units), icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
-    return { title: `${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing`, body: 'All quiet in the patch. Peek at stages and harvests.', icon: GROW_ICON.sow, tint: c.mint, eyebrow: 'Grow patch' };
-  }, [edibles, forecast, climate, c, units, events, ticks]);
+    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now) && !isTicked(t, skips ?? {}, now) && !away(`task:${t.id}`));
+    if (task) return { key: `task:${task.id}`, days: 7, title: task.title, body: localizeTemps(task.body, units), icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
+    return { key: 'quiet', days: 7, title: `${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing`, body: 'All quiet in the patch. Peek at stages and harvests.', icon: GROW_ICON.sow, tint: c.mint, eyebrow: 'Grow patch' };
+  }, [edibles, forecast, climate, c, units, events, ticks, skips, hidden]);
 
   if (!item) return null;
+  // The "all quiet" card put away: nothing else to show.
+  if (hidden?.key === item.key && Date.now() < Date.parse(hidden.until)) return null;
+  // Put away from Today: gone until it's due again (a week for jobs, a day for weather); the next job
+  // shows instead, and it's still in the Grow patch.
+  const putAway = () => setProfile({ growHidden: { key: item.key, until: new Date(Date.now() + item.days * 86_400_000).toISOString() } });
 
   return (
     <Pressable
@@ -104,13 +115,22 @@ export function GrowTodayCard() {
           {item.body}
         </Text>
       </View>
-      <Icon d={GROW_ICON.chevron} color={c.ink} size={18} width={2.6} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={item.days === 1 ? 'Hide for today' : 'Hide for this week'}
+        hitSlop={8}
+        onPress={putAway}
+        style={({ pressed }) => [styles.close, { borderColor: c.line, backgroundColor: c.card }, pressed && { opacity: 0.6 }]}
+      >
+        <Icon d={GROW_ICON.close} color={c.ink} size={14} width={2.8} />
+      </Pressable>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 2, borderRadius: 20, padding: 12, paddingRight: 10 },
+  close: { width: 32, height: 32, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
   badge: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   eyebrow: { fontFamily: fonts.bodyHeavy, ...type.caption },
   title: { fontFamily: fonts.displaySemi, ...type.headline },

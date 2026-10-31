@@ -78,7 +78,7 @@ const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFin
 const isDate = (v: unknown): v is string => isStr(v) && !Number.isNaN(new Date(v).getTime());
 const oneOf = <T extends string>(list: readonly T[]) => (v: unknown): v is T => isStr(v) && (list as readonly string[]).includes(v);
 
-const POT_COLORS = ['yellow', 'blue', 'coral', 'grape', 'bubblegum', 'gold'] as const;
+const POT_COLORS = ['yellow', 'blue', 'coral', 'grape', 'bubblegum', 'green', 'gold'] as const;
 const SOILS = ['potting_mix', 'chunky_aroid', 'gritty', 'perlite_mix', 'bagged_cactus', 'veg_mix', 'coir', 'moisture_control', 'moss', 'garden_soil', 'leca', 'water', 'unsure'] as const;
 const POT_MATERIALS = ['plastic', 'glazed', 'terracotta', 'fabric'] as const;
 const LIGHTS = ['low', 'medium', 'bright', 'direct'] as const;
@@ -209,6 +209,7 @@ const PROFILE_CHECKS: Record<string, (v: unknown) => boolean> = {
   supporterSince: isDate,
   coachDismissed: isBool,
   growTicks: (v) => isObj(v) && Object.values(v).every(isStr),
+  growSkips: (v) => isObj(v) && Object.values(v).every(isStr),
   units: oneOf(['auto', 'imperial', 'metric']),
   idUsage: shape({ day: isStr, count: isNum }),
   trips: every(shape({ from: isDate, to: isDate, done: opt(every(isStr)) })),

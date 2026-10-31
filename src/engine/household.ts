@@ -17,7 +17,7 @@ import type { CareEvent, Plant } from '../types';
  */
 
 /** Profile fields the household shares; everything else (reminder time, look, units…) stays per phone. */
-export const SHARED_PROFILE_KEYS = ['climate', 'city', 'sunlight', 'rooms', 'trips', 'grows', 'spots', 'wishlist', 'growTicks'] as const;
+export const SHARED_PROFILE_KEYS = ['climate', 'city', 'sunlight', 'rooms', 'trips', 'grows', 'spots', 'wishlist', 'growTicks', 'growSkips'] as const;
 export type SharedProfile = Pick<Profile, (typeof SHARED_PROFILE_KEYS)[number]>;
 
 export interface Member {
@@ -129,6 +129,20 @@ export function deletedSinceAgreed(synced: Synced, fetched: { id: string }[], re
   if (incomplete) return [...reported];
   const there = new Set(fetched.map((i) => i.id));
   return [...new Set([...reported, ...Object.keys(synced).filter((id) => !there.has(id))])];
+}
+
+/**
+ * A round where some records didn't come down from iCloud: deletes made on this phone wait. The missing
+ * record may be an edit made on another phone since, and a complete round would keep that edit (a
+ * change there beats a delete here). The old agreement stays, so the next round still sees the delete
+ * and sends it once nothing is missing. Saves still go: when both phones changed a record, this
+ * phone's version wins in a complete round too.
+ */
+export function holdDeletes(r: MergeResult, synced: Synced, incomplete: boolean | undefined): MergeResult {
+  if (!incomplete || !r.remove.length) return r;
+  const next = { ...r.synced };
+  for (const id of r.remove) if (synced[id]) next[id] = synced[id];
+  return { ...r, remove: [], synced: next };
 }
 
 export function merge(local: Jungle, synced: Synced, remote: RemoteItem[], deletedRemote: string[], now: number): MergeResult {

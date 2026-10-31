@@ -57,6 +57,10 @@ export interface Profile {
   coachDismissed: boolean;
   /** Grow patch jobs ticked off: task id → when. Old ticks are dropped as new ones come in. */
   growTicks: Record<string, string>;
+  /** Grow patch jobs skipped (not done, just not for now): task id → when. They last as long as a tick. */
+  growSkips?: Record<string, string>;
+  /** The grow card on Today, put away by the person: which item (`task:<id>`, `alert:<id>`), and until when (ISO). */
+  growHidden?: { key: string; until: string };
   /** When the user last saved a backup file. */
   lastBackupAt?: string;
   /**
@@ -220,6 +224,8 @@ interface PlantState {
   setFed: (plantIds: string[], on: boolean, now?: Date, since?: string) => void;
   /** Tick a grow patch job off, or untick it. */
   tickGrowTask: (taskId: string, on: boolean, now?: Date) => void;
+  /** Skip a grow job for now (or bring it back): it leaves the list like a tick, but nothing is logged. */
+  skipGrowTask: (taskId: string, on: boolean, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
   removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
@@ -748,6 +754,13 @@ export const usePlantStore = create<PlantState>()(
           const cutoff = now.getTime() - 62 * 86400000;
           const kept = Object.fromEntries(Object.entries(s.profile.growTicks ?? {}).filter(([id, at]) => id !== taskId && new Date(at).getTime() > cutoff));
           return { profile: { ...s.profile, growTicks: on ? { ...kept, [taskId]: now.toISOString() } : kept } };
+        });
+      },
+      skipGrowTask: (taskId, on, now = new Date()) => {
+        set((s) => {
+          const cutoff = now.getTime() - 62 * 86400000;
+          const kept = Object.fromEntries(Object.entries(s.profile.growSkips ?? {}).filter(([id, at]) => id !== taskId && new Date(at).getTime() > cutoff));
+          return { profile: { ...s.profile, growSkips: on ? { ...kept, [taskId]: now.toISOString() } : kept } };
         });
       },
       setFed: (plantIds, on, now = new Date(), since) => {

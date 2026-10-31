@@ -93,39 +93,55 @@ function AlertCard({ alert, c }: { alert: GrowAlert; c: Palette }) {
   );
 }
 
-function TaskRow({ task, done, onToggle, plants, c, last }: { task: GrowTask; done: boolean; onToggle: () => void; plants: Plant[]; c: Palette; last: boolean }) {
+/** "2 done", "1 done, 1 skipped", "All 3 done for now". */
+const doneLine = (done: number, skipped: number, all: boolean) => {
+  const parts = [done ? `${done} done` : '', skipped ? `${skipped} skipped` : ''].filter(Boolean).join(', ');
+  return all && !skipped ? `All ${done} done for now` : parts;
+};
+
+/**
+ * One grow job. Tapping ticks it (a feed tick logs a feed). "Skip" puts it away for now without
+ * logging anything; a skipped job, shown folded away, comes back with a tap.
+ */
+function TaskRow({ task, done, skipped, onToggle, onSkip, plants, c, last }: { task: GrowTask; done: boolean; skipped?: boolean; onToggle: () => void; onSkip?: () => void; plants: Plant[]; c: Palette; last: boolean }) {
   const units = useUnits();
   const who = task.plantIds.map((id) => plants.find((p) => p.id === id)?.name).filter(Boolean).join(', ');
   const waiting = task.waiting ? task.waiting.plantIds.map((id) => plants.find((p) => p.id === id)?.name).filter(Boolean) : [];
   return (
     <Pressable
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked: done }}
-      accessibilityLabel={task.title}
+      accessibilityRole={skipped ? 'button' : 'checkbox'}
+      accessibilityState={skipped ? undefined : { checked: done }}
+      accessibilityLabel={skipped ? `${task.title}, skipped. Bring it back` : task.title}
       onPress={onToggle}
       style={[styles.task, !last && { borderBottomWidth: 2, borderColor: c.cloud }]}
     >
       <View style={[styles.taskIcon, { backgroundColor: taskTint(task.kind, c), borderColor: c.line }]}>
         <Icon d={GROW_ICON[task.kind]} color={c.ink} size={20} />
       </View>
-      <View style={{ flex: 1, gap: 2, opacity: done ? 0.45 : 1 }}>
+      <View style={{ flex: 1, gap: 2, opacity: done || skipped ? 0.45 : 1 }}>
         <Text style={[styles.taskTitle, { color: c.ink }, done && styles.strike]}>{task.title}</Text>
         <Text style={[styles.taskBody, { color: c.ink }]}>{localizeTemps(task.body, units)}</Text>
         <View style={styles.taskHead}>
-          {task.thisWeek && !done ? (
+          {task.thisWeek && !done && !skipped ? (
             <View style={[styles.weekPill, { backgroundColor: c.sun, borderColor: c.line }]}>
               <Text style={[styles.weekText, { color: textOn(c.sun, c) }]}>This week</Text>
             </View>
           ) : null}
           <Text style={[styles.taskWho, { color: c.inkMuted, flexShrink: 1 }]}>For {who}</Text>
         </View>
+        {onSkip && (
+          <Pressable accessibilityRole="button" accessibilityLabel={`Skip ${task.title} for now`} hitSlop={10} onPress={onSkip} style={{ alignSelf: 'flex-start', paddingVertical: 4 }}>
+            <Text style={[styles.skipLink, { color: c.inkMuted }]}>Skip for now</Text>
+          </Pressable>
+        )}
+        {skipped && <Text style={[styles.skipLink, { color: c.inkMuted }]}>Skipped · tap to bring back</Text>}
         {task.waiting && waiting.length > 0 && (
           <Text style={[styles.waiting, { backgroundColor: c.mint, color: textOn(c.mint, c) }]}>
             Not yet for {andList(waiting)}: {waiting.length === 1 ? 'its fresh mix feeds it' : 'their fresh mix feeds them'} till about {shortDay(new Date(task.waiting.until))}.
           </Text>
         )}
       </View>
-      <View style={[styles.check, { borderColor: c.line, backgroundColor: done ? c.leaf : c.card }]}>
+      <View style={[styles.check, { borderColor: c.line, backgroundColor: done ? c.leaf : c.card }, skipped && { opacity: 0.35 }]}>
         {done ? <Icon d={GROW_ICON.check} color={textOn(c.leaf, c)} size={16} width={3} /> : null}
       </View>
     </Pressable>
@@ -280,6 +296,8 @@ export default function GrowPatch() {
   const faces = usePlantStore((s) => s.profile.faces);
   const ticks = usePlantStore((s) => s.profile.growTicks);
   const tickGrowTask = usePlantStore((s) => s.tickGrowTask);
+  const skipGrowTask = usePlantStore((s) => s.skipGrowTask);
+  const skips = usePlantStore((s) => s.profile.growSkips);
   const setStaked = usePlantStore((s) => s.setStaked);
   const setFed = usePlantStore((s) => s.setFed);
   const now = new Date();
@@ -297,6 +315,15 @@ export default function GrowPatch() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/'));
   // Ticks are saved: a repeating job ("every 2–3 days") comes back unticked after that, others next month.
   const done = (t: GrowTask) => isTicked(t, ticks ?? {}, now);
+  const skipped = (t: GrowTask) => !done(t) && isTicked(t, skips ?? {}, now);
+  const open = tasks.filter((t) => !done(t) && !skipped(t));
+  const finished = tasks.filter((t) => done(t) || skipped(t));
+  const skipCount = finished.filter(skipped).length;
+  const skip = (t: GrowTask, on: boolean) => {
+    haptics.tap();
+    skipGrowTask(t.id, on);
+  };
+  const [showDone, setShowDone] = useState(false);
   const toggle = (t: GrowTask) => {
     haptics.tap();
     const on = !done(t);
@@ -346,9 +373,35 @@ export default function GrowPatch() {
             <View style={{ gap: 8 }}>
               <Text style={[styles.section, { color: c.ink }]}>This month in {placeName(climate)}</Text>
               <Sticker drop={4} style={{ overflow: 'hidden' }}>
-                {tasks.map((t, i) => (
-                  <TaskRow key={t.id} task={t} done={done(t)} onToggle={() => toggle(t)} plants={edibles} c={c} last={i === tasks.length - 1} />
+                {open.map((t, i) => (
+                  <TaskRow key={t.id} task={t} done={false} onToggle={() => toggle(t)} onSkip={() => skip(t, true)} plants={edibles} c={c} last={!finished.length && i === open.length - 1} />
                 ))}
+                {/* Done jobs fold away under one line; open it to untick a mis-tap. */}
+                {finished.length > 0 && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: showDone }}
+                    onPress={() => {
+                      haptics.tap();
+                      setShowDone(!showDone);
+                    }}
+                    style={({ pressed }) => [styles.doneRow, { borderColor: c.cloud }, !open.length && { borderTopWidth: 0 }, pressed && { backgroundColor: c.cloud }]}
+                  >
+                    <Icon d={GROW_ICON.check} color={c.good} size={18} width={2.6} />
+                    <Text style={[styles.doneText, { color: c.inkMuted }]}>
+                      {doneLine(finished.length - skipCount, skipCount, !open.length)}
+                    </Text>
+                    <Text style={[styles.doneText, { color: c.ink, textDecorationLine: 'underline' }]}>{showDone ? 'Hide' : 'Show'}</Text>
+                  </Pressable>
+                )}
+                {showDone &&
+                  finished.map((t, i) =>
+                    skipped(t) ? (
+                      <TaskRow key={t.id} task={t} done={false} skipped onToggle={() => skip(t, false)} plants={edibles} c={c} last={i === finished.length - 1} />
+                    ) : (
+                      <TaskRow key={t.id} task={t} done onToggle={() => toggle(t)} plants={edibles} c={c} last={i === finished.length - 1} />
+                    ),
+                  )}
               </Sticker>
             </View>
           )}
@@ -371,6 +424,9 @@ export default function GrowPatch() {
 const andList = (names: (string | undefined)[]) => (names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`);
 
 const styles = StyleSheet.create({
+  skipLink: { fontFamily: fonts.bodyHeavy, ...type.footnote, textDecorationLine: 'underline' },
+  doneRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 16, borderTopWidth: 1.5 },
+  doneText: { fontFamily: fonts.bodyHeavy, ...type.callout },
   waiting: { marginTop: 6, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 7, overflow: 'hidden', fontFamily: fonts.bodyHeavy, ...type.footnote },
   page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row', alignItems: 'center', minHeight: 44 },

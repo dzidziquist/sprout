@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deletedSinceAgreed, orphanPhotos, diaryPhotos, fingerprint, fromItems, merge, nameOf, othersLately, signEvents, stableJson, toItems, type Jungle, type RemoteItem, type Synced } from './household';
+import { deletedSinceAgreed, holdDeletes, orphanPhotos, diaryPhotos, fingerprint, fromItems, merge, nameOf, othersLately, signEvents, stableJson, toItems, type Jungle, type RemoteItem, type Synced } from './household';
 import type { CareEvent, Plant } from '../types';
 
 const plant = (id: string, extra: Partial<Plant> = {}): Plant =>
@@ -95,6 +95,21 @@ describe('syncing', () => {
     const r = merge(here, agreed(base), [remoteOf(there, 'pl-b', 50)], [], 100);
     expect(r.jungle.plants.map((p) => p.name)).toEqual(['a', 'Bee']);
     expect(r.remove).toEqual([]);
+  });
+
+  it('holds a delete made here while a round is incomplete, and keeps the edit from there once it arrives', () => {
+    const here = jungle([plant('a')], [event('e1')]);
+    const there = jungle([plant('a'), plant('b', { name: 'Bee' })], [event('e1')]);
+    // Round 1: the edit to b didn't come down. Without the hold, b would be deleted in iCloud.
+    const first = holdDeletes(merge(here, agreed(base), [], [], 100), agreed(base), true);
+    expect(first.remove).toEqual([]);
+    expect(first.synced['pl-b']).toEqual(agreed(base)['pl-b']);
+    // Round 2 (complete): the edit arrives and wins over the delete, as it would have the first time.
+    const second = merge(first.jungle, first.synced, [remoteOf(there, 'pl-b', 50)], [], 200);
+    expect(second.jungle.plants.map((p) => p.name)).toEqual(['a', 'Bee']);
+    expect(second.remove).toEqual([]);
+    // A complete round sends the delete as before.
+    expect(holdDeletes(merge(here, agreed(base), [], [], 100), agreed(base), false).remove).toEqual(['pl-b']);
   });
 
   it('this phone’s own upload coming back doesn’t undo a delete made since', () => {
