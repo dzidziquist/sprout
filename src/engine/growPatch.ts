@@ -199,6 +199,20 @@ export function taskFitsStage(task: Pick<CalendarTask, 'kind' | 'stages'>, plant
   return at >= stages.indexOf(first) && at <= end;
 }
 
+/**
+ * "Not this season" for a grow job: until its run in the calendar ends (the first month it isn't due),
+ * or, for a job that follows the crop's stage (stake, flowers, feed), three months, about a season.
+ */
+export function seasonEnd(taskId: string, climate: ClimateProfile, realDate: Date): Date {
+  const task = CALENDAR[modelOf(climate)].find((t) => t.id === taskId);
+  const start = new Date(realDate.getFullYear(), realDate.getMonth(), 1);
+  if (!task) return new Date(start.getFullYear(), start.getMonth() + 3, 1);
+  const month = climateDate(climate, realDate).getMonth();
+  let k = 1;
+  while (k < 12 && task.when.some((w) => w.month === (month + k) % 12)) k++;
+  return new Date(start.getFullYear(), start.getMonth() + k, 1);
+}
+
 /** Stages a staked or trellised crop needs its support by: once it's growing, until the season's done. */
 const NEEDS_SUPPORT: EdibleStage[] = ['growing', 'flowering', 'fruiting', 'harvesting'];
 

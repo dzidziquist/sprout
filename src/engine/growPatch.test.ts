@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   daysInStage,
+  seasonEnd,
   edibleFeedingPaused,
   ediblePlants,
   feedingAdvice,
@@ -494,3 +495,18 @@ describe('isTicked', () => {
   });
 });
 
+
+describe('not this season', () => {
+  it('turns a calendar job off until its run ends, and a stage job for about a season', () => {
+    const oct31 = new Date(2026, 9, 31, 12);
+    expect(seasonEnd('sea-blight-bin', 'seattle', oct31)).toEqual(new Date(2026, 11, 1));
+    expect(seasonEnd('stage-stake', 'seattle', oct31)).toEqual(new Date(2027, 0, 1));
+  });
+
+  it('keeps outdoor clean-up jobs away from indoor crops', () => {
+    const tomato = (placement: Plant['placement']) => ({ id: placement, name: 'T', speciesId: 'tomato', stage: 'fruiting', placement, potColor: 'yellow', soil: 'veg_mix', potMaterial: 'plastic', potDiameterCm: 30, light: 'bright', origin: 'seed', acquiredAt: '2026-04-01T00:00:00Z', createdAt: '2026-04-01T00:00:00Z', k: 1, nextCheckAt: '2026-11-01T00:00:00Z' }) as Plant;
+    const ids = (p: Plant) => tasksFor([p], 'seattle', new Date(2026, 9, 20, 12)).map((t) => t.id);
+    expect(ids(tomato('indoor'))).not.toContain('sea-blight-bin');
+    expect(ids(tomato('outdoor'))).toContain('sea-blight-bin');
+  });
+});
