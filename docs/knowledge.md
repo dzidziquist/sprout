@@ -52,7 +52,7 @@ Put sources in the entry's `sources` (doctor causes) or `source` (mixes), and li
 - Common care mistakes before rare diseases. Checks the person can actually do.
 - **Never pesticide or chemical doses** (no ml, per litre, neem, insecticide…): a test enforces it.
 - Feeding advice says half strength when in doubt.
-- Match the existing style: British spelling ("fertiliser", "colour"), curly apostrophes (’).
+- Match the existing style: British spelling ("fertiliser", "colour"), curly apostrophes (’). One exception: say "zucchini", not "courgette": it's the word most PlantFam growers (Seattle) know and search for.
 
 ## Reviewing what's already there
 

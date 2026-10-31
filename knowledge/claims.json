@@ -192,17 +192,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "blossom-end-rot-15",
-      "entry": "cause:blossom-end-rot",
-      "claim": "Pots dry out fast in hot weather.",
-      "url": "https://www.rhs.org.uk/problems/blossom-end-rot",
-      "quote": "During hot periods it may need watering two or more times a day.",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Page says the soil or potting compost of fruiting crops (tomatoes, peppers, aubergines) 'should be kept consistently moist ... During hot periods it may need watering two or more times a day'. It is about border soil as well as pots and doesn't itself say pots dry out fast."
-    },
-    {
       "id": "blossom-end-rot-16",
       "entry": "cause:blossom-end-rot",
       "claim": "Containers dry out quickly, so potted plants get blossom end rot more easily without steady watering.",
@@ -711,13 +700,13 @@
     {
       "id": "low-water-4",
       "entry": "cause:low-water",
-      "claim": "Fix: top up so about a third of the roots sits in water.",
+      "claim": "Fix: top up so about a third to half of the roots sit in water.",
       "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
       "quote": "keep the roots only 1/3 to 1/2 submerged once they start to develop beyond the net pot.",
       "verdict": "partly",
       "checked": "2026-10-31",
       "checkedBy": "fact-checker",
-      "note": "Page says 'keep the roots only 1/3 to 1/2 submerged' (Kratky passive system) and elsewhere 'keep enough water in your system so that about half of the roots are submerged' (deep water culture). 'About a third' is only the bottom of that range; the page's top-up target is nearer half."
+      "note": "Quote is verbatim, but it is in the page's 'Passive aeration (the Kratky method)' section on deep-water hydroponics of food crops in net pots, and applies 'once they start to develop beyond the net pot' (maintenance section: 'Try to keep enough water in your system so that about half of the roots are submerged'). The page does not cover houseplants in plain water or LECA/semi-hydro, so the 1/3-1/2 guidance is narrower than the claim's use."
     },
     {
       "id": "low-water-5",
@@ -738,17 +727,6 @@
       "verdict": "supported",
       "checked": "2026-10-31",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "ocean-forest-2",
-      "entry": "mix:FoxFarm Ocean Forest",
-      "claim": "Ocean Forest carries enough food that it needs no nitrogen feed at first.",
-      "url": "https://foxfarm.com/product/ocean-forest-potting-soil/",
-      "quote": "There’s no need for nitrogen fertilizers at first",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Page says only 'There's no need for nitrogen fertilizers at first; instead try FoxFarm Big Bloom Liquid Plant Food to get things started.' It doesn't say the mix carries enough food, and it still suggests a liquid feed at the start."
     },
     {
       "id": "happy-frog-1",
@@ -772,7 +750,7 @@
     },
     {
       "id": "coast-of-maine-1",
-      "entry": "mix:Coast of Maine",
+      "entry": "mix:Coast of Maine Bar Harbor Blend",
       "claim": "Coast of Maine Bar Harbor Blend potting soil contains composted manure and added fertiliser.",
       "url": "https://coastofmaine.com/products/bar-harbor-premium-potting-soil",
       "quote": "Sphagnum peat moss, composted manure, perlite, aged bark and fertilizer (see below).",
@@ -782,7 +760,7 @@
     },
     {
       "id": "coast-of-maine-2",
-      "entry": "mix:Coast of Maine",
+      "entry": "mix:Coast of Maine Bar Harbor Blend",
       "claim": "Its fertiliser comes from kelp meal and lobster and crab shell meal.",
       "url": "https://coastofmaine.com/products/bar-harbor-premium-potting-soil",
       "quote": "Derived From: kelp meal, lobster & crab shell meal.",
@@ -792,8 +770,8 @@
     },
     {
       "id": "coast-of-maine-3",
-      "entry": "mix:Coast of Maine",
-      "claim": "Not every Coast of Maine potting soil has lobster or crab: Acadia Blend is plant-based.",
+      "entry": "mix:Coast of Maine Acadia Blend",
+      "claim": "Acadia Blend is plant-based, with no peat or animal manures.",
       "url": "https://coastofmaine.com/products/acadia-blend-potting-soil",
       "quote": "Organic & Natural Acadia Blend Potting Soil is a 100% plant-based formulation containing no peat moss or animal manures.",
       "verdict": "supported",
