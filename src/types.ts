@@ -66,7 +66,7 @@ export type EdibleStage = 'seed' | 'seedling' | 'growing' | 'flowering' | 'fruit
 export type Accent = 'leaf' | 'sky' | 'grape' | 'coral' | 'bubblegum';
 
 /** 'gold' is a milestone reward; species art never uses it. */
-export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum' | 'gold';
+export type PotColor = 'yellow' | 'blue' | 'coral' | 'grape' | 'bubblegum' | 'green' | 'gold';
 
 /** Plants with their own illustrated buddy (assets/buddies). Other species borrow the closest one. */
 export type ArtId =
