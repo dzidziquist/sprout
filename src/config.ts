@@ -10,8 +10,8 @@ export const SUPPORT_EMAIL = '';
 /** Developer website, used for support and privacy contact until a dedicated address exists. */
 export const SUPPORT_URL = 'https://dzidziquist.com';
 
-/** Public privacy policy, hosted on Notion (page "PlantFam Privacy Policy"). TODO(founder): publish it to the web and paste its notion.site URL here. */
-export const PRIVACY_POLICY_URL = '';
+/** Public privacy policy, published from Notion (page "PlantFam Privacy Policy"). The same URL goes in App Store Connect. */
+export const PRIVACY_POLICY_URL = 'https://dzidziquist.notion.site/PlantFam-Privacy-Policy-3fabc232dc2181d59c4de6716ad9eb84';
 
 /** PlantFam's App Store page (Apple ID 6823421043). It goes live once the app is approved. */
 export const APP_STORE_URL = 'https://apps.apple.com/app/id6823421043';

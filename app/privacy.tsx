@@ -5,7 +5,7 @@ import { GlassButton } from '@/components/GlassButton';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker, Title } from '@/components/ui';
 import { PRIVACY_SECTIONS, PRIVACY_SUMMARY } from '@/data/privacy';
-import { PRIVACY_UPDATED, SUPPORT_EMAIL, SUPPORT_URL } from '@/config';
+import { PRIVACY_POLICY_URL, PRIVACY_UPDATED, SUPPORT_EMAIL, SUPPORT_URL } from '@/config';
 import { fonts, type, space } from '@/theme/tokens';
 import { useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
@@ -82,7 +82,17 @@ export default function PrivacyScreen() {
         ))}
       </View>
 
-      <Text style={[styles.updated, { color: c.inkMuted }]}>Last updated {PRIVACY_UPDATED}</Text>
+      <Text style={[styles.updated, { color: c.inkMuted }]}>
+        Last updated {PRIVACY_UPDATED}
+        {PRIVACY_POLICY_URL ? (
+          <>
+            {' · '}
+            <Text style={{ color: c.link, textDecorationLine: 'underline' }} accessibilityRole="link" onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+              Read it on the web
+            </Text>
+          </>
+        ) : null}
+      </Text>
     </ScrollView>
   );
 }
