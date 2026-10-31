@@ -3,6 +3,7 @@ import { AppState, Appearance, Platform, View } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { Fredoka_600SemiBold, Fredoka_700Bold } from '@expo-google-fonts/fredoka';
@@ -42,6 +43,11 @@ export default function RootLayout() {
   useEffect(() => {
     if (Platform.OS !== 'web') Appearance.setColorScheme(themePref === 'system' ? null : themePref);
   }, [themePref]);
+
+  // The window behind the app shows while iOS zooms it open or closed; match the page so it doesn't flash black.
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(c.bg).catch(() => {});
+  }, [c.bg]);
   const [fontsLoaded, fontError] = useFonts({ Fredoka_600SemiBold, Fredoka_700Bold, Nunito_700Bold, Nunito_800ExtraBold });
   const router = useRouter();
   // Tapping a photo-day notification opens that plant's page.
