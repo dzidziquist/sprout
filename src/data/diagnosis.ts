@@ -396,7 +396,7 @@ export const CAUSES: Record<string, Cause> = {
   'blossom-end-rot': {
     id: 'blossom-end-rot',
     title: 'Blossom end rot',
-    summary: 'A dark, sunken patch on the bottom of tomatoes, peppers or zucchini. It’s usually uneven watering stopping calcium reaching the fruit, rarely a lack of calcium in the soil.',
+    summary: 'A dark, sunken patch on the bottom of tomatoes, peppers or zucchini. It’s usually uneven watering that stops calcium reaching the fruit. A lack of calcium in the soil is rare.',
     check: ['Is the patch on the end opposite the stem?', 'Has the soil been swinging between bone dry and soaked?'],
     fix: ['Water deeply and regularly so the soil never dries right out.', 'Mulch the top of the soil to keep moisture even.', 'Pick off affected fruit: it won’t recover, but with steady watering new fruit is usually fine.'],
     signals: [DRY, LATE, { signal: 'hotSeason', weight: 1.4, why: 'Pots dry out fast in the heat.' }, { signal: 'smallPot', weight: 1.4, why: 'Small pots swing from wet to dry fast.' }, { signal: 'fruiting', weight: 1.5, why: '' }],
