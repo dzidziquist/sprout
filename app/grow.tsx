@@ -7,7 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { daysInStage, ediblePlants, FEED_TASKS, feedingAdvice, formatTotals, harvestStats, isTicked, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
+import { daysInStage, ediblePlants, FEED_TASKS, feedingAdvice, formatTotals, harvestStats, isTicked, seasonEnd, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
 import { edibleGuide } from '@/data/edibles';
 import { speciesOf } from '@/data/species';
 import { useForecast } from '@/lib/weather';
@@ -101,9 +101,10 @@ const doneLine = (done: number, skipped: number, all: boolean) => {
 
 /**
  * One grow job. Tapping ticks it (a feed tick logs a feed). "Skip" puts it away for now without
- * logging anything; a skipped job, shown folded away, comes back with a tap.
+ * logging anything, till it's next due; "Not this season" turns it off till its season ends (a job that
+ * doesn't suit someone's setup). Either way it folds away and comes back with a tap.
  */
-function TaskRow({ task, done, skipped, onToggle, onSkip, plants, c, last }: { task: GrowTask; done: boolean; skipped?: boolean; onToggle: () => void; onSkip?: () => void; plants: Plant[]; c: Palette; last: boolean }) {
+function TaskRow({ task, done, skipped, offUntil, onToggle, onSkip, onOffSeason, plants, c, last }: { task: GrowTask; done: boolean; skipped?: boolean; offUntil?: string; onToggle: () => void; onSkip?: () => void; onOffSeason?: () => void; plants: Plant[]; c: Palette; last: boolean }) {
   const units = useUnits();
   const who = task.plantIds.map((id) => plants.find((p) => p.id === id)?.name).filter(Boolean).join(', ');
   const waiting = task.waiting ? task.waiting.plantIds.map((id) => plants.find((p) => p.id === id)?.name).filter(Boolean) : [];
@@ -111,7 +112,7 @@ function TaskRow({ task, done, skipped, onToggle, onSkip, plants, c, last }: { t
     <Pressable
       accessibilityRole={skipped ? 'button' : 'checkbox'}
       accessibilityState={skipped ? undefined : { checked: done }}
-      accessibilityLabel={skipped ? `${task.title}, skipped. Bring it back` : task.title}
+      accessibilityLabel={skipped ? `${task.title}, ${offUntil ? 'off this season' : 'skipped'}. Bring it back` : task.title}
       onPress={onToggle}
       style={[styles.task, !last && { borderBottomWidth: 2, borderColor: c.cloud }]}
     >
@@ -130,11 +131,22 @@ function TaskRow({ task, done, skipped, onToggle, onSkip, plants, c, last }: { t
           <Text style={[styles.taskWho, { color: c.inkMuted, flexShrink: 1 }]}>For {who}</Text>
         </View>
         {onSkip && (
-          <Pressable accessibilityRole="button" accessibilityLabel={`Skip ${task.title} for now`} hitSlop={10} onPress={onSkip} style={{ alignSelf: 'flex-start', paddingVertical: 4 }}>
-            <Text style={[styles.skipLink, { color: c.inkMuted }]}>Skip for now</Text>
-          </Pressable>
+          <View style={styles.skipRow}>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Skip ${task.title} for now`} hitSlop={8} onPress={onSkip} style={{ paddingVertical: 4 }}>
+              <Text style={[styles.skipLink, { color: c.inkMuted }]}>Skip for now</Text>
+            </Pressable>
+            {onOffSeason && (
+              <Pressable accessibilityRole="button" accessibilityLabel={`Turn ${task.title} off for this season`} hitSlop={8} onPress={onOffSeason} style={{ paddingVertical: 4 }}>
+                <Text style={[styles.skipLink, { color: c.inkMuted }]}>Not this season</Text>
+              </Pressable>
+            )}
+          </View>
         )}
-        {skipped && <Text style={[styles.skipLink, { color: c.inkMuted }]}>Skipped · tap to bring back</Text>}
+        {skipped && (
+          <Text style={[styles.skipLink, { color: c.inkMuted }]}>
+            {offUntil ? `Off till ${new Date(offUntil).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : 'Skipped'} · tap to bring back
+          </Text>
+        )}
         {task.waiting && waiting.length > 0 && (
           <Text style={[styles.waiting, { backgroundColor: c.mint, color: textOn(c.mint, c) }]}>
             Not yet for {andList(waiting)}: {waiting.length === 1 ? 'its fresh mix feeds it' : 'their fresh mix feeds them'} till about {shortDay(new Date(task.waiting.until))}.
@@ -298,6 +310,8 @@ export default function GrowPatch() {
   const tickGrowTask = usePlantStore((s) => s.tickGrowTask);
   const skipGrowTask = usePlantStore((s) => s.skipGrowTask);
   const skips = usePlantStore((s) => s.profile.growSkips);
+  const offSeason = usePlantStore((s) => s.profile.growOffSeason);
+  const offSeasonGrowTask = usePlantStore((s) => s.offSeasonGrowTask);
   const setStaked = usePlantStore((s) => s.setStaked);
   const setFed = usePlantStore((s) => s.setFed);
   const now = new Date();
@@ -315,13 +329,18 @@ export default function GrowPatch() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/'));
   // Ticks are saved: a repeating job ("every 2–3 days") comes back unticked after that, others next month.
   const done = (t: GrowTask) => isTicked(t, ticks ?? {}, now);
-  const skipped = (t: GrowTask) => !done(t) && isTicked(t, skips ?? {}, now);
+  const offUntil = (t: GrowTask) => {
+    const at = offSeason?.[t.id];
+    return at && Date.parse(at) > now.getTime() ? at : undefined;
+  };
+  const skipped = (t: GrowTask) => !done(t) && (isTicked(t, skips ?? {}, now) || !!offUntil(t));
   const open = tasks.filter((t) => !done(t) && !skipped(t));
   const finished = tasks.filter((t) => done(t) || skipped(t));
   const skipCount = finished.filter(skipped).length;
   const skip = (t: GrowTask, on: boolean) => {
     haptics.tap();
     skipGrowTask(t.id, on);
+    if (!on) offSeasonGrowTask(t.id, undefined);
   };
   const [showDone, setShowDone] = useState(false);
   const toggle = (t: GrowTask) => {
@@ -374,7 +393,10 @@ export default function GrowPatch() {
               <Text style={[styles.section, { color: c.ink }]}>This month in {placeName(climate)}</Text>
               <Sticker drop={4} style={{ overflow: 'hidden' }}>
                 {open.map((t, i) => (
-                  <TaskRow key={t.id} task={t} done={false} onToggle={() => toggle(t)} onSkip={() => skip(t, true)} plants={edibles} c={c} last={!finished.length && i === open.length - 1} />
+                  <TaskRow key={t.id} task={t} done={false} onToggle={() => toggle(t)} onSkip={() => skip(t, true)} onOffSeason={() => {
+                      haptics.tap();
+                      offSeasonGrowTask(t.id, seasonEnd(t.id, climate, new Date()).toISOString());
+                    }} plants={edibles} c={c} last={!finished.length && i === open.length - 1} />
                 ))}
                 {/* Done jobs fold away under one line; open it to untick a mis-tap. */}
                 {finished.length > 0 && (
@@ -397,7 +419,7 @@ export default function GrowPatch() {
                 {showDone &&
                   finished.map((t, i) =>
                     skipped(t) ? (
-                      <TaskRow key={t.id} task={t} done={false} skipped onToggle={() => skip(t, false)} plants={edibles} c={c} last={i === finished.length - 1} />
+                      <TaskRow key={t.id} task={t} done={false} skipped offUntil={offUntil(t)} onToggle={() => skip(t, false)} plants={edibles} c={c} last={i === finished.length - 1} />
                     ) : (
                       <TaskRow key={t.id} task={t} done onToggle={() => toggle(t)} plants={edibles} c={c} last={i === finished.length - 1} />
                     ),
@@ -424,6 +446,7 @@ export default function GrowPatch() {
 const andList = (names: (string | undefined)[]) => (names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`);
 
 const styles = StyleSheet.create({
+  skipRow: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16 },
   skipLink: { fontFamily: fonts.bodyHeavy, ...type.footnote, textDecorationLine: 'underline' },
   doneRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 16, borderTopWidth: 1.5 },
   doneText: { fontFamily: fonts.bodyHeavy, ...type.callout },

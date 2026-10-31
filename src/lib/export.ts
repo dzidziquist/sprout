@@ -210,6 +210,7 @@ const PROFILE_CHECKS: Record<string, (v: unknown) => boolean> = {
   coachDismissed: isBool,
   growTicks: (v) => isObj(v) && Object.values(v).every(isStr),
   growSkips: (v) => isObj(v) && Object.values(v).every(isStr),
+  growOffSeason: (v) => isObj(v) && Object.values(v).every(isDate),
   units: oneOf(['auto', 'imperial', 'metric']),
   idUsage: shape({ day: isStr, count: isNum }),
   trips: every(shape({ from: isDate, to: isDate, done: opt(every(isStr)) })),

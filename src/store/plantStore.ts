@@ -59,6 +59,8 @@ export interface Profile {
   growTicks: Record<string, string>;
   /** Grow patch jobs skipped (not done, just not for now): task id → when. They last as long as a tick. */
   growSkips?: Record<string, string>;
+  /** Grow jobs turned off for this season ("not for my setup"): task id → until when (ISO). */
+  growOffSeason?: Record<string, string>;
   /** The grow card on Today, put away by the person: which item (`task:<id>`, `alert:<id>`), and until when (ISO). */
   growHidden?: { key: string; until: string };
   /** When the user last saved a backup file. */
@@ -226,6 +228,8 @@ interface PlantState {
   tickGrowTask: (taskId: string, on: boolean, now?: Date) => void;
   /** Skip a grow job for now (or bring it back): it leaves the list like a tick, but nothing is logged. */
   skipGrowTask: (taskId: string, on: boolean, now?: Date) => void;
+  /** Turn a grow job off until `until` (its season's end), or back on (undefined). */
+  offSeasonGrowTask: (taskId: string, until: string | undefined, now?: Date) => void;
   /** Take a photo out of the diary. The plant's cover falls back to the newest photo left. */
   removePhoto: (eventId: string) => void;
   /** Replace plants and history with a validated backup. Keeps purchase state and app plumbing. */
@@ -761,6 +765,13 @@ export const usePlantStore = create<PlantState>()(
           const cutoff = now.getTime() - 62 * 86400000;
           const kept = Object.fromEntries(Object.entries(s.profile.growSkips ?? {}).filter(([id, at]) => id !== taskId && new Date(at).getTime() > cutoff));
           return { profile: { ...s.profile, growSkips: on ? { ...kept, [taskId]: now.toISOString() } : kept } };
+        });
+      },
+      offSeasonGrowTask: (taskId, until, now = new Date()) => {
+        set((s) => {
+          // Expired ones are dead weight.
+          const kept = Object.fromEntries(Object.entries(s.profile.growOffSeason ?? {}).filter(([id, at]) => id !== taskId && Date.parse(at) > now.getTime()));
+          return { profile: { ...s.profile, growOffSeason: until ? { ...kept, [taskId]: until } : kept } };
         });
       },
       setFed: (plantIds, on, now = new Date(), since) => {
