@@ -74,19 +74,22 @@ export function GrowTodayCard() {
 
   const item = useMemo(() => {
     if (!edibles.length) return null;
-    const alert = weatherAlerts(edibles, forecast, units)[0];
+    // What was put away (still within its time) is passed over, so the next item shows instead.
+    const away = (key: string) => hidden?.key === key && Date.now() < Date.parse(hidden.until);
+    const alert = weatherAlerts(edibles, forecast, units).find((a) => !away(`alert:${a.id}`));
     if (alert) return { key: `alert:${alert.id}`, days: 1, title: alert.title, body: alert.body, icon: ALERT_ICON[alert.kind], tint: alertTint(alert.kind, c), eyebrow: 'Grow patch · weather' };
     // The top job not already ticked off in the grow patch.
     const now = new Date();
-    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now) && !isTicked(t, skips ?? {}, now));
+    const task = tasksFor(edibles, climate, now, events).find((t) => !isTicked(t, ticks ?? {}, now) && !isTicked(t, skips ?? {}, now) && !away(`task:${t.id}`));
     if (task) return { key: `task:${task.id}`, days: 7, title: task.title, body: localizeTemps(task.body, units), icon: GROW_ICON[task.kind], tint: taskTint(task.kind, c), eyebrow: task.thisWeek ? 'Grow patch · this week' : 'Grow patch · this month' };
     return { key: 'quiet', days: 7, title: `${edibles.length} ${edibles.length === 1 ? 'crop' : 'crops'} growing`, body: 'All quiet in the patch. Peek at stages and harvests.', icon: GROW_ICON.sow, tint: c.mint, eyebrow: 'Grow patch' };
-  }, [edibles, forecast, climate, c, units, events, ticks, skips]);
+  }, [edibles, forecast, climate, c, units, events, ticks, skips, hidden]);
 
   if (!item) return null;
-  // Put away from Today: gone until it's due again (a week for jobs, a day for weather), or until a
-  // different job comes up. It's still in the Grow patch.
+  // The "all quiet" card put away: nothing else to show.
   if (hidden?.key === item.key && Date.now() < Date.parse(hidden.until)) return null;
+  // Put away from Today: gone until it's due again (a week for jobs, a day for weather); the next job
+  // shows instead, and it's still in the Grow patch.
   const putAway = () => setProfile({ growHidden: { key: item.key, until: new Date(Date.now() + item.days * 86_400_000).toISOString() } });
 
   return (
