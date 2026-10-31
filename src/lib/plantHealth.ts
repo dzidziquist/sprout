@@ -33,7 +33,7 @@ export function causeForLabel(label: string | undefined): string | undefined {
     [/thrip/, 'thrips'],
     [/scale|coccid|diaspid/, 'scale'],
     [/fungus gnat|sciarid|bradysia/, 'fungus-gnats'],
-    [/caterpillar|moth|slug|snail|beetle|leaf miner|leafminer|lepidopter/, 'pests-chewing'],
+    [/caterpillar|moth|slug|snail|beetle|weevil|leaf miner|leafminer|lepidopter|worm|looper|borer|sawfly|grasshopper|locust/, 'pests-chewing'],
     [/root rot|pythium|phytophthora|crown rot|stem rot/, 'root-rot'],
     [/blossom end rot/, 'blossom-end-rot'],
     [/leaf spot|blight|anthracnose|rust|septoria|alternaria|cercospora|downy mildew|mildew|spot|botrytis|grey mould|gray mold/, 'leaf-spot'],
@@ -41,6 +41,32 @@ export function causeForLabel(label: string | undefined): string | undefined {
     [/deficien|chlorosis/, 'hungry'],
   ];
   return rules.find(([re]) => re.test(l))?.[1];
+}
+
+/**
+ * Pests of fields and veg beds that are very unlikely on a plant kept indoors, so a match on a
+ * houseplant is probably Pl@ntNet guessing.
+ */
+const FIELD_PESTS = /armyworm|cutworm|bollworm|earworm|rootworm|wireworm|corn borer|stem borer|maize|locust|grasshopper|colorado potato|codling|cabbage (white|moth|looper)|flea beetle|carrot fly|onion fly|spodoptera|helicoverpa|diabrotica|ostrinia|leptinotarsa|cydia pomonella/;
+
+/** True when the match is an outdoor crop pest. */
+export function isFieldPest(label: string | undefined): boolean {
+  return Boolean(label && FIELD_PESTS.test(label.toLowerCase()));
+}
+
+/** How much to trust a set of results as a whole: none found, only long shots, or at least one real lead. */
+export function photoVerdict(results: Pick<HealthResult, 'confidence'>[]): 'none' | 'unsure' | 'leads' {
+  if (!results.length) return 'none';
+  return results.every((r) => r.confidence === 'Long shot') ? 'unsure' : 'leads';
+}
+
+/**
+ * A page with photos of the match to compare against. Pl@ntNet names read "Spodoptera frugiperda - Fall
+ * armyworm"; the Latin part finds the right page more often than the common name.
+ */
+export function lookUpUrl(result: Pick<HealthResult, 'name' | 'code'>): string {
+  const term = (result.name ?? result.code).split(' - ')[0].trim();
+  return `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(term)}`;
 }
 
 export function plantHealthConfigured(): boolean {
