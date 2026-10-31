@@ -57,6 +57,8 @@ export interface Profile {
   coachDismissed: boolean;
   /** Grow patch jobs ticked off: task id → when. Old ticks are dropped as new ones come in. */
   growTicks: Record<string, string>;
+  /** The grow card on Today, put away by the person: which item (`task:<id>`, `alert:<id>`), and until when (ISO). */
+  growHidden?: { key: string; until: string };
   /** When the user last saved a backup file. */
   lastBackupAt?: string;
   /**

@@ -297,6 +297,9 @@ export default function GrowPatch() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/'));
   // Ticks are saved: a repeating job ("every 2–3 days") comes back unticked after that, others next month.
   const done = (t: GrowTask) => isTicked(t, ticks ?? {}, now);
+  const open = tasks.filter((t) => !done(t));
+  const finished = tasks.filter(done);
+  const [showDone, setShowDone] = useState(false);
   const toggle = (t: GrowTask) => {
     haptics.tap();
     const on = !done(t);
@@ -346,9 +349,29 @@ export default function GrowPatch() {
             <View style={{ gap: 8 }}>
               <Text style={[styles.section, { color: c.ink }]}>This month in {placeName(climate)}</Text>
               <Sticker drop={4} style={{ overflow: 'hidden' }}>
-                {tasks.map((t, i) => (
-                  <TaskRow key={t.id} task={t} done={done(t)} onToggle={() => toggle(t)} plants={edibles} c={c} last={i === tasks.length - 1} />
+                {open.map((t, i) => (
+                  <TaskRow key={t.id} task={t} done={false} onToggle={() => toggle(t)} plants={edibles} c={c} last={!finished.length && i === open.length - 1} />
                 ))}
+                {/* Done jobs fold away under one line; open it to untick a mis-tap. */}
+                {finished.length > 0 && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: showDone }}
+                    onPress={() => {
+                      haptics.tap();
+                      setShowDone(!showDone);
+                    }}
+                    style={({ pressed }) => [styles.doneRow, { borderColor: c.cloud }, !open.length && { borderTopWidth: 0 }, pressed && { backgroundColor: c.cloud }]}
+                  >
+                    <Icon d={GROW_ICON.check} color={c.good} size={18} width={2.6} />
+                    <Text style={[styles.doneText, { color: c.inkMuted }]}>
+                      {open.length ? `${finished.length} done` : `All ${finished.length} done for now`}
+                    </Text>
+                    <Text style={[styles.doneText, { color: c.ink, textDecorationLine: 'underline' }]}>{showDone ? 'Hide' : 'Show'}</Text>
+                  </Pressable>
+                )}
+                {showDone &&
+                  finished.map((t, i) => <TaskRow key={t.id} task={t} done onToggle={() => toggle(t)} plants={edibles} c={c} last={i === finished.length - 1} />)}
               </Sticker>
             </View>
           )}
@@ -371,6 +394,8 @@ export default function GrowPatch() {
 const andList = (names: (string | undefined)[]) => (names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`);
 
 const styles = StyleSheet.create({
+  doneRow: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 16, borderTopWidth: 1.5 },
+  doneText: { fontFamily: fonts.bodyHeavy, ...type.callout },
   waiting: { marginTop: 6, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 7, overflow: 'hidden', fontFamily: fonts.bodyHeavy, ...type.footnote },
   page: { paddingHorizontal: space.xl, gap: space.lg },
   toolbar: { flexDirection: 'row', alignItems: 'center', minHeight: 44 },

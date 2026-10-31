@@ -56,7 +56,7 @@ const shared = {
   bubblegum: colors.bubblegum,
   orange: colors.orange,
   onBright: colors.ink,
-  pot: { yellow: colors.sun, blue: colors.sky, coral: colors.coral, grape: colors.grape, bubblegum: colors.bubblegum, gold: '#E0A526' },
+  pot: { yellow: colors.sun, blue: colors.sky, coral: colors.coral, grape: colors.grape, bubblegum: colors.bubblegum, green: colors.leaf, gold: '#E0A526' },
 };
 
 export const light: Palette = {
@@ -79,7 +79,7 @@ export const light: Palette = {
   warn: colors.warn,
   good: colors.good,
   glass: 'rgba(255,255,255,0.55)',
-  potTint: { yellow: colors.butter, blue: colors.ice, coral: colors.peach, grape: colors.lavender, bubblegum: colors.blush, gold: '#F0C24B' },
+  potTint: { yellow: colors.butter, blue: colors.ice, coral: colors.peach, grape: colors.lavender, bubblegum: colors.blush, green: colors.mint, gold: '#F0C24B' },
 };
 
 export const dark: Palette = {
@@ -103,7 +103,7 @@ export const dark: Palette = {
   warn: '#FF9F7A',
   good: '#7CEBA8',
   glass: 'rgba(40,38,62,0.55)',
-  potTint: { yellow: '#3D3418', blue: '#1D3245', coral: '#46271F', grape: '#2D2648', bubblegum: '#45222E', gold: '#4A3A10' },
+  potTint: { yellow: '#3D3418', blue: '#1D3245', coral: '#46271F', grape: '#2D2648', bubblegum: '#45222E', green: '#1C3A2A', gold: '#4A3A10' },
 };
 
 /**

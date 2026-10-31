@@ -32,6 +32,7 @@ export const potHex: Record<PotColor, string> = {
   coral: colors.coral,
   grape: colors.grape,
   bubblegum: colors.bubblegum,
+  green: colors.leaf,
   gold: '#E0A526',
 };
 
@@ -42,6 +43,7 @@ export const potTint: Record<PotColor, string> = {
   coral: colors.peach,
   grape: colors.lavender,
   bubblegum: colors.blush,
+  green: colors.mint,
   gold: '#F0C24B',
 };
 

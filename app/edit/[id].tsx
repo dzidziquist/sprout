@@ -33,6 +33,7 @@ const CARD_COLORS: { id: PotColor; label: string }[] = [
   { id: 'coral', label: 'Peach' },
   { id: 'grape', label: 'Lavender' },
   { id: 'bubblegum', label: 'Blush' },
+  { id: 'green', label: 'Mint' },
   { id: 'gold', label: 'Gold' },
 ];
 

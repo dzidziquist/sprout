@@ -17,7 +17,7 @@ export function seasonBanner(profile: ClimateProfile, now: Date): SeasonBanner {
     const paused = isFeedingPaused(profile, 'indoor', now);
     if (m >= 9 || m <= 3) {
       const title = isPreset(profile, 'seattle') ? 'Grey season' : 'Cool season';
-      return { title, body: `Short days, so checks are spaced out.${paused ? ' Feeding is paused till spring.' : ''}`, art: 'season-grey' };
+      return { title, body: `Short days, so checks are spaced out.${paused ? ' Houseplant feeding is paused till spring.' : ''}`, art: 'season-grey' };
     }
     if (m >= 6 && m <= 8) return { title: isPreset(profile, 'seattle') ? 'Dry summer' : 'Summer', body: 'Outdoor pots dry fast: checks come sooner.', art: 'season-dry-summer' };
     return { title: 'Spring', body: 'Days are getting longer. Feeding is back on.', art: 'season-spring' };
