@@ -50,6 +50,598 @@
       "verdict": "supported",
       "checked": "2026-10-30",
       "checkedBy": "fact-checker"
+    },
+    {
+      "id": "blossom-end-rot-1",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Blossom end rot shows as a dark patch at the flower end of the fruit that turns sunken as it grows.",
+      "url": "https://www.rhs.org.uk/problems/blossom-end-rot",
+      "quote": "Blossom end rot shows as a circular patch, varying in colour from greenish brown to black, at the end of the fruit that had the flower (the end furthest from the plant). As this patch increases in size it becomes sunken",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-2",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Blossom end rot affects tomatoes, peppers and squash (zucchini is a squash).",
+      "url": "https://extension.illinois.edu/news-releases/tomato-gardeners-beware-blossom-end-rot-can-be-prevented",
+      "quote": "Blossom end rot can also affect peppers, eggplants, squash, and watermelons.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-3",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Blossom end rot affects tomatoes, peppers and cucurbits (the squash family, which includes zucchini).",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/blossom-end-rot/",
+      "quote": "Blossom end rot affects tomatoes, peppers, and cucurbits.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-4",
+      "entry": "cause:blossom-end-rot",
+      "claim": "It comes from too little calcium reaching the fruit, usually because uneven soil moisture cuts calcium uptake.",
+      "url": "https://hort.extension.wisc.edu/troubleshooting-tomato-problems/",
+      "quote": "Blossom end rot is due to a lack of calcium in developing fruit, typically caused by fluctuating soil moisture reducing calcium uptake.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-5",
+      "entry": "cause:blossom-end-rot",
+      "claim": "It is rarely a lack of calcium in the soil or potting mix.",
+      "url": "https://www.rhs.org.uk/problems/blossom-end-rot",
+      "quote": "It is very rare for soils, growing bags or potting media to actually lack calcium. There is almost always plenty in the soil and indeed within the plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-6",
+      "entry": "cause:blossom-end-rot",
+      "claim": "It is usually not a shortage of calcium in the soil but how well the plant takes calcium up.",
+      "url": "https://extension.illinois.edu/news-releases/tomato-gardeners-beware-blossom-end-rot-can-be-prevented",
+      "quote": "Usually, it’s not an issue of a lack of calcium in the soil, but rather how well the plants absorb calcium.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-7",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Check: the patch is on the flower end, the end furthest from the stem.",
+      "url": "https://www.rhs.org.uk/problems/blossom-end-rot",
+      "quote": "at the end of the fruit that had the flower (the end furthest from the plant)",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-8",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Keep the root zone from drying out or staying soaked (check: has the soil swung between bone dry and soaked?).",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/blossom-end-rot/",
+      "quote": "To reduce rot, monitor soil moisture to make sure that the root zone neither dries out nor remains saturated.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-9",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Water deeply and keep it up through the season once fruit forms.",
+      "url": "https://extension.illinois.edu/news-releases/tomato-gardeners-beware-blossom-end-rot-can-be-prevented",
+      "quote": "Water plants deeply starting when fruits first form and continuing throughout the growing season.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-10",
+      "entry": "cause:blossom-end-rot",
+      "claim": "A layer of mulch helps keep soil moisture even.",
+      "url": "https://extension.illinois.edu/news-releases/tomato-gardeners-beware-blossom-end-rot-can-be-prevented",
+      "quote": "Adding a top layer of mulch can help conserve and even out the moisture in the soil.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-11",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Mulching and watering in dry spells keep soil moisture even and keep blossom end rot in check.",
+      "url": "https://hort.extension.wisc.edu/troubleshooting-tomato-problems/",
+      "quote": "Keep this problem in check by maintaining uniform soil moisture levels via mulching and watering during any dry spells.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-12",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Affected fruit won’t recover; pick it off.",
+      "url": "https://extension.illinois.edu/news-releases/tomato-gardeners-beware-blossom-end-rot-can-be-prevented",
+      "quote": "Unfortunately, once a fruit has blossom end rot, there is nothing you can do. Foliar applications of calcium don’t help much because the calcium doesn’t move into the fruit well. It is best to remove the fruit and discard it.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-13",
+      "entry": "cause:blossom-end-rot",
+      "claim": "With steadier watering, later fruit is usually protected.",
+      "url": "https://www.rhs.org.uk/problems/blossom-end-rot",
+      "quote": "By making minor adjustments in watering you will usually be able to protect subsequent fruits from blossom end rot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-14",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Plants in pots are most at risk, because their water supply swings more.",
+      "url": "https://www.rhs.org.uk/problems/blossom-end-rot",
+      "quote": "Plants grown with limited root space (e.g. in pots or growing bags) are most at risk of irregular water supply leading to local calcium deficiency in the fruits.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-15",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Pots dry out fast in hot weather.",
+      "url": "https://www.rhs.org.uk/problems/blossom-end-rot",
+      "quote": "During hot periods it may need watering two or more times a day.",
+      "verdict": "pending"
+    },
+    {
+      "id": "blossom-end-rot-16",
+      "entry": "cause:blossom-end-rot",
+      "claim": "Containers dry out quickly, so potted plants get blossom end rot more easily without steady watering.",
+      "url": "https://extension.illinois.edu/news-releases/tomato-gardeners-beware-blossom-end-rot-can-be-prevented",
+      "quote": "Containers dry out quickly, so these plants are more likely to develop blossom end rot without consistent watering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-1",
+      "entry": "cause:overwatering",
+      "claim": "Overwatering is the most common way houseplants are killed.",
+      "url": "https://extension.illinois.edu/blogs/ilriverhort/2018-01-28-how-water-houseplants",
+      "quote": "The most common way people kill houseplants is by over watering them.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-2",
+      "entry": "cause:overwatering",
+      "claim": "Soil that stays too wet leaves roots short of oxygen.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Any or all of these symptoms can result from stagnation of the water, too little soil oxygen and development of diseases that rot the roots.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-3",
+      "entry": "cause:overwatering",
+      "claim": "Roots need air, so soil should not stay fully saturated.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Remember, plant roots do need air, so do not fully saturate the soil.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-4",
+      "entry": "cause:overwatering",
+      "claim": "Check: feel the soil about 5 cm (2 in) down with a finger.",
+      "url": "https://extension.illinois.edu/blogs/ilriverhort/2018-01-28-how-water-houseplants",
+      "quote": "The best method for determining when to water is to test the soil with your finger to a depth of two inches.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-5",
+      "entry": "cause:overwatering",
+      "claim": "Check: a heavy pot means hold off watering.",
+      "url": "https://extension.wsu.edu/jefferson/mg-home/tip-sheet-15-houseplants/",
+      "quote": "If the pot is heavy, the plant droops and the lower leaves turn yellow or brown, reduce watering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-6",
+      "entry": "cause:overwatering",
+      "claim": "Check: cover pots and outer planters can hold standing water.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Even if drainage from the pot is good, pot coverings can hold water. Pots wrapped in waterproof foil or placed in deep planters should be checked occasionally for standing water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-7",
+      "entry": "cause:overwatering",
+      "claim": "Fix: hold off watering until the soil has dried.",
+      "url": "https://extension.illinois.edu/news-releases/keep-houseplants-happy-simple-solutions",
+      "quote": "If overwatering is the issue, withhold water until the soil is quite dry and gradually begin a new watering schedule.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-8",
+      "entry": "cause:overwatering",
+      "claim": "Fix: check a few centimetres down and only water when it is dry.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Insert your finger into the growing medium to check how moist it is a few centimetres down. If it is very dry, water your plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-9",
+      "entry": "cause:overwatering",
+      "claim": "Fix: empty the saucer after watering.",
+      "url": "https://extension.illinois.edu/blogs/ilriverhort/2018-01-28-how-water-houseplants",
+      "quote": "Be sure to pour excess water off the saucer so that the plant will not drown.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-10",
+      "entry": "cause:overwatering",
+      "claim": "Fix: tip away water left under the pot.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Discard water that remains beneath the pot one hour after watering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-11",
+      "entry": "cause:overwatering",
+      "claim": "Fix: a pot needs drainage holes so the mix doesn’t become waterlogged.",
+      "url": "https://extension.psu.edu/repotting-houseplants",
+      "quote": "A container with drainage holes is necessary for excess water to drain, preventing the potting mix from becoming waterlogged, which may lead to potential disease problems.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-12",
+      "entry": "cause:overwatering",
+      "claim": "Light (among other things) affects how fast the soil dries out.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Size of plant, pot, light, temperature, humidity and other conditions influence the speed with which the soil mass dries out.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-13",
+      "entry": "cause:overwatering",
+      "claim": "Plastic pots need watering less often than clay ones.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Because they are not porous like clay pots, they need less frequent watering and tend to accumulate fewer salts.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-14",
+      "entry": "cause:overwatering",
+      "claim": "Overwatering is easiest to do in winter when growth slows.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Overwatering can also cause wilting, and it’s easy to mistake this for a lack of water and drown a plant, especially over winter when growth slows.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-1",
+      "entry": "cause:root-rot",
+      "claim": "With root rot the plant wilts even though the soil is wet.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "Gardeners often become aware of root rots when they note that a plant is wilted, even though the soil is wet.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-2",
+      "entry": "cause:root-rot",
+      "claim": "Root rot thrives in soil kept wet.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "Remember, root rot fungi grow and reproduce best in wet soils.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-3",
+      "entry": "cause:root-rot",
+      "claim": "Check: rotten roots are soft and brown and may smell bad.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "Careful examination of the root systems of these plants reveals roots that are soft and brown. These roots may have a bad odor.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-4",
+      "entry": "cause:root-rot",
+      "claim": "Check: healthy roots are generally white (pale).",
+      "url": "https://extension.illinois.edu/news-releases/keep-houseplants-happy-simple-solutions",
+      "quote": "With some exceptions, healthy plants generally have white roots",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-5",
+      "entry": "cause:root-rot",
+      "claim": "Check: signs include stem rot and dark, mushy roots.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Other signs of overwatering include old and new leaves yellowing and dropping at the same time, browning in the middle of leaves, mouldy patches on leaves and flowers, stem rot and dark, mushy roots.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-6",
+      "entry": "cause:root-rot",
+      "claim": "Fix: trim off soft, rotted roots.",
+      "url": "https://www.rhs.org.uk/container-gardening/how-to-repot-a-plant",
+      "quote": "Trim off any soft, rotted roots that you find",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-7",
+      "entry": "cause:root-rot",
+      "claim": "Fix: clean tools after working on a plant with root rot.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "After working with plants with root rot problems, disinfest tools, working surfaces and clay pots",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-8",
+      "entry": "cause:root-rot",
+      "claim": "Fix: repot in a pot with drainage holes.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "Use a pot with drainage holes, but do not put rocks or gravel at the bottom of the pot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-9",
+      "entry": "cause:root-rot",
+      "claim": "Fix: use fresh mix, not the old mix from the plant.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "Do not reuse potting mix from your houseplants, or water that has drained from your plants, as both potentially can contain root rot fungi.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-10",
+      "entry": "cause:root-rot",
+      "claim": "Fix: keep the soil drier afterwards.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "If you decide to keep a plant with root rot, REDUCE SOIL MOISTURE!",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-11",
+      "entry": "cause:root-rot",
+      "claim": "Fix: if the roots aren’t healthy, take cuttings to start a new plant.",
+      "url": "https://hort.extension.wisc.edu/articles/holiday-cactus/",
+      "quote": "If a plant is sagging and not growing even though the media is moist, check to see if it has a healthy root system. If not, take some cuttings to start a new plant and use a better-draining potting mix.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-12",
+      "entry": "cause:root-rot",
+      "claim": "Old mix slumps and loses its air spaces and drainage.",
+      "url": "https://www.rhs.org.uk/container-gardening/how-to-repot-a-plant",
+      "quote": "Compost slumps over time as the organic materials in it break down, reducing air spaces, drainage, and nutrient and water retention",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-1",
+      "entry": "cause:underwatering",
+      "claim": "A thirsty plant wilts when there isn’t enough water in the soil for its roots.",
+      "url": "https://www.rhs.org.uk/advice/understanding-plants/how-plants-absorb-water",
+      "quote": "Permanent wilting occurs when there isn’t enough water in the soil for a plant’s roots to access.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-2",
+      "entry": "cause:underwatering",
+      "claim": "Check: dry soil cracks and pulls away from the sides of the pot.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Under continued drying, the soil begins to crack and pull away from the sides of the pot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-3",
+      "entry": "cause:underwatering",
+      "claim": "Check: a light pot means too little water.",
+      "url": "https://extension.wsu.edu/jefferson/mg-home/tip-sheet-15-houseplants/",
+      "quote": "If the pot seems light and the leaf tips are brown or the plant collapses, there’s too little water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-4",
+      "entry": "cause:underwatering",
+      "claim": "Check: a plant wilting from dry soil recovers once it is watered.",
+      "url": "https://www.rhs.org.uk/advice/understanding-plants/how-plants-absorb-water",
+      "quote": "In this case, recovery is only possible if water is added, either by rainfall or by you watering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-5",
+      "entry": "cause:underwatering",
+      "claim": "Fix: water until it comes out of the drainage hole.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Each time, wet the entire soil mass, not just the top inch. Add water until it comes through the drainage hole in the bottom of the pot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-6",
+      "entry": "cause:underwatering",
+      "claim": "Fix: if dry soil has shrunk from the pot, stand the pot in water until the bubbles stop, then let it drain.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "If this happens, immerse the plant in its pot in a pail of water. Make sure there is an inch or two of water over the top of the soil. Leave it immersed until air bubbles stop rising, then set the plant aside so the excess water will drain.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-7",
+      "entry": "cause:underwatering",
+      "claim": "Fix: check the soil rather than watering on a set schedule.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Rather than watering regularly at set intervals, it is good practice to check the moisture levels and only water when necessary.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-8",
+      "entry": "cause:underwatering",
+      "claim": "Clay pots lose moisture through their walls.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Clay pots absorb and lose moisture through their walls.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-9",
+      "entry": "cause:underwatering",
+      "claim": "Small pots dry out faster.",
+      "url": "https://extension.wsu.edu/jefferson/mg-home/tip-sheet-15-houseplants/",
+      "quote": "Smaller pots dry out faster, and cramped roots dry out and won’t grow.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-1",
+      "entry": "cause:stale-water",
+      "claim": "Roots kept under too much water can’t get oxygen and can rot.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "If you add too much water to your system, the roots will not be able to get oxygen and can develop root rot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-2",
+      "entry": "cause:stale-water",
+      "claim": "Standing nutrient water grows algae and bacteria.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "Nutrient-rich water solutions are prone to algal and bacterial growth, which can be problematic for plant health.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-3",
+      "entry": "cause:stale-water",
+      "claim": "Check/fix: refresh the water when it turns cloudy.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2025-02-21-winter-gardening-propagating-houseplants-beat-winter-blues",
+      "quote": "Be sure to refresh the water in the container when it starts to get cloudy.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-4",
+      "entry": "cause:stale-water",
+      "claim": "Fix: change the water for fresh water regularly (every 3 to 5 days for cuttings in water).",
+      "url": "https://extension.illinois.edu/news-releases/one-many-beginners-guide-plant-propagation",
+      "quote": "Many plants will also develop roots in a container of water, changed out with fresh water every 3 to 5 days.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-5",
+      "entry": "cause:stale-water",
+      "claim": "Fix: use room-temperature water, not cold.",
+      "url": "https://extension.illinois.edu/blogs/ilriverhort/2018-01-28-how-water-houseplants",
+      "quote": "Some other tips that will help include using room temperature water, not cold water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-6",
+      "entry": "cause:stale-water",
+      "claim": "Fix: clean and rinse the container when you change the water.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "After dumping the water, scrub your container with soap and water, rinsing well.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-7",
+      "entry": "cause:stale-water",
+      "claim": "Fix: trim off soft, rotted roots.",
+      "url": "https://www.rhs.org.uk/container-gardening/how-to-repot-a-plant",
+      "quote": "Trim off any soft, rotted roots that you find",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-8",
+      "entry": "cause:stale-water",
+      "claim": "Keep the water line low so the upper roots get air.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "The tops of the roots get oxygen in the air and the bottoms take water and nutrients from the solution below.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-9",
+      "entry": "cause:stale-water",
+      "claim": "Check: only the lower part of the roots (a third to a half) should sit in water.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "keep the roots only 1/3 to 1/2 submerged once they start to develop beyond the net pot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-10",
+      "entry": "cause:stale-water",
+      "claim": "Fix: if the roots aren’t healthy, take cuttings to start a new plant.",
+      "url": "https://hort.extension.wisc.edu/articles/holiday-cactus/",
+      "quote": "If a plant is sagging and not growing even though the media is moist, check to see if it has a healthy root system. If not, take some cuttings to start a new plant and use a better-draining potting mix.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-11",
+      "entry": "cause:stale-water",
+      "claim": "Warm standing water breeds bacteria faster.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "Warm conditions combined with standing water can facilitate the growth and spread of bacteria and viruses.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-water-1",
+      "entry": "cause:low-water",
+      "claim": "Roots in a reservoir should always reach the water.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "Your roots should always be touching the water, but should not be fully immersed.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-water-2",
+      "entry": "cause:low-water",
+      "claim": "Check: keep enough water that part of the roots is submerged.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "Try to keep enough water in your system so that about half of the roots are submerged.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-water-3",
+      "entry": "cause:low-water",
+      "claim": "Check: reservoirs need topping up from time to time.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "This water will need to be topped-off at some point.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-water-4",
+      "entry": "cause:low-water",
+      "claim": "Fix: top up so about a third of the roots sits in water.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "keep the roots only 1/3 to 1/2 submerged once they start to develop beyond the net pot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-water-5",
+      "entry": "cause:low-water",
+      "claim": "Warmth speeds up evaporation from the reservoir.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
+      "quote": "Increased temperature promotes water evaporation and can support algae or bacterial growth within the NFT systems.",
+      "verdict": "pending"
+    },
+    {
+      "id": "ocean-forest-1",
+      "entry": "mix:FoxFarm Ocean Forest",
+      "claim": "Ocean Forest contains earthworm castings, bat guano, fish emulsion and crab meal.",
+      "url": "https://foxfarm.com/product/ocean-forest-potting-soil/",
+      "quote": "a powerhouse blend of aged forest products, sphagnum peat moss, earthworm castings, bat guano, fish emulsion, and crab meal",
+      "verdict": "pending"
+    },
+    {
+      "id": "ocean-forest-2",
+      "entry": "mix:FoxFarm Ocean Forest",
+      "claim": "Ocean Forest carries enough food that it needs no nitrogen feed at first.",
+      "url": "https://foxfarm.com/product/ocean-forest-potting-soil/",
+      "quote": "There’s no need for nitrogen fertilizers at first",
+      "verdict": "pending"
+    },
+    {
+      "id": "happy-frog-1",
+      "entry": "mix:FoxFarm Happy Frog",
+      "claim": "Happy Frog contains earthworm castings and bat guano.",
+      "url": "https://foxfarm.com/product/happy-frog-potting-soil/",
+      "quote": "Between the earthworm castings, bat guano, and aged forest products, your container plants have never felt so good.",
+      "verdict": "pending"
+    },
+    {
+      "id": "happy-frog-2",
+      "entry": "mix:FoxFarm Happy Frog",
+      "claim": "Happy Frog is amended with soil microbes.",
+      "url": "https://foxfarm.com/product/happy-frog-potting-soil/",
+      "quote": "is amended with soil microbes that can help improve root efficiency and encourage nutrient uptake",
+      "verdict": "pending"
+    },
+    {
+      "id": "coast-of-maine-1",
+      "entry": "mix:Coast of Maine",
+      "claim": "Coast of Maine Bar Harbor Blend potting soil contains composted manure and added fertiliser.",
+      "url": "https://coastofmaine.com/products/bar-harbor-premium-potting-soil",
+      "quote": "Sphagnum peat moss, composted manure, perlite, aged bark and fertilizer (see below).",
+      "verdict": "pending"
+    },
+    {
+      "id": "coast-of-maine-2",
+      "entry": "mix:Coast of Maine",
+      "claim": "Its fertiliser comes from kelp meal and lobster and crab shell meal.",
+      "url": "https://coastofmaine.com/products/bar-harbor-premium-potting-soil",
+      "quote": "Derived From: kelp meal, lobster & crab shell meal.",
+      "verdict": "pending"
+    },
+    {
+      "id": "coast-of-maine-3",
+      "entry": "mix:Coast of Maine",
+      "claim": "Not every Coast of Maine potting soil has lobster or crab: Acadia Blend is plant-based.",
+      "url": "https://coastofmaine.com/products/acadia-blend-potting-soil",
+      "quote": "Organic & Natural Acadia Blend Potting Soil is a 100% plant-based formulation containing no peat moss or animal manures.",
+      "verdict": "pending"
     }
   ]
 }
