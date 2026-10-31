@@ -1,7 +1,7 @@
 import { Alert, Platform } from 'react-native';
 import { create } from 'zustand';
 import { Household as Native, type Invite, type Person } from '../../modules/household';
-import { deletedSinceAgreed, diaryPhotos, merge, orphanPhotos, pickShared, signEvents, type Jungle, type RemoteItem } from '../engine/household';
+import { deletedSinceAgreed, diaryPhotos, holdDeletes, merge, orphanPhotos, pickShared, signEvents, type Jungle, type RemoteItem } from '../engine/household';
 import { usePlantStore, type Household } from '../store/plantStore';
 import { deletePhoto } from './photos';
 
@@ -85,7 +85,7 @@ async function round() {
   if (hh.role === 'member' && !hh.synced && !items.length) return;
   const { events } = signEvents(st.events, hh.me);
   const local: Jungle = { plants: st.plants, events, shared: pickShared(st.profile), members: { ...(hh.members ?? {}), [hh.me]: { name: hh.name } } };
-  const r = merge(local, synced, items, changes.deleted ?? [], Date.now());
+  const r = holdDeletes(merge(local, synced, items, changes.deleted ?? [], Date.now()), synced, changes.incomplete);
   if (r.changed || events !== st.events) st.setJungle(r.jungle);
 
   const failed = await Native.save(owner, r.save, r.remove);
