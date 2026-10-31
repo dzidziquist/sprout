@@ -34,7 +34,7 @@ export function causeForLabel(label: string | undefined): string | undefined {
     [/scale|coccid|diaspid/, 'scale'],
     [/fungus gnat|sciarid|bradysia/, 'fungus-gnats'],
     [/caterpillar|moth|slug|snail|beetle|weevil|leaf miner|leafminer|lepidopter|worm|looper|borer|sawfly|grasshopper|locust/, 'pests-chewing'],
-    [/root rot|pythium|phytophthora|crown rot|stem rot/, 'root-rot'],
+    [/root rot|pythium|phytophthora|crown rot|stem rot|collar rot|foot rot|basal rot|rolfsii|sclerotium|southern blight|damping.off|rhizoctonia/, 'root-rot'],
     [/blossom end rot/, 'blossom-end-rot'],
     [/leaf spot|blight|anthracnose|rust|septoria|alternaria|cercospora|downy mildew|mildew|spot|botrytis|grey mould|gray mold/, 'leaf-spot'],
     [/sunburn|sunscald|scorch/, 'sunburn'],

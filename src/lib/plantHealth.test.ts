@@ -60,6 +60,9 @@ describe('photo result helpers', () => {
     for (const name of ['Spodoptera frugiperda - Fall armyworm', 'Agrotis ipsilon - Black cutworm', 'Manduca sexta - Tobacco hornworm', 'Trichoplusia ni - Cabbage looper', 'Otiorhynchus sulcatus - Vine weevil'])
       expect(causeForLabel(name)).toBe('pests-chewing');
     expect(causeForLabel('Erysiphe - Powdery mildew')).toBe('powdery-mildew');
+    // Rots at the base of the stem get the root rot card, not leaf spot ("southern blight" says blight).
+    for (const name of ['Athelia rolfsii - Collar rot', 'Sclerotium rolfsii - Southern blight', 'Rhizoctonia solani - Damping-off'])
+      expect(causeForLabel(name)).toBe('root-rot');
   });
 
   it('flags outdoor crop pests', async () => {
