@@ -68,6 +68,8 @@ describe('photo result helpers', () => {
     expect(isFieldPest('Leptinotarsa decemlineata - Colorado potato beetle')).toBe(true);
     expect(isFieldPest('Tetranychus urticae - Two-spotted spider mite')).toBe(false);
     expect(isFieldPest('Otiorhynchus sulcatus - Vine weevil')).toBe(false);
+    expect(isFieldPest('Puccinia sorghi - Maize rust')).toBe(false);
+    expect(isFieldPest('Ostrinia nubilalis - European corn borer')).toBe(true);
     expect(isFieldPest(undefined)).toBe(false);
   });
 

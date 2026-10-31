@@ -47,7 +47,7 @@ export function causeForLabel(label: string | undefined): string | undefined {
  * Pests of fields and veg beds that are very unlikely on a plant kept indoors, so a match on a
  * houseplant is probably Pl@ntNet guessing.
  */
-const FIELD_PESTS = /armyworm|cutworm|bollworm|earworm|rootworm|wireworm|corn borer|stem borer|maize|locust|grasshopper|colorado potato|codling|cabbage (white|moth|looper)|flea beetle|carrot fly|onion fly|spodoptera|helicoverpa|diabrotica|ostrinia|leptinotarsa|cydia pomonella/;
+const FIELD_PESTS = /armyworm|cutworm|bollworm|earworm|rootworm|wireworm|corn borer|stem borer|locust|grasshopper|colorado potato|codling|cabbage (white|moth|looper)|flea beetle|carrot fly|onion fly|spodoptera|helicoverpa|diabrotica|ostrinia|leptinotarsa|cydia pomonella/;
 
 /** True when the match is an outdoor crop pest. */
 export function isFieldPest(label: string | undefined): boolean {
