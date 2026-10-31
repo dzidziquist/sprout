@@ -213,6 +213,23 @@ export function seasonEnd(taskId: string, climate: ClimateProfile, realDate: Dat
   return new Date(start.getFullYear(), start.getMonth() + k, 1);
 }
 
+/** Grow cards put away from Today (lib/GrowTodayCard): item key → until when. */
+export type HiddenCards = Record<string, string>;
+
+/** Whether a card is still put away. */
+export function isPutAway(hidden: HiddenCards | undefined, key: string, now: Date): boolean {
+  const until = hidden?.[key];
+  return !!until && Date.parse(until) > now.getTime();
+}
+
+/** Put one more card away, keeping every other card that's still away (and dropping the expired). */
+export function putAway(hidden: HiddenCards | undefined, key: string, until: Date, now: Date): HiddenCards {
+  // Anything that isn't a key → date pair (an older single-card shape) simply drops out.
+  const card = (k: string) => k === 'quiet' || k.startsWith('task:') || k.startsWith('alert:');
+  const kept = Object.fromEntries(Object.entries(hidden ?? {}).filter(([k, at]) => k !== key && card(k) && typeof at === 'string' && Date.parse(at) > now.getTime()));
+  return { ...kept, [key]: until.toISOString() };
+}
+
 /** Stages a staked or trellised crop needs its support by: once it's growing, until the season's done. */
 const NEEDS_SUPPORT: EdibleStage[] = ['growing', 'flowering', 'fruiting', 'harvesting'];
 

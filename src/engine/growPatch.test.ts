@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   daysInStage,
+  isPutAway,
+  putAway,
   seasonEnd,
   edibleFeedingPaused,
   ediblePlants,
@@ -508,5 +510,31 @@ describe('not this season', () => {
     const ids = (p: Plant) => tasksFor([p], 'seattle', new Date(2026, 9, 20, 12)).map((t) => t.id);
     expect(ids(tomato('indoor'))).not.toContain('sea-blight-bin');
     expect(ids(tomato('outdoor'))).toContain('sea-blight-bin');
+  });
+});
+
+describe('grow cards put away from Today', () => {
+  const now = new Date('2026-10-31T12:00:00Z');
+  const week = new Date('2026-11-07T12:00:00Z');
+
+  it('keeps every card put away: hiding B after A leaves A hidden too', () => {
+    const a = putAway(undefined, 'task:sea-blight-bin', week, now);
+    const ab = putAway(a, 'task:stage-stake', week, now);
+    expect(isPutAway(ab, 'task:sea-blight-bin', now)).toBe(true);
+    expect(isPutAway(ab, 'task:stage-stake', now)).toBe(true);
+    expect(isPutAway(ab, 'task:stage-pollinate', now)).toBe(false);
+  });
+
+  it('lets a card come back once its time is up, and drops expired ones when another is hidden', () => {
+    const a = putAway(undefined, 'alert:frost', new Date('2026-11-01T12:00:00Z'), now);
+    const later = new Date('2026-11-02T12:00:00Z');
+    expect(isPutAway(a, 'alert:frost', later)).toBe(false);
+    expect(Object.keys(putAway(a, 'quiet', week, later))).toEqual(['quiet']);
+  });
+
+  it('ignores the older single-card shape', () => {
+    const old = { key: 'task:x', until: '2026-11-07T12:00:00Z' } as unknown as Record<string, string>;
+    expect(isPutAway(old, 'task:x', now)).toBe(false);
+    expect(Object.keys(putAway(old, 'task:y', week, now))).toEqual(['task:y']);
   });
 });
