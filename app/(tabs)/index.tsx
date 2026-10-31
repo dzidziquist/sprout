@@ -207,7 +207,7 @@ export default function TodayScreen() {
         </Sticker>
 
         {round.length > 0 && (
-          <View style={{ gap: 12 }}>
+          <View style={{ gap: 8 }}>
             {round.map((p) => {
               const mood = moodFor(p, now);
               const tint = c.potTint[p.potColor];
@@ -245,6 +245,8 @@ export default function TodayScreen() {
                   friction={2}
                   rightThreshold={40}
                   overshootRight={false}
+                  // Room for the card's drop shadow: the swipe container clips whatever hangs below it.
+                  childrenContainerStyle={styles.swipeRoom}
                   renderRightActions={() => (
                     <View style={styles.swipeActions}>
                       <SwipeAction label="Skip" bg={c.sky} slash onPress={() => answer(p.id, 'damp')} />
@@ -337,7 +339,8 @@ const styles = StyleSheet.create({
   thumb: { width: 80, height: 80, borderRadius: 16, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   name: { fontFamily: fonts.displaySemi, ...type.headline },
   reason: { fontFamily: fonts.bodyHeavy, ...type.footnote },
-  swipeActions: { flexDirection: 'row', gap: 6, paddingLeft: 8, paddingVertical: 4 },
+  swipeRoom: { paddingBottom: 4 },
+  swipeActions: { flexDirection: 'row', gap: 6, paddingLeft: 8, paddingTop: 4, paddingBottom: 8 },
   swipeAction: { width: 64, borderRadius: 18, borderWidth: 2, alignItems: 'center', justifyContent: 'center', gap: 4 },
   swipeText: { fontFamily: fonts.bodyHeavy, ...type.caption },
   upNext: { flexDirection: 'row', gap: 8 },

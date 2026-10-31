@@ -1,6 +1,6 @@
 import { useUnits } from '@/hooks/useUnits';
 import { localizeTemps } from '@/lib/units';
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -95,11 +95,12 @@ const MATERIALS: { id: PotMaterial; label: string }[] = [
   { id: 'fabric', label: 'Grow bag' },
 ];
 /** Where it lives. A grow light is a switch under Indoors (placement 'growlight'), so it keeps its room and spot. */
+// Ordered so the pills sit in two rows on a phone (with Grow light after Indoors): the short ones first.
 const PLACES: { id: Placement; label: string }[] = [
   { id: 'indoor', label: 'Indoors' },
+  { id: 'ground', label: 'Garden bed' },
   { id: 'covered_outdoor', label: 'Balcony, covered' },
   { id: 'outdoor', label: 'Outside, in a pot' },
-  { id: 'ground', label: 'Garden bed' },
 ];
 /** Everything without a growing guide, including plants that aren't in the library. */
 const ORIGINS: { id: Origin; label: string }[] = [
@@ -550,29 +551,29 @@ export default function AddPlantScreen() {
       <Label>Where does it live?</Label>
       <View style={styles.wrap}>
         {PLACES.map((p) => (
-          <Pill
-            key={p.id}
-            on={p.id === 'indoor' ? indoors : placement === p.id}
-            bg={c.ice}
-            label={p.label}
-            onPress={() => {
-              setPlacement(p.id === 'indoor' && indoors ? placement : p.id);
-              // Beds are made of garden soil; moving out of one goes back to a potting mix.
-              if (p.id === 'ground' && !isReservoir(soil)) setSoil('garden_soil');
-              else if (p.id !== 'ground' && soil === 'garden_soil') setSoil(soilBase);
-            }}
-          />
+          <Fragment key={p.id}>
+            <Pill
+              on={p.id === 'indoor' ? indoors : placement === p.id}
+              bg={c.ice}
+              label={p.label}
+              onPress={() => {
+                setPlacement(p.id === 'indoor' && indoors ? placement : p.id);
+                // Beds are made of garden soil; moving out of one goes back to a potting mix.
+                if (p.id === 'ground' && !isReservoir(soil)) setSoil('garden_soil');
+                else if (p.id !== 'ground' && soil === 'garden_soil') setSoil(soilBase);
+              }}
+            />
+            {/* Grow lights are an indoor spot: offered next to Indoors once it's picked. */}
+            {p.id === 'indoor' && indoors && (
+              <Pill on={placement === 'growlight'} bg={c.butter} label="Grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')}>
+                <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                  <LineIcon name="bulb" color={placement === 'growlight' ? textOn(selectedFill(c.butter, c), c) : c.ink} size={16} width={2.2} />
+                </View>
+              </Pill>
+            )}
+          </Fragment>
         ))}
       </View>
-      {indoors && (
-        <View style={styles.wrap}>
-          <Pill on={placement === 'growlight'} bg={c.butter} label="Under a grow light" onPress={() => setPlacement(placement === 'growlight' ? 'indoor' : 'growlight')}>
-            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-              <LineIcon name="bulb" color={placement === 'growlight' ? textOn(selectedFill(c.butter, c), c) : c.ink} size={16} width={2.2} />
-            </View>
-          </Pill>
-        </View>
-      )}
       <Text style={[styles.note, { color: c.inkMuted }]}>
         {placement === 'growlight'
           ? 'Its light comes from the lamp, so it isn’t in the Light view.'
