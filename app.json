@@ -2,9 +2,10 @@
   "expo": {
     "name": "PlantFam",
     "slug": "plantfam",
-    "version": "1.0.16",
+    "version": "1.0.17",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FFFFFF",
     "newArchEnabled": true,
     "scheme": "plantfam",
     "ios": {
@@ -48,6 +49,7 @@
       "output": "single"
     },
     "plugins": [
+      "expo-system-ui",
       "expo-router",
       "expo-font",
       [
