@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   daysInStage,
+  pickGrowCard,
   isPutAway,
   putAway,
   seasonEnd,
@@ -536,5 +537,29 @@ describe('grow cards put away from Today', () => {
     const old = { key: 'task:x', until: '2026-11-07T12:00:00Z' } as unknown as Record<string, string>;
     expect(isPutAway(old, 'task:x', now)).toBe(false);
     expect(Object.keys(putAway(old, 'task:y', week, now))).toEqual(['task:y']);
+  });
+});
+
+describe("Today's grow card", () => {
+  const now = new Date('2026-10-31T12:00:00Z');
+  const week = new Date('2026-11-07T12:00:00Z');
+  const job = (id: string) => ({ id, kind: 'care' as const, title: id, body: '', plantIds: ['p'], thisWeek: true });
+  const tasks = [job('a'), job('b')];
+
+  it('moves to the next job as each is put away, and stays away once all are', () => {
+    expect(pickGrowCard([], tasks, {}, now)).toMatchObject({ kind: 'task', task: { id: 'a' } });
+    const a = putAway(undefined, 'task:a', week, now);
+    expect(pickGrowCard([], tasks, { hidden: a }, now)).toMatchObject({ kind: 'task', task: { id: 'b' } });
+    const ab = putAway(a, 'task:b', week, now);
+    // Not "all quiet": there are jobs, they're just put away.
+    expect(pickGrowCard([], tasks, { hidden: ab }, now)).toBeNull();
+    // A week on, they're back.
+    expect(pickGrowCard([], tasks, { hidden: ab }, new Date('2026-11-08T12:00:00Z'))).toMatchObject({ kind: 'task', task: { id: 'a' } });
+  });
+
+  it('says all quiet only when nothing is left to do', () => {
+    expect(pickGrowCard([], [], {}, now)).toEqual({ kind: 'quiet' });
+    expect(pickGrowCard([], tasks, { ticks: { a: now.toISOString(), b: now.toISOString() } }, now)).toEqual({ kind: 'quiet' });
+    expect(pickGrowCard([], [], { hidden: putAway(undefined, 'quiet', week, now) }, now)).toBeNull();
   });
 });

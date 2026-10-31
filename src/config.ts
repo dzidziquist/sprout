@@ -26,4 +26,4 @@ export const TIPS_ENABLED = false;
 export const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 
-export const PRIVACY_UPDATED = 'October 18, 2026';
+export const PRIVACY_UPDATED = 'October 31, 2026';

@@ -15,9 +15,17 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
   {
     title: 'What stays on your phone',
     body: [
-      'Your plants, care diary, harvests, family trees, streaks and settings are saved only on this device.',
-      'Diary photos are copied into PlantFam’s own folder on your phone. They are not uploaded anywhere.',
+      'Your plants, care diary, harvests, family trees, streaks and settings are saved on this phone. Copies also go to your own iCloud through iCloud backup (on by default when iCloud Drive is on) and, if you use one, a household (below).',
+      'Diary photos are copied into PlantFam’s own folder on your phone.',
       'There is no PlantFam account and no PlantFam server holding your data. We can’t see your plants.',
+    ],
+  },
+  {
+    title: 'Your iCloud',
+    body: [
+      'iCloud backup: on by default when iCloud Drive is turned on for this iPhone. Once a week PlantFam saves a backup of your plants, diary, diary photos and settings to its own folder in your iCloud, and keeps the last four. Turn it off any time in Settings → Your data → iCloud backup.',
+      'Household: if you start or join one, the shared plants, diary entries, diary photos, the shared settings (your city, rooms, trips away, wishlist and grow patch progress) and the name you choose are kept in the household owner’s iCloud and shared only with the people the owner invites.',
+      'Both are stored by Apple in iCloud under your Apple ID (or the household owner’s). The maker of PlantFam can’t see or reach any of it.',
     ],
   },
   {
@@ -52,8 +60,9 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
   {
     title: 'Backups and deleting your data',
     body: [
-      'A backup is a file you save and keep wherever you choose (Files, iCloud Drive, email). PlantFam never receives it. Diary photos aren’t included.',
+      '“Back up now”: with iCloud backup on, it saves a backup to your iCloud straight away, diary photos included. With it off (or without iCloud), it makes a file you save and keep wherever you choose (Files, iCloud Drive, email); diary photos aren’t in that file. PlantFam never receives either.',
       'Settings → Delete all my data erases every plant, diary entry, photo and setting on this phone. Deleting the app does the same.',
+      'iCloud backups stay in your iCloud until you remove them: iPhone Settings → your name → iCloud → Manage Storage → PlantFam. Leaving a household removes you from it; the owner stopping it ends the sharing.',
       'Your iPhone’s own backups may include PlantFam’s data, the same as for other apps.',
     ],
   },
