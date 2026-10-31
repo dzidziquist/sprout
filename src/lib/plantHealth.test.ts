@@ -53,3 +53,36 @@ describe('checkPlantHealth', () => {
     await settled;
   });
 });
+
+describe('photo result helpers', () => {
+  it('sends caterpillar names to the chewing pests card', async () => {
+    const { causeForLabel } = await import('./plantHealth');
+    for (const name of ['Spodoptera frugiperda - Fall armyworm', 'Agrotis ipsilon - Black cutworm', 'Manduca sexta - Tobacco hornworm', 'Trichoplusia ni - Cabbage looper', 'Otiorhynchus sulcatus - Vine weevil'])
+      expect(causeForLabel(name)).toBe('pests-chewing');
+    expect(causeForLabel('Erysiphe - Powdery mildew')).toBe('powdery-mildew');
+  });
+
+  it('flags outdoor crop pests', async () => {
+    const { isFieldPest } = await import('./plantHealth');
+    expect(isFieldPest('Spodoptera frugiperda - Fall armyworm')).toBe(true);
+    expect(isFieldPest('Leptinotarsa decemlineata - Colorado potato beetle')).toBe(true);
+    expect(isFieldPest('Tetranychus urticae - Two-spotted spider mite')).toBe(false);
+    expect(isFieldPest('Otiorhynchus sulcatus - Vine weevil')).toBe(false);
+    expect(isFieldPest('Puccinia sorghi - Maize rust')).toBe(false);
+    expect(isFieldPest('Ostrinia nubilalis - European corn borer')).toBe(true);
+    expect(isFieldPest(undefined)).toBe(false);
+  });
+
+  it('says how far to trust the results', async () => {
+    const { photoVerdict } = await import('./plantHealth');
+    expect(photoVerdict([])).toBe('none');
+    expect(photoVerdict([{ confidence: 'Long shot' }, { confidence: 'Long shot' }])).toBe('unsure');
+    expect(photoVerdict([{ confidence: 'Long shot' }, { confidence: 'Maybe' }])).toBe('leads');
+  });
+
+  it('looks up the Latin name', async () => {
+    const { lookUpUrl } = await import('./plantHealth');
+    expect(lookUpUrl({ code: 'LAPHFR', name: 'Spodoptera frugiperda - Fall armyworm' })).toBe('https://en.wikipedia.org/wiki/Special:Search?search=Spodoptera%20frugiperda');
+    expect(lookUpUrl({ code: 'TETRUR' })).toBe('https://en.wikipedia.org/wiki/Special:Search?search=TETRUR');
+  });
+});

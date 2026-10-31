@@ -10,7 +10,7 @@ import { AREA_ICON, SYMPTOM_ART } from '@/data/symptomArt';
 import { checkedMonth, evidenceFor } from '@/data/evidence';
 import { diagnose, speciesNote, symptomsFor, type CheckOrder } from '@/engine/diagnose';
 import { isReservoir } from '@/engine/careEngine';
-import { checkPlantHealth, plantHealthConfigured, type HealthResult } from '@/lib/plantHealth';
+import { checkPlantHealth, isFieldPest, lookUpUrl, photoVerdict, plantHealthConfigured, type HealthResult } from '@/lib/plantHealth';
 import { PlantIdError } from '@/lib/plantId';
 import { DAILY_IDS } from '../identify';
 import { GlassButton } from '@/components/GlassButton';
@@ -61,6 +61,7 @@ export default function DoctorScreen() {
   useEffect(() => () => abort.current?.abort(), []);
 
   if (!plant) return <PlantGone />;
+  const indoors = plant.placement === 'indoor' || plant.placement === 'growlight';
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const symptoms = symptomsFor(plant);
   const water = isReservoir(plant.soil);
@@ -305,12 +306,11 @@ export default function DoctorScreen() {
           <View style={{ gap: 10 }}>
             <View style={styles.photoRow}>
               <Image source={{ uri: photo.uri }} style={[styles.thumb, { borderColor: c.line }]} />
-              <Text style={[styles.body, { color: c.ink, flex: 1 }]}>
-                {photo.results.length ? 'Here’s what it might be:' : 'Nothing it recognises. That’s often good news! Try the symptom list above for care problems.'}
-              </Text>
+              <Text style={[styles.body, { color: c.ink, flex: 1 }]}>{PHOTO_VERDICT[photoVerdict(photo.results)]}</Text>
             </View>
             {photo.results.map((r) => {
               const cause = r.causeId ? CAUSES[r.causeId] : undefined;
+              const unlikelyIndoors = indoors && isFieldPest(r.name);
               return (
                 <View key={r.code} style={{ gap: 8 }}>
                   <View style={styles.photoRow}>
@@ -325,12 +325,25 @@ export default function DoctorScreen() {
                     >
                       <Text style={[styles.pillText, { color: r.confidence === 'Long shot' ? c.ink : c.onBright }]}>{r.confidence}</Text>
                     </View>
-                    <Text style={[styles.cardTitle, { color: c.ink, flex: 1, ...type.body }]}>{r.name ?? r.code}</Text>
+                    <Text
+                      style={[styles.cardTitle, { color: c.ink, flex: 1, ...type.body, textDecorationLine: 'underline' }]}
+                      accessibilityRole="link"
+                      accessibilityHint="Opens photos of it to compare"
+                      onPress={() => Linking.openURL(lookUpUrl(r))}
+                    >
+                      {r.name ?? r.code}
+                    </Text>
                   </View>
-                  {cause && <CauseCard cause={cause} c={c} onSave={() => save(cause, 'Photo check')} onCutting={() => router.push(`/cuttings/${plant.id}`)} />}
+                  {unlikelyIndoors && <Text style={[styles.hint, { color: c.inkMuted }]}>Usually an outdoor crop pest, so unlikely on a plant kept indoors.</Text>}
+                  {cause && !unlikelyIndoors && <CauseCard cause={cause} c={c} onSave={() => save(cause, 'Photo check')} onCutting={() => router.push(`/cuttings/${plant.id}`)} />}
                 </View>
               );
             })}
+            {photo.results.length > 0 && (
+              <Text style={[styles.hint, { color: c.inkMuted }]}>
+                Not sure it fits? Tap a name to see photos of it, try a sharper close-up in daylight, or pick what you see from the list above.
+              </Text>
+            )}
           </View>
         )}
         <Text style={[styles.hint, { color: c.inkMuted }]}>Powered by Pl@ntNet. Uses one of your {DAILY_IDS} free photo looks a day.</Text>
@@ -461,6 +474,13 @@ function Bullet({ text, n, c }: { text: string; n?: number; c: Palette }) {
     </View>
   );
 }
+
+/** The line above the photo results, by how much they can be trusted. */
+const PHOTO_VERDICT = {
+  none: 'Nothing it recognises. That’s often good news! Try the symptom list above for care problems.',
+  unsure: 'Pl@ntNet couldn’t find a good match. Its best guesses are below, but don’t act on them alone.',
+  leads: 'Here’s what it might be:',
+} as const;
 
 const styles = StyleSheet.create({
   whyRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderTopWidth: 1.5, paddingTop: 10, marginTop: 2 },
