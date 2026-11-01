@@ -56,9 +56,17 @@ for (const [url, list] of byUrl) {
     }
   } catch (e) {
     // A redirect loop is a site that wants cookies (UF/IFAS), not a dead page.
+    // Only a domain that no longer exists counts as broken here; resets, timeouts, TLS hiccups and
+    // bot walls (UC IPM and UF/IFAS from CI runners) are a person's job to check.
+    const code = e?.cause?.code ?? '';
     const why = String(e?.cause?.message ?? e?.message ?? e);
-    status = /redirect/i.test(why) ? 'check by hand' : 'broken';
-    detail = /redirect/i.test(why) ? 'the site keeps redirecting (it wants cookies)' : why;
+    if (code === 'ENOTFOUND') {
+      status = 'broken';
+      detail = `the site doesn’t exist any more (${why})`;
+    } else {
+      status = 'check by hand';
+      detail = /redirect/i.test(why) ? 'the site keeps redirecting (it wants cookies)' : `couldn’t load it from here (${code || why})`;
+    }
   }
   if (status === 'broken' || status === 'changed') failed += 1;
   rows.push(`| ${status === 'ok' ? '✅' : status === 'check by hand' ? '👀' : '❌'} ${status} | ${url} | ${[...new Set(list.map((c) => c.entry))].join(", ")} | ${detail} |`);
