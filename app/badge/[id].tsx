@@ -7,7 +7,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useBadges } from '@/hooks/useBadges';
 import { BADGE_ART } from '@/data/art';
 import { BADGE_RIMS, COIN_FILL } from '@/data/badgeRims';
-import { CoinBack, CoinEdge } from '@/components/BadgeCoin';
+import { CoinBack, CoinEdge, CoinLight } from '@/components/BadgeCoin';
 import { BADGE_ICON, badgeFill } from '@/components/BadgeSticker';
 import { GlassButton } from '@/components/GlassButton';
 import { Button } from '@/components/ui';
@@ -123,7 +123,10 @@ export default function BadgeScreen() {
           )}
           <Animated.View style={[styles.face, { transform: [{ perspective: 900 }, { rotateY: front }] }]}>
             {art ? (
-              <Image source={earned ? art.earned : art.locked} style={{ width: SIZE, height: SIZE }} resizeMode="contain" />
+              <>
+                <Image source={earned ? art.earned : art.locked} style={{ width: SIZE, height: SIZE }} resizeMode="contain" />
+                {!reduced && <CoinLight turn={angle} size={COIN} />}
+              </>
             ) : (
               <View style={[styles.disc, { backgroundColor: fill, borderColor: earned ? c.line : c.inkMuted }, !earned && { borderStyle: 'dashed', opacity: 0.6 }]}>
                 <Svg width={96} height={96} viewBox="0 0 24 24">
@@ -134,6 +137,7 @@ export default function BadgeScreen() {
           </Animated.View>
           <Animated.View style={[styles.face, styles.backFace, { transform: [{ perspective: 900 }, { rotateY: back }] }]}>
             {art && rim ? (
+              <>
               <CoinBack
                 rim={rim}
                 size={COIN}
@@ -141,6 +145,8 @@ export default function BadgeScreen() {
                 kicker={earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}
                 text={earned ? date : badge.hint}
               />
+              {!reduced && <CoinLight turn={Animated.add(angle, 180)} size={COIN} />}
+              </>
             ) : (
               <View style={[styles.disc, { backgroundColor: earned ? fill : c.cloud, borderColor: c.line }]}>
                 <Text style={[styles.backKicker, { color: earned ? textOn(fill, c) : c.inkMuted }]}>{earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}</Text>
