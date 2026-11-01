@@ -9,6 +9,7 @@ import { useColors } from '@/theme/theme';
 import { fonts, type } from '@/theme/tokens';
 import type { Plant } from '@/types';
 import { showUndo } from '@/lib/undo';
+import { PlantPreview, PREVIEW_SIZE } from '@/components/PlantPreview';
 
 type ArchiveReason = NonNullable<Plant['archivedReason']>;
 
@@ -29,6 +30,7 @@ export function usePlantActions(plant: Plant | undefined, opts: { onDeleted?: ()
   if (!plant) return null;
   return {
     log: () => router.push(`/log/${plant.id}`),
+    doctor: () => router.push(`/doctor/${plant.id}`),
     edit: () => router.push(`/edit/${plant.id}`),
     open: () => router.push(`/plant/${plant.id}`),
     cutting: () => {
@@ -109,6 +111,7 @@ export function PlantMenu({
         ]
       : [
           <Link.MenuAction key="log" title="Log care" icon="checklist" onPress={actions.log} />,
+          <Link.MenuAction key="doctor" title="Something wrong?" icon="stethoscope" onPress={actions.doctor} />,
           <Link.MenuAction key="edit" title="Edit" icon="pencil" onPress={actions.edit} />,
           <Link.MenuAction key="cut" title="Take a cutting" icon="scissors" onPress={actions.cutting} />,
           // Nested menus are supported at runtime; the prop type only lists actions.
@@ -127,7 +130,10 @@ export function PlantMenu({
             {children}
           </Pressable>
         </Link.Trigger>
-        <Link.Preview />
+        {/* A compact card, not the whole page squeezed in (its buttons did nothing in a preview). */}
+        <Link.Preview style={PREVIEW_SIZE}>
+          <PlantPreview plant={plant} />
+        </Link.Preview>
         <Link.Menu>{items}</Link.Menu>
       </Link>
     );
@@ -163,6 +169,7 @@ type Actions = NonNullable<ReturnType<typeof usePlantActions>>;
 const ICONS = {
   log: 'M9 11l3 3 8-8M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9',
   edit: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
+  doctor: 'M6 3v6a4 4 0 0 0 8 0V3M10 13v3a5 5 0 0 0 10 0v-2M20 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
   cut: 'M6 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 21.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM8 6l12 12M8 18 20 6',
   archive: 'M3 4h18v4H3zM5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4',
   gift: 'M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7C10 3 6 4 7.5 7M12 7c2-4 6-3 4.5 0',
@@ -217,6 +224,7 @@ export function PlantActionSheet({ plant, visible, onClose, actions }: { plant: 
             ) : (
               <>
                 <Row icon="log" title="Log care" tint={c.mint} onPress={run(actions.log)} />
+                <Row icon="doctor" title="Something wrong?" tint={c.peach} onPress={run(actions.doctor)} />
                 <Row icon="edit" title="Edit" tint={c.ice} onPress={run(actions.edit)} />
                 <Row icon="cut" title="Take a cutting" tint={c.lavender} onPress={run(actions.cutting)} />
                 <Row icon="archive" title="Archive…" tint={c.butter} onPress={() => setStep('archive')} />
