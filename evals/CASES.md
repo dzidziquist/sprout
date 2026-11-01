@@ -4,7 +4,7 @@ What PlantFam must (or should) answer in each situation. Every knowledge change 
 (`npm test`); a **must** case failing blocks the change. Generated from `evals/cases.ts`: to change a case,
 edit that file, then run `UPDATE_CASES_MD=1 npx vitest run evals` to refresh this list.
 
-36 must, 13 should.
+36 must, 23 should.
 
 ## Plant doctor
 
@@ -56,6 +56,22 @@ Why: Dried-out mix stops soaking up water; a pot full of roots does the same.
 
 Source: app rule · `water-runs-through`
 
+### Pothos in a 10 cm pot, same mix for over two years, not growing
+
+Should. Picks **Not growing at all**. First possible cause: **Outgrown its pot**.
+
+Why: A plant left in the same small pot fills it with roots and runs short of food, so growth stalls.
+
+Source: <https://hort.extension.wisc.edu/articles/houseplant-care/> · `old-mix-small-pot-no-growth`
+
+### Pothos growing in a jar of water in July, top-up check over a week late, drooping
+
+Should. Picks **Drooping or wilting**. First possible cause: **Water line too low**.
+
+Why: A plant in plain water needs its roots covered: when the water line drops below them, it can’t drink.
+
+Source: <https://hgic.clemson.edu/how-to-grow-and-care-for-lucky-bamboo-dracaena-sanderiana/> · `water-jar-late-drooping`
+
 ### Pothos in a dim spot, tall and leggy
 
 **Must**. Picks **Tall, leggy and stretched**. First possible cause: **Not enough light**.
@@ -95,6 +111,38 @@ Should. Picks **Not growing at all**. First possible cause: **Not enough light**
 Why: Low light and the dark season stop growth; it isn’t usually a disease.
 
 Source: app rule · `no-growth-winter-dark`
+
+### Pothos left outside in Seattle in late November, leaves falling off
+
+Should. Picks **Leaves falling off**. First possible cause: **Cold or draughts**.
+
+Why: Tropical houseplants dislike cold nights and chilling makes leaves drop; they should come in as night lows dip toward 10 °C (50 °F).
+
+Source: <https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/> · `outdoor-tropical-nov-dropping`
+
+### Pothos brought home 10 days ago, dropping a few leaves
+
+Should. Picks **Leaves falling off**. First possible cause: **Settling in**.
+
+Why: A new home is a shock: many new plants drop a few leaves for up to about three weeks while they adjust.
+
+Source: <https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/> · `new-plant-dropping`
+
+### Pothos with nothing logged out of the ordinary, a lower leaf yellowing
+
+Should. Picks **Lower leaves turning yellow**. Shown among the causes: **Just an old leaf**.
+
+Why: Plants retire their oldest leaves now and then, so normal ageing must be in the running.
+
+Source: <https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/> · `yellow-lower-old-leaves`
+
+### Pothos in direct sun in July, leaves curling
+
+Should. Picks **Leaves curling**. Shown among the causes: **Too hot**.
+
+Why: Leaves rolling and wilting in a very hot room in mid-summer suggest heat stress, so it must be in the running.
+
+Source: <https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant> · `curling-direct-sun-summer`
 
 ### Fine webbing under the leaves
 
@@ -151,6 +199,30 @@ Should. Picks **Holes or chewed edges**. First possible cause: **Something is ea
 Why: Outside, holes are usually slugs, snails or caterpillars.
 
 Source: app rule · `holes-outside`
+
+### Pothos indoors with silvery streaks and tiny black dots on the leaves
+
+Should. Picks **Tiny speckles or silvery streaks**. Shown among the causes: **Thrips**.
+
+Why: Silvery streaks marked with tiny black specks are thrips damage.
+
+Source: <https://www.rhs.org.uk/biodiversity/thrips> · `silvery-streaks-thrips`
+
+### Tomato outside, soil checking damp, brown spots on the leaves
+
+Should. Picks **Brown or black spots**. First possible cause: **Leaf spot (fungus or bacteria)**.
+
+Why: Leaf spot fungi spread in splashing water and need leaves to stay wet for hours, which rain and dew give outdoor plants.
+
+Source: <https://ipm.ucanr.edu/PMG/PESTNOTES/pn74172.html> · `spots-outdoor-tomato-wet`
+
+### Tomato indoors, a cloud of white specks flies up when it’s brushed
+
+Should. Picks **White specks fly up**. First possible cause: **Whitefly**.
+
+Why: Clouds of small white insects flying up from a disturbed plant are whitefly, and tomatoes and peppers are among their favourites.
+
+Source: <https://www.rhs.org.uk/biodiversity/glasshouse-whitefly> · `white-specks-tomato-whitefly`
 
 ### Tomato potted 10 days ago in FoxFarm Ocean Forest, lower leaves yellowing
 
@@ -239,6 +311,14 @@ Should. Picks **Fruit splitting or cracking**. First possible cause: **Uneven wa
 Why: Fruit splits when a thirsty plant suddenly gets a lot of water.
 
 Source: app rule · `split-fruit`
+
+### Tomato fruiting indoors in July, flowers dropping without setting fruit
+
+Should. Picks **Flowers drop, no fruit**. First possible cause: **Too hot, too dry or not pollinated**.
+
+Why: Days above about 29 °C (85 °F) or nights above 21 °C (70 °F) make tomatoes drop flowers, and indoors there is no wind to shake the pollen.
+
+Source: <https://hgic.clemson.edu/why-did-my-tomatoes-stop-producing-fruit/> · `flower-drop-indoor-summer`
 
 ### Lettuce shooting up a flower stalk in summer
 
