@@ -7,23 +7,10 @@ import { usePlantStore } from '@/store/plantStore';
 import { useColors } from '@/theme/theme';
 import { fonts, type } from '@/theme/tokens';
 import type { Plant } from '@/types';
+import { previewChips } from '@/engine/preview';
 
 /** Size iOS is asked to show the press-and-hold preview at. */
 export const PREVIEW_SIZE = { width: 320, height: 380 };
-
-const dayGap = (from: Date, to: Date) => Math.round((new Date(to.toDateString()).getTime() - new Date(from.toDateString()).getTime()) / 86400000);
-
-/** "Today", "Tomorrow", "In 3 days" for the next check; "Today", "Yesterday", "6 days ago" for the last watering. */
-export function previewLines(plant: Pick<Plant, 'nextCheckAt' | 'rooting'>, lastWaterAt: string | undefined, now: Date) {
-  const next = dayGap(now, new Date(plant.nextCheckAt));
-  const nextText = next <= 0 ? 'Today' : next === 1 ? 'Tomorrow' : `In ${next} days`;
-  let watered: string | undefined;
-  if (lastWaterAt) {
-    const ago = dayGap(new Date(lastWaterAt), now);
-    watered = ago <= 0 ? 'Today' : ago === 1 ? 'Yesterday' : `${ago} days ago`;
-  }
-  return { next: nextText, watered };
-}
 
 /**
  * The card iOS shows while you press and hold a plant: the plant, its name and the two things you'd
@@ -39,7 +26,7 @@ export function PlantPreview({ plant }: { plant: Plant }) {
   });
   const now = new Date();
   const species = speciesOf(plant);
-  const { next, watered } = previewLines(plant, lastWaterAt, now);
+  const chips = previewChips(plant, lastWaterAt, now);
   const where = [species.commonName, plant.room].filter(Boolean).join(' · ');
   return (
     <View style={[styles.card, { backgroundColor: c.card }]}>
@@ -47,7 +34,7 @@ export function PlantPreview({ plant }: { plant: Plant }) {
         <PlantBuddy
           speciesId={plant.rooting ? 'cutting' : plant.speciesId}
           pot={plant.potColor}
-          mood={moodFor(plant, now, !!activeTrip(profile.trips, now))}
+          mood={plant.archivedAt ? 'happy' : moodFor(plant, now, !!activeTrip(profile.trips, now))}
           size={170}
           bg={c.potTint[plant.potColor]}
           faces={profile.faces}
@@ -63,16 +50,12 @@ export function PlantPreview({ plant }: { plant: Plant }) {
           </Text>
         )}
         <View style={styles.row}>
-          <View style={[styles.chip, { backgroundColor: c.mint, borderColor: c.line }]}>
-            <Text style={[styles.chipNum, { color: c.ink }]}>{next}</Text>
-            <Text style={[styles.chipLabel, { color: c.ink }]}>next check</Text>
-          </View>
-          {watered && (
-            <View style={[styles.chip, { backgroundColor: c.butter, borderColor: c.line }]}>
-              <Text style={[styles.chipNum, { color: c.ink }]}>{watered}</Text>
-              <Text style={[styles.chipLabel, { color: c.ink }]}>last watered</Text>
+          {chips.map((chip) => (
+            <View key={chip.label} style={[styles.chip, { backgroundColor: c[chip.tone], borderColor: c.line }]}>
+              <Text style={[styles.chipNum, { color: c.ink }]}>{chip.num}</Text>
+              <Text style={[styles.chipLabel, { color: c.ink }]}>{chip.label}</Text>
             </View>
-          )}
+          ))}
         </View>
       </View>
     </View>
