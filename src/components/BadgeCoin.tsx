@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Animated, Image, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { mixHex } from '@/data/badgeRims';
@@ -43,29 +44,41 @@ export function BadgeCoin({
   back: { kicker: string; text: string; locked: boolean };
   reduced: boolean;
 }) {
-  const deg = (offset: number) =>
-    Animated.add(angle, offset).interpolate({ inputRange: [-36000, 36000], outputRange: ['-36000deg', '36000deg'] });
-  const a = Animated.modulo(angle, 360);
-  // The rim only shows around side-on, where the face is narrower than the rim is thick.
-  const edgeOn = a.interpolate({ inputRange: [0, 80, 86, 94, 100, 260, 266, 274, 280, 360], outputRange: [0, 0, 1, 1, 0, 0, 1, 1, 0, 0] });
+  // Built once per coin: rebuilding these on a re-render would detach and re-attach the native spin.
+  const anim = useMemo(() => {
+    const deg = (offset: number) =>
+      Animated.add(angle, offset).interpolate({ inputRange: [-36000, 36000], outputRange: ['-36000deg', '36000deg'] });
+    const a = Animated.modulo(angle, 360);
+    // Glint and shade, per face (same numbers as the test page): the glint rests at the upper left
+    // when the face is towards you and sweeps across as it turns.
+    const light = (offset: number) => {
+      const t = Animated.modulo(Animated.add(angle, offset), 360);
+      return {
+        slide: t.interpolate({ inputRange: [0, 90, 270, 360], outputRange: [-0.42 * coin, 1.1 * coin, -1.1 * coin, -0.42 * coin] }),
+        dim: t.interpolate({ inputRange: [0, 30, 90, 270, 330, 360], outputRange: [0, 0.1, 0.5, 0.5, 0.1, 0] }),
+      };
+    };
+    return {
+      front: deg(0),
+      back: deg(180),
+      edge: deg(90),
+      // The rim only shows around side-on, where the face is narrower than the rim is thick.
+      edgeOn: a.interpolate({ inputRange: [0, 80, 86, 94, 100, 260, 266, 274, 280, 360], outputRange: [0, 0, 1, 1, 0, 0, 1, 1, 0, 0] }),
+      lightFront: light(0),
+      lightBack: light(180),
+    };
+  }, [angle, coin]);
 
-  // Glint and shade, per face (same numbers as the test page): the glint rests at the upper left
-  // when the face is towards you and sweeps across as it turns.
-  const glint = (offset: number) => {
-    if (reduced) return null;
-    const t = Animated.modulo(Animated.add(angle, offset), 360);
-    const slide = t.interpolate({ inputRange: [0, 90, 270, 360], outputRange: [-0.42 * coin, 1.1 * coin, -1.1 * coin, -0.42 * coin] });
-    const dim = t.interpolate({ inputRange: [0, 30, 90, 270, 330, 360], outputRange: [0, 0.1, 0.5, 0.5, 0.1, 0] });
-    return (
+  const glint = (l: { slide: Animated.AnimatedInterpolation<number>; dim: Animated.AnimatedInterpolation<number> }) =>
+    reduced ? null : (
       <View pointerEvents="none" style={[styles.clip, { width: coin, height: coin, borderRadius: coin / 2 }]}>
-        <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: dim }]} />
+        <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: l.dim }]} />
         <Animated.Image
           source={GLINT}
-          style={{ position: 'absolute', top: -coin * 0.25, width: coin, height: coin * 1.5, transform: [{ translateX: slide }, { rotate: '18deg' }] }}
+          style={{ position: 'absolute', top: -coin * 0.25, width: coin, height: coin * 1.5, transform: [{ translateX: l.slide }, { rotate: '18deg' }] }}
         />
       </View>
     );
-  };
 
   const field = back.locked ? '#ECEEF1' : mixHex(rim, '#FFFFFF', 0.82);
   const ink = back.locked ? '#55556B' : mixHex(rim, '#1B1B2F', 0.78);
@@ -75,13 +88,13 @@ export function BadgeCoin({
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       {/* Front */}
-      <Animated.View style={[styles.face, { width: size, height: size, transform: [{ perspective: PERSPECTIVE }, { rotateY: deg(0) }] }]}>
+      <Animated.View style={[styles.face, { width: size, height: size, transform: [{ perspective: PERSPECTIVE }, { rotateY: anim.front }] }]}>
         <Image source={art} style={{ width: size, height: size }} resizeMode="contain" />
-        {glint(0)}
+        {glint(anim.lightFront)}
       </Animated.View>
 
       {/* Back: an enamel ring with a soft field and the engraved date or hint. */}
-      <Animated.View style={[styles.face, { width: size, height: size, transform: [{ perspective: PERSPECTIVE }, { rotateY: deg(180) }] }]}>
+      <Animated.View style={[styles.face, { width: size, height: size, transform: [{ perspective: PERSPECTIVE }, { rotateY: anim.back }] }]}>
         <LinearGradient
           colors={[mixHex(rim, '#FFFFFF', 0.45), rim, mixHex(rim, '#000000', 0.4)]}
           start={{ x: 0, y: 0 }}
@@ -102,11 +115,11 @@ export function BadgeCoin({
             </LinearGradient>
           </View>
         </LinearGradient>
-        {glint(180)}
+        {glint(anim.lightBack)}
       </Animated.View>
 
       {/* The milled rim, drawn last and shown only side-on. */}
-      <Animated.View style={{ position: 'absolute', opacity: edgeOn, transform: [{ perspective: PERSPECTIVE }, { rotateY: deg(90) }] }}>
+      <Animated.View style={{ position: 'absolute', opacity: anim.edgeOn, transform: [{ perspective: PERSPECTIVE }, { rotateY: anim.edge }] }}>
         <LinearGradient
           colors={[mixHex(rim, '#000000', 0.45), mixHex(rim, '#FFFFFF', 0.35), rim, mixHex(rim, '#000000', 0.5)]}
           locations={[0, 0.45, 0.6, 1]}
