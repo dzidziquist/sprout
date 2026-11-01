@@ -4,7 +4,7 @@ What PlantFam must (or should) answer in each situation. Every knowledge change 
 (`npm test`); a **must** case failing blocks the change. Generated from `evals/cases.ts`: to change a case,
 edit that file, then run `UPDATE_CASES_MD=1 npx vitest run evals` to refresh this list.
 
-36 must, 13 should.
+36 must, 20 should.
 
 ## Plant doctor
 
@@ -56,6 +56,14 @@ Why: Dried-out mix stops soaking up water; a pot full of roots does the same.
 
 Source: app rule · `water-runs-through`
 
+### Pothos in a 10 cm pot, same mix for over two years, not growing
+
+Should. Picks **Not growing at all**. First possible cause: **Outgrown its pot**.
+
+Why: A plant left in the same small pot fills it with roots and runs short of food, so growth stalls.
+
+Source: <https://hort.extension.wisc.edu/articles/houseplant-care/> · `old-mix-small-pot-no-growth`
+
 ### Pothos in a dim spot, tall and leggy
 
 **Must**. Picks **Tall, leggy and stretched**. First possible cause: **Not enough light**.
@@ -95,6 +103,30 @@ Should. Picks **Not growing at all**. First possible cause: **Not enough light**
 Why: Low light and the dark season stop growth; it isn’t usually a disease.
 
 Source: app rule · `no-growth-winter-dark`
+
+### Pothos left outside in Seattle in late November, leaves falling off
+
+Should. Picks **Leaves falling off**. First possible cause: **Cold or draughts**.
+
+Why: Tropical houseplants dislike cold nights and chilling makes leaves drop; they should come in as night lows dip toward 10 °C (50 °F).
+
+Source: <https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/> · `outdoor-tropical-nov-dropping`
+
+### Pothos brought home 10 days ago, dropping a few leaves
+
+Should. Picks **Leaves falling off**. First possible cause: **Settling in**.
+
+Why: A new home is a shock: many new plants drop a few leaves for up to about three weeks while they adjust.
+
+Source: <https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/> · `new-plant-dropping`
+
+### Pothos with nothing logged out of the ordinary, a lower leaf yellowing
+
+Should. Picks **Lower leaves turning yellow**. Shown among the causes: **Just an old leaf**.
+
+Why: Plants retire their oldest leaves now and then, so normal ageing must be in the running.
+
+Source: <https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/> · `yellow-lower-old-leaves`
 
 ### Fine webbing under the leaves
 
@@ -151,6 +183,22 @@ Should. Picks **Holes or chewed edges**. First possible cause: **Something is ea
 Why: Outside, holes are usually slugs, snails or caterpillars.
 
 Source: app rule · `holes-outside`
+
+### Pothos indoors with silvery streaks and tiny black dots on the leaves
+
+Should. Picks **Tiny speckles or silvery streaks**. Shown among the causes: **Thrips**.
+
+Why: Silvery streaks marked with tiny black specks are thrips damage.
+
+Source: <https://www.rhs.org.uk/biodiversity/thrips> · `silvery-streaks-thrips`
+
+### Tomato outside, soil checking damp, brown spots on the leaves
+
+Should. Picks **Brown or black spots**. First possible cause: **Leaf spot (fungus or bacteria)**.
+
+Why: Leaf spot fungi spread in splashing water and need leaves to stay wet for hours, which rain and dew give outdoor plants.
+
+Source: <https://ipm.ucanr.edu/PMG/PESTNOTES/pn74172.html> · `spots-outdoor-tomato-wet`
 
 ### Tomato potted 10 days ago in FoxFarm Ocean Forest, lower leaves yellowing
 
@@ -239,6 +287,14 @@ Should. Picks **Fruit splitting or cracking**. First possible cause: **Uneven wa
 Why: Fruit splits when a thirsty plant suddenly gets a lot of water.
 
 Source: app rule · `split-fruit`
+
+### Tomato fruiting indoors in July, flowers dropping without setting fruit
+
+Should. Picks **Flowers drop, no fruit**. First possible cause: **Too hot, too dry or not pollinated**.
+
+Why: Days above about 29 °C (85 °F) or nights above 21 °C (70 °F) make tomatoes drop flowers, and indoors there is no wind to shake the pollen.
+
+Source: <https://hgic.clemson.edu/why-did-my-tomatoes-stop-producing-fruit/> · `flower-drop-indoor-summer`
 
 ### Lettuce shooting up a flower stalk in summer
 
