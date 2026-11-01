@@ -7,7 +7,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useBadges } from '@/hooks/useBadges';
 import { BADGE_ART } from '@/data/art';
 import { BADGE_RIMS, COIN_FILL } from '@/data/badgeRims';
-import { CoinBack, CoinEdge, CoinLight } from '@/components/BadgeCoin';
+import { BadgeCoin } from '@/components/BadgeCoin';
 import { BADGE_ICON, badgeFill } from '@/components/BadgeSticker';
 import { GlassButton } from '@/components/GlassButton';
 import { Button } from '@/components/ui';
@@ -43,7 +43,7 @@ export default function BadgeScreen() {
 
   /** Spin to `to` (pixels), carrying the finger's speed in. */
   const spinTo = (to: number, velocity = 0) => {
-    Animated.spring(x, { toValue: to, velocity, stiffness: 70, damping: 13, mass: 1, useNativeDriver: true }).start();
+    Animated.spring(x, { toValue: to, velocity, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
   };
 
   const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
@@ -101,7 +101,6 @@ export default function BadgeScreen() {
   const date = earned ? new Date(badge.earnedAt!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
   const front = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-36000deg', '36000deg'] });
   const back = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-35820deg', '36180deg'] });
-  const edge = angle.interpolate({ inputRange: [-36000, 36000], outputRange: ['-35910deg', '36090deg'] });
   const artKey = badge.art === undefined ? badge.id : (badge.art ?? '');
   const rim = BADGE_RIMS[artKey]?.[earned ? 'earned' : 'locked'];
 
@@ -115,45 +114,38 @@ export default function BadgeScreen() {
 
       <PanGestureHandler minDist={0} onGestureEvent={onDrag} onHandlerStateChange={onState}>
         <Animated.View style={styles.stage} accessible accessibilityRole="adjustable" accessibilityLabel={`${badge.title}. Swipe to spin.`}>
-          {art && rim && (
-            // The rim, drawn first so the faces cover it except when the coin is side-on.
-            <Animated.View style={{ position: 'absolute', transform: [{ perspective: 900 }, { rotateY: edge }] }}>
-              <CoinEdge rim={rim} thickness={THICK} height={COIN - 6} />
-            </Animated.View>
+          {art && rim ? (
+            <BadgeCoin
+              angle={angle}
+              art={earned ? art.earned : art.locked}
+              size={SIZE}
+              coin={COIN}
+              thickness={THICK}
+              rim={rim}
+              reduced={reduced}
+              back={{ kicker: earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn', text: earned ? date : badge.hint, locked: !earned }}
+            />
+          ) : (
+            <>
+              <Animated.View style={[styles.face, { transform: [{ perspective: 900 }, { rotateY: front }] }]}>
+                {art ? (
+                  <Image source={earned ? art.earned : art.locked} style={{ width: SIZE, height: SIZE }} resizeMode="contain" />
+                ) : (
+                  <View style={[styles.disc, { backgroundColor: fill, borderColor: earned ? c.line : c.inkMuted }, !earned && { borderStyle: 'dashed', opacity: 0.6 }]}>
+                    <Svg width={96} height={96} viewBox="0 0 24 24">
+                      <Path d={BADGE_ICON[badge.id] ?? ''} stroke={earned ? textOn(fill, c) : c.inkMuted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    </Svg>
+                  </View>
+                )}
+              </Animated.View>
+              <Animated.View style={[styles.face, styles.backFace, { transform: [{ perspective: 900 }, { rotateY: back }] }]}>
+                <View style={[styles.disc, { backgroundColor: earned ? fill : c.cloud, borderColor: c.line }]}>
+                  <Text style={[styles.backKicker, { color: earned ? textOn(fill, c) : c.inkMuted }]}>{earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}</Text>
+                  <Text style={[styles.backText, { color: earned ? textOn(fill, c) : c.ink }]}>{earned ? date : badge.hint}</Text>
+                </View>
+              </Animated.View>
+            </>
           )}
-          <Animated.View style={[styles.face, { transform: [{ perspective: 900 }, { rotateY: front }] }]}>
-            {art ? (
-              <>
-                <Image source={earned ? art.earned : art.locked} style={{ width: SIZE, height: SIZE }} resizeMode="contain" />
-                {!reduced && <CoinLight turn={angle} size={COIN} />}
-              </>
-            ) : (
-              <View style={[styles.disc, { backgroundColor: fill, borderColor: earned ? c.line : c.inkMuted }, !earned && { borderStyle: 'dashed', opacity: 0.6 }]}>
-                <Svg width={96} height={96} viewBox="0 0 24 24">
-                  <Path d={BADGE_ICON[badge.id] ?? ''} stroke={earned ? textOn(fill, c) : c.inkMuted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                </Svg>
-              </View>
-            )}
-          </Animated.View>
-          <Animated.View style={[styles.face, styles.backFace, { transform: [{ perspective: 900 }, { rotateY: back }] }]}>
-            {art && rim ? (
-              <>
-              <CoinBack
-                rim={rim}
-                size={COIN}
-                locked={!earned}
-                kicker={earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}
-                text={earned ? date : badge.hint}
-              />
-              {!reduced && <CoinLight turn={Animated.add(angle, 180)} size={COIN} />}
-              </>
-            ) : (
-              <View style={[styles.disc, { backgroundColor: earned ? fill : c.cloud, borderColor: c.line }]}>
-                <Text style={[styles.backKicker, { color: earned ? textOn(fill, c) : c.inkMuted }]}>{earned ? (lv && lv.tiers.length > 1 ? `Level ${lv.level}` : 'Earned') : 'Still to earn'}</Text>
-                <Text style={[styles.backText, { color: earned ? textOn(fill, c) : c.ink }]}>{earned ? date : badge.hint}</Text>
-              </View>
-            )}
-          </Animated.View>
         </Animated.View>
       </PanGestureHandler>
 
