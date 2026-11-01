@@ -140,7 +140,7 @@ export const CAUSES: Record<string, Cause> = {
     soilOnly: true,
     title: 'Thirsty',
     summary: 'The soil has been drying out completely, so the plant is losing water faster than it gets it.',
-    check: ['Is the soil dry and pulling away from the sides of the pot?', 'Does the pot feel light?', 'Are the leaves wilting, with brown, crispy edges, and the oldest leaves at the base yellowing first?'],
+    check: ['Is the soil dry and pulling away from the sides of the pot?', 'Does the pot feel light?', 'Are the leaves wilting, with brown, crispy edges? Are the oldest leaves at the base yellowing first?'],
     fix: ['Water slowly until it runs out of the bottom.', 'If the soil is rock hard, stand the pot in a bowl of water until the bubbles stop, then let it drain.', 'Check a little sooner from now on.'],
     signals: [DRY, LATE, { signal: 'terracotta', weight: 1.2, why: 'Clay pots dry out fast.' }, { signal: 'smallPot', weight: 1.2, why: 'Small pots dry out fast.' }, { signal: 'hotSeason', weight: 1.3, why: 'It’s the hot season, so it drinks more.' }, { signal: 'moistureLover', weight: 1.3, why: 'It likes to stay lightly damp.' }, { signal: 'wetChecks', weight: 0.3, why: '' }, { signal: 'reservoir', weight: 0.5, why: '' }],
     tweak: 'more-water',
@@ -171,8 +171,8 @@ export const CAUSES: Record<string, Cause> = {
   'low-light': {
     id: 'low-light',
     title: 'Not enough light',
-    summary: 'The plant can’t make enough food, so it stretches toward the light and drops older leaves.',
-    check: ['Is it more than about 3 m (10 ft) from a window, or in a dark corner? Light fades fast away from the glass.', 'Is new growth smaller, paler or further apart than old growth?', 'Is it leaning toward the window?'],
+    summary: 'The plant can’t make enough food, so it stretches towards the light and drops older leaves.',
+    check: ['Is it more than about 3 m (10 ft) from a window, or in a dark corner? Light fades fast away from the glass.', 'Is new growth smaller, paler or further apart than old growth?', 'Is it leaning towards the window?'],
     fix: ['Move it closer to a bright window, especially in winter when the sun is weaker.', 'Turn the pot once a week so it grows evenly.', 'If no spot is bright enough, a grow light can make up for the missing daylight.'],
     signals: [{ signal: 'lowLight', weight: 2.5, why: 'Its spot is set to low light.' }, { signal: 'slowSeason', weight: 1.3, why: 'Days are short right now.' }, { signal: 'succulent', weight: 1.5, why: 'Succulents need lots of light.' }, { signal: 'directSun', weight: 0.3, why: '' }],
     sources: ['https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants', 'https://extension.missouri.edu/publications/g6515', 'https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/', 'https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care', 'https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant', 'https://extension.illinois.edu/news-releases/keep-houseplants-happy-simple-solutions', 'https://extension.missouri.edu/publications/g6510'],
@@ -295,7 +295,7 @@ export const CAUSES: Record<string, Cause> = {
   },
   cold: {
     id: 'cold',
-    title: 'Cold or drafts',
+    title: 'Cold or draughts',
     summary: 'Tropical plants dislike nights below about 10 °C (50 °F) and cold draughts. Leaves can go dark, limp or drop.',
     check: ['Is it near a door, a draughty window, or touching cold glass?', 'Was it outside on a cold night?'],
     fix: ['Move it away from cold glass and doors.', 'Bring outdoor tropicals in before nights get cold.', 'Water less often while it’s cool and growth is slow.'],
