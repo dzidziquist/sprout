@@ -777,6 +777,2350 @@
       "verdict": "supported",
       "checked": "2026-10-31",
       "checkedBy": "fact-checker"
+    },
+    {
+      "id": "low-light-1",
+      "entry": "cause:low-light",
+      "claim": "Summary: without enough light a houseplant can’t make enough food (carbohydrates).",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants",
+      "quote": "Without adequate light, carbohydrates cannot be manufactured, the energy reserves are depleted and plants die.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-2",
+      "entry": "cause:low-light",
+      "claim": "Summary: short of light, stems stretch long and thin toward the light.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants",
+      "quote": "Plant stems become “leggy,” meaning stems become long and thin and appear to be reaching toward the source of light.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-3",
+      "entry": "cause:low-light",
+      "claim": "Summary: short of light, plants may drop leaves, especially older ones.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants",
+      "quote": "Plants without sufficient light may also drop their leaves, especially older leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-4",
+      "entry": "cause:low-light",
+      "claim": "Check: even low-light plants usually don’t get enough light more than about 3 m (10 ft) from an average window.",
+      "url": "https://extension.missouri.edu/publications/g6515",
+      "quote": "even low-light plants usually do not receive enough light at distances greater than 10 feet from an average window",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-5",
+      "entry": "cause:low-light",
+      "claim": "Check: light fades fast as you move away from the window (the light source).",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Light intensity decreases rapidly as you move away from the source of light.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-6",
+      "entry": "cause:low-light",
+      "claim": "Check: short of light, new growth is further apart (long gaps between leaves on the stem).",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants",
+      "quote": "A lack of sufficient light causes the plant to grow long spaces on stems between the leaf nodes",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-7",
+      "entry": "cause:low-light",
+      "claim": "Check: short of light, leaves come in paler.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants",
+      "quote": "When plants lack light, they don't produce chlorophyll (the green pigment in plants), and plants can turn pale green to yellow to white.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-8",
+      "entry": "cause:low-light",
+      "claim": "Check: in low light, new leaves come in small and pale on stretched stems.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "A geranium grown in low light will be spindly and elongated with small, pale, green leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-9",
+      "entry": "cause:low-light",
+      "claim": "Check: a houseplant short of light leans, with stems reaching toward the light.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
+      "quote": "Look for leggy stems reaching toward the light.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-10",
+      "entry": "cause:low-light",
+      "claim": "Fix: move it closer to a bright window, especially over winter when the sun is weaker.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Bear in mind that over winter, when sunlight is weaker, many houseplants benefit from being moved closer to south- or west-facing windows.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-11",
+      "entry": "cause:low-light",
+      "claim": "Fix: for a leggy, stretching houseplant, move it somewhere brighter and turn it now and then so it grows evenly.",
+      "url": "https://extension.illinois.edu/news-releases/keep-houseplants-happy-simple-solutions",
+      "quote": "Move them to a brighter location, or turn them occasionally to keep them growing evenly.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-12",
+      "entry": "cause:low-light",
+      "claim": "Fix: turning a houseplant once a week keeps it from growing one-sided.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Many plants can be kept from getting one-sided by turning them once a week.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-light-13",
+      "entry": "cause:low-light",
+      "claim": "Fix: a grow light can make up for too little daylight.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Supplemental lighting or “grow lights” can be added when natural light is insufficient for plant growth.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-1",
+      "entry": "cause:sunburn",
+      "claim": "Summary: strong direct sun can scorch houseplant leaves, leaving brown or washed-out patches.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Strong, direct sunlight, such as from a south-facing window in summer, can cause brown scorched patches on leaves and give them a washed-out appearance.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-2",
+      "entry": "cause:sunburn",
+      "claim": "Summary: leaves that are completely brown won’t recover.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Cut off any mouldy, shrivelled, completely brown or completely yellow leaves with secateurs, as these won’t recover.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-3",
+      "entry": "cause:sunburn",
+      "claim": "Summary: the plant itself usually recovers once its conditions are put right.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Many houseplants will recover quickly once their growing conditions are improved",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-4",
+      "entry": "cause:sunburn",
+      "claim": "Check: too much light shows as scorched and bleached leaves.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants",
+      "quote": "Plants exposed to too much light may result in scorched and bleached leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-5",
+      "entry": "cause:sunburn",
+      "claim": "Check: a sudden move into stronger light, especially direct sun, bleaches or burns the leaves.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Abruptly moving a plant to more intense light — especially direct sunlight — results in bleaching or burning of foliage.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-6",
+      "entry": "cause:sunburn",
+      "claim": "Check: a houseplant moved outside into too much sun can burn.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "If the plant is shocked with too much sun, the leaves can burn.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-7",
+      "entry": "cause:sunburn",
+      "claim": "Fix: at the first pale patches or crispy edges, move it back a little.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
+      "quote": "If you see pale patches or crispy edges, that’s a sign the transition is happening too fast. A small adjustment back can prevent lasting damage.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-8",
+      "entry": "cause:sunburn",
+      "claim": "Fix: a lightweight (sheer) curtain diffuses the sun for most foliage houseplants.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Most foliage plants do well with light at a north window, daylight with no direct sun, or sunlight diffused through a lightweight curtain.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-9",
+      "entry": "cause:sunburn",
+      "claim": "Fix: move houseplants into brighter light gradually, over one to two weeks.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
+      "quote": "Move plants closer to windows gradually over one to two weeks, especially if they’re headed toward south- or west-facing light.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-10",
+      "entry": "cause:sunburn",
+      "claim": "Fix: jumping into bright sun too fast is what scorches the leaves.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
+      "quote": "Jumping too quickly into bright sun can scorch leaves, particularly on shade-loving plants like pothos, philodendrons, peace lilies, and ferns.",
+      "verdict": "pending"
+    },
+    {
+      "id": "sunburn-11",
+      "entry": "cause:sunburn",
+      "claim": "Fix: keep leaves that are still mostly green until new leaves have grown.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Retain leaves that are predominantly green until the plant has produced a fresh flush of leaves, or you could delay recovery.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-1",
+      "entry": "cause:dry-air",
+      "claim": "Summary: dry indoor air, especially with the heating on, draws water out of leaves faster than it’s replaced, and browns the tips.",
+      "url": "https://hort.extension.wisc.edu/keys-to-healthy-houseplants/",
+      "quote": "Dry air indoors draws water out of plant foliage faster than it can be replaced, especially now in the winter heating season. This is a leading cause of brown tips to leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-2",
+      "entry": "cause:dry-air",
+      "claim": "Summary: dry air is a common houseplant problem, especially in winter with the heating on.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Low air humidity (dry air) is a common cause of problems on foliage houseplants, especially over winter when the heating is on.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-3",
+      "entry": "cause:dry-air",
+      "claim": "Check: hot air blowing on a houseplant browns the leaf edges.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Hot air blowing on a plant often causes leaves to brown on the edges and, occasionally, to drop or die.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-4",
+      "entry": "cause:dry-air",
+      "claim": "Check: houseplants near radiators often get scorched leaves.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Plants kept near direct sources of heat, like radiators, often suffer scorched leaves",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-5",
+      "entry": "cause:dry-air",
+      "claim": "Check: forced air from vents dries houseplants fast.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Forced air dries the plants rapidly, overtaxes their limited root systems, and may cause damage or plant loss.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-6",
+      "entry": "cause:dry-air",
+      "claim": "Check: dry air shows as crispy leaves with brown tips and edges.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "You might see shrivelled, crispy leaves with brown tips and edges, plus early dropping of leaves, buds and flowers.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-7",
+      "entry": "cause:dry-air",
+      "claim": "Fix: don’t keep houseplants above heaters or radiators.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Do not put plants at windows that have hot air registers or radiators directly below them.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-8",
+      "entry": "cause:dry-air",
+      "claim": "Fix: grouping plants or standing them on trays of damp pebbles raises the humidity around them.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Humidity levels around a plant can be increased by grouping plants together or placing them on trays of damp pebbles.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-9",
+      "entry": "cause:dry-air",
+      "claim": "Fix: the pot stands on the wet pebbles, not in the water.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Pots must be placed on, not in, the wet sand or gravel.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-10",
+      "entry": "cause:dry-air",
+      "claim": "Fix: kitchens and bathrooms are usually more humid than other rooms.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Kitchens and bathrooms generally have higher humidity than other rooms.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-11",
+      "entry": "cause:dry-air",
+      "claim": "Fix: trim dry or brown leaf tips off with sharp scissors.",
+      "url": "https://ucanr.edu/site/uc-marin-master-gardeners/houseplant-care",
+      "quote": "Trim off leaf tips using sharp scissors if they are dry or brown.",
+      "verdict": "pending"
+    },
+    {
+      "id": "dry-air-12",
+      "entry": "cause:dry-air",
+      "claim": "Fix: when trimming brown leaf edges, follow the leaf shape.",
+      "url": "https://ucanr.edu/blog/coastal-gardener/article/fiddle-leaf-fig-houseplant-proper-care",
+      "quote": "If the leave margins have become brown, trim with scissors, following the leaf shape.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-1",
+      "entry": "cause:tap-water",
+      "claim": "Summary: some houseplants are sensitive to fluoride or chlorine in tap water.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Some houseplants are sensitive to fluoride or chlorine in tap water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-2",
+      "entry": "cause:tap-water",
+      "claim": "Summary: salts from the water stay behind in the pot as it dries, and build up.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "When water evaporates from the soil, the minerals or salts stay behind.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-3",
+      "entry": "cause:tap-water",
+      "claim": "Summary: salt build-up shows as brown leaf tips.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Reduced growth, brown leaf tips, dropping of lower leaves, small new growth, dead root tips, and wilting are all signs of soluble salts buildup.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-4",
+      "entry": "cause:tap-water",
+      "claim": "Summary: fertiliser salts building up are another cause of brown leaf edges.",
+      "url": "https://extension.illinois.edu/news-releases/keep-houseplants-happy-simple-solutions",
+      "quote": "Another cause of brown leaf edges is an accumulation of fertilizer salts on containers.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-5",
+      "entry": "cause:tap-water",
+      "claim": "Check: a white crust on the soil or the pot rim is a sign of salt build-up.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "White to grey crusty deposits on the soil surface or rim of pots is a sign of salt buildup.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-6",
+      "entry": "cause:tap-water",
+      "claim": "Check: once other causes (like watering) are ruled out and brown edges continue, suspect salts and flush the soil.",
+      "url": "https://extension.illinois.edu/news-releases/keep-houseplants-happy-simple-solutions",
+      "quote": "If other issues have been eliminated and the brown edges continue, scrub the edges of the pot and flush the soil with clear water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-7",
+      "entry": "cause:tap-water",
+      "claim": "Fix: water with rainwater when you can.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Use rainwater when possible to water plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-8",
+      "entry": "cause:tap-water",
+      "claim": "Fix: for tip browning from fluoride in tap water, use rainwater or filtered water.",
+      "url": "https://www.rhs.org.uk/plants/spider-plants/growing-guide",
+      "quote": "It can be caused by too much or too little water, or by the fluoride in tap water, so use rainwater or filtered water whenever possible.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-9",
+      "entry": "cause:tap-water",
+      "claim": "Fix: chlorinated tap water left to stand overnight loses its chlorine.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "If the water is chlorinated, let it stand overnight before applying; the chlorine will evaporate.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-10",
+      "entry": "cause:tap-water",
+      "claim": "Fix: flush houseplants every four to six months.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Plants should be flushed (or leached) every four to six months.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-11",
+      "entry": "cause:tap-water",
+      "claim": "Fix: use about twice the pot’s volume of water to flush it.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "The amount of water used for flushing should equal twice the volume of the pot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-12",
+      "entry": "cause:tap-water",
+      "claim": "Fix: after flushing, let the pot drain.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "You want to see water running out the drain holes for a short time. Stop watering from the top and let the plant drain.",
+      "verdict": "pending"
+    },
+    {
+      "id": "tap-water-13",
+      "entry": "cause:tap-water",
+      "claim": "Fix: go easy on fertiliser: too much builds up salts.",
+      "url": "https://ucanr.edu/site/uc-marin-master-gardeners/houseplant-care",
+      "quote": "Avoid overfertilizing. Too much fertilizer results in the buildup of salts and excessive, leggy growth.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-1",
+      "entry": "cause:hungry",
+      "claim": "Summary: houseplants kept in the same pot use up the nutrients in their mix.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Houseplants are often grown in the same pot for years and will quickly use up all the nutrients",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-2",
+      "entry": "cause:hungry",
+      "claim": "Summary: short of nitrogen, leaves turn pale yellow, older leaves first.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "Spindly, stunted plants with pale yellow leaves and, occasionally, pink tints. Older leaves are affected first, but the yellowing spreads to younger foliage.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-3",
+      "entry": "cause:hungry",
+      "claim": "Check: an overall yellow-green colour and dropping lower leaves can mean a houseplant needs feeding.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Drop of lower leaves, overall yellow-green color or weak growth may indicate a need for fertilization.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-4",
+      "entry": "cause:hungry",
+      "claim": "Check: fresh potting mix often carries slow-release food that lasts several months.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "High quality artificial mixes generally contain slow-release fertilizers which take care of a plant’s nutritional requirements for several months.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-5",
+      "entry": "cause:hungry",
+      "claim": "Fix: feed with a balanced houseplant fertiliser at half strength.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
+      "quote": "Start gently with a balanced houseplant fertilizer used at half strength every two to four weeks.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-6",
+      "entry": "cause:hungry",
+      "claim": "Fix: feed while it’s growing, not in winter when there’s no new growth.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "However, plants do not need fertilizer in winter when no new growth is apparent.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-7",
+      "entry": "cause:hungry",
+      "claim": "Fix: repotting into fresh mix gives the plant new nutrients.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
+      "quote": "Fresh potting mix provides better drainage, oxygen, and nutrients, giving plants a strong start for the growing season.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-8",
+      "entry": "cause:hungry",
+      "claim": "Fix: a houseplant that has used up its nutrients may benefit from repotting into fresh compost.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "If growth seems lacklustre and flowering is poor, your plant may benefit from being repotted into fresh peat-free compost.",
+      "verdict": "pending"
+    },
+    {
+      "id": "hungry-9",
+      "entry": "cause:hungry",
+      "claim": "Fix: don’t feed a wilted plant: water first, then feed once it has recovered.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Never apply liquid fertilizers to a wilted plant. Water the plant first, and apply fertilizer after the plant has recovered and the soil has dried slightly.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-1",
+      "entry": "cause:cold",
+      "claim": "Summary: tropical houseplants are hurt by nights below about 10 °C (50 °F).",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
+      "quote": "most houseplants should stay indoors until nighttime temperatures are consistently above 50°F. Cold nights can shock tropical plants, even if daytime temperatures feel comfortable.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-2",
+      "entry": "cause:cold",
+      "claim": "Summary: many houseplants dislike draughts, especially in winter.",
+      "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
+      "quote": "Many houseplants dislike draughty positions – particularly in winter",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-3",
+      "entry": "cause:cold",
+      "claim": "Summary: cold damage shows as blackened leaves and drooping.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Blackened leaves, leaf droop and whole plant collapse are symptoms of cold damage",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-4",
+      "entry": "cause:cold",
+      "claim": "Summary: chilling can make leaves drop.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Chilling the plant can also cause leaf drop.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-5",
+      "entry": "cause:cold",
+      "claim": "Check: in winter it’s colder by the window than elsewhere in the house.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "In winter, the temperature near windows may be cooler than elsewhere in the house.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-6",
+      "entry": "cause:cold",
+      "claim": "Check: on cold nights, plants on windowsills can suffer, especially behind drawn curtains.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "If curtains are drawn on cold nights, plants on windowsills can suffer due to cold air being trapped between the window and curtain.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-7",
+      "entry": "cause:cold",
+      "claim": "Check: draughts near doors and windows can chill tropical houseplants (here, palms).",
+      "url": "https://hgic.clemson.edu/factsheet/indoor-palms/",
+      "quote": "Protect them from drafts near doors, windows, and air conditioning.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-8",
+      "entry": "cause:cold",
+      "claim": "Fix: move houseplants to a better spot when temperatures drop.",
+      "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
+      "quote": "Move to a better location when temperatures drop.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-9",
+      "entry": "cause:cold",
+      "claim": "Fix: bring houseplants back inside when night lows dip toward 10 °C (50 °F).",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Bring your plants back inside for the fall when the lows start dipping toward 50 degrees again.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-10",
+      "entry": "cause:cold",
+      "claim": "Fix: move houseplants back indoors before cool weather returns.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Move plants indoors by mid-September before cool weather returns.",
+      "verdict": "pending"
+    },
+    {
+      "id": "cold-11",
+      "entry": "cause:cold",
+      "claim": "Fix: water less in the cool season: it’s easy to overwater over winter when growth slows.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "it’s easy to mistake this for a lack of water and drown a plant, especially over winter when growth slows.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-1",
+      "entry": "cause:purple-cold",
+      "claim": "Short of phosphorus shows as a purple tinge, with purplish veins especially under the leaves, and older leaves going purplish.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/phosphorus-deficiency/",
+      "quote": "In broadleaf plants, young leaves may be dark green and have purplish veins, especially on the underside of leaves. Older leaves can develop an overall purplish tint and tip dieback.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-2",
+      "entry": "cause:purple-cold",
+      "claim": "Purple older leaves from short phosphorus are often seen on young tender plants, such as tomatoes, when it is cold.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "Stunted growth with purple discolouration on older leaves. Eventually, leaves turn dull yellow. Often seen on young tomato, sweet potato and other tender plants when the temperatures are low at the time of planting.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-3",
+      "entry": "cause:purple-cold",
+      "claim": "Phosphorus is usually there; it is cold soil that stops the roots taking it up, so it shows in cool spells.",
+      "url": "https://extension.colostate.edu/resource/recognizing-common-tomato-pests-pathogens-and-problems/",
+      "quote": "Phosphorus deficiencies occur early in the growing season when soil is still cool. Phosphorus is abundant in our soils but may be unavailable to the plant when the soil is too cold.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-4",
+      "entry": "cause:purple-cold",
+      "claim": "A real lack of phosphorus is uncommon; wet compost in cool weather stops roots taking it up.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "Cause: Phosphorus shortage, but this is uncommon as it doesn't readily wash away.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-5",
+      "entry": "cause:purple-cold",
+      "claim": "Wet compost in cool weather hinders root uptake, so go easy on water in pots when it is cool.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "compost (especially in cool weather) hinders root uptake. Remedy in containers: Regularly liquid feed containers with a general-purpose liquid fertiliser. Be careful not to overwater containers, especially in cool weather.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-6",
+      "entry": "cause:purple-cold",
+      "claim": "Check: on cold nights, it can be much cooler right by the window.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "In winter, the temperature near windows may be cooler than elsewhere in the house. If drapes are drawn around a plant placed near a window, the temperature may be too cool. On cold nights, check temperatures close to windows.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-7",
+      "entry": "cause:purple-cold",
+      "claim": "Fix: keep plants away from cold glass.",
+      "url": "https://extension.illinois.edu/houseplants/care",
+      "quote": "Avoid extreme temperature changes, such as cold and hot air blasts from windows, radiators, heating and air conditioning vents. Take special care near cold window panes too. Cold glass can damage foliage.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-8",
+      "entry": "cause:purple-cold",
+      "claim": "Fix: plants on windowsills can suffer from cold air on cold nights.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "If curtains are drawn on cold nights, plants on windowsills can suffer due to cold air being trapped between the window and curtain.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-9",
+      "entry": "cause:purple-cold",
+      "claim": "Fix: once it warms up, the purpling usually corrects itself.",
+      "url": "https://extension.colostate.edu/resource/recognizing-common-tomato-pests-pathogens-and-problems/",
+      "quote": "Don’t plant tomatoes too early in the season. Use can use black plastic mulch to warm the soil. Once soil temperatures rise, the problem usually corrects itself.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-10",
+      "entry": "cause:purple-cold",
+      "claim": "Fix: extra phosphorus feed is rarely needed.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "Phosphorus shortages in cultivated soils are rare, so application of phosphorus-rich fertilisers such as bonemeal are rarely needed",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-11",
+      "entry": "cause:purple-cold",
+      "claim": "Fix: plants with no new growth in winter don’t need feeding.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Fertilizing once a month is adequate for most houseplants that are producing new growth or flowers. However, plants do not need fertilizer in winter when no new growth is apparent.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-12",
+      "entry": "cause:purple-cold",
+      "claim": "Fix: for plants in pots, use a general-purpose liquid feed.",
+      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
+      "quote": "Remedy in containers: Regularly liquid feed containers with a general-purpose liquid fertiliser.",
+      "verdict": "pending"
+    },
+    {
+      "id": "purple-cold-13",
+      "entry": "cause:purple-cold",
+      "claim": "Fix: feed at the low end of the label rate (half strength), as more can be added later.",
+      "url": "https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/",
+      "quote": "Follow fertilizer label directions and apply the low end of suggested rates, as more can be added later, rather than risk overfertilizing.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-1",
+      "entry": "cause:heat-stress",
+      "claim": "Heat stress shows as leaves wilting, rolling and going crispy, common in very hot rooms in summer.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Leaves wilting, rolling, bleaching and going crispy suggest a plant is suffering from heat stress – common in very hot rooms like conservatories in mid-summer.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-2",
+      "entry": "cause:heat-stress",
+      "claim": "Too much sun in the middle of the day can make houseplant leaves droop or scorch.",
+      "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
+      "quote": "Too much light or sunshine in the middle of the day can cause leaves to droop, or scorch yellow.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-3",
+      "entry": "cause:heat-stress",
+      "claim": "Plants roll or cup their leaves in heat to cut water loss.",
+      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
+      "quote": "Corn and tomatoes are among many plants that commonly roll their leaves or cup in response to heat.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-4",
+      "entry": "cause:heat-stress",
+      "claim": "Keep plants a proper distance from grow lights, especially hot bulbs.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/lighting-for-indoor-plants",
+      "quote": "Keeping sufficient distance between plants and a light source is especially important when using bulbs that produce a lot of heat, like incandescent and high-pressure sodium. But even with LED and fluorescent lights, maintaining a proper distance helps to ensure healthy plant growth.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-5",
+      "entry": "cause:heat-stress",
+      "claim": "Check: wilting in the hottest part of the day that recovers in the evening points to heat stress.",
+      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
+      "quote": "Plants that wilt during the hottest part of the day and recover in the evening and early morning are likely suffering from heat stress.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-6",
+      "entry": "cause:heat-stress",
+      "claim": "Fix: move pots into shade, or shade them over the hottest part of the day.",
+      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
+      "quote": "Move containers where they get shade. Provide shade cloth or other means of shade, where possible. Heat stress is compounded when other plant stressors like drought, wind or intense sun are also present.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-7",
+      "entry": "cause:heat-stress",
+      "claim": "Fix: shade from late morning to near the end of the day, so plants still get some direct sun.",
+      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
+      "quote": "consider adding it in the late morning and removing it toward the end of the day so plants get some direct sunlight.",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-8",
+      "entry": "cause:heat-stress",
+      "claim": "Fix: for sun damage, move the houseplant to a more suitable spot.",
+      "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
+      "quote": "Consider the environment and place the houseplant in a more suitable position",
+      "verdict": "pending"
+    },
+    {
+      "id": "heat-stress-9",
+      "entry": "cause:heat-stress",
+      "claim": "Fix: in heat, keep the soil moist but not soggy.",
+      "url": "https://extension.missouri.edu/news/dont-overwater-heat-stressed-plants",
+      "quote": "The important thing is that the soil should be kept moist, but not soggy.",
+      "verdict": "pending"
+    },
+    {
+      "id": "old-leaves-1",
+      "entry": "cause:old-leaves",
+      "claim": "It is normal for the odd lower leaf to yellow and fall.",
+      "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
+      "quote": "It is normal for the odd lower leaf on a mature plant to yellow and fall.",
+      "verdict": "pending"
+    },
+    {
+      "id": "old-leaves-2",
+      "entry": "cause:old-leaves",
+      "claim": "Plants drop older leaves in favour of new growth; houseplants often drop a yellow leaf or two.",
+      "url": "https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/",
+      "quote": "plants will occasionally get rid of older, unproductive leaves in favor of new growth. This is often the case when houseplants drop a yellow leaf or two.",
+      "verdict": "pending"
+    },
+    {
+      "id": "old-leaves-3",
+      "entry": "cause:old-leaves",
+      "claim": "Check: lots of yellow leaves, especially new growth, means something else is going on.",
+      "url": "https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/",
+      "quote": "When larger amounts of leaves turn yellow, especially including newer growth, other causes need to be investigated.",
+      "verdict": "pending"
+    },
+    {
+      "id": "old-leaves-4",
+      "entry": "cause:old-leaves",
+      "claim": "Fix: snip off leaves once they are completely yellow; leave mostly green ones on.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Cut off any mouldy, shrivelled, completely brown or completely yellow leaves with secateurs, as these won’t recover. Retain leaves that are predominantly green until the plant has produced a fresh flush of leaves, or you could delay recovery.",
+      "verdict": "pending"
+    },
+    {
+      "id": "old-leaves-5",
+      "entry": "cause:old-leaves",
+      "claim": "Fix: older leaves dying back on a healthy plant is no cause for concern.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Older leaves on healthy houseplants will naturally turn brown and die back over time as the plant matures, which is no cause for concern.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-1",
+      "entry": "cause:shock",
+      "claim": "A new home is stressful for a plant; many new plants lose a few lower leaves while they adjust.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "For a new houseplant, your home is a different environment. This is stressful for a plant, so give your plant the best start possible.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-2",
+      "entry": "cause:shock",
+      "claim": "Many new plants lose a few lower leaves as they adjust to new surroundings.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Many new plants will lose a few lower leaves during this time. This is a survival mechanism for the plant as it adjusts to its new surroundings.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-3",
+      "entry": "cause:shock",
+      "claim": "Some leaf drop after a big change in surroundings is normal and should last only about three weeks.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Some leaf drop occurs when plants are subjected to a significant change in environment, but this leaf drop should only last about three weeks.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-4",
+      "entry": "cause:shock",
+      "claim": "Repotting a plant that has just arrived adds strain while it adjusts.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "A newly acquired plant must make adjustments to its new environment, and repotting immediately puts added strain on the plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-5",
+      "entry": "cause:shock",
+      "claim": "Check: older leaves yellowing and dropping as new growth comes is normal for newly planted-out plants.",
+      "url": "https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/",
+      "quote": "Older leaves on plants started indoors typically turn yellow and drop off establishing plants as new growth develops.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-6",
+      "entry": "cause:shock",
+      "claim": "Fix: a plant gets used to its spot; moving it sets it back for a while.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Plants can become acclimated to a location. An abrupt move from a low-light to a bright-light location may be damaging.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-7",
+      "entry": "cause:shock",
+      "claim": "Fix: moving a plant makes it use light less well for a while.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Moving a plant disrupts this orientation and causes the plant to use light less efficiently for a period of time.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-8",
+      "entry": "cause:shock",
+      "claim": "Fix: keep a new plant watered and out of bright sun for a few days.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Do not do any major repotting until the plant has settled into your environment. Keep the plant hydrated and away from bright sun for a few days.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-9",
+      "entry": "cause:shock",
+      "claim": "Fix: new plants seldom need feeding for a few weeks.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Newly purchased plants have been well fertilized in the greenhouse. They seldom need additional fertilizer for a few weeks.",
+      "verdict": "pending"
+    },
+    {
+      "id": "shock-10",
+      "entry": "cause:shock",
+      "claim": "Fix: don’t feed to push growth on a struggling plant; it can do more harm.",
+      "url": "https://extension.missouri.edu/publications/g6510",
+      "quote": "Do not use fertilizer to stimulate new growth on a plant located in poor growing conditions. Lack of growth is more often due to improper light or watering than to nutritional deficiencies. In such cases, adding fertilizer may actually cause additional injury.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-1",
+      "entry": "cause:pot-bound",
+      "claim": "A pot-bound plant often shows lack of food (yellowing) and slow growth.",
+      "url": "https://hort.extension.wisc.edu/articles/houseplant-care/",
+      "quote": "A pot-bound plant left uncared for often has nutrient deficiency symptoms (e.g., yellowing) and stunted growth.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-2",
+      "entry": "cause:pot-bound",
+      "claim": "A pot-bound plant dries out faster after watering.",
+      "url": "https://hort.extension.wisc.edu/articles/houseplant-care/",
+      "quote": "A more subtle sign may be a plant with soil that dries more quickly than usual after watering, requiring more frequent watering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-3",
+      "entry": "cause:pot-bound",
+      "claim": "When roots fill the pot there is too little soil to hold water, so the plant wilts.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "There is not enough soil to hold the water for all those roots, so the plant wilts.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-4",
+      "entry": "cause:pot-bound",
+      "claim": "Check: roots growing through the drainage holes or showing on the soil surface mean it needs repotting.",
+      "url": "https://extension.illinois.edu/houseplants/repotting",
+      "quote": "Roots begin to grow through the drainage holes. Roots appear on the soil surface. The soil mass is filled with roots.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-5",
+      "entry": "cause:pot-bound",
+      "claim": "Check: roots on the surface or out of the drainage holes are the most obvious sign.",
+      "url": "https://hort.extension.wisc.edu/articles/houseplant-care/",
+      "quote": "The most obvious sign that a plant should be repotted is when roots appear on the soil surface or come out of drainage holes.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-6",
+      "entry": "cause:pot-bound",
+      "claim": "Check: mix that dries out very quickly is a sign of being pot-bound.",
+      "url": "https://extension.psu.edu/repotting-houseplants",
+      "quote": "Do you notice that the potting mix dries out very quickly, even during periods of cooler temperatures?",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-7",
+      "entry": "cause:pot-bound",
+      "claim": "Check: roots circling the root ball mean it is time to repot.",
+      "url": "https://extension.psu.edu/repotting-houseplants",
+      "quote": "If the roots are circling around the root ball or are so dense that it is difficult to see any potting mix in the bottom third of the root ball, it's time to repot.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-8",
+      "entry": "cause:pot-bound",
+      "claim": "Fix: for pots under 25 cm, repot into one about 2.5–5 cm (1–2 in) wider.",
+      "url": "https://www.rhs.org.uk/container-gardening/how-to-repot-a-plant",
+      "quote": "For containers less than 25cm (10in) in diameter and depth, aim to repot into a container about 2.5-5cm (1-2in) deeper and wider than the previous one.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-9",
+      "entry": "cause:pot-bound",
+      "claim": "Fix: the new pot should be about two inches (5 cm) wider than the old one.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "The pot selected for repotting should be approximately two inches larger in diameter than the pot the plant is currently growing in.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-10",
+      "entry": "cause:pot-bound",
+      "claim": "Fix: replant into the new pot with fresh potting mix.",
+      "url": "https://extension.illinois.edu/houseplants/repotting",
+      "quote": "Then replant into the new container using fresh potting mix.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-11",
+      "entry": "cause:pot-bound",
+      "claim": "Fix: repot when the plant is growing, usually spring or early summer.",
+      "url": "https://extension.illinois.edu/houseplants/repotting",
+      "quote": "Re-potting is best accomplished when the plant is actively growing. Typically this is done in spring or early summer.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pot-bound-12",
+      "entry": "cause:pot-bound",
+      "claim": "Fix: spring is the best time to repot.",
+      "url": "https://extension.psu.edu/repotting-houseplants",
+      "quote": "The best time to repot a plant is in the spring when it naturally and actively begins its seasonal growth.",
+      "verdict": "pending"
+    },
+    {
+      "id": "surface-mold-1",
+      "entry": "cause:surface-mold",
+      "claim": "White mould-like growth on the soil can be fungi living in the soil (not to be confused with crusty salt deposits).",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "(Do not confuse this with the white or yellow mold-like growth of saprophytic soil fungi.)",
+      "verdict": "pending"
+    },
+    {
+      "id": "surface-mold-2",
+      "entry": "cause:surface-mold",
+      "claim": "Fungus on the soil surface is a sign of overwatering.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Check the soil surface for signs of moss and fungus, which indicate overwatering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "surface-mold-3",
+      "entry": "cause:surface-mold",
+      "claim": "Fix: a drier surface discourages mould; watering from the bottom keeps the surface drier.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "The surface of the potting mix also stays on the dry side, discouraging fungus gnats, algae, and mold.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-1",
+      "entry": "cause:spider-mites",
+      "claim": "Spider mites feed by piercing leaves and sucking the sap, leaving a speckled look.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Feeding creates a stippled appearance on the leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-2",
+      "entry": "cause:spider-mites",
+      "claim": "Spider mites suck the contents of leaf cells; damage first shows as fine light dots.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/spider-mites/",
+      "quote": "Often, damage first appears as a stippling of light dots on the leaves; sometimes leaves turn a bronze color.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-3",
+      "entry": "cause:spider-mites",
+      "claim": "When spider mite numbers are high, webbing covers the leaves.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/spider-mites/",
+      "quote": "When numbers are high, dense webbing can cover leaves, twigs, and fruit.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-4",
+      "entry": "cause:spider-mites",
+      "claim": "Spider mites on indoor plants thrive in warm, dry conditions.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Spider mites thrive in dry, warm conditions.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-5",
+      "entry": "cause:spider-mites",
+      "claim": "Tapping a leaf over white paper shows spider mites as tiny moving dots.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Tap leaves with a sheet of white paper underneath and watch for tiny moving creatures.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-6",
+      "entry": "cause:spider-mites",
+      "claim": "Check the undersides of leaves for spider mites and their webbing.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/spider-mites/",
+      "quote": "Check the undersides of leaves for mites, their eggs, and webbing; you’ll need a hand lens to identify them.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-7",
+      "entry": "cause:spider-mites",
+      "claim": "Spraying houseplants with water several times helps manage spider mites; small plants in a sink, larger ones in the shower.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
+      "quote": "Doing this several times can help manage pests like aphids, spider mites, and other pests that aren’t firmly attached to plants (such as scale). Small plants can be sprayed off in a sink, while you may need to use the shower for larger plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-8",
+      "entry": "cause:spider-mites",
+      "claim": "For infested plants, spray water on the undersides of the leaves.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/spider-mites/",
+      "quote": "If plants are infested, apply a water spray or mist to the undersides of leaves at least once a day.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-9",
+      "entry": "cause:spider-mites",
+      "claim": "Wiping houseplant leaves with a damp sponge or paper towel removes mites.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
+      "quote": "Leaves of plants can be wiped with a moist sponge or paper towel to remove insects and mites.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-10",
+      "entry": "cause:spider-mites",
+      "claim": "Keep an infested houseplant apart from the others.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "If pests are detected, isolate the plant from others.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-11",
+      "entry": "cause:spider-mites",
+      "claim": "Raising humidity makes conditions less favourable to spider mites but does not control them on its own.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "This will help move conditions away from those that favour glasshouse red spider mites, though this will not on its own control the mite.",
+      "verdict": "pending"
+    },
+    {
+      "id": "spider-mites-12",
+      "entry": "cause:spider-mites",
+      "claim": "Spider mites breed fast in hot weather.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/spider-mites/",
+      "quote": "Spider mites reproduce rapidly in hot weather and commonly become numerous in June through September.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-1",
+      "entry": "cause:aphids",
+      "claim": "Aphids can be green, black, white and other colours.",
+      "url": "https://www.rhs.org.uk/biodiversity/aphids",
+      "quote": "Some aphids are known as greenfly or blackfly, but there are species that are yellow, pink, white or mottled.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-2",
+      "entry": "cause:aphids",
+      "claim": "Aphids feed on soft new growth.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
+      "quote": "They feed on soft, new plant growth.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-3",
+      "entry": "cause:aphids",
+      "claim": "Aphids colonise shoot tips, buds and the undersides of younger leaves.",
+      "url": "https://www.rhs.org.uk/biodiversity/aphids",
+      "quote": "It is usually possible to see aphid colonies with the naked eye, many species colonise shoot tips, flower buds and the underside of younger leaves",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-4",
+      "entry": "cause:aphids",
+      "claim": "Aphids on houseplants make sticky honeydew.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Watch for honeydew, a shiny, sticky substance made by aphids, mealybugs and scale insects found on the upper surface of leaves, and on tabletops and other items around and under the plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-5",
+      "entry": "cause:aphids",
+      "claim": "Aphids can curl leaves and leave sticky honeydew.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
+      "quote": "Aphids can curl leaves and produce sticky honeydew that may attract ants and sooty mold.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-6",
+      "entry": "cause:aphids",
+      "claim": "Ants climbing a plant can point to aphid colonies.",
+      "url": "https://www.rhs.org.uk/biodiversity/aphids",
+      "quote": "Ants may be found climbing plants with aphid colonies, they tend the aphids obtaining honeydew as a reward.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-7",
+      "entry": "cause:aphids",
+      "claim": "Aphid colonies can be squashed with fingers.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "You can use fingers and thumbs to squash aphid colonies.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-8",
+      "entry": "cause:aphids",
+      "claim": "A strong spray of water knocks aphids off plants.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
+      "quote": "Knock aphid populations off plants by shaking the plant or spraying it with a strong stream of water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-9",
+      "entry": "cause:aphids",
+      "claim": "Prune out badly infested, curled growth.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
+      "quote": "Aphids hidden within curled leaves will not be affected by pesticides that work on contact. Prune these out.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-10",
+      "entry": "cause:aphids",
+      "claim": "Ladybirds and lacewings come to eat aphids.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
+      "quote": "Naturally occurring insect predators such as lady beetles and lacewings will visit plants when aphids are abundant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-11",
+      "entry": "cause:aphids",
+      "claim": "Broad-spectrum sprays can kill aphid predators.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
+      "quote": "Avoid the use of broad-spectrum insecticides that can be toxic to natural enemies and plant flowering plants that provide nectar and pollen to attract them.",
+      "verdict": "pending"
+    },
+    {
+      "id": "aphids-12",
+      "entry": "cause:aphids",
+      "claim": "Check for aphids at least twice a week so they can be hosed off or pruned out early.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
+      "quote": "Check your plants regularly for aphids—at least twice a week when plants are growing rapidly—in order to catch infestations early, so you can knock or hose them off or prune them out.",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-1",
+      "entry": "cause:mealybugs",
+      "claim": "Mealybugs show as fluffy white wax in leaf joints and other sheltered spots.",
+      "url": "https://www.rhs.org.uk/biodiversity/mealybug",
+      "quote": "Glasshouse mealybug is usually first noticed as a fluffy white wax produced in the leaf axils or other sheltered places on the plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-2",
+      "entry": "cause:mealybugs",
+      "claim": "Female mealybugs do not move far.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "This is especially true of mealybugs and scale insects where the adult females do not fly or crawl far",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-3",
+      "entry": "cause:mealybugs",
+      "claim": "Look for mealybugs where leaves join stems.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "At the point where leaves join stems.",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-4",
+      "entry": "cause:mealybugs",
+      "claim": "Some mealybugs are found below the soil surface on the main stem.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Some mealybugs may also be found below the soil surface on the main stem.",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-5",
+      "entry": "cause:mealybugs",
+      "claim": "Look for mealybugs along the veins under the leaves.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Along veins on the undersides of leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-6",
+      "entry": "cause:mealybugs",
+      "claim": "Mealybugs make plants sticky with honeydew.",
+      "url": "https://www.rhs.org.uk/biodiversity/mealybug",
+      "quote": "Large numbers of mealybugs may result in an accumulation of honeydew. This makes plants sticky",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-7",
+      "entry": "cause:mealybugs",
+      "claim": "Mealybugs can be picked off with tweezers or a cotton bud.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Mealybugs can be removed using tweezers or a cotton swab dipped in alcohol.",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-8",
+      "entry": "cause:mealybugs",
+      "claim": "Wiping leaves with a damp sponge or paper towel removes insects.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
+      "quote": "Leaves of plants can be wiped with a moist sponge or paper towel to remove insects and mites.",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-9",
+      "entry": "cause:mealybugs",
+      "claim": "Mealybug numbers build quickly if left unchecked.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "Plants can tolerate some levels of mealybug, although populations can quickly build if left unchecked",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-10",
+      "entry": "cause:mealybugs",
+      "claim": "Keep plants with mealybugs and other sap feeders apart from unaffected houseplants.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "Separate plants with populations of sap feeding invertebrates from other unaffected houseplants to minimise spread within your collection",
+      "verdict": "pending"
+    },
+    {
+      "id": "mealybugs-11",
+      "entry": "cause:mealybugs",
+      "claim": "Mealybugs are especially common on cacti and succulents.",
+      "url": "https://www.rhs.org.uk/biodiversity/mealybug",
+      "quote": "Glasshouse mealybugs are found mainly on greenhouse plants and houseplants, especially cacti and succulents",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-1",
+      "entry": "cause:scale",
+      "claim": "Scale insects look like shell-like bumps on stems and under leaves.",
+      "url": "https://www.rhs.org.uk/biodiversity/scale-insects",
+      "quote": "Scales or shell-like bumps on plant stems and the underside of leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-2",
+      "entry": "cause:scale",
+      "claim": "Scale insects don’t look like insects at first.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
+      "quote": "Scale insects are unique, and at first, appearance, don’t really resemble insects.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-3",
+      "entry": "cause:scale",
+      "claim": "Scale insects on houseplants are usually brown, grey or white.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Usually brown, gray or white.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-4",
+      "entry": "cause:scale",
+      "claim": "Look along stems and under leaves, especially the main veins, for scale.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Examine plant stems and the undersides of leaves, especially along mid-veins, for the presence of scales.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-5",
+      "entry": "cause:scale",
+      "claim": "Many scale insects excrete sticky honeydew.",
+      "url": "https://hort.extension.wisc.edu/articles/scale-insects/",
+      "quote": "Many also excrete sticky honeydew which supports the growth of sooty mold.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-6",
+      "entry": "cause:scale",
+      "claim": "Honeydew from scale (and aphids, mealybugs) lands on leaves and on surfaces under the plant.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Watch for honeydew, a shiny, sticky substance made by aphids, mealybugs and scale insects found on the upper surface of leaves, and on tabletops and other items around and under the plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-7",
+      "entry": "cause:scale",
+      "claim": "A few scale insects can be scraped off with a fingernail or a plastic card.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
+      "quote": "If you have a few scale insects on a plant, scrape them off with your fingernail or a piece of plastic like a credit card.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-8",
+      "entry": "cause:scale",
+      "claim": "Wiping leaves with a damp sponge or paper towel removes insects and sooty mould.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
+      "quote": "Leaves of plants can be wiped with a moist sponge or paper towel to remove insects and mites. This is also a good way to remove sooty mold from plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "scale-9",
+      "entry": "cause:scale",
+      "claim": "Inspect scale-infested houseplants weekly and repeat as needed.",
+      "url": "https://hort.extension.wisc.edu/articles/scale-insects/",
+      "quote": "Inspect the plants closely at weekly intervals, and repeat the procedure as necessary (probably several times).",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-1",
+      "entry": "cause:whitefly",
+      "claim": "Whiteflies are tiny sap-sucking insects that fly up when the plant is disturbed.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
+      "quote": "Whiteflies are tiny, sap-sucking insects that fly around plants when disturbed.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-2",
+      "entry": "cause:whitefly",
+      "claim": "Disturbing a plant sends up clouds of small white whitefly.",
+      "url": "https://www.rhs.org.uk/biodiversity/glasshouse-whitefly",
+      "quote": "When a plant is disturbed clouds of small white-winged insects, 1.5 mm (about 1/16 in) long, will fly up.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-3",
+      "entry": "cause:whitefly",
+      "claim": "Whitefly feed on many vegetables and on houseplants.",
+      "url": "https://www.rhs.org.uk/biodiversity/glasshouse-whitefly",
+      "quote": "Glasshouse whitefly can feed on many vegetables and ornamental plants grown in greenhouses as well as house-plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-4",
+      "entry": "cause:whitefly",
+      "claim": "Common whiteflies feed on tomatoes and peppers.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
+      "quote": "Very broad including many herbaceous and some woody plants including cole crops, cotton, cucurbits, tomatoes, peppers, crape myrtle, lantana, roses, and hibiscus.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-5",
+      "entry": "cause:whitefly",
+      "claim": "Whitefly adults flutter up when you water or handle the plant.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Adults cling to plants and are easily disturbed, fluttering up when you water or handle a plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-6",
+      "entry": "cause:whitefly",
+      "claim": "The young are flat, oval and scale-like, under the leaves.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Immature: Less than 1/16 inch long; flat, oval, scale-like.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-7",
+      "entry": "cause:whitefly",
+      "claim": "All whitefly stages are found under the leaves.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "All stages are normally found on the undersides of leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-8",
+      "entry": "cause:whitefly",
+      "claim": "Yellow sticky cards catch flying whitefly adults.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Use yellow cards to capture flying adults.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-9",
+      "entry": "cause:whitefly",
+      "claim": "Removing infested leaves or hosing plants down holds whitefly back early on.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
+      "quote": "In gardens, whitefly populations in the early stages of population development can be held down by a vigilant program of removing infested leaves or hosing down with water sprays.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-10",
+      "entry": "cause:whitefly",
+      "claim": "Water sprays knock off adult whitefly.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
+      "quote": "Water sprays (syringing) may also be useful in dislodging adults.",
+      "verdict": "pending"
+    },
+    {
+      "id": "whitefly-11",
+      "entry": "cause:whitefly",
+      "claim": "Prune out infested leaves when whitefly are first found.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
+      "quote": "Prune out isolated infested leaves when you first detect them.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-1",
+      "entry": "cause:thrips",
+      "claim": "Thrips are very small and slender.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Very small, about 1/16 inch long and slender.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-2",
+      "entry": "cause:thrips",
+      "claim": "Thrips feed by scraping leaves and sucking the fluid.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Thrips feed by scraping leaves or flowers with their rasping mouthparts, then sucking the fluid that is released.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-3",
+      "entry": "cause:thrips",
+      "claim": "Thrips damage shows as silvery streaks on leaves.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Damaged leaves develop irregular silvery streaks or splotches.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-4",
+      "entry": "cause:thrips",
+      "claim": "Thrips-damaged areas are marked with tiny black spots of excrement.",
+      "url": "https://www.rhs.org.uk/biodiversity/thrips",
+      "quote": "The discoloured areas are usually marked by many tiny black excrement spots.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-5",
+      "entry": "cause:thrips",
+      "claim": "Leaves fed on by thrips turn silvery.",
+      "url": "https://www.rhs.org.uk/biodiversity/thrips",
+      "quote": "Leaves fed upon by thrips often become dull green and later develop a silvery-white discolouration on the upper surface.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-6",
+      "entry": "cause:thrips",
+      "claim": "Shaking leaves over white paper reveals thrips.",
+      "url": "https://www.rhs.org.uk/biodiversity/thrips",
+      "quote": "Thrips can be hard to detect, shaking foliage over a white sheet of paper or similar can reveal the thrips which can then be examined, ideally with a magnifying lens.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-7",
+      "entry": "cause:thrips",
+      "claim": "Thrips run quickly when disturbed.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Run quickly when disturbed.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-8",
+      "entry": "cause:thrips",
+      "claim": "Prune off thrips-damaged parts.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/thrips/",
+      "quote": "Prune off declining, injured, or infested plant parts.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-9",
+      "entry": "cause:thrips",
+      "claim": "Leaves damaged by thrips won’t regain their green colour.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "Leaves affected by thrips will not regain their green colour, once it has been lost, even if the insect is no-longer present",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-10",
+      "entry": "cause:thrips",
+      "claim": "Blue or yellow sticky cards catch flying thrips.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Use yellow or blue sticky cards to capture flying adults.",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-11",
+      "entry": "cause:thrips",
+      "claim": "Blue sticky traps hung among plants under cover catch thrips and reduce numbers.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "Hanging blue sticky traps (widely available from garden suppliers) above or among plants in glasshouses can trap thrips and help monitor and reduce numbers",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-12",
+      "entry": "cause:thrips",
+      "claim": "Check houseplants often so pests are caught early.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "Monitor house plants frequently so that action can be taken before damaging populations develop",
+      "verdict": "pending"
+    },
+    {
+      "id": "thrips-13",
+      "entry": "cause:thrips",
+      "claim": "Keep plants with sap feeders, thrips included, apart from other houseplants.",
+      "url": "https://www.rhs.org.uk/biodiversity/indoor-plants-sap-feeding-insects",
+      "quote": "Separate plants with populations of sap feeding invertebrates from other unaffected houseplants to minimise spread within your collection",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-1",
+      "entry": "cause:fungus-gnats",
+      "claim": "Fungus gnats are small dark brown or black flies.",
+      "url": "https://hort.extension.wisc.edu/articles/fungus-gnats-on-houseplants/",
+      "quote": "Adult fungus gnats are delicate, dark brown or black flies that are approximately 1/8 inch long.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-2",
+      "entry": "cause:fungus-gnats",
+      "claim": "Fungus gnats lay eggs in moist potting soil.",
+      "url": "https://hort.extension.wisc.edu/articles/fungus-gnats-on-houseplants/",
+      "quote": "Fungus gnat females lay up to 200 eggs (in clusters) in cracks and crevices on the surface of the moist soil of potted plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-3",
+      "entry": "cause:fungus-gnats",
+      "claim": "Fungus gnats rarely damage indoor plants; they are mostly a nuisance.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "They rarely, if ever, damage indoor plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-4",
+      "entry": "cause:fungus-gnats",
+      "claim": "Fungus gnats are usually a cosmetic problem.",
+      "url": "https://hort.extension.wisc.edu/articles/fungus-gnats-on-houseplants/",
+      "quote": "In most situations, fungus gnats are a cosmetic problem. However, on occasion, fungus gnat larvae can cause plant damage.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-5",
+      "entry": "cause:fungus-gnats",
+      "claim": "Fungus gnats are a sign the potting mix is too moist.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
+      "quote": "The presence of fungus gnats is usually a good indicator that your houseplants’ growing media is too moist.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-6",
+      "entry": "cause:fungus-gnats",
+      "claim": "Fungus gnat adults fly up when plants are disturbed during watering.",
+      "url": "https://extension.oregonstate.edu/ask-extension/featured/i-have-fungus-gnats-everywhere-can-you-help",
+      "quote": "Look for the flying adults when plants are disturbed during watering or moving plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-7",
+      "entry": "cause:fungus-gnats",
+      "claim": "Check pots for soil that stays too moist.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/fungus-gnats/",
+      "quote": "Besides looking for adults, check plant pots for excessively moist conditions and organic debris where larvae feed.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-8",
+      "entry": "cause:fungus-gnats",
+      "claim": "Let the top inch (2–3 cm) of soil dry before watering.",
+      "url": "https://hort.extension.wisc.edu/articles/fungus-gnats-on-houseplants/",
+      "quote": "Keep the soil surface dry to eliminate favorable egg-laying sites for the insect. You can do this by allowing the top inch of the soil to dry out before you water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-9",
+      "entry": "cause:fungus-gnats",
+      "claim": "Fungus gnat larvae live in the top of the potting soil and need moisture.",
+      "url": "https://extension.oregonstate.edu/ask-extension/featured/i-have-fungus-gnats-everywhere-can-you-help",
+      "quote": "The larvae of the fungus gnats live in the top half inch or so of potting soil and require moisture.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-10",
+      "entry": "cause:fungus-gnats",
+      "claim": "Yellow sticky traps catch some adults but won’t clear them on their own.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/yard-and-garden-insects/insects-on-indoor-plants",
+      "quote": "Yellow sticky traps will capture some adult flies. But, traps only help to detect adults and should not be relied on as the only management method.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-11",
+      "entry": "cause:fungus-gnats",
+      "claim": "Watering from the bottom keeps the soil surface dry.",
+      "url": "https://hort.extension.wisc.edu/articles/fungus-gnats-on-houseplants/",
+      "quote": "Alternatively, you can water from the bottom to provide moisture for the roots while keeping the soil surface dry.",
+      "verdict": "pending"
+    },
+    {
+      "id": "fungus-gnats-12",
+      "entry": "cause:fungus-gnats",
+      "claim": "It can take three to four weeks of changed watering to get fungus gnats in check.",
+      "url": "https://hort.extension.wisc.edu/articles/fungus-gnats-on-houseplants/",
+      "quote": "It may take three to four weeks of modified watering and use of sand/gravel to get fungus gnats in check.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-1",
+      "entry": "cause:leaf-spot",
+      "claim": "Fungal leaf spots on houseplants are brown spots with a yellowish edge.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Several fungi can cause leaf spots. Symptoms include small, brown spots with yellowish margins on the leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-2",
+      "entry": "cause:leaf-spot",
+      "claim": "Dark spots with a yellow edge are a possible sign of fungal leaf spot on houseplants.",
+      "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
+      "quote": "Dark spots with yellow margins on leaves may be due to fungal leaf spot",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-3",
+      "entry": "cause:leaf-spot",
+      "claim": "Bacterial leaf spots can have a yellow halo, and they grow and join up in wet conditions.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Plants infected with bacteria have water-soaked spots, sometimes with a yellow halo, usually uniform in size, and sometimes with a sticky ooze. The spots enlarge and run together during wet conditions",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-4",
+      "entry": "cause:leaf-spot",
+      "claim": "Bacterial leaf spots on houseplants can turn dark brown or black with a yellow border, and grow until the whole leaf is affected.",
+      "url": "https://ipm.ucanr.edu/PMG/PESTNOTES/pn74172.html",
+      "quote": "These diseases are characterized by dark green, water-soaked spots that may turn tan, dark brown, or black with a yellow border. The spots can enlarge until the entire leaf blade is affected.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-5",
+      "entry": "cause:leaf-spot",
+      "claim": "Leaf spot fungi spread in splashing water.",
+      "url": "https://ipm.ucanr.edu/PMG/PESTNOTES/pn74172.html",
+      "quote": "Fungi that cause leaf spots and blights are generally spread by splashing water containing their spores.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-6",
+      "entry": "cause:leaf-spot",
+      "claim": "Leaf spot fungi need leaves to stay wet for hours to infect.",
+      "url": "https://ipm.ucanr.edu/PMG/PESTNOTES/pn74172.html",
+      "quote": "Many of these fungi require hours of continuous leaf wetness for infection to occur.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-7",
+      "entry": "cause:leaf-spot",
+      "claim": "Fungal leaf spots can run together until the whole leaf dies.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Sometimes the lesions run together, and the entire leaf dies.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-8",
+      "entry": "cause:leaf-spot",
+      "claim": "Remove and discard spotted leaves as soon as you see them.",
+      "url": "https://ipm.ucanr.edu/PMG/PESTNOTES/pn74172.html",
+      "quote": "Remove and discard infected leaves or other plant parts as soon as disease symptoms are observed.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-9",
+      "entry": "cause:leaf-spot",
+      "claim": "Diseased leaves should not go in the compost.",
+      "url": "https://hgic.clemson.edu/garden-sanitation/",
+      "quote": "Removing dead or infected plant material is the number one step in most cases. Raking diseased leaves, removing fruits, pruning out diseased branches, and even pulling up entire plants are all examples of garden sanitation. Diseased material should not be composted.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-10",
+      "entry": "cause:leaf-spot",
+      "claim": "Keep water off the leaves and water early in the day so they dry fast.",
+      "url": "https://ipm.ucanr.edu/PMG/PESTNOTES/pn74172.html",
+      "quote": "these diseases can usually be prevented by avoiding splashing water onto foliage and by watering early in the day so that plant surfaces dry as quickly as possible.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-11",
+      "entry": "cause:leaf-spot",
+      "claim": "Outdoors, avoid wetting the leaves with sprinklers and water early in the day.",
+      "url": "https://ipm.ucanr.edu/PMG/GARDEN/PLANTS/DISEASES/leafspotdis.html",
+      "quote": "Many of the pathogens are favored by moisture, so avoid overhead sprinklers and irrigate early in the day so that the foliage dries more quickly.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-12",
+      "entry": "cause:leaf-spot",
+      "claim": "Good air flow around the plant helps against fungal leaf spots.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Remove and destroy infected plant material. Provide good air circulation around the plants. Avoid splashing water on the foliage since this spreads the fungi.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-13",
+      "entry": "cause:leaf-spot",
+      "claim": "Avoid crowding plants to prevent bacterial leaf spots.",
+      "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
+      "quote": "Remove all diseased plant material. Avoid low temperatures, crowding plants, and spraying or splashing water onto the foliage.",
+      "verdict": "pending"
+    },
+    {
+      "id": "leaf-spot-14",
+      "entry": "cause:leaf-spot",
+      "claim": "Clean your tools after cutting off diseased leaves.",
+      "url": "https://hgic.clemson.edu/garden-sanitation/",
+      "quote": "disinfect your tools and wash your hands after working with diseased plant material and before handling healthy plants",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-1",
+      "entry": "cause:powdery-mildew",
+      "claim": "Powdery mildew looks like flour dusted on the leaves.",
+      "url": "https://extension.psu.edu/addressing-downy-mildew-and-powdery-mildew-in-the-home-garden",
+      "quote": "Powdery mildew looks like flour dusted on the surface of leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-2",
+      "entry": "cause:powdery-mildew",
+      "claim": "Powdery mildew is caused by a fungus.",
+      "url": "https://extension.psu.edu/addressing-downy-mildew-and-powdery-mildew-in-the-home-garden",
+      "quote": "powdery mildew is a fungal disease caused by a variety of species",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-3",
+      "entry": "cause:powdery-mildew",
+      "claim": "Zucchini (courgettes) and cucumbers are among the plants it affects.",
+      "url": "https://www.rhs.org.uk/disease/powdery-mildews",
+      "quote": "cucurbits (courgettes, marrows and cucumbers)",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-4",
+      "entry": "cause:powdery-mildew",
+      "claim": "It infects squash and cucumbers.",
+      "url": "https://extension.umn.edu/disease-management/powdery-mildew-cucurbits",
+      "quote": "infects all cucurbits, including muskmelons, squash, cucumbers, gourds, watermelons and pumpkins.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-5",
+      "entry": "cause:powdery-mildew",
+      "claim": "Peas often get powdery mildew badly.",
+      "url": "https://hort.extension.wisc.edu/articles/powdery-mildew-vegetables/",
+      "quote": "Peas are another vegetable that can have severe powdery mildew problems.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-6",
+      "entry": "cause:powdery-mildew",
+      "claim": "On squash and other vine crops it shows up in mid to late summer.",
+      "url": "https://extension.umn.edu/disease-management/powdery-mildew-cucurbits",
+      "quote": "Symptoms of powdery mildew first appear mid to late summer in Minnesota.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-7",
+      "entry": "cause:powdery-mildew",
+      "claim": "Powdery mildew rubs off when you touch it.",
+      "url": "https://extension.illinois.edu/blogs/over-garden-fence/2020-08-31-why-are-some-plants-leaves-white-now",
+      "quote": "Second clue – if you touch it, it will rub off.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-8",
+      "entry": "cause:powdery-mildew",
+      "claim": "On squash and other vine crops, older leaves get it first.",
+      "url": "https://extension.umn.edu/disease-management/powdery-mildew-cucurbits",
+      "quote": "The older leaves are more susceptible and powdery mildew will infect them first.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-9",
+      "entry": "cause:powdery-mildew",
+      "claim": "When you see it, start by removing infected leaves.",
+      "url": "https://extension.psu.edu/addressing-downy-mildew-and-powdery-mildew-in-the-home-garden",
+      "quote": "If the symptoms of either disease are detected, begin by eliminating infected leaves, branches, flowers, or fruits.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-10",
+      "entry": "cause:powdery-mildew",
+      "claim": "Give plants space so air moves around them.",
+      "url": "https://extension.umn.edu/disease-management/powdery-mildew-cucurbits",
+      "quote": "Provide good air movement around plants through proper spacing, staking of plants and weed control.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-11",
+      "entry": "cause:powdery-mildew",
+      "claim": "Water at the base (drip or soaker) instead of over the leaves.",
+      "url": "https://extension.psu.edu/addressing-downy-mildew-and-powdery-mildew-in-the-home-garden",
+      "quote": "Replace overhead watering with drip or soaker irrigation.",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-12",
+      "entry": "cause:powdery-mildew",
+      "claim": "Water regularly in dry spells: plants short of water get it worse.",
+      "url": "https://www.rhs.org.uk/disease/powdery-mildews",
+      "quote": "Provide good drainage, but water regularly during dry periods (plants suffering from regular but intermittent drought-stress are more susceptible).",
+      "verdict": "pending"
+    },
+    {
+      "id": "powdery-mildew-13",
+      "entry": "cause:powdery-mildew",
+      "claim": "Choose varieties that resist powdery mildew.",
+      "url": "https://extension.umn.edu/disease-management/powdery-mildew-cucurbits",
+      "quote": "Plant varieties with complete or partial resistance to powdery mildew.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-1",
+      "entry": "cause:pests-chewing",
+      "claim": "Slugs and snails leave ragged holes in leaves.",
+      "url": "https://www.rhs.org.uk/biodiversity/slugs-and-snails",
+      "quote": "leaving ragged holes made with their rasping mouthparts",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-2",
+      "entry": "cause:pests-chewing",
+      "claim": "Caterpillars chew large, ragged holes in leaves.",
+      "url": "https://extension.umn.edu/yard-and-garden-insects/caterpillars-cole-crops",
+      "quote": "Larger caterpillars chew large, ragged holes in the leaves leaving the large veins intact.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-3",
+      "entry": "cause:pests-chewing",
+      "claim": "Cabbage caterpillars eat holes in the leaves, and the caterpillars and their droppings are often found on the plants.",
+      "url": "https://www.rhs.org.uk/biodiversity/cabbage-caterpillars",
+      "quote": "Holes are eaten in the outer leaves of all brassicas and damage may also be seen on the inner leaves of cabbages when the heart is cut through. Caterpillars and their excrement are often found on the plants.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-4",
+      "entry": "cause:pests-chewing",
+      "claim": "Slugs feed at night, leaving holes and slime trails as clues.",
+      "url": "https://www.rhs.org.uk/biodiversity/slugs-and-snails",
+      "quote": "Slug feeding happens at night, so often the holes and slime trails left behind will be the only clues as to who has been nibbling.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-5",
+      "entry": "cause:pests-chewing",
+      "claim": "Search with a torch in the evening and pick slugs and snails off by hand.",
+      "url": "https://www.rhs.org.uk/biodiversity/slugs-and-snails",
+      "quote": "Torchlight searches can be carried out on mild evenings, especially when the weather is damp, hand-picking slugs and snails into a container.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-6",
+      "entry": "cause:pests-chewing",
+      "claim": "Use a torch in the evening to find slugs.",
+      "url": "https://extension.umn.edu/yard-and-garden-insects/slugs",
+      "quote": "In the evening, use a flashlight to locate slugs.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-7",
+      "entry": "cause:pests-chewing",
+      "claim": "Look under leaves for slugs.",
+      "url": "https://extension.umn.edu/yard-and-garden-insects/slugs",
+      "quote": "Look for slugs on leaf surfaces and underneath leaves as well as under rocks and debris.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-8",
+      "entry": "cause:pests-chewing",
+      "claim": "Check the lower leaves for caterpillars; they blend in.",
+      "url": "https://hort.extension.wisc.edu/articles/imported-cabbageworm/",
+      "quote": "Examine the lower leaves of plants for the larvae as well.",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-9",
+      "entry": "cause:pests-chewing",
+      "claim": "Pick caterpillars and their eggs off by hand.",
+      "url": "https://www.rhs.org.uk/biodiversity/cabbage-caterpillars",
+      "quote": "Inspect plants regularly and pick off the pale yellow butterfly eggs, white spherical moth eggs and caterpillars when seen",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-10",
+      "entry": "cause:pests-chewing",
+      "claim": "Water in the morning, not the evening, so slugs have less damp to move about in at night.",
+      "url": "https://www.rhs.org.uk/biodiversity/slugs-and-snails",
+      "quote": "Water in the early morning rather than the evening as evening watering provide ideal conditions for them to move around at night",
+      "verdict": "pending"
+    },
+    {
+      "id": "pests-chewing-11",
+      "entry": "cause:pests-chewing",
+      "claim": "Fine netting keeps butterflies off cabbages and other brassicas, if it doesn’t touch the plants.",
+      "url": "https://www.rhs.org.uk/biodiversity/cabbage-caterpillars",
+      "quote": "Growing brassicas under fine netting or horticultural fleece can exclude adult butterflies and moths from laying eggs on the crop. Care must be taken to ensure the netting does not touch the plants or the adults can lay eggs through it",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-1",
+      "entry": "cause:flower-drop",
+      "claim": "Heat can make tomatoes, peppers, beans and zucchini flower without fruiting.",
+      "url": "https://extension.umn.edu/yard-and-garden-news/heatwave-makes-vegetables-misbehave",
+      "quote": "If you are still seeing flowers, but aren’t getting the tomatoes, peppers, beans, or zucchini you expect, there may be a few heat-related factors at play.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-2",
+      "entry": "cause:flower-drop",
+      "claim": "Tomatoes drop flowers after days above about 85 °F (29 °C) or nights above 70 °F (21 °C).",
+      "url": "https://hgic.clemson.edu/why-did-my-tomatoes-stop-producing-fruit/",
+      "quote": "Several days of nighttime temperatures above 70 F and or daytime temperatures above 85 F will cause the plants to abort flowers.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-3",
+      "entry": "cause:flower-drop",
+      "claim": "Sustained heat (over 85 °F by day, 70 °F at night) makes tomato flowers drop without being pollinated.",
+      "url": "https://extension.umn.edu/yard-and-garden-news/heatwave-makes-vegetables-misbehave",
+      "quote": "When tomatoes are exposed to sustained hot temperatures (more than 85°F during the day and 70°F at night), the tomato plant becomes stressed and depletes its energy stores. This changes the flowers, making it harder for them to be pollinated, and the blossom often drops without pollination occurring.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-4",
+      "entry": "cause:flower-drop",
+      "claim": "A thirsty tomato can drop its flowers.",
+      "url": "https://hgic.clemson.edu/why-did-my-tomatoes-stop-producing-fruit/",
+      "quote": "Drought stress in tomato plants can cause flowers to wither or drop prematurely.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-5",
+      "entry": "cause:flower-drop",
+      "claim": "Pepper flower buds can fall off if the plant gets too dry; keep the soil evenly moist.",
+      "url": "https://www.rhs.org.uk/vegetables/peppers/grow-your-own",
+      "quote": "evenly moist. Flower buds may fall off if plants get too dry.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-6",
+      "entry": "cause:flower-drop",
+      "claim": "Flowers that aren’t pollinated die and drop.",
+      "url": "https://hgic.clemson.edu/why-did-my-tomatoes-stop-producing-fruit/",
+      "quote": "When the flowers are not properly pollinated, they die and drop off the plant.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-7",
+      "entry": "cause:flower-drop",
+      "claim": "Tomato flowers are pollinated when shaken, for example by wind.",
+      "url": "https://hgic.clemson.edu/why-did-my-tomatoes-stop-producing-fruit/",
+      "quote": "The tomato flowers hang down in a cluster and are pollinated when shaken by movement such as wind.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-8",
+      "entry": "cause:flower-drop",
+      "claim": "Crops like squash and cucumbers need bees, and heat makes bees less active.",
+      "url": "https://extension.umn.edu/yard-and-garden-news/heatwave-makes-vegetables-misbehave",
+      "quote": "In crops that depend on pollinators, such as members of the vine crop family, hot weather can impact bee activity, causing reduced fruit set.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-9",
+      "entry": "cause:flower-drop",
+      "claim": "In a hot spell, keep tomatoes watered and wait for cooler weather.",
+      "url": "https://hgic.clemson.edu/why-did-my-tomatoes-stop-producing-fruit/",
+      "quote": "When temperatures get this high the best thing a gardener can do is keep the plants irrigated and wait for more favorable growing temperatures to arrive.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-10",
+      "entry": "cause:flower-drop",
+      "claim": "A shade cloth over tomatoes keeps them cooler in great heat.",
+      "url": "https://extension.illinois.edu/node/21445",
+      "quote": "Using shade cloth above tomatoes can reduce solar radiation and provide a cooler environment",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-11",
+      "entry": "cause:flower-drop",
+      "claim": "Lightly tap or shake tomato flowers when fully open to help pollination under cover.",
+      "url": "https://www.rhs.org.uk/vegetables/tomatoes/grow-your-own",
+      "quote": "You can also lightly tap or shake the flowers when fully open to aid pollen transfer within the flower.",
+      "verdict": "pending"
+    },
+    {
+      "id": "flower-drop-12",
+      "entry": "cause:flower-drop",
+      "claim": "You can hand-pollinate tomato flowers by tapping them or with a small brush.",
+      "url": "https://pueblo.extension.colostate.edu/hand-pollination/",
+      "quote": "You can sometimes do it by lightly tapping the flower. You can also use a small brush or a Q-tip.",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-1",
+      "entry": "cause:splitting",
+      "claim": "Heavy watering or rain after a dry spell makes ripening fruit split or crack.",
+      "url": "https://extension.missouri.edu/news/conditions-are-right-now-for-cracking-splitting-tomatoes",
+      "quote": "Too much irrigation or heavy rainfall after a dry period results in rapid uptake of water in plants. This causes ripening fruit to split vertically or crack concentrically",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-2",
+      "entry": "cause:splitting",
+      "claim": "Fruit cracks when the flesh swells faster than the skin can stretch.",
+      "url": "https://extension.psu.edu/why-are-my-tomatoes-cracking-and-what-can-i-do-about-it",
+      "quote": "As fruit grow, the flesh inside the tomato expands, and if that expansion happens quickly, the skin may not stretch enough to keep up.",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-3",
+      "entry": "cause:splitting",
+      "claim": "Cracking follows a quick change from dry to wet, like rain after a dry spell or heavy watering.",
+      "url": "https://extension.psu.edu/why-are-my-tomatoes-cracking-and-what-can-i-do-about-it",
+      "quote": "Many growers observe more cracking when soil moisture shifts rapidly from dry to wet conditions, such as after a rain event following a dry period or heavy irrigation.",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-4",
+      "entry": "cause:splitting",
+      "claim": "Keeping soil moisture constant matters most for plants in pots and growing bags.",
+      "url": "https://www.rhs.org.uk/problems/tomatoes-fruit-splitting-and-cracking",
+      "quote": "This is especially important when growing in growing bags, pots or other containers.",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-5",
+      "entry": "cause:splitting",
+      "claim": "Water supply in pots varies a lot, so check them regularly.",
+      "url": "https://www.rhs.org.uk/problems/tomatoes-fruit-splitting-and-cracking",
+      "quote": "Water supply can be especially variable in growing bags and pots, and this requires regular monitoring both in the greenhouse and outside.",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-6",
+      "entry": "cause:splitting",
+      "claim": "If rain is coming after a dry spell, pick nearly ripe fruit.",
+      "url": "https://extension.missouri.edu/news/conditions-are-right-now-for-cracking-splitting-tomatoes",
+      "quote": "If rain is expected after a droughty period, harvest any nearly ripe tomatoes.",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-7",
+      "entry": "cause:splitting",
+      "claim": "Mulch helps keep soil moisture even.",
+      "url": "https://extension.missouri.edu/news/conditions-are-right-now-for-cracking-splitting-tomatoes",
+      "quote": "Conserve soil moisture by mulching the area with straw, compost or other material.",
+      "verdict": "pending"
+    },
+    {
+      "id": "splitting-8",
+      "entry": "cause:splitting",
+      "claim": "Mulch keeps soil moisture more even between rain or watering.",
+      "url": "https://extension.psu.edu/why-are-my-tomatoes-cracking-and-what-can-i-do-about-it",
+      "quote": "Mulches, whether organic or plastic, can also support uniform soil moisture by reducing evaporation and slowing rapid soil drying between rain or irrigation events.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-1",
+      "entry": "cause:bolting",
+      "claim": "A bolting plant grows tall and sends up flower stalks.",
+      "url": "https://ipm.ucanr.edu/PMG/GARDEN/VEGES/ENVIRON/bolting.html",
+      "quote": "The plant begins to grow tall and sends up flower stalks.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-2",
+      "entry": "cause:bolting",
+      "claim": "Long days with high temperatures make lettuce bolt.",
+      "url": "https://hort.extension.wisc.edu/articles/growing-salad-greens-wisconsin/",
+      "quote": "long days associated with high temperatures will cause lettuce to bolt",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-3",
+      "entry": "cause:bolting",
+      "claim": "Long days and warmth make spinach bolt.",
+      "url": "https://hort.extension.wisc.edu/articles/growing-salad-greens-wisconsin/",
+      "quote": "Under long days and warm temperature, spinach quickly bolts and stops producing large leaves.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-4",
+      "entry": "cause:bolting",
+      "claim": "High heat and longer days speed up flowering.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/non-pest-issues-in-cool-season-crops",
+      "quote": "After this shift, high heat and longer days will speed up flowering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-5",
+      "entry": "cause:bolting",
+      "claim": "Lettuce and spinach turn bitter after flowering.",
+      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/non-pest-issues-in-cool-season-crops",
+      "quote": "This is especially true for spinach and lettuce, which both become extremely bitter after flowering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-6",
+      "entry": "cause:bolting",
+      "claim": "Basil often starts flowering in mid to late summer, which affects the flavour of the leaves.",
+      "url": "https://www.rhs.org.uk/herbs/basil/grow-your-own",
+      "quote": "Plants often start flowering in mid- to late summer, which does affect the flavour of the leaves",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-7",
+      "entry": "cause:bolting",
+      "claim": "Letting basil flower makes it more bitter.",
+      "url": "https://extension.umn.edu/vegetables/growing-basil",
+      "quote": "If you allow basil to flower and form seed, it will become woody and yields will be considerably less. Flowering will lead to more bitter flavors.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-8",
+      "entry": "cause:bolting",
+      "claim": "Remove basil flower stems as soon as you see them to keep the leaves good.",
+      "url": "https://www.rhs.org.uk/herbs/basil/grow-your-own",
+      "quote": "you can delay this and maintain leaf quality for as long as possible by removing any flower stems as soon as you spot them",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-9",
+      "entry": "cause:bolting",
+      "claim": "Cut hearting lettuces before they bolt.",
+      "url": "https://www.rhs.org.uk/vegetables/lettuce/grow-your-own",
+      "quote": "hearting lettuces, which should be cut as soon as they mature, before they flower (bolt)",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-10",
+      "entry": "cause:bolting",
+      "claim": "Keep lettuce watered and lightly shaded in summer, and re-sow regularly for replacements.",
+      "url": "https://www.rhs.org.uk/vegetables/lettuce/grow-your-own",
+      "quote": "so keep them well-watered and lightly shaded in summer, and re-sow regularly so you always have replacements on hand.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-11",
+      "entry": "cause:bolting",
+      "claim": "In midsummer, light shade in the hottest part of the day helps stop lettuce flowering early.",
+      "url": "https://www.rhs.org.uk/vegetables/lettuce/grow-your-own",
+      "quote": "if sowing/planting in the middle of summer, some light shade is preferable during the hottest part of the day, as too much heat can cause lettuces to flower prematurely.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-12",
+      "entry": "cause:bolting",
+      "claim": "Sow spinach in spring and again in late summer to autumn.",
+      "url": "https://www.rhs.org.uk/vegetables/spinach/grow-your-own",
+      "quote": "For continuous harvests, sow seeds repeatedly every few weeks in spring and late summer/autumn.",
+      "verdict": "pending"
+    },
+    {
+      "id": "bolting-13",
+      "entry": "cause:bolting",
+      "claim": "Spinach does best grown in spring or autumn, when short days favour leaves over flowers.",
+      "url": "https://hort.extension.wisc.edu/articles/growing-salad-greens-wisconsin/",
+      "quote": "In the Midwest, spinach must be grown in the spring or fall when short days trigger leaf production instead of flowering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-15",
+      "entry": "cause:overwatering",
+      "claim": "Check: a houseplant pot that is still wet feels heavier than a dry one.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/growing-guide",
+      "quote": "Drier pots feel lighter than wet ones",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-16",
+      "entry": "cause:overwatering",
+      "claim": "Check: learn how heavy the pot is just after watering; wet potting mix is much heavier than dry.",
+      "url": "https://ucanr.edu/blog/backyard-gardener/article/watering-your-houseplants",
+      "quote": "Get familiar with how heavy the pot is right after watering, dry potting mix is much lighter in weight than when it is wet.",
+      "verdict": "pending"
+    },
+    {
+      "id": "overwatering-17",
+      "entry": "cause:overwatering",
+      "claim": "Check: potting mix gets noticeably lighter as it dries, so weight shows how wet it still is.",
+      "url": "https://hgic.clemson.edu/factsheet/indoor-plants-watering/",
+      "quote": "As potting mixtures become dry, a definite loss in weight can be observed.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-13",
+      "entry": "cause:root-rot",
+      "claim": "A houseplant with bad root rot is often not worth saving.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "Often the best and most cost effective way of dealing with a plant with root rot is to throw it out.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-14",
+      "entry": "cause:root-rot",
+      "claim": "Fix: before throwing out a failing houseplant, take cuttings from it.",
+      "url": "https://extension.illinois.edu/blogs/flowers-fruits-and-frass/2021-03-24-how-do-you-bring-office-plant-back-life",
+      "quote": "Before you throw away the plant, consider propagating it.",
+      "verdict": "pending"
+    },
+    {
+      "id": "root-rot-15",
+      "entry": "cause:root-rot",
+      "claim": "Fix: take houseplant cuttings from healthy stems.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-take-cuttings-from-houseplants",
+      "quote": "Find some long stems that the plant won’t miss. Go for healthy stems, free of pests and diseases",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-10",
+      "entry": "cause:underwatering",
+      "claim": "Check: a dry houseplant pot feels lighter than a wet one.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/growing-guide",
+      "quote": "Drier pots feel lighter than wet ones",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-11",
+      "entry": "cause:underwatering",
+      "claim": "Check: dry potting mix is much lighter than wet, so a light pot means dry mix.",
+      "url": "https://ucanr.edu/blog/backyard-gardener/article/watering-your-houseplants",
+      "quote": "Get familiar with how heavy the pot is right after watering, dry potting mix is much lighter in weight than when it is wet.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-12",
+      "entry": "cause:underwatering",
+      "claim": "Check: potting mix loses weight as it dries.",
+      "url": "https://hgic.clemson.edu/factsheet/indoor-plants-watering/",
+      "quote": "As potting mixtures become dry, a definite loss in weight can be observed.",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-13",
+      "entry": "cause:underwatering",
+      "claim": "Check: wilting leaves with brown, crispy edges are signs a houseplant isn’t getting enough water.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Wilted leaves, brown and crispy leaf edges and flowers that fade or fall quickly are all signs that a plant isn’t getting enough water",
+      "verdict": "pending"
+    },
+    {
+      "id": "underwatering-14",
+      "entry": "cause:underwatering",
+      "claim": "Check: on a dry houseplant the older leaves at the base often yellow and fall first.",
+      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant",
+      "quote": "Unlike with overwatering (below), older leaves at the base of a dry plant will often yellow and fall first.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-12",
+      "entry": "cause:stale-water",
+      "claim": "Roots need oxygen, and most plants’ roots die in stagnant (stale, still) water.",
+      "url": "https://www.rhs.org.uk/vegetables/hydroponics",
+      "quote": "All plant roots need oxygen (air) and the root zone in hydroponic cultivation must not only be moist and nutrient-rich but must also be very well aerated. Roots of most plants will die in stagnant water.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-13",
+      "entry": "cause:stale-water",
+      "claim": "Healthy roots on a houseplant cutting (including ones rooted in water) are creamy white and firm.",
+      "url": "https://extension.umn.edu/houseplants/propagating-monstera-deliciosa",
+      "quote": "To check for roots, use a spatula, plant label or small trowel to gently lift your cutting out of its media. Inspect the roots. They should be creamy white and firm.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-14",
+      "entry": "cause:stale-water",
+      "claim": "Check: healthy houseplant roots are white; brownish to blackish roots point to root rot.",
+      "url": "https://ipm.ucanr.edu/home-and-landscape/houseplant-problems/",
+      "quote": "Off-color (brownish to blackish, or dark yellowish) roots, especially at the root tips, often indicate that root rot is present. Healthy roots should be white, entirely so or at least under their outer covering.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-15",
+      "entry": "cause:stale-water",
+      "claim": "Check: rotting roots are soft and brown and may smell bad.",
+      "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
+      "quote": "Careful examination of the root systems of these plants reveals roots that are soft and brown. These roots may have a bad odor.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-16",
+      "entry": "cause:stale-water",
+      "claim": "Check/fix: for a houseplant growing in plain water, change the water when it turns cloudy.",
+      "url": "https://extension.umn.edu/houseplants/propagating-monstera-deliciosa",
+      "quote": "Pros: In water, you can observe root growth, the plants are also easy to care for and they don’t require much space. The water should be changed when it becomes cloudy.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-17",
+      "entry": "cause:stale-water",
+      "claim": "Fix: for a houseplant grown in water (lucky bamboo), change the water every week.",
+      "url": "https://hgic.clemson.edu/how-to-grow-and-care-for-lucky-bamboo-dracaena-sanderiana/",
+      "quote": "Change the water weekly.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-18",
+      "entry": "cause:stale-water",
+      "claim": "Fix: a water-rooted houseplant with root rot may not survive, so take a new cutting.",
+      "url": "https://extension.umn.edu/houseplants/propagating-monstera-deliciosa",
+      "quote": "A cutting with root rot may not survive and you may have to take a new cutting.",
+      "verdict": "pending"
+    },
+    {
+      "id": "stale-water-19",
+      "entry": "cause:stale-water",
+      "claim": "Fix: take the new cutting from healthy material.",
+      "url": "https://extension.illinois.edu/blogs/good-growing/2025-02-21-winter-gardening-propagating-houseplants-beat-winter-blues",
+      "quote": "When propagating any plant, choose healthy material.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-water-6",
+      "entry": "cause:low-water",
+      "claim": "Fix: for a houseplant in plain water, keep it topped up so the lower stem stays under water.",
+      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
+      "quote": "Keep water topped so that lower part of cutting is always below water surface.",
+      "verdict": "pending"
+    },
+    {
+      "id": "low-water-7",
+      "entry": "cause:low-water",
+      "claim": "Fix: a houseplant grown in plain water (lucky bamboo) should have its roots covered by water.",
+      "url": "https://hgic.clemson.edu/how-to-grow-and-care-for-lucky-bamboo-dracaena-sanderiana/",
+      "quote": "The stems of lucky bamboo should be submerged in enough water to cover the roots and at least one inch of the stem.",
+      "verdict": "pending"
     }
   ]
 }
