@@ -1,0 +1,328 @@
+{
+  "style": "Glossy enamel 3D relief",
+  "date": "2026-11-01",
+  "sourceRevision": "a7351402e72d9f991fe9bfe665f029f2a4a8175a",
+  "earned": 16,
+  "locked": 15,
+  "masterDimensions": [
+    1254,
+    1254
+  ],
+  "deliveryDimensions": [
+    640,
+    640
+  ],
+  "totalBytes": 4716052,
+  "assets": [
+    {
+      "path": "assets/art/badge-first-check-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 157208,
+      "sha256": "68da8f949ca88e6575a587b5288c0749bff495f7e319a2bedddcc88d50286477",
+      "masterSha256": "8a0db70299378ea9170a81cb1033fe6f345c6052c00e78bc299c9ecd12b10f91"
+    },
+    {
+      "path": "assets/art/badge-first-check.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 129554,
+      "sha256": "1f587df45f545c9560f09a3e973671b92bb794805ef47bfdb6161272fb6469bf",
+      "masterSha256": "62be40b602f11c54ca0eafb2e5866d16bba2b5c0458a83179099a36ef0d53903"
+    },
+    {
+      "path": "assets/art/badge-first-cutting-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 180523,
+      "sha256": "3790ec1ddb794bfea4c5c4cd06458c030cef5dcb1a04568495d59187902a61cd",
+      "masterSha256": "c89c0cdf24eee66913c1bab29e2358df6190464ef3d73db2ef25fb562069d1b9"
+    },
+    {
+      "path": "assets/art/badge-first-cutting.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 141647,
+      "sha256": "aab60da75d62e060d8f0589ef554b5d6dfffc5450bf98d205b02d18801296412",
+      "masterSha256": "5cbca8f5dc0a13c729b417423d4e1d6b65ed4cfc3284cc00e8e5994f3e3e2356"
+    },
+    {
+      "path": "assets/art/badge-first-harvest-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 151418,
+      "sha256": "efe421419ca85050a6820084753ea15d22d3ee1bdf004f508609a0675605be98",
+      "masterSha256": "664308eb0e47b1128d461a94a6041328388f8398a84bf07d6b855fc599c380c7"
+    },
+    {
+      "path": "assets/art/badge-first-harvest.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 140710,
+      "sha256": "18dc93ed34b3ee1b7b81cff30ecfe9fed763917fae86e9f6559da0979b43c157",
+      "masterSha256": "a242c1c9fde2bab15a7d78f9cc6899f92ef0aa2ddcf62280aa62fcc94582acff"
+    },
+    {
+      "path": "assets/art/badge-first-photo-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 155161,
+      "sha256": "c2ba8aa78316789b1ab31f76ffb6c8c93d789c57bb30fd3d4e754d050c6233e2",
+      "masterSha256": "638e345dcd248bf8bbf3d01e2255b72e20d3bae60dbf424a8404ad69be5b4a8c"
+    },
+    {
+      "path": "assets/art/badge-first-photo.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 135592,
+      "sha256": "92098e083a63bad74446e43c5bfff929543cb6fd4dde41f18b540d4cf0dba94d",
+      "masterSha256": "bc82ad74da3494223af77eee4eba02671a6674e700403b5086b2e256ba5a6683"
+    },
+    {
+      "path": "assets/art/badge-first-roots-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 196431,
+      "sha256": "294f14320ff0b6b8061e00e2ab41263948aa55d10e75b4368d0532ce156083d5",
+      "masterSha256": "3a2ea560cb2026a3441e4ceb577e073d308cd3fe7c69cd61dff1326a47a26be4"
+    },
+    {
+      "path": "assets/art/badge-first-roots.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 160992,
+      "sha256": "5acecda0fc44bbb3571caf1be1aab7aaeed9a572b89a33971aefc37f1b2583f3",
+      "masterSha256": "7f0561ca7a055d50038589fbb442e76eafe29e87fd01d106034d583e9d6d1c79"
+    },
+    {
+      "path": "assets/art/badge-first-skip-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 191348,
+      "sha256": "39ed4e0becaaa5ca969afc8f54667a7b39d4208cb9311f5149c59a996d3a8adb",
+      "masterSha256": "d60b4fd07b783cc22ff880239379eec3a279a00e627d66a7cab9827b07731d9e"
+    },
+    {
+      "path": "assets/art/badge-first-skip.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 143322,
+      "sha256": "98a7672ce61b478c7894d5a60fe4ac2be8d1784cfbedc3a1b2932413895e8dec",
+      "masterSha256": "56a67c57c1f694c44ffb454bafa73923a0222f28df3b1c8fd6b25659e729091c"
+    },
+    {
+      "path": "assets/art/badge-five-plant-fam-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 178215,
+      "sha256": "4a90d75c3b43be8fcd5d05acf64362b521910310fc3aa296dbb028ea84b72bb6",
+      "masterSha256": "60605d2c0053d441de26fbd0f2bd16a7d2c371014e76fc913201bc2b5ed881ed"
+    },
+    {
+      "path": "assets/art/badge-five-plant-fam.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 145970,
+      "sha256": "f4646c131c309075becf7507f539fc5b4411b5ded794462e8c718c19e488d8fa",
+      "masterSha256": "d52802b8571eddb3ddef73787c7e15c1889d3e580c5c5c66bee7b0bdcaf08e92"
+    },
+    {
+      "path": "assets/art/badge-four-week-streak-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 137080,
+      "sha256": "a12b1caba3f650985955e0bbc5dab16c12ebf22ec9cc202324494247e9dbbecd",
+      "masterSha256": "f6ef501751ac426f783ce0981f788ce632987e63abdac34cfe84939a62966d07"
+    },
+    {
+      "path": "assets/art/badge-four-week-streak.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 121036,
+      "sha256": "5446b9eb55497cc77fbf2384fefc42b1d75c7a9dd067ad24feedd34cf11929d5",
+      "masterSha256": "3acc9decf1a14769d076ec33822819d8e021f555de46691fde3ee8e6ead600e5"
+    },
+    {
+      "path": "assets/art/badge-generous-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 144978,
+      "sha256": "f27bba54cb2dfe80aa2dd3e862abc27e1530a856faea4c480af7f332b203cad6",
+      "masterSha256": "ed30a52935b15ef8dafcfe8cbc7d975360f5e6c11d5198754120d969ef8f0ec7"
+    },
+    {
+      "path": "assets/art/badge-generous.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 128726,
+      "sha256": "260c819454dfe3a0779ee2de466cb9b3294002d2e8915e6e33eea14f1f71a6ab",
+      "masterSha256": "9f7ed9f790ba8dbafd67a131b3ca92cda2bebdb20fd707556593a6d908b117fe"
+    },
+    {
+      "path": "assets/art/badge-grandma-plant-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 160247,
+      "sha256": "660d026cf81c35b2714eb23495e767fa01a9e93bd08bea2d8e9e6e06102ecd3a",
+      "masterSha256": "e45a0ee7f8448288129ca268cbf920fb9bfc58a1dbf58e06d284749ae68d6550"
+    },
+    {
+      "path": "assets/art/badge-grandma-plant.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 139455,
+      "sha256": "43e135a2a7c709857d44c8a3345bd8b8e49d6223b87072e3c257d9d7b4aa9e11",
+      "masterSha256": "b99dc7f95e8caf5548b25aadafe1a4163ffbdb8c54a0f4ee7c38401df001c5e1"
+    },
+    {
+      "path": "assets/art/badge-medal.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 155706,
+      "sha256": "93034af148fd2fbae7b9562fc417937817a188735013a0495cb620f0c0e124ff",
+      "masterSha256": "4c259a957b70f0df720cdf601f1a1a5b4dde8173297d6c68667a82f997d9ab2f"
+    },
+    {
+      "path": "assets/art/badge-propagator-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 178348,
+      "sha256": "e7f333618125939f2fa7204f7ae63d15d2a6575c218166f04067e36f43960a70",
+      "masterSha256": "79bde6a827d8c48399a0af57e4ad5e46807585473d7b7971d6d7caf2bd1d936c"
+    },
+    {
+      "path": "assets/art/badge-propagator.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 134431,
+      "sha256": "1a3642bbd884a3692194d47d2f7ce0cfb808c67716003e1a9931c9bf5d80a667",
+      "masterSha256": "c3f7f75b23042f5d9340c5b4812fbdd839e5aba6f7d1e129f346d0f1910aa0da"
+    },
+    {
+      "path": "assets/art/badge-survived-dry-season-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 174322,
+      "sha256": "0d6536ac160ad5a19c356a2aa8d052c530f1bc64457fe13c153c6bce45584784",
+      "masterSha256": "b094e0a8214d7c3a1baa6b09752d7948f328223f42e20a6a77c23a3a319a1f67"
+    },
+    {
+      "path": "assets/art/badge-survived-dry-season.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 155504,
+      "sha256": "975baadca7143f6edeb0ccc3e478084714fe3e4d636fc172961a807a1dcb0493",
+      "masterSha256": "68f0142ef9e7493f24898c7594a9dee45eb7c565dd0d3317eea27b31d0e04c31"
+    },
+    {
+      "path": "assets/art/badge-survived-grey-season-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 152798,
+      "sha256": "aa3418a639e047574cfa27c22a41bca2a7269baf30ac8c269dc08b009d104ba4",
+      "masterSha256": "8074d0c4d6aec1bfc0348e0ab43a3f088f35918bb528a4fb7c75aec916a9a3b7"
+    },
+    {
+      "path": "assets/art/badge-survived-grey-season.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 124884,
+      "sha256": "df6199a0cf78036a7f4b70180123f3484d4d8e1e0aa879dc48ee1754929a7a39",
+      "masterSha256": "1850f510c0379ec45ffb5cc8f10bdbe7aeb22dd334fdee0c99e7fc04b169f8cf"
+    },
+    {
+      "path": "assets/art/badge-survived-winter-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 163187,
+      "sha256": "ca955817c0e9ba30f67347ed4756d4c2e163682086802d04973586b7fda05a19",
+      "masterSha256": "605895c88b0cd83f04ca2717ed83fcafc288f98d31bcd6bb4fbcfd71ad0e5df7"
+    },
+    {
+      "path": "assets/art/badge-survived-winter.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 141474,
+      "sha256": "e19f3fbe95e5f704b920a2b2cb2af479665d2956b8b296dc04b49cbf5a5cb22b",
+      "masterSha256": "80b894be6444fa2f2a68828eb9760ada9df1378844793bf33e39709ccad0f1a4"
+    },
+    {
+      "path": "assets/art/badge-ten-skips-locked.png",
+      "state": "locked",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 162991,
+      "sha256": "977dff4a394209b679a0406f387c216794d785fc0abcbd44d48c21a9559c3b9a",
+      "masterSha256": "0735eeb2ddc1f24261069b1d28bc7666c2c8fa7343e17ccc68688f0f37d45dc4"
+    },
+    {
+      "path": "assets/art/badge-ten-skips.png",
+      "state": "earned",
+      "width": 640,
+      "height": 640,
+      "transparent": true,
+      "bytes": 132794,
+      "sha256": "4a4e564106f2581eddf983260df12d5cf851ac4876e5c8b6e098add73d720a51",
+      "masterSha256": "ab40a9691a26fffe6abb2633523666d5212d4513619c2ec235bf60ec02adab39"
+    }
+  ]
+}
