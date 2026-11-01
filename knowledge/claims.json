@@ -242,17 +242,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "overwatering-5",
-      "entry": "cause:overwatering",
-      "claim": "Check: a heavy pot means hold off watering.",
-      "url": "https://extension.wsu.edu/jefferson/mg-home/tip-sheet-15-houseplants/",
-      "quote": "If the pot is heavy, the plant droops and the lower leaves turn yellow or brown, reduce watering.",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Page pairs a heavy pot with symptoms: 'If the pot is heavy, the plant droops and the lower leaves turn yellow or brown, reduce watering.' A heavy pot alone isn't given as the signal; its 'best test' is a finger 1 to 2 inches into the soil."
-    },
-    {
       "id": "overwatering-6",
       "entry": "cause:overwatering",
       "claim": "Check: cover pots and outer planters can hold standing water.",
@@ -443,17 +432,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "root-rot-11",
-      "entry": "cause:root-rot",
-      "claim": "Fix: if the roots aren’t healthy, take cuttings to start a new plant.",
-      "url": "https://hort.extension.wisc.edu/articles/holiday-cactus/",
-      "quote": "If a plant is sagging and not growing even though the media is moist, check to see if it has a healthy root system. If not, take some cuttings to start a new plant and use a better-draining potting mix.",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Advice is specific to holiday cactus (easily propagated from stem 'joints'), sagging in moist, poorly drained media; the page doesn't give it as a general fix for all plants."
-    },
-    {
       "id": "root-rot-12",
       "entry": "cause:root-rot",
       "claim": "Old mix slumps and loses its air spaces and drainage.",
@@ -482,28 +460,6 @@
       "verdict": "supported",
       "checked": "2026-10-31",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "underwatering-3",
-      "entry": "cause:underwatering",
-      "claim": "Check: a light pot means too little water.",
-      "url": "https://extension.wsu.edu/jefferson/mg-home/tip-sheet-15-houseplants/",
-      "quote": "If the pot seems light and the leaf tips are brown or the plant collapses, there’s too little water.",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Page pairs a light pot with symptoms: 'If the pot seems light and the leaf tips are brown or the plant collapses, there's too little water.' A light pot alone isn't given as the signal."
-    },
-    {
-      "id": "underwatering-4",
-      "entry": "cause:underwatering",
-      "claim": "Check: a plant wilting from dry soil recovers once it is watered.",
-      "url": "https://www.rhs.org.uk/advice/understanding-plants/how-plants-absorb-water",
-      "quote": "In this case, recovery is only possible if water is added, either by rainfall or by you watering.",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Page says recovery is 'only possible if water is added' (a necessary condition, not a promise), and goes on: 'Left too long without water and a plant will die.' It doesn't say the plant will recover once watered."
     },
     {
       "id": "underwatering-5",
@@ -647,17 +603,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "stale-water-10",
-      "entry": "cause:stale-water",
-      "claim": "Fix: if the roots aren’t healthy, take cuttings to start a new plant.",
-      "url": "https://hort.extension.wisc.edu/articles/holiday-cactus/",
-      "quote": "If a plant is sagging and not growing even though the media is moist, check to see if it has a healthy root system. If not, take some cuttings to start a new plant and use a better-draining potting mix.",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Advice is specific to holiday cactus growing in poorly drained potting mix ('use a better-draining potting mix'); it is not about plants standing in water and isn't given as a general fix."
-    },
-    {
       "id": "stale-water-11",
       "entry": "cause:stale-water",
       "claim": "Warm standing water breeds bacteria faster.",
@@ -696,17 +641,6 @@
       "verdict": "supported",
       "checked": "2026-10-31",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "low-water-4",
-      "entry": "cause:low-water",
-      "claim": "Fix: top up so about a third to half of the roots sit in water.",
-      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
-      "quote": "keep the roots only 1/3 to 1/2 submerged once they start to develop beyond the net pot.",
-      "verdict": "partly",
-      "checked": "2026-10-31",
-      "checkedBy": "fact-checker",
-      "note": "Quote is verbatim, but it is in the page's 'Passive aeration (the Kratky method)' section on deep-water hydroponics of food crops in net pots, and applies 'once they start to develop beyond the net pot' (maintenance section: 'Try to keep enough water in your system so that about half of the roots are submerged'). The page does not cover houseplants in plain water or LECA/semi-hydro, so the 1/3-1/2 guidance is narrower than the claim's use."
     },
     {
       "id": "low-water-5",
@@ -849,17 +783,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "low-light-8",
-      "entry": "cause:low-light",
-      "claim": "Check: in low light, new leaves come in small and pale on stretched stems.",
-      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
-      "quote": "A geranium grown in low light will be spindly and elongated with small, pale, green leaves.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page's example is a single species (a geranium grown in low light); it illustrates the general effect of light intensity but does not itself state it for houseplants generally."
-    },
-    {
       "id": "low-light-9",
       "entry": "cause:low-light",
       "claim": "Check: a houseplant short of light leans, with stems reaching toward the light.",
@@ -1000,17 +923,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "sunburn-10",
-      "entry": "cause:sunburn",
-      "claim": "Fix: jumping into bright sun too fast is what scorches the leaves.",
-      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
-      "quote": "Jumping too quickly into bright sun can scorch leaves, particularly on shade-loving plants like pothos, philodendrons, peace lilies, and ferns.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page says jumping too quickly into bright sun 'can scorch leaves, particularly on shade-loving plants like pothos, philodendrons, peace lilies, and ferns' (spring move toward windows); it does not say this is the cause of scorch, and the claim drops the 'can'/shade-loving scope."
-    },
-    {
       "id": "sunburn-11",
       "entry": "cause:sunburn",
       "claim": "Fix: keep leaves that are still mostly green until new leaves have grown.",
@@ -1131,17 +1043,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "dry-air-12",
-      "entry": "cause:dry-air",
-      "claim": "Fix: when trimming brown leaf edges, follow the leaf shape.",
-      "url": "https://ucanr.edu/blog/coastal-gardener/article/fiddle-leaf-fig-houseplant-proper-care",
-      "quote": "If the leave margins have become brown, trim with scissors, following the leaf shape.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Source is a single-species page (fiddle leaf fig care); the trimming tip is not stated for houseplants generally."
-    },
-    {
       "id": "tap-water-1",
       "entry": "cause:tap-water",
       "claim": "Summary: some houseplants are sensitive to fluoride or chlorine in tap water.",
@@ -1212,17 +1113,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "tap-water-8",
-      "entry": "cause:tap-water",
-      "claim": "Fix: for tip browning from fluoride in tap water, use rainwater or filtered water.",
-      "url": "https://www.rhs.org.uk/plants/spider-plants/growing-guide",
-      "quote": "It can be caused by too much or too little water, or by the fluoride in tap water, so use rainwater or filtered water whenever possible.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Source is the RHS spider plant growing guide; tip browning from fluoride and the rainwater/filtered-water fix are stated for spider plants only."
-    },
-    {
       "id": "tap-water-9",
       "entry": "cause:tap-water",
       "claim": "Fix: chlorinated tap water left to stand overnight loses its chlorine.",
@@ -1281,17 +1171,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "hungry-2",
-      "entry": "cause:hungry",
-      "claim": "Summary: short of nitrogen, leaves turn pale yellow, older leaves first.",
-      "url": "https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies",
-      "quote": "Spindly, stunted plants with pale yellow leaves and, occasionally, pink tints. Older leaves are affected first, but the yellowing spreads to younger foliage.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "RHS nutrient-deficiencies page is about garden plants in soil (nitrogen 'easily washed out of the soil by rain'); symptoms not stated for houseplants specifically."
     },
     {
       "id": "hungry-3",
@@ -1362,17 +1241,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "cold-1",
-      "entry": "cause:cold",
-      "claim": "Summary: tropical houseplants are hurt by nights below about 10 °C (50 °F).",
-      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/houseplants/spring-houseplant-care",
-      "quote": "most houseplants should stay indoors until nighttime temperatures are consistently above 50°F. Cold nights can shock tropical plants, even if daytime temperatures feel comfortable.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page gives 50°F as the night temperature to wait for before moving houseplants outdoors ('Cold nights can shock tropical plants'); it does not state 50°F as the threshold below which tropical houseplants are hurt (MU g6510 says some tropical foliage plants can be injured below 40°F)."
     },
     {
       "id": "cold-2",
@@ -1473,17 +1341,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "purple-cold-1",
-      "entry": "cause:purple-cold",
-      "claim": "Short of phosphorus shows as a purple tinge, with purplish veins especially under the leaves, and older leaves going purplish.",
-      "url": "https://ipm.ucanr.edu/home-and-landscape/phosphorus-deficiency/",
-      "quote": "In broadleaf plants, young leaves may be dark green and have purplish veins, especially on the underside of leaves. Older leaves can develop an overall purplish tint and tip dieback.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "UC IPM page is about landscape trees and shrubs in soil ('adequate amounts for most trees and shrubs'); symptoms not stated for houseplants. Page also says the purplish veins are on young, dark-green leaves."
     },
     {
       "id": "purple-cold-2",
@@ -1600,17 +1457,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "purple-cold-13",
-      "entry": "cause:purple-cold",
-      "claim": "Fix: feed at the low end of the label rate (half strength), as more can be added later.",
-      "url": "https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/",
-      "quote": "Follow fertilizer label directions and apply the low end of suggested rates, as more can be added later, rather than risk overfertilizing.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page says apply 'the low end of suggested rates'; it does not say half strength. Context is general yellowing (hanging baskets, herbaceous plantings, trees and shrubs), not houseplants specifically."
-    },
-    {
       "id": "heat-stress-1",
       "entry": "cause:heat-stress",
       "claim": "Heat stress shows as leaves wilting, rolling and going crispy, common in very hot rooms in summer.",
@@ -1631,17 +1477,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "heat-stress-3",
-      "entry": "cause:heat-stress",
-      "claim": "Plants roll or cup their leaves in heat to cut water loss.",
-      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
-      "quote": "Corn and tomatoes are among many plants that commonly roll their leaves or cup in response to heat.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Oregon State page is about outdoor garden plants in a heat wave ('Corn and tomatoes are among many plants...'); not stated for houseplants."
-    },
-    {
       "id": "heat-stress-4",
       "entry": "cause:heat-stress",
       "claim": "Keep plants a proper distance from grow lights, especially hot bulbs.",
@@ -1652,39 +1487,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "heat-stress-5",
-      "entry": "cause:heat-stress",
-      "claim": "Check: wilting in the hottest part of the day that recovers in the evening points to heat stress.",
-      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
-      "quote": "Plants that wilt during the hottest part of the day and recover in the evening and early morning are likely suffering from heat stress.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Oregon State page is about outdoor garden plants in a heat wave (nonwoody annuals and perennials); not stated for houseplants."
-    },
-    {
-      "id": "heat-stress-6",
-      "entry": "cause:heat-stress",
-      "claim": "Fix: move pots into shade, or shade them over the hottest part of the day.",
-      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
-      "quote": "Move containers where they get shade. Provide shade cloth or other means of shade, where possible. Heat stress is compounded when other plant stressors like drought, wind or intense sun are also present.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Advice is for outdoor containers/garden in a heat wave ('Provide shade cloth'); not houseplant advice."
-    },
-    {
-      "id": "heat-stress-7",
-      "entry": "cause:heat-stress",
-      "claim": "Fix: shade from late morning to near the end of the day, so plants still get some direct sun.",
-      "url": "https://extension.oregonstate.edu/catalog/em-9556-heat-wave-garden-how-identify-prevent-heat-stress-plants",
-      "quote": "consider adding it in the late morning and removing it toward the end of the day so plants get some direct sunlight.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Advice is for outdoor garden shading with 'a beach or picnic umbrella' in a heat wave; not houseplant advice."
-    },
-    {
       "id": "heat-stress-8",
       "entry": "cause:heat-stress",
       "claim": "Fix: for sun damage, move the houseplant to a more suitable spot.",
@@ -1693,28 +1495,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "heat-stress-9",
-      "entry": "cause:heat-stress",
-      "claim": "Fix: in heat, keep the soil moist but not soggy.",
-      "url": "https://extension.missouri.edu/news/dont-overwater-heat-stressed-plants",
-      "quote": "The important thing is that the soil should be kept moist, but not soggy.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "MU news item is about outdoor landscape plants in heat ('Check soil moisture by digging six inches with a trowel'); not stated for houseplants."
-    },
-    {
-      "id": "old-leaves-1",
-      "entry": "cause:old-leaves",
-      "claim": "It is normal for the odd lower leaf to yellow and fall.",
-      "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
-      "quote": "It is normal for the odd lower leaf on a mature plant to yellow and fall.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page says this is normal 'on a mature plant'; the claim drops that qualifier."
     },
     {
       "id": "old-leaves-2",
@@ -2077,17 +1857,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "spider-mites-8",
-      "entry": "cause:spider-mites",
-      "claim": "For infested plants, spray water on the undersides of the leaves.",
-      "url": "https://ipm.ucanr.edu/home-and-landscape/spider-mites/",
-      "quote": "If plants are infested, apply a water spray or mist to the undersides of leaves at least once a day.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page is outdoor landscape guidance (woody plants, ground covers, irrigation, dust) and says to spray 'at least once a day'; the claim drops the frequency and the page doesn't address indoor plants."
-    },
-    {
       "id": "spider-mites-9",
       "entry": "cause:spider-mites",
       "claim": "Wiping houseplant leaves with a damp sponge or paper towel removes mites.",
@@ -2198,17 +1967,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "aphids-8",
-      "entry": "cause:aphids",
-      "claim": "A strong spray of water knocks aphids off plants.",
-      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
-      "quote": "Knock aphid populations off plants by shaking the plant or spraying it with a strong stream of water.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page's quick tip limits this to sturdy plants: 'Spray aphids with a strong stream of water to knock them off sturdy plants.' It's also garden/landscape guidance, not houseplant guidance."
-    },
-    {
       "id": "aphids-9",
       "entry": "cause:aphids",
       "claim": "Prune out badly infested, curled growth.",
@@ -2238,17 +1996,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "aphids-12",
-      "entry": "cause:aphids",
-      "claim": "Check for aphids at least twice a week so they can be hosed off or pruned out early.",
-      "url": "https://ipm.ucanr.edu/home-and-landscape/aphids/",
-      "quote": "Check your plants regularly for aphids—at least twice a week when plants are growing rapidly—in order to catch infestations early, so you can knock or hose them off or prune them out.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page says 'at least twice a week when plants are growing rapidly', and it's garden/landscape guidance (orchards, late spring). The claim drops the rapid-growth condition."
     },
     {
       "id": "mealybugs-1",
@@ -2481,17 +2228,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "whitefly-4",
-      "entry": "cause:whitefly",
-      "claim": "Common whiteflies feed on tomatoes and peppers.",
-      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
-      "quote": "Very broad including many herbaceous and some woody plants including cole crops, cotton, cucurbits, tomatoes, peppers, crape myrtle, lantana, roses, and hibiscus.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "The quoted host list is for one species, sweetpotato whitefly (Bemisia tabaci), not 'common whiteflies' in general. The page lists greenhouse whitefly's hosts as 'most vegetables and herbaceous ornamentals'."
-    },
-    {
       "id": "whitefly-5",
       "entry": "cause:whitefly",
       "claim": "Whitefly adults flutter up when you water or handle the plant.",
@@ -2532,17 +2268,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "whitefly-9",
-      "entry": "cause:whitefly",
-      "claim": "Removing infested leaves or hosing plants down holds whitefly back early on.",
-      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
-      "quote": "In gardens, whitefly populations in the early stages of population development can be held down by a vigilant program of removing infested leaves or hosing down with water sprays.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page scopes this to gardens: 'In gardens, whitefly populations in the early stages... can be held down...'. The claim isn't scoped that way."
-    },
-    {
       "id": "whitefly-10",
       "entry": "cause:whitefly",
       "claim": "Water sprays knock off adult whitefly.",
@@ -2551,17 +2276,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "whitefly-11",
-      "entry": "cause:whitefly",
-      "claim": "Prune out infested leaves when whitefly are first found.",
-      "url": "https://ipm.ucanr.edu/home-and-landscape/whiteflies/",
-      "quote": "Prune out isolated infested leaves when you first detect them.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Garden quick tips ('before bringing them into your garden'). The page says to prune out 'isolated' infested leaves when first detected, and the claim drops 'isolated'."
     },
     {
       "id": "thrips-1",
@@ -2996,17 +2710,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "powdery-mildew-5",
-      "entry": "cause:powdery-mildew",
-      "claim": "Peas often get powdery mildew badly.",
-      "url": "https://hort.extension.wisc.edu/articles/powdery-mildew-vegetables/",
-      "quote": "Peas are another vegetable that can have severe powdery mildew problems.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page says peas are a vegetable that 'can have severe powdery mildew problems'; it does not say this happens often."
-    },
-    {
       "id": "powdery-mildew-6",
       "entry": "cause:powdery-mildew",
       "claim": "On squash and other vine crops it shows up in mid to late summer.",
@@ -3048,17 +2751,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "powdery-mildew-10",
-      "entry": "cause:powdery-mildew",
-      "claim": "Give plants space so air moves around them.",
-      "url": "https://extension.umn.edu/disease-management/powdery-mildew-cucurbits",
-      "quote": "Provide good air movement around plants through proper spacing, staking of plants and weed control.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page is about powdery mildew of cucurbits (squash family) only; spacing advice is given for those vine crops, not for plants in general."
-    },
-    {
       "id": "powdery-mildew-11",
       "entry": "cause:powdery-mildew",
       "claim": "Water at the base (drip or soaker) instead of over the leaves.",
@@ -3077,17 +2769,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "powdery-mildew-13",
-      "entry": "cause:powdery-mildew",
-      "claim": "Choose varieties that resist powdery mildew.",
-      "url": "https://extension.umn.edu/disease-management/powdery-mildew-cucurbits",
-      "quote": "Plant varieties with complete or partial resistance to powdery mildew.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page is about powdery mildew of cucurbits (squash family) only; resistant-variety advice is given for those crops, not for plants in general."
     },
     {
       "id": "pests-chewing-1",
@@ -3436,17 +3117,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "bolting-4",
-      "entry": "cause:bolting",
-      "claim": "High heat and longer days speed up flowering.",
-      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/yard-and-garden-problems/non-pest-issues-in-cool-season-crops",
-      "quote": "After this shift, high heat and longer days will speed up flowering.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page is about cool-season vegetable crops, and says this applies 'after a plant has shifted into its reproductive stage'; the claim states it generally."
-    },
-    {
       "id": "bolting-5",
       "entry": "cause:bolting",
       "claim": "Lettuce and spinach turn bitter after flowering.",
@@ -3525,17 +3195,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "bolting-13",
-      "entry": "cause:bolting",
-      "claim": "Spinach does best grown in spring or autumn, when short days favour leaves over flowers.",
-      "url": "https://hort.extension.wisc.edu/articles/growing-salad-greens-wisconsin/",
-      "quote": "In the Midwest, spinach must be grown in the spring or fall when short days trigger leaf production instead of flowering.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page says 'In the Midwest, spinach must be grown in the spring or fall when short days trigger leaf production'; it is scoped to the Midwest, and the claim drops that."
     },
     {
       "id": "overwatering-15",
@@ -3658,17 +3317,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "stale-water-13",
-      "entry": "cause:stale-water",
-      "claim": "Healthy roots on a houseplant cutting (including ones rooted in water) are creamy white and firm.",
-      "url": "https://extension.umn.edu/houseplants/propagating-monstera-deliciosa",
-      "quote": "To check for roots, use a spatula, plant label or small trowel to gently lift your cutting out of its media. Inspect the roots. They should be creamy white and firm.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page covers only Monstera deliciosa cuttings and describes lifting the cutting 'out of its media' (soil, perlite, etc.), not cuttings rooted in water; it doesn't say this for houseplant cuttings in general."
-    },
-    {
       "id": "stale-water-14",
       "entry": "cause:stale-water",
       "claim": "Check: healthy houseplant roots are white; brownish to blackish roots point to root rot.",
@@ -3710,17 +3358,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "stale-water-18",
-      "entry": "cause:stale-water",
-      "claim": "Fix: a water-rooted houseplant with root rot may not survive, so take a new cutting.",
-      "url": "https://extension.umn.edu/houseplants/propagating-monstera-deliciosa",
-      "quote": "A cutting with root rot may not survive and you may have to take a new cutting.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page covers only Monstera deliciosa cuttings, and links root rot to overwatering or a container that 'is not draining well' (rooting media); it doesn't refer to water-rooted plants."
-    },
-    {
       "id": "stale-water-19",
       "entry": "cause:stale-water",
       "claim": "Fix: take the new cutting from healthy material.",
@@ -3729,17 +3366,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "low-water-6",
-      "entry": "cause:low-water",
-      "claim": "Fix: for a houseplant in plain water, keep it topped up so the lower stem stays under water.",
-      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
-      "quote": "Keep water topped so that lower part of cutting is always below water surface.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page is about rooting stem cuttings in water before potting them up ('When cuttings have a small network of roots, plant each in a three inch container'), not about houseplants kept in plain water long-term."
     },
     {
       "id": "low-water-7",
@@ -3881,17 +3507,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "underwatering-18",
-      "entry": "cause:underwatering",
-      "claim": "Check: a houseplant wilted from dryness revives once it is watered.",
-      "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
-      "quote": "Do not apply fertilizer to a wilted plant. Water the plant first and let it revive before fertilizing.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Quote is fertiliser advice ('Do not apply fertilizer to a wilted plant. Water the plant first and let it revive before fertilizing'). It assumes the plant revives after watering but never says the wilting is from dryness or that watering always revives it."
     },
     {
       "id": "hungry-10",
@@ -4219,17 +3834,6 @@
       "checkedBy": "fact-checker"
     },
     {
-      "id": "pests-chewing-12",
-      "entry": "cause:pests-chewing",
-      "claim": "Check both sides of the leaves for caterpillars and their damage.",
-      "url": "https://extension.umn.edu/yard-and-garden-insects/caterpillars-cole-crops",
-      "quote": "Check for caterpillars and their feeding damage on both sides of leaves on cole crops.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page says to check both sides of leaves 'on cole crops' (UMN caterpillars in cole crops). Claim is not scoped to cole crops or vegetables."
-    },
-    {
       "id": "bolting-14",
       "entry": "cause:bolting",
       "claim": "Fix: lettuce can be sown from spring through to autumn.",
@@ -4248,39 +3852,6 @@
       "verdict": "supported",
       "checked": "2026-11-01",
       "checkedBy": "fact-checker"
-    },
-    {
-      "id": "stale-water-20",
-      "entry": "cause:stale-water",
-      "claim": "Fix: take cuttings from healthy houseplant stems; cuttings will root in a jar of water.",
-      "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-take-cuttings-from-houseplants",
-      "quote": "Go for healthy stems, free of pests and diseases",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Quote covers only 'Go for healthy stems, free of pests and diseases'. The water-rooting half is on the page elsewhere ('pop prepared cuttings directly into a glass or jar of water and it will develop roots') but not in the quote."
-    },
-    {
-      "id": "low-water-8",
-      "entry": "cause:low-water",
-      "claim": "Fix: with roots part in water, the tops of the roots get oxygen from the air and the bottoms take up water.",
-      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
-      "quote": "The tops of the roots get oxygen in the air and the bottoms take water and nutrients from the solution below.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Page is UMN small-scale hydroponics for food crops (lettuce, tomatoes). It describes roots in a hydroponic nutrient solution, not houseplants or cuttings in water; claim is not scoped that way."
-    },
-    {
-      "id": "low-water-9",
-      "entry": "cause:low-water",
-      "claim": "Fix: roots should always touch the water but not be fully under it.",
-      "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
-      "quote": "Your roots should always be touching the water, but should not be fully immersed.",
-      "verdict": "partly",
-      "checked": "2026-11-01",
-      "checkedBy": "fact-checker",
-      "note": "Hydroponic food-crop advice ('Your roots should always be touching the water, but should not be fully immersed'); claim is not scoped to hydroponics."
     }
   ]
 }

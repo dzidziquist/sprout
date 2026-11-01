@@ -114,6 +114,8 @@ const LATE = { signal: 'overdue', weight: 1.8, why: 'Its last few checks came la
 export const CAUSES: Record<string, Cause> = {
   overwatering: {
     id: 'overwatering',
+    status: 'verified',
+    reviewed: '2026-11',
     soilOnly: true,
     title: 'Too much water',
     summary: 'The roots are sitting wet for too long and can’t breathe. The most common way houseplants die.',
@@ -125,6 +127,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'root-rot': {
     id: 'root-rot',
+    status: 'verified',
+    reviewed: '2026-11',
     soilOnly: true,
     title: 'Root rot',
     summary: 'Roots that stayed wet too long have started to rot, so the plant can’t drink even though the soil is wet.',
@@ -137,10 +141,12 @@ export const CAUSES: Record<string, Cause> = {
   },
   underwatering: {
     id: 'underwatering',
+    status: 'verified',
+    reviewed: '2026-11',
     soilOnly: true,
     title: 'Thirsty',
     summary: 'The soil has been drying out completely, so the plant is losing water faster than it gets it.',
-    check: ['Is the soil dry and pulling away from the sides of the pot?', 'Does the pot feel light?', 'Are the leaves wilting, with brown, crispy edges? Are the oldest leaves at the base yellowing first?', 'Feel the soil before you water: wilting with dry soil points to thirst, and it should perk up after a drink. Wilting while the soil is still wet can mean rotting roots instead.'],
+    check: ['Is the soil dry and pulling away from the sides of the pot?', 'Does the pot feel light?', 'Are the leaves wilting, with brown, crispy edges? Are the oldest leaves at the base yellowing first?', 'Feel the soil before you water: wilting with dry soil points to thirst. Wilting while the soil is still wet can mean rotting roots instead.'],
     fix: ['Water slowly until it runs out of the bottom.', 'If the soil is rock hard, stand the pot in a bowl of water until the bubbles stop, then let it drain.', 'Check a little sooner from now on.'],
     signals: [DRY, LATE, { signal: 'terracotta', weight: 1.2, why: 'Clay pots dry out fast.' }, { signal: 'smallPot', weight: 1.2, why: 'Small pots dry out fast.' }, { signal: 'hotSeason', weight: 1.3, why: 'It’s the hot season, so it drinks more.' }, { signal: 'moistureLover', weight: 1.3, why: 'It likes to stay lightly damp.' }, { signal: 'wetChecks', weight: 0.3, why: '' }, { signal: 'reservoir', weight: 0.5, why: '' }],
     tweak: 'more-water',
@@ -159,6 +165,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'low-water': {
     id: 'low-water',
+    status: 'verified',
+    reviewed: '2026-11',
     waterOnly: true,
     title: 'Water line too low',
     summary: 'The reservoir ran low, so the roots couldn’t reach the water.',
@@ -170,6 +178,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'low-light': {
     id: 'low-light',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Not enough light',
     summary: 'The plant can’t make enough food, so it stretches towards the light and drops older leaves.',
     check: ['Is it more than about 3 m (10 ft) from a window, or in a dark corner? Light fades fast away from the glass.', 'Is new growth smaller, paler or further apart than old growth?', 'Is it leaning towards the window?'],
@@ -179,6 +189,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   sunburn: {
     id: 'sunburn',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Too much sun',
     summary: 'Strong direct sun has scorched the leaves. Burned patches won’t turn green again, but the plant usually recovers once it’s out of the strong sun.',
     check: ['Are there pale, washed-out or brown scorched patches, and does it get strong direct sun (like a sunny window in summer)?', 'Did you move it somewhere sunnier lately, or put it outside?'],
@@ -188,6 +200,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'dry-air': {
     id: 'dry-air',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Dry air',
     summary: 'Indoor air, especially with the heating on, pulls moisture out of leaves faster than the roots replace it.',
     check: ['Is it near a heater, radiator or air vent?', 'Are the leaf tips and edges brown and crispy?'],
@@ -197,6 +211,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'tap-water': {
     id: 'tap-water',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Salts and chlorine in tap water',
     summary: 'Some plants are sensitive to the chlorine and fluoride in tap water. Salts from water and fertiliser also build up in the pot and brown the leaf tips.',
     check: ['Do you see a white crust on the soil or the pot rim?', 'Are the tips brown even though the soil moisture is right?'],
@@ -262,12 +278,14 @@ export const CAUSES: Record<string, Cause> = {
     title: 'Cold roots (short of phosphorus)',
     summary: 'A reddish-purple tinge, mostly on the older leaves. Cold roots take up phosphorus slowly, so it shows in cool spells, especially on young plants, more than from a lack of food.',
     check: ['Has it been cold at night, or is the pot against cold glass?', 'Is it mostly on the older leaves?'],
-    fix: ['Move it away from cold glass, somewhere warmer at night.', 'Warmth is the fix: extra phosphorus feed won’t help while it’s cold.', 'If it’s warm and still purple, give a general-purpose liquid feed at half strength.'],
+    fix: ['Move it away from cold glass, somewhere warmer at night.', 'Wait for warmer days before feeding much; it usually greens up by itself.', 'If it’s warm and still purple, give a general-purpose liquid feed at half strength.'],
     signals: [{ signal: 'slowSeason', weight: 1.8, why: 'It’s the cool season.' }, { signal: 'outdoor', weight: 1.3, why: 'Cold nights outside.' }, { signal: 'unfed', weight: 1.2, why: 'No feed logged in a couple of months.' }, { signal: 'freshMix', weight: 0.6, why: '' }],
     sources: ['https://ipm.ucanr.edu/home-and-landscape/phosphorus-deficiency/', 'https://www.rhs.org.uk/prevention-protection/nutrient-deficiencies', 'https://extension.colostate.edu/resource/recognizing-common-tomato-pests-pathogens-and-problems/', 'https://extension.missouri.edu/publications/g6510', 'https://extension.illinois.edu/houseplants/care', 'https://www.rhs.org.uk/plants/types/houseplants/how-to-help-a-poorly-houseplant', 'https://hort.extension.wisc.edu/analyzing-reasons-for-yellow-leaves/', 'https://ag.umass.edu/greenhouse-floriculture/greenhouse-updates-apr-24-2020', 'https://ask.ifas.ufl.edu/publication/CV265'],
   },
   'heat-stress': {
     id: 'heat-stress',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Too hot',
     summary: 'Leaves curl, flop or scorch when it’s very hot: a sunny window in summer, a hot balcony, or too close to a grow light.',
     check: ['Is it in strong midday or afternoon sun, or close under a lamp?', 'Does it perk up in the evening?'],
@@ -277,6 +295,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'old-leaves': {
     id: 'old-leaves',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Just an old leaf',
     summary: 'Plants retire their oldest, lowest leaves now and then. One at a time, with healthy new growth, is nothing to worry about.',
     check: ['Is it only one or two of the oldest, lowest leaves?', 'Is new growth coming in green and healthy?'],
@@ -286,6 +306,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   shock: {
     id: 'shock',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Settling in',
     summary: 'Moving house, a new spot or a fresh pot is a shock. Plants may droop for a while, and often drop a few leaves for up to about three weeks while they adjust.',
     check: ['Did it move, get repotted, or come home recently?', 'Is new growth still appearing?'],
@@ -295,6 +317,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   cold: {
     id: 'cold',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Cold or draughts',
     summary: 'Tropical plants dislike nights below about 10 °C (50 °F) and cold draughts. Leaves can go dark, limp or drop.',
     check: ['Is it near a door, a draughty window, or touching cold glass?', 'Was it outside on a cold night?'],
@@ -304,6 +328,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'pot-bound': {
     id: 'pot-bound',
+    status: 'verified',
+    reviewed: '2026-11',
     soilOnly: true,
     title: 'Outgrown its pot',
     summary: 'The roots have filled the pot, so it dries out fast and runs out of food.',
@@ -314,6 +340,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'leaf-spot': {
     id: 'leaf-spot',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Leaf spot (fungus or bacteria)',
     summary: 'Brown or black spots, often with a yellow edge or halo, usually come from a fungus or bacteria. They spread in splashing water and when leaves stay wet.',
     check: ['Do the spots have a yellow edge or halo?', 'Are the spots getting bigger or joining up?', 'Do the leaves stay wet after watering or rain?'],
@@ -324,7 +352,7 @@ export const CAUSES: Record<string, Cause> = {
   'powdery-mildew': {
     id: 'powdery-mildew',
     title: 'Powdery mildew',
-    summary: 'A fungus that looks like a dusting of flour on the leaves. Common on squash, zucchini, cucumbers and peas, mostly from late summer into autumn.',
+    summary: 'A fungus that looks like a dusting of flour on the leaves. Common on squash, zucchini, cucumbers and peas late in the season.',
     check: ['Does the white powder wipe off with a finger?', 'Is it on older leaves first?'],
     fix: ['Remove the worst leaves.', 'Give plants more space and air.', 'Water at the base, not over the leaves, and water regularly in dry spells.', 'Next time, choose a variety that resists mildew.'],
     signals: [{ signal: 'edible', weight: 1.6, why: 'Squash, cucumbers and peas are prone to it.' }, { signal: 'fruiting', weight: 1.4, why: 'It shows up most late in the season.' }, { signal: 'outdoor', weight: 1.2, why: '' }],
@@ -332,6 +360,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'spider-mites': {
     id: 'spider-mites',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Spider mites',
     summary: 'Tiny mites that suck the leaves, leaving fine speckles and, later, thin webbing. They love warm, dry air.',
     check: ['Hold white paper under a leaf and tap it. Tiny moving dots?', 'Look under the leaves and where they meet the stems for fine webbing. When there are lots of them, it can cover the stems too.'],
@@ -350,6 +380,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   mealybugs: {
     id: 'mealybugs',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Mealybugs',
     summary: 'Slow bugs that look like little bits of cotton wool, hiding where leaves meet stems.',
     check: ['Look in leaf joints, under leaves and at the soil line for white fluff.', 'Is there sticky residue?'],
@@ -359,6 +391,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   scale: {
     id: 'scale',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Scale insects',
     summary: 'Small brown bumps stuck to stems and leaf veins that don’t look like bugs at all. Many leave sticky honeydew.',
     check: ['Look along the stems and the main veins under the leaves: do little brown bumps scrape off with a fingernail?', 'Are the leaves or the floor below sticky?'],
@@ -368,6 +402,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   whitefly: {
     id: 'whitefly',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Whitefly',
     summary: 'Tiny white sap-sucking insects that fly up in a cloud when you brush the plant. Common on tomatoes and peppers, and on houseplants.',
     check: ['Brush the leaves: does a little cloud of white specks fly up?', 'Look under the leaves for the tiny, flat, oval young.'],
@@ -377,6 +413,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   thrips: {
     id: 'thrips',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Thrips',
     summary: 'Tiny slim insects that scrape leaves, leaving silvery streaks and black specks.',
     check: ['Look for silvery, scratched-looking patches with tiny black dots.', 'Tap a leaf over white paper: tiny slivers that move?'],
@@ -386,6 +424,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'fungus-gnats': {
     id: 'fungus-gnats',
+    status: 'verified',
+    reviewed: '2026-11',
     soilOnly: true,
     title: 'Fungus gnats',
     summary: 'Tiny black flies that breed in wet soil. Annoying, mostly harmless to the plant, and a sign the soil stays wet.',
@@ -399,7 +439,7 @@ export const CAUSES: Record<string, Cause> = {
     id: 'surface-mold',
     soilOnly: true,
     title: 'Mould on the soil',
-    summary: 'White fuzz on top of the soil is usually a fungus feeding on the mix, not on the plant. It’s rarely harmful, but it’s a sign the surface stays too wet.',
+    summary: 'White fuzz on top of the soil is usually a fungus feeding on the mix, not on the plant. It isn’t necessarily harmful, but it’s a sign the surface stays too wet.',
     check: ['Is it only on the soil surface, with firm stems and no wilting? Stems ringed brown or black at the soil line point to rot instead.', 'Is the soil staying damp for days?'],
     fix: ['Let the top of the soil dry more between drinks; watering from the bottom keeps the surface drier.', 'A brighter, less humid spot helps keep it away.'],
     signals: [WET, SOGGY, { signal: 'lowLight', weight: 1.4, why: 'Low light keeps the surface damp.' }, SLOW, { signal: 'recentRepot', weight: 1.3, why: 'Fresh bagged mix often has a little mould.' }],
@@ -408,6 +448,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'pests-chewing': {
     id: 'pests-chewing',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Something is eating it',
     summary: 'Holes and ragged edges usually mean caterpillars, slugs or snails.',
     check: ['Check both sides of the leaves, especially the lower ones, for caterpillars, and look around the plant at night with a torch for slugs and snails.', 'Is there a slime trail, or little droppings on the leaves?'],
@@ -429,6 +471,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   'flower-drop': {
     id: 'flower-drop',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Too hot, too dry or not pollinated',
     summary: 'Tomatoes, peppers and other edibles can drop their flowers when days or nights are very hot, the plant is thirsty, or the flowers aren’t pollinated.',
     check: ['Have days been above about 29 °C (85 °F), or nights above 21 °C (70 °F)?', 'Is it indoors, with no wind or bees to move the pollen?', 'Has the soil been drying out?'],
@@ -438,6 +482,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   splitting: {
     id: 'splitting',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Uneven watering',
     summary: 'Fruit splits when a thirsty plant suddenly gets a lot of water, from you or from rain, and the fruit swells faster than its skin.',
     check: ['Did a dry spell end with heavy watering or rain?'],
@@ -448,6 +494,8 @@ export const CAUSES: Record<string, Cause> = {
   },
   bolting: {
     id: 'bolting',
+    status: 'verified',
+    reviewed: '2026-11',
     title: 'Bolting (going to seed)',
     summary: 'Lettuce, spinach and herbs like basil shoot up flower stalks, often when days get long and hot. Leaves turn bitter afterwards.',
     check: ['Is a tall central stalk shooting up, maybe with buds?', 'Have days been long and warm?'],
