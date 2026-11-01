@@ -9,9 +9,16 @@ const norm = (t) =>
   t
     .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;|&lsquo;|[‘’]/g, "'").replace(/&quot;|&ldquo;|&rdquo;|[“”]/g, '"').replace(/&ndash;|&mdash;|[–—]/g, '-')
+    // Numeric entities (&#8217; and friends) first, so the named-quote rules below catch them too.
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+    .replace(/&nbsp;|\u00a0/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;|&lsquo;|[‘’]/g, "'").replace(/&quot;|&ldquo;|&rdquo;|[“”]/g, '"').replace(/&ndash;|&mdash;|[–—]/g, '-')
     .replace(/\s+/g, ' ')
+    // Some sites (RHS) leave a space before punctuation where a link ended: "gooseberries , grapes".
+    .replace(/ ([,.;:!?)])/g, '$1')
     .toLowerCase();
+
+/** A bot-protection page sent with HTTP 200 instead of the article (Clemson's Cloudflare). */
+const isChallenge = (raw) => raw.length < 20000 && /challenge-platform|cf-chl|just a moment|enable javascript and cookies/i.test(raw);
 
 const byUrl = new Map();
 for (const c of claims) byUrl.set(c.url, [...(byUrl.get(c.url) ?? []), c]);
@@ -29,8 +36,18 @@ for (const [url, list] of byUrl) {
     } else if (!res.ok) {
       status = 'broken';
       detail = `HTTP ${res.status}`;
+    } else if ((res.headers.get('content-type') ?? '').includes('pdf')) {
+      status = 'check by hand';
+      detail = 'PDF: this script can’t read the text';
     } else {
-      const text = norm(await res.text());
+      const raw = await res.text();
+      if (isChallenge(raw)) {
+        status = 'check by hand';
+        detail = 'the site showed a bot check instead of the page';
+        rows.push(`| 👀 ${status} | ${url} | ${[...new Set(list.map((c) => c.entry))].join(', ')} | ${detail} |`);
+        continue;
+      }
+      const text = norm(raw);
       const missing = list.filter((c) => !text.includes(norm(c.quote)));
       if (missing.length) {
         status = 'changed';
@@ -38,8 +55,10 @@ for (const [url, list] of byUrl) {
       }
     }
   } catch (e) {
-    status = 'broken';
-    detail = String(e?.message ?? e);
+    // A redirect loop is a site that wants cookies (UF/IFAS), not a dead page.
+    const why = String(e?.cause?.message ?? e?.message ?? e);
+    status = /redirect/i.test(why) ? 'check by hand' : 'broken';
+    detail = /redirect/i.test(why) ? 'the site keeps redirecting (it wants cookies)' : why;
   }
   if (status === 'broken' || status === 'changed') failed += 1;
   rows.push(`| ${status === 'ok' ? '✅' : status === 'check by hand' ? '👀' : '❌'} ${status} | ${url} | ${[...new Set(list.map((c) => c.entry))].join(", ")} | ${detail} |`);
