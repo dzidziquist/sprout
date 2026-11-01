@@ -3757,7 +3757,9 @@
       "claim": "Summary: fungi growing in potting soil mostly feed on the organic matter in the mix and aren’t necessarily harmful to the plant.",
       "url": "https://ask.ifas.ufl.edu/publication/PP377",
       "quote": "Many of these fungi are saprotrophic and feed on the organic matter contained in the potting soil itself",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "surface-mold-5",
@@ -3765,7 +3767,9 @@
       "claim": "Summary: these fungi in potting soil are not necessarily harmful to the plants.",
       "url": "https://ask.ifas.ufl.edu/publication/PP377",
       "quote": "These fungi are not necessarily harmful to the plants, but fungal fruiting bodies can make plants unmarketable.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "surface-mold-6",
@@ -3773,7 +3777,10 @@
       "claim": "Check: some of these fungi make a dense whitish mat (mycelium) on the surface of indoor potting soil.",
       "url": "https://ask.ifas.ufl.edu/publication/PP377",
       "quote": "Leucocoprinus birnbaumii can produce a dense yellowish-white mycelium on the surface of potting soil.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Page names one species (Leucocoprinus birnbaumii) and says 'yellowish-white'. It notes the species is common in indoor potting soils."
     },
     {
       "id": "surface-mold-7",
@@ -3781,7 +3788,9 @@
       "claim": "Check: with stem rot (unlike surface fungus), stems are ringed brown or black at soil level and the plant wilts.",
       "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
       "quote": "With root or stem rot, leaves and stems show noticeable wilt. Stems may be girdled at or near soil level by a ring of brown or black tissue.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "surface-mold-8",
@@ -3789,7 +3798,9 @@
       "claim": "Fix: fungi grow in potting soil when it’s humid, dim and warm, and overwatering encourages them.",
       "url": "https://ask.ifas.ufl.edu/publication/PP377",
       "quote": "Generally, when mushroom-forming fungi are growing in potting soils it is the result of high humidity, low light, and warm temperatures. Overwatering may encourage fungal growth and stimulate mushroom fruiting.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "surface-mold-9",
@@ -3797,7 +3808,9 @@
       "claim": "Fix: for pots kept indoors, moving the pot somewhere less humid (or cooler) helps stop it coming back.",
       "url": "https://ask.ifas.ufl.edu/publication/PP377",
       "quote": "When pots are kept indoors, changing the location of the pot to an area with less humidity or a cooler temperature may help to prevent more mushrooms from forming.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "spider-mites-13",
@@ -3805,7 +3818,9 @@
       "claim": "Check houseplants under the leaves and where the leaves meet the stem for signs of pests such as webbing (spider mites pictured).",
       "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
       "quote": "Check the undersides of foliage and where the leaves meet the stem. Some pests are small and difficult to see, so be on the lookout for signs and symptoms of an infestation, such as distorted leaves, shiny coating, sticky coating, or webbing. Pictured here is an infestation of tiny spider mites.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "spider-mites-14",
@@ -3813,7 +3828,9 @@
       "claim": "Spider mite webbing starts under the leaves; as numbers grow it can cover the leaves and stems (page covers houseplants and garden plants).",
       "url": "https://extension.illinois.edu/blogs/good-growing/2022-08-26-managing-spider-mites-garden-and-home",
       "quote": "The webbing is produced by glands near their mouths, and strands will be spun on the undersides of infested leaves. As mite populations grow, the webbing can completely cover a plant’s leaves, stems, and flowers.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "spider-mites-15",
@@ -3821,7 +3838,9 @@
       "claim": "On houseplants especially, spider mites enclose the leaves they attack in fine silk webbing.",
       "url": "https://web.extension.illinois.edu/hortanswers/detailProblem.cfm?PathogenID=98",
       "quote": "Particularly on house plants, this mite encloses attacked leaves in fine silk webbing.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "spider-mites-16",
@@ -3829,7 +3848,9 @@
       "claim": "On houseplants, spider mite webbing may be seen near the growing points.",
       "url": "https://ipm.ucanr.edu/home-and-landscape/houseplant-problems/",
       "quote": "Yellowed leaves with tiny speckling; leaves later bronzed and drying; webbing may be noted near growing points",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "underwatering-15",
@@ -3837,7 +3858,9 @@
       "claim": "Check: before watering a wilted houseplant, feel the compost below the surface: wilting is often mistaken for thirst.",
       "url": "https://www.rhs.org.uk/advice/understanding-plants/how-plants-absorb-water",
       "quote": "Houseplants are often killed with kindness when wilting is mistaken for thirst. So, before watering wilted houseplants, check the compost below the surface by sticking your finger in to sense for moisture.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "underwatering-16",
@@ -3845,7 +3868,9 @@
       "claim": "Check: a houseplant that wilts even though the soil is wet points to root rot.",
       "url": "https://hort.extension.wisc.edu/articles/root-rots-houseplants/",
       "quote": "Gardeners often become aware of root rots when they note that a plant is wilted, even though the soil is wet.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "underwatering-17",
@@ -3853,7 +3878,9 @@
       "claim": "Check: wilting doesn’t always mean thirst; rotting roots also cause wilting, and then watering makes it worse.",
       "url": "https://hgic.clemson.edu/factsheet/indoor-plants-watering/",
       "quote": "Although wilting is often an indication of the need to water, it is not always so. Any injury to the root system decreases a plant’s ability to take up water, including root rot, which is caused by too much water. This inability to take up water will cause wilting, and under these conditions, watering may make the problem worse.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "underwatering-18",
@@ -3861,7 +3888,10 @@
       "claim": "Check: a houseplant wilted from dryness revives once it is watered.",
       "url": "https://extension.wsu.edu/pnw-gardeners-handbook/chapter-14-houseplants/",
       "quote": "Do not apply fertilizer to a wilted plant. Water the plant first and let it revive before fertilizing.",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Quote is fertiliser advice ('Do not apply fertilizer to a wilted plant. Water the plant first and let it revive before fertilizing'). It assumes the plant revives after watering but never says the wilting is from dryness or that watering always revives it."
     },
     {
       "id": "hungry-10",
@@ -3869,7 +3899,9 @@
       "claim": "Check: on houseplants, yellow-green older leaves point to too little fertiliser, especially nitrogen.",
       "url": "https://ipm.ucanr.edu/home-and-landscape/houseplant-problems/",
       "quote": "Foliage yellow-green on older leaves Insufficient fertilizer, especially nitrogen",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "hungry-11",
@@ -3877,7 +3909,9 @@
       "claim": "Check: on houseplants, yellowing and dropping of the lower leaves is generally from a shortage of nitrogen (or iron); pot-bound plants are prone.",
       "url": "https://hgic.clemson.edu/factsheet/houseplant-diseases-disorders/",
       "quote": "Yellowing, Browning & Death of Lower Leaves: This is generally caused by nitrogen or iron deficiency. Pot-bound plants are especially susceptible.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "hungry-12",
@@ -3885,7 +3919,10 @@
       "claim": "Summary/check: short of nitrogen, older leaves yellow evenly (uniformly) while newer growth stays greener.",
       "url": "https://ipm.ucanr.edu/PMG/GARDEN/PLANTS/DISORDERS/nitrogendeficiency.html",
       "quote": "Slow growth and uniform yellowing of older leaves are usually the first symptoms of nitrogen (N) deficiency.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "UC IPM garden/landscape page. The nitrogen symptoms are general plant physiology. 'Newer growth stays greener' comes from the photo caption on the same page."
     },
     {
       "id": "hungry-13",
@@ -3893,7 +3930,9 @@
       "claim": "Summary/check: nitrogen shortage shows as uniformly yellowish older leaves with greener new foliage.",
       "url": "https://ipm.ucanr.edu/PMG/GARDEN/PLANTS/DISORDERS/nitrogendeficiency.html",
       "quote": "Uniformly yellowish older leaves and greener newer foliage due to nitrogen deficiency.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "hungry-14",
@@ -3901,7 +3940,9 @@
       "claim": "Check: nitrogen shortage gives a general yellowing (not just between the veins), starting with the older leaves.",
       "url": "https://www.rhs.org.uk/problems/chlorosis",
       "quote": "Nitrogen deficiency causes a more general yellowing or reddening, initially usually of the older leaves, often accompanied by a lack of vigour.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "hungry-15",
@@ -3909,7 +3950,9 @@
       "claim": "Summary: nitrogen moves within the plant, so a shortage shows first on the lower leaves as a general yellowing.",
       "url": "https://ask.ifas.ufl.edu/publication/ep081",
       "quote": "It is a mobile element in the plant and deficiency symptoms therefore show up first on the lower leaves. Symptoms consist of a general yellowing (chlorosis) of the leaves.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "tap-water-14",
@@ -3917,7 +3960,9 @@
       "claim": "Summary/fix: dracaena is very sensitive to fluoride; avoid mixes high in perlite and fertilisers with superphosphate.",
       "url": "https://hgic.clemson.edu/factsheet/dracaena/",
       "quote": "Dracaena is very sensitive to fluoride. Symptoms include yellowing of the tips or margins of the leaf or dead, scorched areas. Avoid potting soils that have a high percentage of perlite and keep the soil pH between 6.0 and 6.5 to prevent fluoride from causing injury. Do not use fertilizer which contains superphosphate since it often has high levels of fluorine.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "tap-water-15",
@@ -3925,7 +3970,9 @@
       "claim": "Fix: for a spider plant, distilled water or rainwater helps prevent tip browning from fluoride or chlorine in tap water.",
       "url": "https://hort.extension.wisc.edu/articles/spider-plant-chlorophytum-comosum/",
       "quote": "Low humidity, excessively dry soil, salt accumulation and/or chemicals, particularly fluoride or chlorine, in tap water may cause brown leaf tips. Using distilled water or rainwater will help prevent tip browning.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "tap-water-16",
@@ -3933,7 +3980,9 @@
       "claim": "Fix: for a dracaena, use rainwater or filtered water because of fluoride in tap water.",
       "url": "https://www.rhs.org.uk/plants/dracaena/how-to-grow-dracaena",
       "quote": "Plants can be damaged by fluoride in tap water, so use rainwater or filtered water if possible",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "tap-water-17",
@@ -3941,7 +3990,9 @@
       "claim": "Summary: brown leaf tips from fluoride are common in peace lily (Spathiphyllum) and its relatives.",
       "url": "https://extension.missouri.edu/publications/g6510",
       "quote": "Brown leaf tips is a typical symptom of fluoride toxicity, a physiological disorder common in members of the lily family such as Spathiphyllum.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "tap-water-18",
@@ -3949,7 +4000,9 @@
       "claim": "Fix: tap water left to stand for 24 hours loses its chlorine; houseplants prefer rainwater, and distilled water is an alternative.",
       "url": "https://www.rhs.org.uk/plants/calathea/growing-guide",
       "quote": "All houseplants prefer rainwater, as mains tap water contains lime (calcium carbonate) and chlorine. However, calatheas will tolerate tap water if it has been left to stand for at least 24 hours beforehand, so the chlorine evaporates. Alternatively, use distilled water that collects in dehumidifiers and tumble dryers.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "shock-11",
@@ -3957,7 +4010,9 @@
       "claim": "Summary: after repotting, houseplants may wilt and die back a bit, then perk back up with time, water and the right light.",
       "url": "https://extension.illinois.edu/blogs/good-growing/2018-03-19-tips-repotting-houseplants",
       "quote": "Trees may drop many of their leaves; houseplants may wilt and die back a bit. Often give the plants enough time, adequate water, the right light and they will establish a good root system and perk back up.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "shock-12",
@@ -3965,7 +4020,10 @@
       "claim": "Summary: wilting and loss of leaves after repotting (or first potting) is transplant shock; give good care until it adjusts.",
       "url": "https://ucanr.edu/sites/default/files/2018-07/287094.pdf",
       "quote": "Wilting and loss of foliage after repotting or initial potting.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Quote is in a table row (#16) of the UC houseplant problems PDF: symptom 'Wilting and loss of foliage after repotting or initial potting', cause 'Transplant shock', fix 'Give optimum care until plant adjusts'."
     },
     {
       "id": "low-light-14",
@@ -3973,7 +4031,9 @@
       "claim": "Check: a houseplant short of light grows long gaps between leaves, smaller-than-normal leaves and paler stems and leaves.",
       "url": "https://extension.missouri.edu/publications/g6515",
       "quote": "The signs that a healthy plant is not getting enough light include development of long internodes (length of stem between leaves) or of smaller-than-normal leaves; pale green stems and foliage; and lower leaves that are yellow and dropping.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "purple-cold-14",
@@ -3981,7 +4041,10 @@
       "claim": "Summary/check: short of phosphorus, older leaves go reddish or purple; in pot plants it often comes from slow uptake in cool weather.",
       "url": "https://ag.umass.edu/greenhouse-floriculture/greenhouse-updates-apr-24-2020",
       "quote": "Symptoms of phosphorus deficiency are reddening or purpling of older leaves. The top of the plants may appear darker green. Sometimes P deficiency can occur due to slower rates of uptake by plants exposed to cool spring temperatures in outdoor retail areas.",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Page (UMass greenhouse update) is about bedding plants in outdoor retail areas and says P deficiency 'sometimes' comes from slow uptake in 'cool spring temperatures in outdoor retail areas'. It does not say 'often' and is not about pot plants in general or houseplants."
     },
     {
       "id": "purple-cold-15",
@@ -3989,7 +4052,10 @@
       "claim": "Fix: when it’s from the cold, adding phosphorus won’t fix it; move the plants somewhere warmer.",
       "url": "https://ag.umass.edu/greenhouse-floriculture/greenhouse-updates-apr-24-2020",
       "quote": "Adding P will not help correct the problem, and as noted above can cause plants to stretch. If possible, move plants to a heated space until outdoor temperatures warm up.",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Advice is for greenhouse bedding plants in outdoor retail areas in spring: 'move plants to a heated space until outdoor temperatures warm up'. Not written for houseplants."
     },
     {
       "id": "purple-cold-16",
@@ -3997,7 +4063,9 @@
       "claim": "Summary: cool growing media slow roots’ phosphorus uptake, especially for seedlings and young plants (container growing).",
       "url": "https://ask.ifas.ufl.edu/publication/CV265",
       "quote": "Media temperatures should not fall below 60F for extended periods, especially during seedling or young plant development. Cool media will reduce P uptake by plant roots.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "heat-stress-10",
@@ -4005,7 +4073,9 @@
       "claim": "Check: plants may droop on a hot afternoon but recover in the cooler evening.",
       "url": "https://hort.extension.wisc.edu/reasons-why-plants-wilt/",
       "quote": "As a result, plants may wilt or leaves droop on a hot windy summer afternoon but recover during calmer, cooler evenings.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "heat-stress-11",
@@ -4013,7 +4083,9 @@
       "claim": "Check: temporary wilting on hot days recovers overnight when it’s cooler.",
       "url": "https://www.rhs.org.uk/advice/understanding-plants/how-plants-absorb-water",
       "quote": "Luckily overnight, with leaf pores closed and conditions cooler, plants are able to recover.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "heat-stress-12",
@@ -4021,7 +4093,9 @@
       "claim": "Fix: for a houseplant with heat or underwatering damage, move it to a cooler or shadier spot.",
       "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
       "quote": "Move plant to a cooler or shadier position as required.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "heat-stress-13",
@@ -4029,7 +4103,9 @@
       "claim": "Fix: water houseplants little and often in summer, aiming for moist potting mix, never soggy or bone dry.",
       "url": "https://www.rhs.org.uk/prevention-protection/leaf-damage-on-houseplants",
       "quote": "Water regularly - perhaps checking one day a week and watering little and often in summer, maybe every fortnight in winter. The aim should be to scrupulously avoid soggy potting media and bone-dry conditions, and aim for moist potting media.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "aphids-13",
@@ -4037,7 +4113,9 @@
       "claim": "Fix: on houseplants, wash aphids off with a spray of water and remove infested parts.",
       "url": "https://ipm.ucanr.edu/home-and-landscape/houseplant-problems/",
       "quote": "To control aphids, wash them off plants with a spray of water, practice sanitation (remove, bag, and dispose of infested plant parts)",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "aphids-14",
@@ -4045,7 +4123,9 @@
       "claim": "Fix: spray houseplants with water several times to knock aphids off; small plants in a sink, larger ones in the shower.",
       "url": "https://extension.illinois.edu/blogs/good-growing/2022-01-14-houseplant-pests-and-how-manage-them",
       "quote": "Plants can also be sprayed with water to knock pests off. Doing this several times can help manage pests like aphids, spider mites, and other pests that aren’t firmly attached to plants (such as scale). Small plants can be sprayed off in a sink, while you may need to use the shower for larger plants.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "aphids-15",
@@ -4053,7 +4133,9 @@
       "claim": "Check: monitor houseplants for pests regularly; early detection and removing the affected part may be all that’s needed.",
       "url": "https://ipm.ucanr.edu/home-and-landscape/houseplant-problems/",
       "quote": "In many cases, early detection and removal of a pest or disease, when it is still restricted to a single leaf or part of another plant part that can be removed, might be all that is necessary for eradication and successful management.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "whitefly-12",
@@ -4061,7 +4143,9 @@
       "claim": "Summary: glasshouse whitefly feeds on tomatoes and peppers, as well as on houseplants.",
       "url": "https://www.rhs.org.uk/biodiversity/glasshouse-whitefly",
       "quote": "Glasshouse whitefly can feed on many vegetables and ornamental plants grown in greenhouses as well as house-plants. These include: cucumber, melon, tomato, peppers",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "whitefly-13",
@@ -4069,7 +4153,9 @@
       "claim": "Fix: on houseplants, wash whitefly eggs and young off with water and get rid of infested plant parts.",
       "url": "https://ipm.ucanr.edu/home-and-landscape/houseplant-problems/",
       "quote": "To control whiteflies, wash eggs and crawling juveniles off plants with water, dispose of infested plant parts",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "powdery-mildew-14",
@@ -4077,7 +4163,9 @@
       "claim": "Summary: powdery mildew affects many edible garden plants, including cucurbits (courgettes, cucumbers) and peas.",
       "url": "https://www.rhs.org.uk/disease/powdery-mildews",
       "quote": "Many common edible and ornamental garden plants are affected including apples, blackcurrants, gooseberries, grapes, crucifers, cucurbits (courgettes, marrows and cucumbers), peas",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "powdery-mildew-15",
@@ -4085,7 +4173,10 @@
       "claim": "Summary: powdery mildew is most common from about August into autumn, though it can start as early as June.",
       "url": "https://extension.illinois.edu/blogs/over-garden-fence/2020-08-31-why-are-some-plants-leaves-white-now",
       "quote": "This time of year we see a lot of PM, starting around August and continuing into fall. It can get started as early as June though.",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Illinois blog about outdoor garden plants in Illinois ('This time of year we see a lot of PM, starting around August'). The timing is for that region's outdoor season, not powdery mildew in general or indoors."
     },
     {
       "id": "powdery-mildew-16",
@@ -4093,7 +4184,9 @@
       "claim": "Fix: don’t plant too densely: space plants so air circulates and humidity drops.",
       "url": "https://www.rhs.org.uk/disease/powdery-mildews",
       "quote": "Don’t plant too densely, giving space between plants. Aim for an open environment to increase air circulation and reduce humidity",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "powdery-mildew-17",
@@ -4101,7 +4194,9 @@
       "claim": "Fix: space vegetable plants further apart to increase air flow and reduce humidity.",
       "url": "https://hort.extension.wisc.edu/articles/powdery-mildew-vegetables/",
       "quote": "Reduce the humidity around your plants by spacing them further apart to increase air flow.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "powdery-mildew-18",
@@ -4109,7 +4204,9 @@
       "claim": "Fix: choose varieties that resist powdery mildew (vegetables generally).",
       "url": "https://hort.extension.wisc.edu/articles/powdery-mildew-vegetables/",
       "quote": "Consider buying plant varieties that are powdery mildew resistant. This will not guarantee that your plants will be powdery mildew free every year, but should result in less severe disease when it occurs.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "powdery-mildew-19",
@@ -4117,7 +4214,9 @@
       "claim": "Fix: mildew-resistant varieties of vegetables and ornamentals are available.",
       "url": "https://www.rhs.org.uk/disease/powdery-mildews",
       "quote": "Seed producers sometimes offer powdery mildew-resistant cultivars of both vegetables and ornamental plants, check catalogues for details.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "pests-chewing-12",
@@ -4125,7 +4224,10 @@
       "claim": "Check both sides of the leaves for caterpillars and their damage.",
       "url": "https://extension.umn.edu/yard-and-garden-insects/caterpillars-cole-crops",
       "quote": "Check for caterpillars and their feeding damage on both sides of leaves on cole crops.",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Page says to check both sides of leaves 'on cole crops' (UMN caterpillars in cole crops). Claim is not scoped to cole crops or vegetables."
     },
     {
       "id": "bolting-14",
@@ -4133,7 +4235,9 @@
       "claim": "Fix: lettuce can be sown from spring through to autumn.",
       "url": "https://www.rhs.org.uk/vegetables/lettuce/grow-your-own",
       "quote": "Lettuce seeds can be sown indoors or outdoors, in containers or in the ground, from spring through to autumn.",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "bolting-15",
@@ -4141,7 +4245,9 @@
       "claim": "Fix: lettuce bolts sooner in hot, dry weather, so grow it in light shade in the hotter months.",
       "url": "https://www.rhs.org.uk/vegetables/lettuce/grow-your-own",
       "quote": "so take care to site them in light shade during the hotter months and water regularly",
-      "verdict": "pending"
+      "verdict": "supported",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker"
     },
     {
       "id": "stale-water-20",
@@ -4149,7 +4255,10 @@
       "claim": "Fix: take cuttings from healthy houseplant stems; cuttings will root in a jar of water.",
       "url": "https://www.rhs.org.uk/plants/types/houseplants/how-to-take-cuttings-from-houseplants",
       "quote": "Go for healthy stems, free of pests and diseases",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Quote covers only 'Go for healthy stems, free of pests and diseases'. The water-rooting half is on the page elsewhere ('pop prepared cuttings directly into a glass or jar of water and it will develop roots') but not in the quote."
     },
     {
       "id": "low-water-8",
@@ -4157,7 +4266,10 @@
       "claim": "Fix: with roots part in water, the tops of the roots get oxygen from the air and the bottoms take up water.",
       "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
       "quote": "The tops of the roots get oxygen in the air and the bottoms take water and nutrients from the solution below.",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Page is UMN small-scale hydroponics for food crops (lettuce, tomatoes). It describes roots in a hydroponic nutrient solution, not houseplants or cuttings in water; claim is not scoped that way."
     },
     {
       "id": "low-water-9",
@@ -4165,7 +4277,10 @@
       "claim": "Fix: roots should always touch the water but not be fully under it.",
       "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/small-scale-hydroponics",
       "quote": "Your roots should always be touching the water, but should not be fully immersed.",
-      "verdict": "pending"
+      "verdict": "partly",
+      "checked": "2026-11-01",
+      "checkedBy": "fact-checker",
+      "note": "Hydroponic food-crop advice ('Your roots should always be touching the water, but should not be fully immersed'); claim is not scoped to hydroponics."
     }
   ]
 }
