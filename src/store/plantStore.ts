@@ -650,11 +650,20 @@ export const usePlantStore = create<PlantState>()(
 
       logRegrow: (plantId, now = new Date()) => {
         const at = now.toISOString();
-        set((s) => ({
-          plants: s.plants.map((p) => (p.id === plantId ? { ...p, regrowCount: (p.regrowCount ?? 0) + 1 } : p)),
-          // A cut is a harvest too: it shows up in the basket and earns the first-harvest party.
-          events: [...s.events, { id: uid(), plantId, type: 'regrow', at }, { id: uid(), plantId, type: 'harvest', amount: 1, unit: 'bunch', at }],
-        }));
+        set((s) => {
+          // A fresh cut sends a harvesting plant back to growing, logged at the same moment so deleting the cut undoes it too.
+          const back = s.plants.find((p) => p.id === plantId)?.stage === 'harvesting';
+          return {
+            plants: s.plants.map((p) => (p.id === plantId ? { ...p, regrowCount: (p.regrowCount ?? 0) + 1, ...(back ? { stage: 'growing' as const, stageAt: at } : {}) } : p)),
+            // A cut is a harvest too: it shows up in the basket and earns the first-harvest party.
+            events: [
+              ...s.events,
+              { id: uid(), plantId, type: 'regrow', at },
+              { id: uid(), plantId, type: 'harvest', amount: 1, unit: 'bunch', at },
+              ...(back ? [{ id: uid(), plantId, type: 'stage' as const, stage: 'growing' as const, at }] : []),
+            ],
+          };
+        });
       },
 
       addPhoto: (plantId, uri, note, now = new Date()) => {
@@ -688,11 +697,24 @@ export const usePlantStore = create<PlantState>()(
           if (!gone || !canDeleteEvent(gone)) return {};
           if (gone.type === 'check' || gone.type === 'water') return forgetWatering(s, gone, now);
           if (gone.type === 'regrow') {
-            // The cut logged a bunch harvested at the same moment: both go, and the cut count drops by one.
+            // The cut logged a bunch harvested and, on a harvesting plant, a step back to growing. All of
+            // it goes: the bunch at the same moment, and a 'growing' stage within a few seconds (older
+            // builds logged the stage just after the cut). The cut count drops by one.
+            const t = Date.parse(gone.at);
             const pair = s.events.find((e) => e.plantId === gone.plantId && e.type === 'harvest' && e.at === gone.at);
+            const stage = s.events.find((e) => e.plantId === gone.plantId && e.type === 'stage' && e.stage === 'growing' && Date.parse(e.at) >= t && Date.parse(e.at) - t < 5000);
+            const events = s.events.filter((e) => e.id !== eventId && e.id !== pair?.id && e.id !== stage?.id);
+            const later = stage && events.some((e) => e.plantId === gone.plantId && e.type === 'stage' && e.at > stage.at);
+            const before = events.filter((e) => e.plantId === gone.plantId && e.type === 'stage' && e.at <= gone.at).sort((x, y) => (x.at < y.at ? 1 : -1))[0];
             return {
-              events: s.events.filter((e) => e.id !== eventId && e.id !== pair?.id),
-              plants: s.plants.map((p) => (p.id === gone.plantId ? { ...p, regrowCount: Math.max(0, (p.regrowCount ?? 0) - 1) } : p)),
+              events,
+              plants: s.plants.map((p) => {
+                if (p.id !== gone.plantId) return p;
+                const count = { regrowCount: Math.max(0, (p.regrowCount ?? 0) - 1) };
+                // Undo the step back to growing unless a later stage has replaced it.
+                if (!stage || later) return { ...p, ...count };
+                return { ...p, ...count, stage: before?.stage ?? 'harvesting', stageAt: before?.at ?? p.stageAt };
+              }),
             };
           }
           const events = s.events.filter((e) => e.id !== eventId);

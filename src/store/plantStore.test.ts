@@ -79,7 +79,8 @@ describe('plant store', () => {
     s.logRegrow(p.id, now);
     s.addPhoto(p.id, 'file:///photo.jpg', undefined, now);
     const st = usePlantStore.getState();
-    expect(st.plants[0]).toMatchObject({ stage: 'harvesting', regrowCount: 2, photoUri: 'file:///photo.jpg' });
+    // The first cut sends the harvesting plant back to growing; the second leaves it there.
+    expect(st.plants[0]).toMatchObject({ stage: 'growing', regrowCount: 2, photoUri: 'file:///photo.jpg' });
     expect(st.events.find((e) => e.type === 'harvest')).toMatchObject({ amount: 2, unit: 'bunch', note: 'first!' });
   });
 
@@ -441,6 +442,36 @@ describe('deleting a cut or a stage logged by mistake', () => {
     const after = usePlantStore.getState();
     expect(after.events.map((e) => e.id)).toEqual(['g1', 'h1']);
     expect(after.plants[0].regrowCount).toBe(1);
+  });
+
+  it('a cut on a harvesting plant goes back to growing, and deleting the cut puts harvesting back', () => {
+    usePlantStore.setState({
+      plants: [{ ...usePlantStore.getState().plants[0], id: 'p1', stage: 'harvesting', stageAt: '2026-10-20T09:00:00Z', regrowCount: 0 } as never],
+      events: [{ id: 's1', plantId: 'p1', type: 'stage', stage: 'harvesting', at: '2026-10-20T09:00:00Z' }],
+    });
+    usePlantStore.getState().logRegrow('p1', new Date('2026-11-01T09:00:00Z'));
+    let p = usePlantStore.getState().plants[0];
+    expect([p.stage, p.regrowCount]).toEqual(['growing', 1]);
+    const cut = usePlantStore.getState().events.find((e) => e.type === 'regrow')!;
+    usePlantStore.getState().deleteEvent(cut.id);
+    p = usePlantStore.getState().plants[0];
+    expect([p.stage, p.stageAt, p.regrowCount]).toEqual(['harvesting', '2026-10-20T09:00:00Z', 0]);
+    expect(usePlantStore.getState().events.map((e) => e.id)).toEqual(['s1']);
+  });
+
+  it('also cleans up a cut from an older build, whose stage change was logged a moment later', () => {
+    usePlantStore.setState({
+      plants: [{ ...usePlantStore.getState().plants[0], id: 'p1', stage: 'growing', stageAt: '2026-11-01T09:00:00.040Z', regrowCount: 1 } as never],
+      events: [
+        { id: 's1', plantId: 'p1', type: 'stage', stage: 'harvesting', at: '2026-10-20T09:00:00Z' },
+        { id: 'g1', plantId: 'p1', type: 'regrow', at: '2026-11-01T09:00:00.000Z' },
+        { id: 'h1', plantId: 'p1', type: 'harvest', amount: 1, unit: 'bunch', at: '2026-11-01T09:00:00.000Z' },
+        { id: 's2', plantId: 'p1', type: 'stage', stage: 'growing', at: '2026-11-01T09:00:00.040Z' },
+      ],
+    });
+    usePlantStore.getState().deleteEvent('g1');
+    expect(usePlantStore.getState().events.map((e) => e.id)).toEqual(['s1']);
+    expect(usePlantStore.getState().plants[0].stage).toBe('harvesting');
   });
 
   it('steps the plant back to its previous stage when the latest one goes', () => {
