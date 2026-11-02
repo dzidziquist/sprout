@@ -78,8 +78,7 @@ export function StagePanel({ plant, now }: { plant: Plant; now: Date }) {
 
   const regrow = () => {
     logRegrow(plant.id);
-    // A fresh cut sends it back to growing.
-    if (plant.stage === 'harvesting') setStage(plant.id, 'growing');
+    // A fresh cut sends a harvesting plant back to growing (the store does it, so deleting the cut undoes it).
     haptics.success();
   };
 
