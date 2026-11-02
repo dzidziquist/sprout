@@ -426,6 +426,42 @@ describe('deleting a care entry', () => {
   });
 });
 
+describe('deleting a cut or a stage logged by mistake', () => {
+  it('takes back a cut and the bunch it harvested', () => {
+    usePlantStore.setState({
+      plants: [{ ...usePlantStore.getState().plants[0], id: 'p1', regrowCount: 2 } as never],
+      events: [
+        { id: 'g1', plantId: 'p1', type: 'regrow', at: '2026-11-01T09:00:00Z' },
+        { id: 'h1', plantId: 'p1', type: 'harvest', amount: 1, unit: 'bunch', at: '2026-11-01T09:00:00Z' },
+        { id: 'g2', plantId: 'p1', type: 'regrow', at: '2026-11-01T09:05:00Z' },
+        { id: 'h2', plantId: 'p1', type: 'harvest', amount: 1, unit: 'bunch', at: '2026-11-01T09:05:00Z' },
+      ],
+    });
+    usePlantStore.getState().deleteEvent('g2');
+    const after = usePlantStore.getState();
+    expect(after.events.map((e) => e.id)).toEqual(['g1', 'h1']);
+    expect(after.plants[0].regrowCount).toBe(1);
+  });
+
+  it('steps the plant back to its previous stage when the latest one goes', () => {
+    usePlantStore.setState({
+      plants: [{ ...usePlantStore.getState().plants[0], id: 'p1', stage: 'harvesting', stageAt: '2026-11-01T09:00:00Z' } as never],
+      events: [
+        { id: 's1', plantId: 'p1', type: 'stage', stage: 'growing', at: '2026-10-01T09:00:00Z' },
+        { id: 's2', plantId: 'p1', type: 'stage', stage: 'harvesting', at: '2026-11-01T09:00:00Z' },
+      ],
+    });
+    usePlantStore.getState().deleteEvent('s2');
+    const p = usePlantStore.getState().plants[0];
+    expect([p.stage, p.stageAt]).toEqual(['growing', '2026-10-01T09:00:00Z']);
+    // An older stage entry just leaves the history; the current stage stays.
+    usePlantStore.setState({ events: [...usePlantStore.getState().events, { id: 's3', plantId: 'p1', type: 'stage', stage: 'harvesting', at: '2026-11-02T09:00:00Z' }] });
+    usePlantStore.getState().deleteEvent('s1');
+    expect(usePlantStore.getState().events.map((e) => e.id)).toEqual(['s3']);
+    expect(usePlantStore.getState().plants[0].stage).toBe('growing');
+  });
+});
+
 describe('deleting a watering or a check', () => {
   const day = (n: number) => new Date(now.getTime() + n * 86400000);
 

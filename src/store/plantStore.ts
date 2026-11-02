@@ -208,7 +208,7 @@ interface PlantState {
   addNote: (plantId: string, note: string, now?: Date) => void;
   /** Rewrite a note (or a photo's caption). Emptying a plain note removes it. */
   editNote: (eventId: string, note: string) => void;
-  /** Removes a care entry logged by mistake (see canDeleteEvent). Waterings and checks stay: the rhythm learned from them. */
+  /** Removes a care entry logged by mistake (see canDeleteEvent), undoing what it changed: a watering or check puts the rhythm back, a cut lowers the cut count (and takes its harvest), the latest stage steps back. */
   deleteEvent: (eventId: string, now?: Date) => void;
   /** Plan a trip (replacing any that hasn't started), or end the current one now. */
   planTrip: (trip: Trip) => void;
@@ -352,7 +352,7 @@ function movedChecks(before: Plant[], after: Plant[]): Map<string, string> {
  * Entries a person can delete later. Cuttings, stages and memories aren't: they're the plant's story. Deleting a
  * watering or a check re-plans the next check (see deleteEvent).
  */
-const DELETABLE = new Set<CareEvent['type']>(['feed', 'prune', 'pest', 'repot', 'staked', 'refresh', 'harvest', 'note', 'water', 'check']);
+const DELETABLE = new Set<CareEvent['type']>(['feed', 'prune', 'pest', 'repot', 'staked', 'refresh', 'harvest', 'note', 'water', 'check', 'regrow', 'stage']);
 export const canDeleteEvent = (e: Pick<CareEvent, 'type'>) => DELETABLE.has(e.type);
 
 /** Which plant a wish is for: the species, plus the name for plants not in the catalogue. */
@@ -687,7 +687,24 @@ export const usePlantStore = create<PlantState>()(
           const gone = s.events.find((e) => e.id === eventId);
           if (!gone || !canDeleteEvent(gone)) return {};
           if (gone.type === 'check' || gone.type === 'water') return forgetWatering(s, gone, now);
+          if (gone.type === 'regrow') {
+            // The cut logged a bunch harvested at the same moment: both go, and the cut count drops by one.
+            const pair = s.events.find((e) => e.plantId === gone.plantId && e.type === 'harvest' && e.at === gone.at);
+            return {
+              events: s.events.filter((e) => e.id !== eventId && e.id !== pair?.id),
+              plants: s.plants.map((p) => (p.id === gone.plantId ? { ...p, regrowCount: Math.max(0, (p.regrowCount ?? 0) - 1) } : p)),
+            };
+          }
           const events = s.events.filter((e) => e.id !== eventId);
+          if (gone.type === 'stage') {
+            // Taking back the latest stage puts the plant on the one before it. With no earlier stage
+            // entry there's nothing to go back to, so the plant keeps its stage and only the entry goes.
+            const plant = s.plants.find((p) => p.id === gone.plantId);
+            const later = events.some((e) => e.plantId === gone.plantId && e.type === 'stage' && e.at > gone.at);
+            const before = events.filter((e) => e.plantId === gone.plantId && e.type === 'stage' && e.at <= gone.at).sort((x, y) => (x.at < y.at ? 1 : -1))[0];
+            if (!plant || later || !before?.stage) return { events };
+            return { events, plants: s.plants.map((p) => (p.id === gone.plantId ? { ...p, stage: before.stage, stageAt: before.at } : p)) };
+          }
           // Repot and fresh-water dates come from these entries, so they fall back to the one before.
           const latest = (type: CareEvent['type']) =>
             events.filter((e) => e.plantId === gone.plantId && e.type === type).reduce<string | undefined>((m, e) => (!m || e.at > m ? e.at : m), undefined);
