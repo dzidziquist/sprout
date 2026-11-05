@@ -14,10 +14,11 @@ export const SUPPORT_URL = 'https://dzidziquist.com';
 export const PRIVACY_POLICY_URL = 'https://dzidziquist.notion.site/PlantFam-Privacy-Policy-3fabc232dc2181d59c4de6716ad9eb84';
 
 /**
- * The "Suggest a plant or idea" form: a Notion form on the "PlantFam ideas" database, shared with
- * "Anyone with the link". While empty, the row falls back to email or the website.
+ * Where the in-app "Suggest a plant or idea" form posts (the plantfam-ideas Vercel function in
+ * server/ideas, which adds a row to the "PlantFam ideas" Notion database). While empty, the row
+ * falls back to email or the website.
  */
-export const IDEAS_FORM_URL = '';
+export const IDEAS_ENDPOINT = '';
 
 /** PlantFam's App Store page (Apple ID 6823421043). It goes live once the app is approved. */
 export const APP_STORE_URL = 'https://apps.apple.com/app/id6823421043';
@@ -32,4 +33,4 @@ export const TIPS_ENABLED = false;
 export const TERMS_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 
-export const PRIVACY_UPDATED = 'October 31, 2026';
+export const PRIVACY_UPDATED = 'November 5, 2026';

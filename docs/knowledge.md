@@ -18,7 +18,8 @@ Wrong advice is kept out four ways:
    before (`evals/passing.json`, which only grows; changing or removing a case needs a person's OK). A weekly workflow re-opens every source
    page to catch dead links and pages that changed.
 
-Then Codex reviews the pull request, and a person merges it.
+Then Codex reviews the pull request, and a person merges it. (Plants suggested in the app go through the
+same agents and claims, from the ideas inbox pipeline in `docs/intake.md`.)
 
 ## What the task may change
 

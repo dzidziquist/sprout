@@ -11,7 +11,9 @@ Only `src/data/diagnosis.ts`, `src/data/mixes.ts`, `src/data/edibles.ts`, `src/d
 1. Search only the sites in `knowledge/sources.json`. Open every page you use (WebFetch, or curl).
 2. Write each fact as a **claim** in `knowledge/claims.json`:
    `{ id, entry, claim, url, quote, verdict: "pending" }`
-   - `entry` is what it backs: `cause:<id>`, `symptom:<id>`, `mix:<name>`, `note:<species>/<symptom>`.
+   - `entry` is what it backs: `cause:<id>`, `symptom:<id>`, `mix:<name>`, `note:<species>/<symptom>`,
+     or `species:<id>` for a new catalogue plant from the ideas inbox (`docs/intake.md`): one claim each
+     for its care group, light, soil, pet safety and tip.
    - `quote` is **copied word for word** from the page (20–400 characters): the words that support the
      claim, not a summary. If you can't find words that say it, you don't have a claim.
 3. New causes, symptoms and mixes go in with `status: 'draft'`; new species notes go in

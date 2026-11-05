@@ -74,6 +74,13 @@ describe('buildExportJson', () => {
     expect(doc.profile.supporter).toBe(true);
     expect(doc.profile).not.toHaveProperty('streakFreezes');
   });
+
+  it('never puts the ideas this phone sent, or what it has seen, in a backup', () => {
+    const sentIdeas = [{ id: '2a5d8875912b48ddbc07779a3b9785a8', kind: 'Missing plant', label: 'Dragon fruit', at: '2026-11-05' }];
+    const doc = JSON.parse(buildExportJson({ profile: { ...DEFAULT_PROFILE, sentIdeas, whatsNewSeen: ['a'] }, plants, events }));
+    expect(doc.profile).not.toHaveProperty('sentIdeas');
+    expect(doc.profile).not.toHaveProperty('whatsNewSeen');
+  });
 });
 
 describe('parseBackup', () => {

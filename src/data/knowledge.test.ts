@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CAUSES, SPECIES_NOTES, SPECIES_NOTES_DRAFT, SYMPTOMS } from './diagnosis';
 import { MIX_BRANDS } from './mixes';
+import { SPECIES } from './species';
 
 /*
  * The knowledge rules (docs/knowledge.md), checked on every change: every fact behind a verified entry
@@ -23,6 +24,7 @@ const ENTRIES = new Set([
   ...Object.keys(CAUSES).map((id) => `cause:${id}`),
   ...SYMPTOMS.map((s) => `symptom:${s.id}`),
   ...MIX_BRANDS.map((b) => `mix:${b.name}`),
+  ...Object.keys(SPECIES).map((id) => `species:${id}`),
   ...Object.entries({ ...SPECIES_NOTES_DRAFT, ...SPECIES_NOTES }).flatMap(([sp, notes]) => Object.keys(notes).map((sym) => `note:${sp}/${sym}`)),
 ]);
 const supported = (entry: string) => claims.some((c) => c.entry === entry && c.verdict === 'supported');
@@ -46,6 +48,14 @@ describe('knowledge ledger', () => {
     for (const c of Object.values(CAUSES)) if (c.status === 'verified') expect(supported(`cause:${c.id}`), `cause ${c.id} is verified without a supported claim`).toBe(true);
     for (const s of SYMPTOMS) if (s.status === 'verified') expect(s.causes.length).toBeGreaterThan(0);
     for (const b of MIX_BRANDS) if (b.status === 'verified') expect(supported(`mix:${b.name}`), `mix ${b.name} is verified without a supported claim`).toBe(true);
+  });
+
+  it('ships a plant added from the ideas inbox only when every claim behind it is supported', () => {
+    // docs/intake.md: a species with claims (one the pipeline researched) is in the catalogue, which the
+    // app shows, so every claim must already be supported. Hand-written entries have no claims.
+    for (const c of claims.filter((x) => x.entry.startsWith('species:') && x.verdict !== 'supported')) {
+      expect.fail(`${c.id}: ${c.entry} is in the catalogue but this claim is ${c.verdict}. Fix or drop it before the plant merges.`);
+    }
   });
 
   it('lets an entry be verified only when every claim behind it is supported', () => {
