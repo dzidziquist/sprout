@@ -8,6 +8,7 @@ import { Button, Label, Sticker, Title } from '@/components/ui';
 import { buildIdea, IDEA_KINDS, type IdeaKind } from '@/lib/idea';
 import * as haptics from '@/lib/haptics';
 import { useSheetTop } from '@/lib/sheetTop';
+import { usePlantStore } from '@/store/plantStore';
 import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 
@@ -25,6 +26,7 @@ export default function IdeaScreen() {
   const [details, setDetails] = useState('');
   const [email, setEmail] = useState('');
   const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const setProfile = usePlantStore((s) => s.setProfile);
   const app = `PlantFam ${APP_VERSION} · ${Platform.OS === 'ios' ? 'iOS' : Platform.OS} ${Platform.Version}`;
   const idea = buildIdea({ kind, plant, details, email, app });
   const tint = { 'Missing plant': c.mint, 'Feature idea': c.butter, 'Something confusing': c.lavender, Bug: c.blush } as const;
@@ -36,6 +38,13 @@ export default function IdeaScreen() {
     try {
       const r = await fetch(IDEAS_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(idea.body) });
       if (!r.ok) throw new Error(String(r.status));
+      // Remember it on this phone only, so an update that adds it can say thanks.
+      const { id } = ((await r.json().catch(() => ({}))) ?? {}) as { id?: unknown };
+      if (typeof id === 'string' && /^[0-9a-f-]{32,36}$/i.test(id)) {
+        const label = (kind === 'Missing plant' && plant.trim()) || details.trim().split('\n')[0].slice(0, 60);
+        const sent = usePlantStore.getState().profile.sentIdeas ?? [];
+        setProfile({ sentIdeas: [...sent, { id, kind, label, at: new Date().toISOString() }].slice(-50) });
+      }
       haptics.success();
       setState('sent');
     } catch {

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Trip } from '../engine/away';
+import type { SentIdea } from '../lib/whatsNew';
 import type { AnyRoomLight, RoomLight } from '../engine/light';
 import { addDays, applyCheck, initialNextCheck, K_MAX, K_MIN, MAX_INTERVAL_DAYS, seasonMultiplier } from '../engine/careEngine';
 import { GRACE_DAYS } from '../engine/streak';
@@ -39,6 +40,10 @@ export interface Profile {
   accent?: Accent;
   /** Plants tab layout the person last picked. Unset: grid for a small fam, list from 16 plants. */
   jungleView?: 'grid' | 'list' | 'light';
+  /** What's new items this phone has shown (src/lib/whatsNew.ts). Unset on a new install. Not backed up. */
+  whatsNewSeen?: string[];
+  /** Ideas sent from this phone, so an update that adds one can say thanks. Never leaves the phone. */
+  sentIdeas?: SentIdea[];
   /** Grow patch layout. Unset: grid from 5 crops, list below that. */
   growView?: 'grid' | 'list';
   /** Each room's windows (each with what's in its way), by room name, for the light view. Older saves have one shade per room. */

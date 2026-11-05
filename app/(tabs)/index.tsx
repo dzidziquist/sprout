@@ -20,6 +20,7 @@ import { PlantMenu } from '@/components/PlantMenu';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { UndoHost } from '@/components/UndoToast';
 import { HouseholdCard } from '@/components/HouseholdCard';
+import { WhatsNewCard } from '@/components/WhatsNewCard';
 import { showUndo } from '@/lib/undo';
 import { GlassButton } from '@/components/GlassButton';
 import { TodayAnswerButtons } from '@/components/TodayAnswerButtons';
@@ -261,6 +262,7 @@ export default function TodayScreen() {
           </View>
         )}
 
+        <WhatsNewCard now={now} />
         <HouseholdCard now={now} />
 
         {!trip && nextTrip && (

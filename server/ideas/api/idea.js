@@ -58,7 +58,9 @@ export default async function handler(req, res) {
     console.error('notion', r?.status, r ? await r.text().catch(() => '') : 'network');
     return res.status(502).json({ ok: false, error: 'notion' });
   }
-  return res.status(200).json({ ok: true });
+  const page = await r.json().catch(() => ({}));
+  // The row id lets the phone that sent it say thanks when an update adds it (src/lib/whatsNew.ts).
+  return res.status(200).json({ ok: true, id: typeof page.id === 'string' ? page.id : undefined });
 }
 
 function safeJson(s) {

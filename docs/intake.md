@@ -13,7 +13,7 @@ scheduled Claude Code task works through the inbox:
 | **Other** | The owner | `Needs your review` |
 
 The pipeline merges its own pull requests once every check below passes. **It never starts a
-TestFlight build.** The owner says "build"; once a build with the change ships, its rows move to `Done`.
+TestFlight build.** How merged work reaches phones is in "Shipping" below.
 
 ## Statuses
 
@@ -61,7 +61,9 @@ Separate agents, each starting fresh with one job (`docs/agents/`). Nobody check
    runs the whole suite, the typecheck and the evals; for a screen bug it retakes the screenshot. It
    also reads the diff for anything outside the allowed files or the rules above. Pass or fail, with
    reasons. A fail goes back to step 2 once; a second fail → `Needs your review`.
-4. **Pull request** with the note (no email), the reproduction, the fix and the verifier's report.
+4. **Pull request** with the note (no email), the reproduction, the fix and the verifier's report, and
+   one item in `src/data/whatsNew.ts` (`kind: 'fix'`, a short line in PlantFam's voice, `ideas` = the
+   Notion row id).
    Codex reviews it and CI runs. Fix real findings the usual way.
 5. **Merge** (squash) only when: the verifier passed, CI is green on the head, and Codex has no open
    findings. Then `Ready to ship` with the PR link.
@@ -94,7 +96,29 @@ Changing a fact needs the knowledge pipeline (`docs/knowledge.md`), not a bug fi
    and add "art needs a hand" to Pipeline notes.
 5. **Register** the images in `src/data/expandedBuddyImages.ts`, run `node scripts/audit-assets.mjs`,
    the tests, typecheck and evals.
-6. **Pull request**, Codex, CI, **merge** on the same conditions as bugs. Then `Ready to ship`.
+6. **Pull request** with one item in `src/data/whatsNew.ts` (`kind: 'plant'`, "Dragon fruit has joined
+   the catalogue", `ideas` = the Notion row id), then Codex, CI and **merge** on the same conditions as
+   bugs. Then `Ready to ship`.
+
+## Shipping
+
+Fixes and plants change only JavaScript, data and art, so they can go to phones **over the air**
+(expo-updates, the **Over-the-air update** workflow) without a new build. Updates reach only builds with
+the same `runtimeVersion` (`app.json`); a test fails when native code changes without bumping it, and
+then a new build is the only way.
+
+- **While `appStoreLive` is `false`** in `.github/release.json` (TestFlight only): nothing ships until the
+  owner says "ship". Then run the Over-the-air update workflow on `main` with a message listing what's
+  in it, and move every `Ready to ship` row to `Done`.
+- **Once the owner sets it to `true`** (PlantFam is live on the App Store): at the end of each run that
+  merged something, run the Over-the-air update workflow on `main` yourself, then move those rows to
+  `Done` and say so in the summary.
+- The pipeline never edits `.github/release.json`, never starts a build, and never publishes from any
+  branch but `main`. If CI or the runtime test is red on `main`, don't publish: tell the owner.
+
+People hear about it in the app, not by push: after the update lands, Today shows a "New in PlantFam"
+card once, from `src/data/whatsNew.ts`. The phone that sent the idea sees "Your idea is in!", because it
+remembers the row ids it sent (they never leave the phone). There's no notification server.
 
 ## The owner's queue
 

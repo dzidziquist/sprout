@@ -1,0 +1,43 @@
+name: Over-the-air update
+
+# Publishes the current main to phones on the production channel, without a new build
+# (docs/intake.md, "Shipping"). Only reaches builds with the same runtimeVersion (app.json); the
+# runtime test fails CI when native code changed and a new build is needed instead.
+# Needs EXPO_TOKEN, and EXPO_PUBLIC_PLANTNET_KEY so photo ID keeps working in the update.
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: What's in it (shown in EAS)
+        required: true
+
+concurrency:
+  group: ota-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Only from main
+        env:
+          REF: ${{ github.ref_name }}
+        run: '[[ "$REF" == "main" ]] || { echo "Publish from main only, not $REF"; exit 1; }'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run ts:check
+      - run: npm test
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Publish
+        env:
+          EXPO_PUBLIC_PLANTNET_KEY: ${{ secrets.EXPO_PUBLIC_PLANTNET_KEY }}
+          MESSAGE: ${{ inputs.message }}
+        run: eas update --channel production --platform ios --message "$MESSAGE" --non-interactive

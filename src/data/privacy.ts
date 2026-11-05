@@ -38,7 +38,8 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
         ? ['Tips (optional): Apple handles payment. RevenueCat records the tip with an anonymous app ID and your purchase receipt so the app can say thank you. Tips unlock no features. We never see your name, email or card.']
         : []),
       'Plant info: to show the About card on a plant’s page, the species name (for example “Goeppertia orbifolia”) is sent to Wikipedia to fetch its short summary. If you tap “Real photo”, the name of that photo’s file is sent to Wikimedia Commons to fetch the photo and its credit (who took it and its licence). Nothing about you or your plants goes with either, and the results are kept on your phone.',
-      'Suggest a plant or idea (only when you send one): what you type, your email if you add it, and the PlantFam and iOS version go to the maker’s private notes (stored in Notion, through a small server on Vercel). Nothing about your plants, photos or location is sent. Your email is used only to reply.',
+      'Suggest a plant or idea (only when you send one): what you type, your email if you add it, and the PlantFam and iOS version go to the maker’s private notes (stored in Notion, through a small server on Vercel). Nothing about your plants, photos or location is sent. Your email is used only to reply. Your phone keeps a note of what it sent, so it can say thanks when an update adds it.',
+      'App updates: when PlantFam opens, it asks Expo’s update service whether a newer version of the app is ready, and downloads it if so. That request carries the app’s version and the kind of phone, nothing about you or your plants.',
       'Reminders are scheduled on your phone. No notification server is involved.',
     ],
   },

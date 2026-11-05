@@ -1,0 +1,4 @@
+{
+  "appStoreLive": false,
+  "_note": "While false, over-the-air updates go out only when the owner says ship. The owner sets it to true once PlantFam is live on the App Store; then the ideas pipeline publishes merged fixes and plants itself (docs/intake.md). The pipeline must never change this file."
+}
