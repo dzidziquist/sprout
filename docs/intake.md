@@ -87,16 +87,19 @@ Changing a fact needs the knowledge pipeline (`docs/knowledge.md`), not a bug fi
 3. **Art.** Write the three prompts in the style of `docs/asset-prompts-v3-new-plants.md` §3 into
    `docs/intake/art/<id>.json` (`{ "id", "pot", "happy", "thirsty", "snoozing" }`) and pick a pot colour
    that keeps the set balanced. Then get the images, in this order:
-   - **Codex (the owner's ChatGPT plan, no API cost):** comment on the plant's PR, starting with
-     `@codex`, asking it to make `assets/buddies/<id>-{happy,thirsty,snoozing}.png` from that JSON and the
-     style block, as 640×640 transparent PNGs framed like the existing buddies, and to push them to the
-     branch. Wait for its reply.
-   - **If Codex can't make image files** and the `OPENAI_API_KEY` secret exists: run the **Plant art**
-     workflow (`.github/workflows/plant-art.yml`) on the branch.
-   - **Otherwise:** merge the plant with its look-alike `art` and no own images, mark the row
-     `Ready to ship` with "art by hand" in Pipeline notes, and list the plant in the owner's summary with
-     a link to its prompts JSON, so they can make the images in ChatGPT and upload them.
-4. **Check the art** (`art-checker.md`). A fresh agent looks at the three images next to
+   - **Codex (the owner's ChatGPT plan, no API cost).** Codex made the app's existing buddy art, but
+     asking it from GitHub (`@codex` on a PR) doesn't work for this account, so the owner runs it:
+     merge the plant first with its look-alike `art` (it ships straight away), then put a ready-to-paste
+     Codex task in the owner's summary: work on `sprout`, branch `intake/plant-<id>` (push it first),
+     make `assets/buddies/<id>-{happy,thirsty,snoozing}.png` from `docs/intake/art/<id>.json` and the
+     style block (happy first, the other two as edits of it), 640×640 transparent PNGs framed like the
+     existing buddies (pot centred, bottom at about y = 623, at least 14px margin), no other files
+     changed. Mark the row `Ready to ship` with "art: waiting for Codex" in Pipeline notes.
+   - **When the images land on that branch** (any later run checks open `intake/plant-*` branches):
+     go on to step 4.
+   - **Only if the `OPENAI_API_KEY` secret exists:** the **Plant art** workflow
+     (`.github/workflows/plant-art.yml`) can make them without the owner instead.
+4. **Check the art** (`art-checker.md`), once images exist. A fresh agent looks at the three images next to
    `pothos-happy.png` and `monstera-happy.png` and runs the checklist in
    `docs/asset-prompts-v3-new-plants.md` §4. Fail → rerun the workflow with a targeted fix in the
    prompt, at most 3 times; still failing → merge the plant with its look-alike `art` and no own images,
