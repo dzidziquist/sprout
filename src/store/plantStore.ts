@@ -39,6 +39,8 @@ export interface Profile {
   accent?: Accent;
   /** Plants tab layout the person last picked. Unset: grid for a small fam, list from 16 plants. */
   jungleView?: 'grid' | 'list' | 'light';
+  /** Grow patch layout. Unset: grid from 5 crops, list below that. */
+  growView?: 'grid' | 'list';
   /** Each room's windows (each with what's in its way), by room name, for the light view. Older saves have one shade per room. */
   rooms?: Record<string, AnyRoomLight>;
   /** No longer used: plant pages always show their light card. Kept so old backups still load. */

@@ -527,3 +527,26 @@ export function formatTotals(totals: Record<string, number> | undefined): string
   const parts = Object.entries(totals).filter(([, n]) => n > 0).map(([u, n]) => formatAmount(n, u));
   return parts.length ? parts.join(' · ') : undefined;
 }
+
+/** The one thing a crop tile shows when it needs you: a weather alert first, then a job due this week. */
+export interface CropChip {
+  text: string;
+  alert?: AlertKind;
+  task?: TaskKind;
+}
+
+const ALERT_CHIP: Record<AlertKind, string> = { frost: 'Frost coming', 'cold-set': 'Cold nights', 'heat-set': 'Heat coming', 'warm-nights': 'Warm nights', 'heavy-rain': 'Heavy rain' };
+const TASK_CHIP: Record<TaskKind, string> = { sow: 'Time to sow', plant: 'Plant out', care: 'Needs a hand', feed: 'Feed due', harvest: 'Ready to pick', protect: 'Protect it' };
+
+export function cropChip(plantId: string, alerts: GrowAlert[], openTasks: GrowTask[]): CropChip | undefined {
+  const alert = alerts.find((a) => a.plantIds.includes(plantId));
+  if (alert) return { text: ALERT_CHIP[alert.kind], alert: alert.kind };
+  const task = openTasks.find((t) => t.thisWeek && t.plantIds.includes(plantId));
+  if (task) return { text: TASK_CHIP[task.kind], task: task.kind };
+  return undefined;
+}
+
+/** Crops that need you first; otherwise the fam order is kept. */
+export function sortByNeed<T extends { id: string }>(plants: T[], needs: (id: string) => boolean): T[] {
+  return plants.map((p, i) => ({ p, i, n: needs(p.id) ? 0 : 1 })).sort((a, b) => a.n - b.n || a.i - b.i).map((x) => x.p);
+}

@@ -39,7 +39,7 @@ export function JungleSearch({ value, onChange }: { value: string; onChange: (q:
 }
 
 /** Grid / list / light switch. */
-export function JungleViewToggle({ value, onChange }: { value: JungleView; onChange: (v: JungleView) => void }) {
+export function JungleViewToggle<V extends JungleView>({ value, onChange, views = ['grid', 'list', 'light'] as V[] }: { value: V; onChange: (v: V) => void; views?: V[] }) {
   const c = useColors();
   const icon = (v: JungleView, on: boolean) => {
     const stroke = on ? textOn(c.lavender, c) : c.inkMuted;
@@ -63,7 +63,7 @@ export function JungleViewToggle({ value, onChange }: { value: JungleView; onCha
   };
   return (
     <View style={[styles.segment, { borderColor: c.line, backgroundColor: c.card }]} accessibilityRole="radiogroup" accessibilityLabel="Layout">
-      {(['grid', 'list', 'light'] as const).map((v) => {
+      {views.map((v) => {
         const on = value === v;
         return (
           <Pressable

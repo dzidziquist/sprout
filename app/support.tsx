@@ -1,4 +1,4 @@
-import { APP_STORE_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL, TIPS_ENABLED } from '@/config';
+import { APP_STORE_URL, IDEAS_FORM_URL, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL, TIPS_ENABLED } from '@/config';
 import { useState } from 'react';
 import { ActivityIndicator, Image, Linking, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import * as StoreReview from 'expo-store-review';
@@ -134,7 +134,7 @@ export default function SupportScreen() {
     } else if (id === 'share') {
       Share.share({ message: `I keep my plants happy with PlantFam, a free plant-care app with cute plant buddies.${APP_STORE_URL ? ` ${APP_STORE_URL}` : ''}` }).catch(() => {});
     } else {
-      Linking.openURL(SUPPORT_EMAIL ? `mailto:${SUPPORT_EMAIL}?subject=PlantFam%20idea` : SUPPORT_URL);
+      Linking.openURL(IDEAS_FORM_URL || (SUPPORT_EMAIL ? `mailto:${SUPPORT_EMAIL}?subject=PlantFam%20idea` : SUPPORT_URL));
     }
   };
 

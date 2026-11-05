@@ -13,6 +13,12 @@ export const SUPPORT_URL = 'https://dzidziquist.com';
 /** Public privacy policy, published from Notion (page "PlantFam Privacy Policy"). The same URL goes in App Store Connect. */
 export const PRIVACY_POLICY_URL = 'https://dzidziquist.notion.site/PlantFam-Privacy-Policy-3fabc232dc2181d59c4de6716ad9eb84';
 
+/**
+ * The "Suggest a plant or idea" form: a Notion form on the "PlantFam ideas" database, shared with
+ * "Anyone with the link". While empty, the row falls back to email or the website.
+ */
+export const IDEAS_FORM_URL = '';
+
 /** PlantFam's App Store page (Apple ID 6823421043). It goes live once the app is approved. */
 export const APP_STORE_URL = 'https://apps.apple.com/app/id6823421043';
 

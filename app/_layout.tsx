@@ -180,6 +180,10 @@ export default function RootLayout() {
           options={{ presentation: 'fullScreenModal', animation: 'fade', contentStyle: { backgroundColor: c.bg } }}
         />
         <Stack.Screen
+          name="crop/[id]"
+          options={{ presentation: 'formSheet', sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}
+        />
+        <Stack.Screen
           name="harvest/[id]"
           options={{ presentation: 'formSheet', sheetAllowedDetents: [0.75, 1], sheetGrabberVisible: true, sheetCornerRadius: 38, contentStyle: { backgroundColor: c.bg } }}
         />

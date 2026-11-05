@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  cropChip,
+  sortByNeed,
   daysInStage,
   pickGrowCard,
   isPutAway,
@@ -561,5 +563,22 @@ describe("Today's grow card", () => {
     expect(pickGrowCard([], [], {}, now)).toEqual({ kind: 'quiet' });
     expect(pickGrowCard([], tasks, { ticks: { a: now.toISOString(), b: now.toISOString() } }, now)).toEqual({ kind: 'quiet' });
     expect(pickGrowCard([], [], { hidden: putAway(undefined, 'quiet', week, now) }, now)).toBeNull();
+  });
+});
+
+describe('crop tiles', () => {
+  const alert = { id: 'frost', kind: 'frost' as const, title: '', body: '', plantIds: ['a'], dates: [] };
+  const feed = { id: 'f', kind: 'feed' as const, title: '', body: '', plantIds: ['a', 'b'], thisWeek: true };
+  const later = { id: 'l', kind: 'harvest' as const, title: '', body: '', plantIds: ['c'], thisWeek: false };
+
+  it('shows weather first, then a job due this week, else nothing', () => {
+    expect(cropChip('a', [alert], [feed])).toEqual({ text: 'Frost coming', alert: 'frost' });
+    expect(cropChip('b', [alert], [feed])).toEqual({ text: 'Feed due', task: 'feed' });
+    expect(cropChip('c', [alert], [feed, later])).toBeUndefined();
+  });
+
+  it('puts crops that need you first and keeps the rest in order', () => {
+    const list = ['a', 'b', 'c', 'd'].map((id) => ({ id }));
+    expect(sortByNeed(list, (id) => id === 'c' || id === 'd').map((p) => p.id)).toEqual(['c', 'd', 'a', 'b']);
   });
 });
