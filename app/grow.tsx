@@ -3,7 +3,7 @@ import { placeName } from '@/lib/climate';
 import { useUnits } from '@/hooks/useUnits';
 import { degrees, localizeTemps } from '@/lib/units';
 import { useMemo, useState } from 'react';
-import { ActionSheetIOS, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { ActionSheetIOS, Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
@@ -220,11 +220,10 @@ export default function GrowPatch() {
       { title: 'Open crop card', run: () => router.push(`/crop/${p.id}`) },
       { title: 'Plant page', run: () => router.push(`/plant/${p.id}`) },
     ];
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions({ title: p.name, options: [...acts.map((a) => a.title), 'Cancel'], cancelButtonIndex: acts.length }, (i) => acts[i]?.run());
-    } else {
-      Alert.alert(p.name, undefined, [...acts.map((a) => ({ text: a.title, onPress: a.run })), { text: 'Cancel', style: 'cancel' as const }]);
-    }
+    // Android's alert keeps only three buttons and the web's does nothing, so there the crop card
+    // (which has the same actions) opens instead.
+    if (Platform.OS !== 'ios') return router.push(`/crop/${p.id}`);
+    ActionSheetIOS.showActionSheetWithOptions({ title: p.name, options: [...acts.map((a) => a.title), 'Cancel'], cancelButtonIndex: acts.length }, (i) => acts[i]?.run());
   };
   const toggle = (t: GrowTask) => {
     haptics.tap();
