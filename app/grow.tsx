@@ -3,24 +3,24 @@ import { placeName } from '@/lib/climate';
 import { useUnits } from '@/hooks/useUnits';
 import { degrees, localizeTemps } from '@/lib/units';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { ActionSheetIOS, Platform, Pressable, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePlantStore } from '@/store/plantStore';
-import { daysInStage, ediblePlants, FEED_TASKS, feedingAdvice, formatTotals, harvestStats, isTicked, seasonEnd, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
+import { cropChip, sortByNeed, ediblePlants, FEED_TASKS, formatTotals, harvestStats, isTicked, seasonEnd, skyOf, withTickedSupport, tasksFor, weatherAlerts, type DailyForecast, type GrowAlert, type GrowTask, type Sky } from '@/engine/growPatch';
 import { edibleGuide } from '@/data/edibles';
-import { speciesOf } from '@/data/species';
 import { useForecast } from '@/lib/weather';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Button, Label, Sticker, Title } from '@/components/ui';
 import { GlassButton } from '@/components/GlassButton';
+import { CropCard, CropTile } from '@/components/CropCard';
+import { JungleViewToggle } from '@/components/JungleControls';
 import { ALERT_ICON, GROW_ICON, Icon, alertTint, taskTint } from '@/components/GrowTodayCard';
 import * as haptics from '@/lib/haptics';
 import { shortDay } from '@/engine/mix';
-import { withNextFeed } from '@/engine/feeding';
 import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors, type Palette } from '@/theme/theme';
-import type { EdibleStage, Plant } from '@/types';
+import type { Plant } from '@/types';
 
 
 function weekday(iso: string, i: number) {
@@ -160,143 +160,6 @@ function TaskRow({ task, done, skipped, offUntil, onToggle, onSkip, onOffSeason,
   );
 }
 
-function StageTrack({ plant, pending, onPick, c }: { plant: Plant; pending?: EdibleStage; onPick: (s: EdibleStage) => void; c: Palette }) {
-  const guide = edibleGuide(plant.speciesId)!;
-  const at = plant.stage ? guide.stages.indexOf(plant.stage) : -1;
-  return (
-    <View style={styles.track}>
-      <View style={[styles.trackLine, { backgroundColor: c.line, left: `${50 / guide.stages.length}%`, right: `${50 / guide.stages.length}%` }]} />
-      {guide.stages.map((s, i) => {
-        const done = i < at;
-        const now = i === at;
-        const picked = pending === s;
-        const fill = picked ? c.grape : now ? c.sun : done ? c.leaf : c.card;
-        return (
-          <Pressable
-            key={s}
-            accessibilityRole="button"
-            accessibilityLabel={`${guide.info[s]!.label}${now ? ', current stage' : ''}`}
-            accessibilityState={{ selected: now }}
-            disabled={now}
-            onPress={() => onPick(s)}
-            hitSlop={4}
-            style={styles.stageCol}
-          >
-            <View
-              style={[
-                styles.dot,
-                { borderColor: c.line, backgroundColor: fill },
-                (now || picked) && { boxShadow: `0px 0px 0px 3px ${c.card}, 0px 0px 0px 5px ${c.line}` },
-              ]}
-            >
-              {done && !picked ? (
-                <Icon d={GROW_ICON.check} color={textOn(fill, c)} size={14} width={3.2} />
-              ) : (
-                <Text style={[styles.dotNum, { color: textOn(fill, c) }]}>{i + 1}</Text>
-              )}
-            </View>
-            <Text style={[styles.stageLabel, { color: now || done || picked ? c.ink : c.inkMuted }]} numberOfLines={1}>
-              {guide.info[s]!.label}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
-function CropCard({ plant, total, now }: { plant: Plant; total?: string; now: Date }) {
-  const events = usePlantStore((s) => s.events);
-  const units = useUnits();
-  const c = useColors();
-  const router = useRouter();
-  const climate = usePlantStore((s) => s.profile.climate);
-  const faces = usePlantStore((s) => s.profile.faces);
-  const setStage = usePlantStore((s) => s.setStage);
-  const logRegrow = usePlantStore((s) => s.logRegrow);
-  const [pending, setPending] = useState<EdibleStage | undefined>();
-  const guide = edibleGuide(plant.speciesId)!;
-  const species = speciesOf(plant);
-  const tint = c.potTint[plant.potColor];
-  const info = plant.stage ? guide.info[plant.stage] : undefined;
-  const days = daysInStage(plant, now);
-
-  const confirm = () => {
-    if (!pending) return;
-    setStage(plant.id, pending);
-    haptics.success();
-    setPending(undefined);
-  };
-
-  const regrow = () => {
-    logRegrow(plant.id);
-    // A fresh cut sends a harvesting plant back to growing (the store does it, so deleting the cut undoes it).
-    haptics.success();
-  };
-
-  return (
-    <Sticker drop={5} style={{ overflow: 'hidden' }}>
-      <View style={[styles.cropHead, { backgroundColor: tint, borderColor: c.line }]}>
-        <View style={{ flex: 1, gap: 2, paddingVertical: 14 }}>
-          <Text style={[styles.cropName, { color: c.ink }]} numberOfLines={1}>{plant.name}</Text>
-          <Text style={[styles.cropKind, { color: c.ink }]} numberOfLines={1}>
-            {species.commonName}
-            {plant.room ? ` · ${plant.room}` : ''}
-          </Text>
-          <View style={styles.pills}>
-            <View style={[styles.pill, { backgroundColor: c.card, borderColor: c.line }]}>
-              <Text style={[styles.pillText, { color: c.ink }]}>
-                {info ? (days === undefined ? info.label : `${info.label} · day ${days + 1}`) : 'Set a stage'}
-              </Text>
-            </View>
-            {guide.regrows && (plant.regrowCount ?? 0) > 0 ? (
-              <View style={[styles.pill, { backgroundColor: c.grape, borderColor: c.line }]}>
-                <Text style={[styles.pillText, { color: textOn(c.grape, c) }]}>Regrown ×{plant.regrowCount}</Text>
-              </View>
-            ) : null}
-          </View>
-        </View>
-        <View style={styles.cropBuddy}>
-          <PlantBuddy speciesId={plant.speciesId} pot={plant.potColor} size={104} bg={tint} faces={faces} />
-        </View>
-      </View>
-
-      <View style={styles.cropBody}>
-        <StageTrack plant={plant} pending={pending} c={c} onPick={(s) => { haptics.tap(); setPending(s === pending ? undefined : s); }} />
-
-        {pending ? (
-          <View style={[styles.confirm, { backgroundColor: c.lavender, borderColor: c.line }]}>
-            <Text style={[styles.confirmText, { color: c.ink }]}>
-              Move {plant.name} to <Text style={{ fontFamily: fonts.display }}>{guide.info[pending]!.label}</Text>?
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <Button title="Not yet" bg={c.card} onPress={() => setPending(undefined)} style={styles.confirmBtn} />
-              <Button title="Yes, move" bg={c.leaf} onPress={confirm} style={styles.confirmBtn} />
-            </View>
-          </View>
-        ) : (
-          <View style={{ gap: 6 }}>
-            <Text style={[styles.tip, { color: c.ink }]}>{info ? localizeTemps(info.tip, units) : 'Tap the stage it’s at now and we’ll tailor the tips.'}</Text>
-            <View style={styles.metaRow}>
-              <Icon d={GROW_ICON.feed} color={c.inkMuted} size={16} />
-              <Text style={[styles.meta, { color: c.inkMuted }]}>{localizeTemps(withNextFeed(feedingAdvice(plant, climate, now), plant.id, events, now), units)}</Text>
-            </View>
-            <View style={styles.metaRow}>
-              <Icon d={GROW_ICON.harvest} color={c.inkMuted} size={16} />
-              <Text style={[styles.meta, { color: c.inkMuted }]}>{total ? `Harvested ${total}` : 'No harvest yet. The first one gets a party.'}</Text>
-            </View>
-          </View>
-        )}
-
-        <View style={styles.actions}>
-          <Button title="Log harvest" raised bg={c.leaf} onPress={() => router.push(`/harvest/${plant.id}`)} style={styles.action} />
-          {guide.regrows ? <Button title="Cut and regrow" raised bg={c.card} onPress={regrow} style={styles.action} /> : null}
-        </View>
-      </View>
-    </Sticker>
-  );
-}
-
 export default function GrowPatch() {
   const c = useColors();
   const router = useRouter();
@@ -313,6 +176,9 @@ export default function GrowPatch() {
   const offSeasonGrowTask = usePlantStore((s) => s.offSeasonGrowTask);
   const setStaked = usePlantStore((s) => s.setStaked);
   const setFed = usePlantStore((s) => s.setFed);
+  const setProfile = usePlantStore((s) => s.setProfile);
+  const logRegrow = usePlantStore((s) => s.logRegrow);
+  const savedView = usePlantStore((s) => s.profile.growView);
   const now = new Date();
 
   const edibles = useMemo(() => ediblePlants(plants), [plants]);
@@ -342,6 +208,23 @@ export default function GrowPatch() {
     if (!on) offSeasonGrowTask(t.id, undefined);
   };
   const [showDone, setShowDone] = useState(false);
+  // Grid by default once the patch is big enough to scroll past; the choice is remembered.
+  const view = savedView ?? (edibles.length >= 5 ? 'grid' : 'list');
+  const chipFor = (id: string) => cropChip(id, alerts, open);
+  const crops = view === 'grid' ? sortByNeed(edibles, (id) => !!chipFor(id)) : edibles;
+  const quick = (p: Plant) => {
+    const guide = edibleGuide(p.speciesId);
+    const acts: { title: string; run: () => void }[] = [
+      { title: 'Log harvest', run: () => router.push(`/harvest/${p.id}`) },
+      ...(guide?.regrows ? [{ title: 'Cut and regrow', run: () => { logRegrow(p.id); haptics.success(); } }] : []),
+      { title: 'Open crop card', run: () => router.push(`/crop/${p.id}`) },
+      { title: 'Plant page', run: () => router.push(`/plant/${p.id}`) },
+    ];
+    // Android's alert keeps only three buttons and the web's does nothing, so there the crop card
+    // (which has the same actions) opens instead.
+    if (Platform.OS !== 'ios') return router.push(`/crop/${p.id}`);
+    ActionSheetIOS.showActionSheetWithOptions({ title: p.name, options: [...acts.map((a) => a.title), 'Cancel'], cancelButtonIndex: acts.length }, (i) => acts[i]?.run());
+  };
   const toggle = (t: GrowTask) => {
     haptics.tap();
     const on = !done(t);
@@ -430,11 +313,28 @@ export default function GrowPatch() {
           <View style={{ gap: 12 }}>
             <View style={styles.sectionRow}>
               <Text style={[styles.section, { color: c.ink }]}>Your crops</Text>
-              {basket ? <Text style={[styles.basket, { color: c.inkMuted }]} numberOfLines={1}>Basket: {basket}</Text> : null}
+              <JungleViewToggle value={view} views={['grid', 'list']} onChange={(v) => setProfile({ growView: v })} />
             </View>
-            {edibles.map((p) => (
-              <CropCard key={p.id} plant={p} total={formatTotals(stats.byPlant[p.id]?.totals)} now={now} />
-            ))}
+            {basket ? <Text style={[styles.basket, { color: c.inkMuted }]} numberOfLines={1}>Basket: {basket}</Text> : null}
+            {view === 'grid' ? (
+              <View style={styles.grid}>
+                {crops.map((p) => {
+                  const chip = chipFor(p.id);
+                  return (
+                    <CropTile
+                      key={p.id}
+                      plant={p}
+                      chip={chip?.text}
+                      chipTint={chip?.alert ? alertTint(chip.alert, c) : chip?.task ? taskTint(chip.task, c) : undefined}
+                      onOpen={() => router.push(`/crop/${p.id}`)}
+                      onHold={() => quick(p)}
+                    />
+                  );
+                })}
+              </View>
+            ) : (
+              crops.map((p) => <CropCard key={p.id} plant={p} total={formatTotals(stats.byPlant[p.id]?.totals)} now={now} />)
+            )}
           </View>
         </>
       )}
@@ -464,7 +364,8 @@ const styles = StyleSheet.create({
   alertTitle: { fontFamily: fonts.display, ...type.headline },
   alertBody: { fontFamily: fonts.bodyHeavy, ...type.callout },
   section: { fontFamily: fonts.display, ...type.title3 },
-  sectionRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 10 },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 },
   basket: { fontFamily: fonts.bodyHeavy, ...type.footnote, flexShrink: 1 },
   task: { flexDirection: 'row', gap: 12, padding: 12, alignItems: 'flex-start' },
   taskIcon: { width: 38, height: 38, borderRadius: 12, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
@@ -476,28 +377,6 @@ const styles = StyleSheet.create({
   taskBody: { fontFamily: fonts.body, ...type.footnote },
   taskWho: { fontFamily: fonts.bodyHeavy, ...type.caption },
   check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginTop: 6 },
-  cropHead: { flexDirection: 'row', paddingLeft: 16, borderBottomWidth: 2, minHeight: 118 },
-  cropName: { fontFamily: fonts.display, ...type.title2 },
-  cropKind: { fontFamily: fonts.bodyHeavy, ...type.footnote },
-  pills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
-  pill: { borderWidth: 2, borderRadius: 14, minHeight: 28, paddingVertical: 2, paddingHorizontal: 10, justifyContent: 'center' },
-  pillText: { fontFamily: fonts.bodyHeavy, ...type.caption },
-  cropBuddy: { width: 112, alignItems: 'center', justifyContent: 'flex-end', marginBottom: -6 },
-  cropBody: { padding: 14, gap: 14 },
-  track: { flexDirection: 'row', position: 'relative' },
-  trackLine: { position: 'absolute', top: 14, height: 2 },
-  stageCol: { flex: 1, alignItems: 'center', gap: 4 },
-  dot: { width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  dotNum: { fontFamily: fonts.bodyHeavy, ...type.caption },
-  stageLabel: { fontFamily: fonts.bodyHeavy, ...type.caption2 },
-  confirm: { borderWidth: 2, borderRadius: 16, padding: 12, gap: 10 },
-  confirmText: { fontFamily: fonts.bodyHeavy, ...type.body },
-  confirmBtn: { flex: 1, minHeight: 42 },
-  tip: { fontFamily: fonts.bodyHeavy, ...type.callout },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  meta: { fontFamily: fonts.bodyHeavy, ...type.footnote, flexShrink: 1 },
-  actions: { flexDirection: 'row', gap: 8 },
-  action: { flex: 1, minHeight: 46 },
   empty: { alignItems: 'center', padding: 20, gap: 10 },
   emptyTitle: { fontFamily: fonts.display, ...type.title2 },
   emptyBody: { fontFamily: fonts.bodyHeavy, ...type.callout, textAlign: 'center' },

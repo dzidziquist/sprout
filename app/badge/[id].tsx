@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
-import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { PanGestureHandler, State, TapGestureHandler, type PanGestureHandlerStateChangeEvent, type TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -46,35 +46,55 @@ export default function BadgeScreen() {
     Animated.spring(x, { toValue: to, velocity, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
   };
 
+  // A tap and a drag are separate gestures: the drag only takes over once the finger has moved (see
+  // activeOffsetX), and a tap twirls. Before, one pan did both, and on iPhone a quick tap often ended
+  // as a failed pan without its numbers, so the twirl never started.
+  const twirled = useRef(0);
   const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
     if (e.state === State.BEGAN) {
-      // Catch it mid-spin where it is, and make the live drag start from there.
+      // Catch it mid-spin where it is, and make a live drag start from there.
       x.stopAnimation();
       x.extractOffset();
       return;
     }
     if (e.state !== State.END && e.state !== State.CANCELLED && e.state !== State.FAILED) return;
-    // Fold the drag into the value natively, then read back exactly where it is (the native value
+    // Fold any drag into the value natively, then read back exactly where it is (the native value
     // arrives asynchronously, so everything after waits for it).
     x.flattenOffset();
-    const { translationX, velocityX } = e;
-    x.stopAnimation((now) => release(now, translationX, velocityX));
-  };
-
-  const release = (now: number, dx: number, vx: number) => {
-    // Reduce Motion: no twirls or coasting. A tap turns it straight to the other side; a let-go settles
-    // on the nearest side without a spring. Dragging still follows the finger.
-    if (reduced) {
-      const half = FULL / 2;
-      const side = Math.round(now / half);
-      if (Math.abs(dx) < 4 && Math.abs(vx) < 100) haptics.tap();
-      x.setValue((Math.abs(dx) < 4 && Math.abs(vx) < 100 ? side + 1 : side) * half);
+    if (e.state === State.FAILED) {
+      // Never became a drag. A tap twirls it (onTap); otherwise settle it on the nearest front.
+      const asked = Date.now();
+      setTimeout(() => {
+        if (twirled.current < asked - 50) x.stopAnimation((now) => release(now, 0));
+      }, 120);
       return;
     }
-    if (Math.abs(dx) < 4 && Math.abs(vx) < 100) {
-      // A tap: one full twirl. No momentum went in, so it settles without overshoot (only flicks bounce).
-      haptics.tap();
+    const vx = e.velocityX ?? 0;
+    x.stopAnimation((now) => release(now, vx));
+  };
+
+  /** A tap: one full twirl to the next face-forward turn (Reduce Motion: straight to the other side). */
+  const onTap = ({ nativeEvent: e }: TapGestureHandlerStateChangeEvent) => {
+    if (e.state !== State.ACTIVE) return;
+    twirled.current = Date.now();
+    haptics.tap();
+    x.flattenOffset();
+    x.stopAnimation((now) => {
+      if (reduced) {
+        const half = FULL / 2;
+        x.setValue((Math.round(now / half) + 1) * half);
+        return;
+      }
+      // No momentum went in, so it settles without overshoot (only flicks bounce).
       Animated.spring(x, { toValue: Math.round(now / FULL) * FULL + FULL, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
+    });
+  };
+
+  const release = (now: number, vx: number) => {
+    // Reduce Motion: no coasting. A let-go settles on the nearest side without a spring.
+    if (reduced) {
+      const half = FULL / 2;
+      x.setValue(Math.round(now / half) * half);
       return;
     }
     if (Math.abs(vx) > 300) haptics.tap();
@@ -112,7 +132,9 @@ export default function BadgeScreen() {
         </GlassButton>
       </View>
 
-      <PanGestureHandler minDist={0} onGestureEvent={onDrag} onHandlerStateChange={onState}>
+      <TapGestureHandler maxDist={10} onHandlerStateChange={onTap}>
+      <Animated.View>
+      <PanGestureHandler activeOffsetX={[-6, 6]} failOffsetY={[-40, 40]} onGestureEvent={onDrag} onHandlerStateChange={onState}>
         <Animated.View style={styles.stage} accessible accessibilityRole="adjustable" accessibilityLabel={`${badge.title}. Swipe to spin.`}>
           {art && rim ? (
             <BadgeCoin
@@ -148,6 +170,8 @@ export default function BadgeScreen() {
           )}
         </Animated.View>
       </PanGestureHandler>
+      </Animated.View>
+      </TapGestureHandler>
 
       <View style={{ gap: 6, alignItems: 'center' }}>
         <Text style={[styles.title, { color: c.ink }]}>{badge.title}</Text>

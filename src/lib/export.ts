@@ -201,6 +201,7 @@ const PROFILE_CHECKS: Record<string, (v: unknown) => boolean> = {
   theme: oneOf(['system', 'light', 'dark']),
   accent: oneOf(['leaf', 'sky', 'grape', 'coral', 'bubblegum']),
   jungleView: oneOf(['grid', 'list', 'light']),
+  growView: oneOf(['grid', 'list']),
   rooms: (v) => isObj(v) && Object.values(v).every(isRoom),
   lightTips: oneOf(['important', 'daily']),
   aboutOpen: isBool,
