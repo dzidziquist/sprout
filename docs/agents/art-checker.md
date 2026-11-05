@@ -8,7 +8,7 @@ Open the three images (`assets/buddies/<id>-{happy,thirsty,snoozing}.png`) next 
 `monstera-happy.png` and one more existing buddy of the same kind of plant. Go through every item of the
 §4 checklist. Also look at each at thumbnail size: could someone name the plant?
 
-Check the files too: 1254×1254, RGBA, transparent corners, nothing touching the edges, and the three
+Check the files too: 640×640 (what `scripts/plant-art.mjs` writes, like the other buddies), RGBA, transparent corners, nothing touching the edges, and the three
 moods line up (same pot position) when you flip between them.
 
 ## Hand over

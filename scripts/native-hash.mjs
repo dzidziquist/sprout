@@ -1,5 +1,6 @@
 // The native side of the app, hashed. Over-the-air updates only reach builds with the same
 // runtimeVersion (app.json), so anything that changes native code must bump it and ship a new build.
+// Covers dependencies, app.json, targets/, plugins/, patches/ and local native modules (modules/).
 // runtime.json records the hash for the current runtimeVersion; src/lib/runtime.test.ts compares them.
 // Run from the repository root: node scripts/native-hash.mjs [--write]
 import { createHash } from 'node:crypto';
@@ -18,7 +19,9 @@ export function nativeHash() {
   delete app.expo.version;
   delete app.expo.runtimeVersion;
   h.update(JSON.stringify(app));
-  for (const f of ['targets', 'plugins', 'patches'].flatMap((d) => walk(join(root, d))).sort()) {
+  // Local native modules (modules/*): their Swift/Kotlin code, podspecs and config, not their JS bridge.
+  const isNative = (f) => !/[\\/]node_modules[\\/]/.test(f) && (!f.includes(`${join(root, 'modules')}`) || !/\.(m?[jt]sx?)$/.test(f));
+  for (const f of ['targets', 'plugins', 'patches', 'modules'].flatMap((d) => walk(join(root, d))).filter(isNative).sort()) {
     h.update(relative(root, f).replaceAll('\\', '/'));
     h.update(readFileSync(f, 'utf8').replace(/\r\n/g, '\n'));
   }
