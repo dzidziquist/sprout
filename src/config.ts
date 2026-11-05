@@ -18,7 +18,7 @@ export const PRIVACY_POLICY_URL = 'https://dzidziquist.notion.site/PlantFam-Priv
  * server/ideas, which adds a row to the "PlantFam ideas" Notion database). While empty, the row
  * falls back to email or the website.
  */
-export const IDEAS_ENDPOINT = '';
+export const IDEAS_ENDPOINT = 'https://plantfam-ideas.vercel.app/api/idea';
 
 /** PlantFam's App Store page (Apple ID 6823421043). It goes live once the app is approved. */
 export const APP_STORE_URL = 'https://apps.apple.com/app/id6823421043';
