@@ -1,0 +1,50 @@
+name: Plant art
+
+# Makes a new plant buddy's happy, thirsty and snoozing images with OpenAI's image model and commits
+# them to the plant's branch (docs/intake.md, "Missing plants"). Run it on an intake/plant-<id> branch
+# that has docs/intake/art/<id>.json. Needs the OPENAI_API_KEY repository secret.
+on:
+  workflow_dispatch:
+    inputs:
+      species:
+        description: Species id (matches docs/intake/art/<id>.json)
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: plant-art-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  art:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Only on a plant branch
+        env:
+          REF: ${{ github.ref_name }}
+          SPECIES: ${{ inputs.species }}
+        run: |
+          [[ "$SPECIES" =~ ^[a-z0-9-]+$ ]] || { echo "Bad species id"; exit 1; }
+          [[ "$REF" == "intake/plant-$SPECIES" ]] || { echo "Run this on the intake/plant-$SPECIES branch, not $REF"; exit 1; }
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm install --no-save --no-package-lock pngjs@7.0.0
+      - name: Generate
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SPECIES: ${{ inputs.species }}
+        run: node scripts/plant-art.mjs "$SPECIES"
+      - name: Commit
+        env:
+          SPECIES: ${{ inputs.species }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "assets/buddies/$SPECIES-happy.png" "assets/buddies/$SPECIES-thirsty.png" "assets/buddies/$SPECIES-snoozing.png"
+          git commit -m "Plant art: $SPECIES (happy, thirsty, snoozing)"
+          git push

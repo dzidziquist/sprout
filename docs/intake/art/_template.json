@@ -1,0 +1,7 @@
+{
+  "id": "<species-id>",
+  "pot": "sky blue #5AB8FF",
+  "happy": "PlantFam buddy, MOOD = HAPPY. Plant: (describe the leaf shape, edge, colour, variegation and growth habit, as in docs/asset-prompts-v3-new-plants.md section 3). Pot: sky blue #5AB8FF.",
+  "thirsty": "Edit the image you just made: keep the plant, the leaf count, the pot, the pot colour, the size and the position identical. Change only: MOOD = THIRSTY face (worried brows, wavy mouth) and the sky-blue drop at the upper right. (Describe the droop.)",
+  "snoozing": "Edit the HAPPY image: keep everything identical. Change only: MOOD = SNOOZING face (closed arc eyes, small smile) and one small \"z\" shape at the upper right. (Describe the relaxed pose.)"
+}
