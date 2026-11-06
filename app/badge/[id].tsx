@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
-import { PanGestureHandler, State, TapGestureHandler, type PanGestureHandlerStateChangeEvent, type TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -17,6 +17,8 @@ import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
 
+/** A touch shorter than this that never became a drag counts as a tap. */
+const TAP_MS = 350;
 const SIZE = 220;
 /** Degrees of turn per pixel dragged. */
 const TURN = 0.9;
@@ -46,13 +48,14 @@ export default function BadgeScreen() {
     Animated.spring(x, { toValue: to, velocity, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
   };
 
-  // A tap and a drag are separate gestures: the drag only takes over once the finger has moved (see
-  // activeOffsetX), and a tap twirls. Before, one pan did both, and on iPhone a quick tap often ended
-  // as a failed pan without its numbers, so the twirl never started.
-  const twirled = useRef(0);
+  // One gesture does both. A finger that lifts without ever dragging (the pan "fails") is a tap and
+  // twirls the badge; a drag spins it. Two separate gestures (a tap wrapped around the pan) fought on
+  // iPhone: the pan claimed every touch first, so the tap never fired.
+  const touchedAt = useRef(0);
   const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
     if (e.state === State.BEGAN) {
       // Catch it mid-spin where it is, and make a live drag start from there.
+      touchedAt.current = Date.now();
       x.stopAnimation();
       x.extractOffset();
       return;
@@ -62,11 +65,9 @@ export default function BadgeScreen() {
     // arrives asynchronously, so everything after waits for it).
     x.flattenOffset();
     if (e.state === State.FAILED) {
-      // Never became a drag. A tap twirls it (onTap); otherwise settle it on the nearest front.
-      const asked = Date.now();
-      setTimeout(() => {
-        if (twirled.current < asked - 50) x.stopAnimation((now) => release(now, 0));
-      }, 120);
+      // Never became a drag: a quick touch is a tap (twirl); a long press just settles it.
+      if (Date.now() - touchedAt.current < TAP_MS) twirl();
+      else x.stopAnimation((now) => release(now, 0));
       return;
     }
     const vx = e.velocityX ?? 0;
@@ -74,19 +75,16 @@ export default function BadgeScreen() {
   };
 
   /** A tap: one full twirl to the next face-forward turn (Reduce Motion: straight to the other side). */
-  const onTap = ({ nativeEvent: e }: TapGestureHandlerStateChangeEvent) => {
-    if (e.state !== State.ACTIVE) return;
-    twirled.current = Date.now();
+  const twirl = (dir: 1 | -1 = 1) => {
     haptics.tap();
-    x.flattenOffset();
     x.stopAnimation((now) => {
       if (reduced) {
         const half = FULL / 2;
-        x.setValue((Math.round(now / half) + 1) * half);
+        x.setValue((Math.round(now / half) + dir) * half);
         return;
       }
       // No momentum went in, so it settles without overshoot (only flicks bounce).
-      Animated.spring(x, { toValue: Math.round(now / FULL) * FULL + FULL, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
+      Animated.spring(x, { toValue: (Math.round(now / FULL) + dir) * FULL, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
     });
   };
 
@@ -132,10 +130,15 @@ export default function BadgeScreen() {
         </GlassButton>
       </View>
 
-      <TapGestureHandler maxDist={10} onHandlerStateChange={onTap}>
-      <Animated.View>
       <PanGestureHandler activeOffsetX={[-6, 6]} failOffsetY={[-40, 40]} onGestureEvent={onDrag} onHandlerStateChange={onState}>
-        <Animated.View style={styles.stage} accessible accessibilityRole="adjustable" accessibilityLabel={`${badge.title}. Swipe to spin.`}>
+        <Animated.View
+          style={styles.stage}
+          accessible
+          accessibilityRole="adjustable"
+          accessibilityLabel={`${badge.title}. Tap or swipe to spin.`}
+          accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }, { name: 'activate' }]}
+          onAccessibilityAction={(ev) => twirl(ev.nativeEvent.actionName === 'decrement' ? -1 : 1)}
+        >
           {art && rim ? (
             <BadgeCoin
               angle={angle}
@@ -170,8 +173,6 @@ export default function BadgeScreen() {
           )}
         </Animated.View>
       </PanGestureHandler>
-      </Animated.View>
-      </TapGestureHandler>
 
       <View style={{ gap: 6, alignItems: 'center' }}>
         <Text style={[styles.title, { color: c.ink }]}>{badge.title}</Text>
