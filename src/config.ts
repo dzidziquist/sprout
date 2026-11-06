@@ -6,14 +6,14 @@ import * as Updates from 'expo-updates';
 export const APP_VERSION = Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? '0.1.0';
 
 /**
- * Which over-the-air update is running, for Settings → Version: "1.0.22 · update Nov 6" once one has
+ * Which over-the-air update is running, for Settings → Version: "1.0.22 · update Nov 6 (31fa)" (the update id's last four) once one has
  * landed, or just the build's version while it runs the code it shipped with.
  */
 export function versionLabel(): string {
   try {
     if (Updates.isEmbeddedLaunch || !Updates.createdAt) return APP_VERSION;
     const day = Updates.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    return `${APP_VERSION} · update ${day} (${(Updates.updateId ?? '').slice(0, 4)})`;
+    return `${APP_VERSION} · update ${day} (${(Updates.updateId ?? '').slice(-4)})`;
   } catch {
     return APP_VERSION;
   }
