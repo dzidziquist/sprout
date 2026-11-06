@@ -99,9 +99,13 @@ Changing a fact needs the knowledge pipeline (`docs/knowledge.md`), not a bug fi
      (`.github/workflows/plant-art.yml`) can make them instead.
 4. **Check the art** (`art-checker.md`), once images exist. A fresh agent looks at the three images next to
    `pothos-happy.png` and `monstera-happy.png` and runs the checklist in
-   `docs/asset-prompts-v3-new-plants.md` §4. Fail → rerun the workflow with a targeted fix in the
-   prompt, at most 3 times; still failing → merge the plant with its look-alike `art` and no own images,
-   and add "art needs a hand" to Pipeline notes.
+   `docs/asset-prompts-v3-new-plants.md` §4. On a fail, ask for a redraw on the same branch:
+   - add the checker's one-line fixes to the JSON's `"fixes"` list and add 1 to its `"attempt"`;
+   - delete the three PNGs from the branch (that's what tells the Codex automation to draw again);
+   - commit and push. Codex's next daily run redraws with the fixes.
+   After 3 failed attempts, stop: leave the plant on its look-alike `art`, delete the branch, and add
+   "art needs a hand" to Pipeline notes and the owner's summary. (With the `OPENAI_API_KEY` secret, a
+   rerun of the Plant art workflow can stand in for Codex.)
 5. **Register** the images on the `intake/plant-<id>` branch, switch the species' `art` to its own id
    if needed, then open a PR from that branch. Register in `src/data/expandedBuddyImages.ts`, run `node scripts/audit-assets.mjs`,
    the tests, typecheck and evals.
@@ -151,7 +155,8 @@ Set up once in Codex (cloud, on the `sprout` environment), as a daily automation
 Every day at 6pm Seattle time: look for branches named intake/plant-* in this repo that have
 docs/intake/art/<id>.json but no assets/buddies/<id>-happy.png. For each one, make the three
 buddy images from that JSON and the STYLE BLOCK in docs/asset-prompts-v3-new-plants.md §2
-(happy first, then thirsty and snoozing as edits of it so plant, pot and position match):
+(happy first, then thirsty and snoozing as edits of it so plant, pot and position match). If the
+JSON has a "fixes" list, an earlier attempt was rejected: apply every fix in it this time.
 assets/buddies/<id>-happy.png, -thirsty.png, -snoozing.png, 640×640 PNG, fully transparent
 background, pot centred with its bottom at about y=623, at least 14px margin, framed like the
 other buddies. Commit them to that same branch and push. Change no other files. If there are
