@@ -87,24 +87,23 @@ Changing a fact needs the knowledge pipeline (`docs/knowledge.md`), not a bug fi
 3. **Art.** Write the three prompts in the style of `docs/asset-prompts-v3-new-plants.md` §3 into
    `docs/intake/art/<id>.json` (`{ "id", "pot", "happy", "thirsty", "snoozing" }`) and pick a pot colour
    that keeps the set balanced. Then get the images, in this order:
-   - **Codex (the owner's ChatGPT plan, no API cost).** Codex made the app's existing buddy art, but
-     asking it from GitHub (`@codex` on a PR) doesn't work for this account, so the owner runs it:
-     merge the plant first with its look-alike `art` (it ships straight away), then put a ready-to-paste
-     Codex task in the owner's summary: work on `sprout`, branch `intake/plant-<id>` (push it first),
-     make `assets/buddies/<id>-{happy,thirsty,snoozing}.png` from `docs/intake/art/<id>.json` and the
-     style block (happy first, the other two as edits of it), 640×640 transparent PNGs framed like the
-     existing buddies (pot centred, bottom at about y = 623, at least 14px margin), no other files
-     changed. Mark the row `Ready to ship` with "art: waiting for Codex" in Pipeline notes.
-   - **When the images land on that branch** (any later run checks open `intake/plant-*` branches):
-     go on to step 4.
+   - **Codex draws it (the owner's ChatGPT plan, no API cost).** Merge the plant first with its
+     look-alike `art`, so it ships straight away. Then push a branch `intake/plant-<id>` from `main`
+     holding only `docs/intake/art/<id>.json`, and mark the row `Ready to ship` with "art: waiting for
+     Codex" in Pipeline notes. A daily **Codex automation** (set up once by the owner, see "Codex art
+     automation" below) finds such branches, draws `assets/buddies/<id>-{happy,thirsty,snoozing}.png`
+     and pushes them to the same branch. Nothing for the owner to do per plant.
+   - **Each run checks every open `intake/plant-*` branch.** Images there → step 4. Still none after
+     3 days → mention it once in the owner's summary (the automation may be off).
    - **Only if the `OPENAI_API_KEY` secret exists:** the **Plant art** workflow
-     (`.github/workflows/plant-art.yml`) can make them without the owner instead.
+     (`.github/workflows/plant-art.yml`) can make them instead.
 4. **Check the art** (`art-checker.md`), once images exist. A fresh agent looks at the three images next to
    `pothos-happy.png` and `monstera-happy.png` and runs the checklist in
    `docs/asset-prompts-v3-new-plants.md` §4. Fail → rerun the workflow with a targeted fix in the
    prompt, at most 3 times; still failing → merge the plant with its look-alike `art` and no own images,
    and add "art needs a hand" to Pipeline notes.
-5. **Register** the images in `src/data/expandedBuddyImages.ts`, run `node scripts/audit-assets.mjs`,
+5. **Register** the images on the `intake/plant-<id>` branch, switch the species' `art` to its own id
+   if needed, then open a PR from that branch. Register in `src/data/expandedBuddyImages.ts`, run `node scripts/audit-assets.mjs`,
    the tests, typecheck and evals.
 6. **Pull request** with one item in `src/data/whatsNew.ts` (`kind: 'plant'`, "Dragon fruit has joined
    the catalogue", `ideas` = the Notion row id), then Codex, CI and **merge** on the same conditions as
@@ -143,3 +142,21 @@ happens to them until the owner acts.
 3. Do the bugs and plants within the limits. Update each row as it finishes.
 4. Send the owner one summary: what merged and is ready to ship, what's waiting for them, what was
    closed and why. If nothing happened, stay quiet.
+
+## Codex art automation
+
+Set up once in Codex (cloud, on the `sprout` environment), as a daily automation:
+
+```
+Every day at 6pm Seattle time: look for branches named intake/plant-* in this repo that have
+docs/intake/art/<id>.json but no assets/buddies/<id>-happy.png. For each one, make the three
+buddy images from that JSON and the STYLE BLOCK in docs/asset-prompts-v3-new-plants.md §2
+(happy first, then thirsty and snoozing as edits of it so plant, pot and position match):
+assets/buddies/<id>-happy.png, -thirsty.png, -snoozing.png, 640×640 PNG, fully transparent
+background, pot centred with its bottom at about y=623, at least 14px margin, framed like the
+other buddies. Commit them to that same branch and push. Change no other files. If there are
+no such branches, do nothing.
+```
+
+Codex only draws. Checking the art (`art-checker.md`), registering it, the PR and merging stay with
+the daily pipeline run, so Codex's work is always checked by someone else.
