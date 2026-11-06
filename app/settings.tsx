@@ -20,7 +20,7 @@ import { cloudReady, cloudSupported, runCloudBackup, useCloudStatus } from '@/li
 import { savedWords } from '@/engine/cloudBackup';
 import { householdLine, householdSupported, leave, stopSharing } from '@/lib/household';
 import * as haptics from '@/lib/haptics';
-import { APP_VERSION, SUPPORT_EMAIL, SUPPORT_URL, TERMS_URL } from '@/config';
+import { APP_VERSION, SUPPORT_EMAIL, versionLabel, SUPPORT_URL, TERMS_URL } from '@/config';
 import { fonts, type, space } from '@/theme/tokens';
 import { ACCENTS, textOn, useColors } from '@/theme/theme';
 import type { Accent } from '@/types';
@@ -339,7 +339,7 @@ export default function SettingsScreen() {
         ) : (
           <Row label="Contact and support" value={SUPPORT_URL.replace(/^https?:\/\//, '')} onPress={() => Linking.openURL(SUPPORT_URL)} />
         )}
-        <Row label="Version" value={APP_VERSION} last />
+        <Row label="Version" value={versionLabel()} last />
       </Section>
 
       <Section title="Erase data" footer="Erases everything on this phone and starts fresh. Make a backup first if you might want your plants back.">

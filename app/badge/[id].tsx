@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Animated, Image, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,8 +17,6 @@ import { fonts, type, space } from '@/theme/tokens';
 import { textOn, useColors } from '@/theme/theme';
 import { Glyph } from '@/components/Glyph';
 
-/** A touch shorter than this that never became a drag counts as a tap. */
-const TAP_MS = 350;
 const SIZE = 220;
 /** Degrees of turn per pixel dragged. */
 const TURN = 0.9;
@@ -48,10 +46,11 @@ export default function BadgeScreen() {
     Animated.spring(x, { toValue: to, velocity, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
   };
 
-  // One gesture does both. A finger that lifts without ever dragging (the pan "fails") is a tap and
-  // twirls the badge; a drag spins it. Two separate gestures (a tap wrapped around the pan) fought on
-  // iPhone: the pan claimed every touch first, so the tap never fired.
+  // A drag spins it (the pan); a tap twirls it (a plain press inside the pan, the same tap every button
+  // uses). On iPhone the pan only starts once the finger moves, so it can't see a tap at all; and a tap
+  // gesture wrapped around the pan lost every touch to it.
   const touchedAt = useRef(0);
+  const twirledAt = useRef(0);
   const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
     if (e.state === State.BEGAN) {
       // Catch it mid-spin where it is, and make a live drag start from there.
@@ -65,9 +64,11 @@ export default function BadgeScreen() {
     // arrives asynchronously, so everything after waits for it).
     x.flattenOffset();
     if (e.state === State.FAILED) {
-      // Never became a drag: a quick touch is a tap (twirl); a long press just settles it.
-      if (Date.now() - touchedAt.current < TAP_MS) twirl();
-      else x.stopAnimation((now) => release(now, 0));
+      // Never became a drag. If it was a tap, the press twirls it; otherwise settle on the nearest front.
+      const since = touchedAt.current;
+      setTimeout(() => {
+        if (twirledAt.current < since) x.stopAnimation((now) => release(now, 0));
+      }, 150);
       return;
     }
     const vx = e.velocityX ?? 0;
@@ -76,6 +77,7 @@ export default function BadgeScreen() {
 
   /** A tap: one full twirl to the next face-forward turn (Reduce Motion: straight to the other side). */
   const twirl = (dir: 1 | -1 = 1) => {
+    twirledAt.current = Date.now();
     haptics.tap();
     x.stopAnimation((now) => {
       if (reduced) {
@@ -139,6 +141,7 @@ export default function BadgeScreen() {
           accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }, { name: 'activate' }]}
           onAccessibilityAction={(ev) => twirl(ev.nativeEvent.actionName === 'decrement' ? -1 : 1)}
         >
+          <Pressable onPress={() => twirl()} onLongPress={() => {}} delayLongPress={400} accessible={false} style={styles.tapArea}>
           {art && rim ? (
             <BadgeCoin
               angle={angle}
@@ -171,6 +174,7 @@ export default function BadgeScreen() {
               </Animated.View>
             </>
           )}
+          </Pressable>
         </Animated.View>
       </PanGestureHandler>
 
@@ -208,6 +212,7 @@ const styles = StyleSheet.create({
   page: { flex: 1, paddingHorizontal: space.xl, gap: space.xl },
   toolbar: { flexDirection: 'row' },
   stage: { height: SIZE + 40, alignItems: 'center', justifyContent: 'center' },
+  tapArea: { width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' },
   face: { position: 'absolute', width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center', backfaceVisibility: 'hidden' },
   backFace: {},
   disc: { width: SIZE - 30, height: SIZE - 30, borderRadius: (SIZE - 30) / 2, borderWidth: 3, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 6 },
