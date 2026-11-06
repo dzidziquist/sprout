@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { PanGestureHandler, State, type PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { Animated, Image, StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -33,12 +33,11 @@ export default function BadgeScreen() {
   const { badges } = useBadges();
   const reduced = useReducedMotion();
   const badge = badges.find((b) => b.id === id);
-  // One value, in pixels of drag, drives the spin. While a finger is down it follows translationX on the
-  // native driver (the resting spin sits in the value's offset), so dragging never waits on JavaScript,
-  // and letting go folds the two together natively in one step: no frame where the badge jumps.
+  // One value, in pixels of drag, drives the spin. While a finger drags it follows translationX (the
+  // resting spin sits in the value's offset), and letting go folds the two together in one step, so
+  // there's no frame where the badge jumps. Springs run on the native driver.
   const x = useRef(new Animated.Value(0)).current;
   const angle = useRef(Animated.multiply(x, TURN)).current;
-  const onDrag = useRef(Animated.event([{ nativeEvent: { translationX: x } }], { useNativeDriver: true })).current;
   const FULL = 360 / TURN;
 
   /** Spin to `to` (pixels), carrying the finger's speed in. */
@@ -46,38 +45,34 @@ export default function BadgeScreen() {
     Animated.spring(x, { toValue: to, velocity, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
   };
 
-  // A drag spins it (the pan); a tap twirls it (a plain press inside the pan, the same tap every button
-  // uses). On iPhone the pan only starts once the finger moves, so it can't see a tap at all; and a tap
-  // gesture wrapped around the pan lost every touch to it.
-  const touchedAt = useRef(0);
-  const twirledAt = useRef(0);
-  const onState = ({ nativeEvent: e }: PanGestureHandlerStateChangeEvent) => {
-    if (e.state === State.BEGAN) {
-      // Catch it mid-spin where it is, and make a live drag start from there.
-      touchedAt.current = Date.now();
-      x.stopAnimation();
-      x.extractOffset();
-      return;
-    }
-    if (e.state !== State.END && e.state !== State.CANCELLED && e.state !== State.FAILED) return;
-    // Fold any drag into the value natively, then read back exactly where it is (the native value
-    // arrives asynchronously, so everything after waits for it).
-    x.flattenOffset();
-    if (e.state === State.FAILED) {
-      // Never became a drag. If it was a tap, the press twirls it; otherwise settle on the nearest front.
-      const since = touchedAt.current;
-      setTimeout(() => {
-        if (twirledAt.current < since) x.stopAnimation((now) => release(now, 0));
-      }, 150);
-      return;
-    }
-    const vx = e.velocityX ?? 0;
-    x.stopAnimation((now) => release(now, vx));
-  };
+  // A tap and a drag race (react-native-gesture-handler's own pattern for this): the drag wins once the
+  // finger moves sideways, the tap wins when it lifts without moving. Earlier versions nested a tap
+  // gesture around the pan, or a press inside it, and on iPhone the tap never got through.
+  const gesture = Gesture.Race(
+    Gesture.Pan()
+      .activeOffsetX([-6, 6])
+      .failOffsetY([-40, 40])
+      .runOnJS(true)
+      // Only once it really is a drag: catch the badge where it is and follow the finger from there.
+      .onStart(() => {
+        x.stopAnimation();
+        x.extractOffset();
+      })
+      .onUpdate((e) => x.setValue(e.translationX))
+      .onEnd((e) => {
+        x.flattenOffset();
+        x.stopAnimation((now) => release(now, e.velocityX ?? 0));
+      }),
+    Gesture.Tap()
+      .maxDuration(400)
+      .runOnJS(true)
+      .onEnd((_e, success) => {
+        if (success) twirl();
+      }),
+  );
 
   /** A tap: one full twirl to the next face-forward turn (Reduce Motion: straight to the other side). */
   const twirl = (dir: 1 | -1 = 1) => {
-    twirledAt.current = Date.now();
     haptics.tap();
     x.stopAnimation((now) => {
       if (reduced) {
@@ -132,7 +127,7 @@ export default function BadgeScreen() {
         </GlassButton>
       </View>
 
-      <PanGestureHandler activeOffsetX={[-6, 6]} failOffsetY={[-40, 40]} onGestureEvent={onDrag} onHandlerStateChange={onState}>
+      <GestureDetector gesture={gesture}>
         <Animated.View
           style={styles.stage}
           accessible
@@ -141,7 +136,6 @@ export default function BadgeScreen() {
           accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }, { name: 'activate' }]}
           onAccessibilityAction={(ev) => twirl(ev.nativeEvent.actionName === 'decrement' ? -1 : 1)}
         >
-          <Pressable onPress={() => twirl()} onLongPress={() => {}} delayLongPress={400} accessible={false} style={styles.tapArea}>
           {art && rim ? (
             <BadgeCoin
               angle={angle}
@@ -174,9 +168,8 @@ export default function BadgeScreen() {
               </Animated.View>
             </>
           )}
-          </Pressable>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
 
       <View style={{ gap: 6, alignItems: 'center' }}>
         <Text style={[styles.title, { color: c.ink }]}>{badge.title}</Text>
@@ -212,7 +205,6 @@ const styles = StyleSheet.create({
   page: { flex: 1, paddingHorizontal: space.xl, gap: space.xl },
   toolbar: { flexDirection: 'row' },
   stage: { height: SIZE + 40, alignItems: 'center', justifyContent: 'center' },
-  tapArea: { width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center' },
   face: { position: 'absolute', width: SIZE, height: SIZE, alignItems: 'center', justifyContent: 'center', backfaceVisibility: 'hidden' },
   backFace: {},
   disc: { width: SIZE - 30, height: SIZE - 30, borderRadius: (SIZE - 30) / 2, borderWidth: 3, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 6 },
