@@ -207,6 +207,9 @@ export default function TodayScreen() {
           )}
         </Sticker>
 
+        {/* Shown once after an update brings something new, above the round so it's seen. */}
+        <WhatsNewCard now={now} />
+
         {round.length > 0 && (
           <View style={{ gap: 8 }}>
             {round.map((p) => {
@@ -262,7 +265,6 @@ export default function TodayScreen() {
           </View>
         )}
 
-        <WhatsNewCard now={now} />
         <HouseholdCard now={now} />
 
         {!trip && nextTrip && (
