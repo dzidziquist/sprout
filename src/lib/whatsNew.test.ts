@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { markSeen, whatsNewFor } from './whatsNew';
 import { WHATS_NEW } from '../data/whatsNew';
+import { SPECIES } from '../data/species';
 
 const now = new Date('2026-11-10T12:00:00Z');
 const items = [
@@ -35,6 +36,7 @@ describe('whatsNew', () => {
       ids.add(i.id);
       expect(i.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(i.text.length).toBeLessThanOrEqual(80);
+      if (i.plant) expect(SPECIES[i.plant as keyof typeof SPECIES], `${i.id}: unknown plant ${i.plant}`).toBeTruthy();
     }
   });
 });

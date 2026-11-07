@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { PlantBuddy } from '@/components/PlantBuddy';
 import { Sticker } from '@/components/ui';
 import { WHATS_NEW } from '@/data/whatsNew';
+import { SPECIES } from '@/data/species';
+import type { SpeciesId } from '@/types';
 import { markSeen, whatsNewFor } from '@/lib/whatsNew';
 import * as haptics from '@/lib/haptics';
 import { usePlantStore } from '@/store/plantStore';
@@ -34,12 +36,14 @@ export function WhatsNewCard({ now }: { now: Date }) {
     setProfile({ whatsNewSeen: markSeen(seen, items) });
   };
   const shown = [...yours, ...items.filter((i) => !yours.includes(i))].slice(0, 4);
+  // The buddy of the first plant in the news (the person's own suggestion first), else the monstera.
+  const buddy = (shown.find((i) => i.plant && SPECIES[i.plant as SpeciesId])?.plant ?? 'monstera') as SpeciesId;
   const more = items.length - shown.length;
 
   return (
     <Sticker drop={3} bg={bg} style={styles.card}>
       <View style={styles.row}>
-        <PlantBuddy speciesId="monstera" size={64} bg={bg} />
+        <PlantBuddy speciesId={buddy} size={64} bg={bg} />
         <View style={{ flex: 1, gap: 2 }}>
           <Text style={[styles.title, { color: ink }]}>{mine ? 'Your idea is in!' : 'New in PlantFam'}</Text>
           {mine && <Text style={[styles.body, { color: ink }]}>Thanks for suggesting it. It’s in this update.</Text>}
