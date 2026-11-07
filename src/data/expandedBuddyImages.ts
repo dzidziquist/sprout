@@ -193,4 +193,9 @@ export const EXPANDED_BUDDY_IMAGES: Partial<Record<string, Record<Mood, ImageSou
     thirsty: require('../../assets/buddies/string-of-hearts-thirsty.png'),
     snoozing: require('../../assets/buddies/string-of-hearts-snoozing.png'),
   },
+  'peperomia-obtusifolia': {
+    happy: require('../../assets/buddies/peperomia-obtusifolia-happy.png'),
+    thirsty: require('../../assets/buddies/peperomia-obtusifolia-thirsty.png'),
+    snoozing: require('../../assets/buddies/peperomia-obtusifolia-snoozing.png'),
+  },
 };
