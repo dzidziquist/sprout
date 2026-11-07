@@ -93,7 +93,9 @@ Changing a fact needs the knowledge pipeline (`docs/knowledge.md`), not a bug fi
      Codex" in Pipeline notes. A daily **Codex automation** (set up once by the owner, see "Codex art
      automation" below) finds such branches, draws `assets/buddies/<id>-{happy,thirsty,snoozing}.png`
      and pushes them to the same branch. Nothing for the owner to do per plant.
-   - **Each run checks every open `intake/plant-*` branch.** Images there → step 4. Still none after
+   - **Each run checks every open `intake/plant-*` branch, and Codex's own `art/<id>-buddies` branches**
+     (Codex sometimes pushes there; those branches can be cut from an older `main`, so copy only the three
+     PNGs onto a fresh branch from `main`, never merge them). Images there → step 4. Still none after
      3 days → mention it once in the owner's summary (the automation may be off).
    - **Only if the `OPENAI_API_KEY` secret exists:** the **Plant art** workflow
      (`.github/workflows/plant-art.yml`) can make them instead.
@@ -110,7 +112,7 @@ Changing a fact needs the knowledge pipeline (`docs/knowledge.md`), not a bug fi
    if needed, then open a PR from that branch. Register in `src/data/expandedBuddyImages.ts`, run `node scripts/audit-assets.mjs`,
    the tests, typecheck and evals.
 6. **Pull request** with one item in `src/data/whatsNew.ts` (`kind: 'plant'`, "Dragon fruit has joined
-   the catalogue", `ideas` = the Notion row id), then Codex, CI and **merge** on the same conditions as
+   the catalogue", `ideas` = the Notion row id, `plant` = the species id so the card shows its buddy), then Codex, CI and **merge** on the same conditions as
    bugs. Then `Ready to ship`.
 
 ## Shipping

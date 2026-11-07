@@ -12,9 +12,11 @@ export interface WhatsNewItem {
   /** Short, in PlantFam's voice: "Dragon fruit has joined the catalogue". */
   text: string;
   ideas?: string[];
+  /** A species id when the item is about one plant: the card shows that plant's buddy. */
+  plant?: string;
 }
 
 export const WHATS_NEW: WhatsNewItem[] = [
-  { id: '2026-11-07-heart-fern-art', date: '2026-11-07', kind: 'new', text: 'Heart fern has its own plant buddy now' },
-  { id: '2026-11-07-string-of-hearts-art', date: '2026-11-07', kind: 'new', text: 'String of hearts has its own plant buddy now' },
+  { id: '2026-11-07-heart-fern-art', date: '2026-11-07', kind: 'new', text: 'Heart fern has its own plant buddy now', plant: 'heart-fern' },
+  { id: '2026-11-07-string-of-hearts-art', date: '2026-11-07', kind: 'new', text: 'String of hearts has its own plant buddy now', plant: 'string-of-hearts' },
 ];
