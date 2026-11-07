@@ -330,6 +330,16 @@
     "referenced": true
   },
   {
+    "path": "assets/art/coin-glint.png",
+    "width": 200,
+    "height": 300,
+    "bytes": 709,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "e5316241a3561afff61af840e3296fb70ee7fd454982b1d118775685d1ff51a5",
+    "referenced": true
+  },
+  {
     "path": "assets/art/empty-caught-up.png",
     "width": 640,
     "height": 640,
@@ -357,6 +367,76 @@
     "alphaChannel": false,
     "sourceArchive": false,
     "sha256": "3f4928beb1ade4885e1c619f4bd80e5ef7d122a196e14e8667e40809861be285",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/light-shade-none.png",
+    "width": 300,
+    "height": 278,
+    "bytes": 58619,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "61ed7d0b5628aefe5740c16a98edc235278638afcbaf6c190eee574843ca2ad2",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/light-shade-outside.png",
+    "width": 269,
+    "height": 300,
+    "bytes": 95886,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "148a83830fa815c8f50508d020114dac360f2758e535458f233e043afe22693e",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/light-shade-sheer.png",
+    "width": 297,
+    "height": 300,
+    "bytes": 88242,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "35ea4598f13b76b00e8f21110d5c1fae22f90525dd8e680c1e0ce3e423a17134",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/light-spot-below.png",
+    "width": 300,
+    "height": 300,
+    "bytes": 56282,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "8818b98cd429d8269d8d0f8f84a5b84eaa18acc4c23606927987947770090f89",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/light-spot-far.png",
+    "width": 300,
+    "height": 270,
+    "bytes": 53000,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "8f5d33101f527455c206ef8db6f31f08d8d63157cf0994d0cc00ed43f106de67",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/light-spot-near.png",
+    "width": 255,
+    "height": 300,
+    "bytes": 55701,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "284000279c1c3dbabec04c805122eea2f55baa51f9d2422cda7ad59c114cd205",
+    "referenced": true
+  },
+  {
+    "path": "assets/art/light-spot-sill.png",
+    "width": 300,
+    "height": 273,
+    "bytes": 60286,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "2450caf1885282887f15c2716c995210e8254108b37a14f22be0a0e3c965abc9",
     "referenced": true
   },
   {
@@ -1500,6 +1580,36 @@
     "referenced": true
   },
   {
+    "path": "assets/buddies/heart-fern-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 61300,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "60b5212deb61301b51fb38da577483058c15194ba616f26fd2399facc985edcc",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/heart-fern-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 59697,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4cfc534df42d3f3bbb91107aeecdd4d8c493080ae711367f981dab34b544a3ee",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/heart-fern-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 62587,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e7f9dbbff42ef2c20cec9c3f436db5161738b373734966a1f95bcbe697e5ec6d",
+    "referenced": true
+  },
+  {
     "path": "assets/buddies/hoya-happy.png",
     "width": 640,
     "height": 640,
@@ -2560,6 +2670,36 @@
     "referenced": true
   },
   {
+    "path": "assets/buddies/string-of-hearts-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 85718,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "907c5d4bb0391e1d3a1677cf49269267bcb5e3de49289924e7659435b238328a",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/string-of-hearts-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 91526,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "8732246d7b4899dd79bb3696022ee2cdf2955304b3b4d1458653beeb02a8cbe6",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/string-of-hearts-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 81703,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d41b527db25a1b56489d43dc9afd123a3a95f5140c066fb69a7b8b11b8629ccd",
+    "referenced": true
+  },
+  {
     "path": "assets/buddies/string-of-pearls-happy.png",
     "width": 640,
     "height": 640,
@@ -2790,6 +2930,16 @@
     "referenced": true
   },
   {
+    "path": "assets/icons/icon-cactus-dark.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 622648,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "95880cc9a752748c7d78df43a32d2f6423b9ebea254be43b91c730e4770913b7",
+    "referenced": true
+  },
+  {
     "path": "assets/icons/icon-cactus-foreground.png",
     "width": 1024,
     "height": 1024,
@@ -2797,6 +2947,16 @@
     "alphaChannel": true,
     "sourceArchive": false,
     "sha256": "c9c4e6e070da8bde8047ec6bf86b4342ad4176ee9d6f6d21da7d3e5a106f260b",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-cactus-tinted.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 413841,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "de7dc59f1219380932de7aa530efeb4ece165ea181b70e5f1c6b4c94c05284d0",
     "referenced": true
   },
   {
@@ -2817,17 +2977,17 @@
     "alphaChannel": false,
     "sourceArchive": false,
     "sha256": "83c2df679d6e2b922b3639b62399df27c7376ce1dcc082f51d9985347e2fcf46",
-    "referenced": false
+    "referenced": true
   },
   {
     "path": "assets/icons/icon-default-tinted.png",
     "width": 1024,
     "height": 1024,
-    "bytes": 862577,
+    "bytes": 576688,
     "alphaChannel": true,
     "sourceArchive": false,
-    "sha256": "1d491142528d018f1cf98fadd263a41f405abd5d693141cbf3dfd60d6536299f",
-    "referenced": false
+    "sha256": "6ea0d58a7f34ca8d31152ea74b671e5b6b1dd6432d11d8dbedf691c2708a92a0",
+    "referenced": true
   },
   {
     "path": "assets/icons/icon-default.png",
@@ -2837,6 +2997,16 @@
     "alphaChannel": false,
     "sourceArchive": false,
     "sha256": "e95ab99d4af55f10dbe9b13fe826d2d295fea5fb617467252026d58a60136c4b",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-night-dark.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 722283,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "3b75779a87c912647be5181628dbd9bc2431dfd12945f2607dd599d32ce73e99",
     "referenced": true
   },
   {
@@ -2850,6 +3020,16 @@
     "referenced": true
   },
   {
+    "path": "assets/icons/icon-night-tinted.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 469892,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "beacca0d9da1bdc0de936ea52bb4159e10cf41a4c346991ba89a5191aff236fb",
+    "referenced": true
+  },
+  {
     "path": "assets/icons/icon-night.png",
     "width": 1024,
     "height": 1024,
@@ -2857,6 +3037,16 @@
     "alphaChannel": false,
     "sourceArchive": false,
     "sha256": "45ac2da21829fa986b5e85042f72b3a7aa0c40e75fcc82b731194f9c3fc03970",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-party-dark.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 715360,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "35105260b01412a28cbe1eaa119afcc31d48aab386ca0dd21d6834fca2c69214",
     "referenced": true
   },
   {
@@ -2870,6 +3060,16 @@
     "referenced": true
   },
   {
+    "path": "assets/icons/icon-party-tinted.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 590607,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "7452c04487b809a01eced20227980b83b98780f233b2579367582d03ea06c603",
+    "referenced": true
+  },
+  {
     "path": "assets/icons/icon-party.png",
     "width": 1024,
     "height": 1024,
@@ -2880,6 +3080,16 @@
     "referenced": true
   },
   {
+    "path": "assets/icons/icon-sunny-dark.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 472452,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7113284acae0eefbc08753c3bda876195035645a3b308ebd84558ce7df1515d6",
+    "referenced": true
+  },
+  {
     "path": "assets/icons/icon-sunny-foreground.png",
     "width": 1024,
     "height": 1024,
@@ -2887,6 +3097,16 @@
     "alphaChannel": true,
     "sourceArchive": false,
     "sha256": "7cd2eb8495ebbc6684bb7d1a447fbc3125e5f51b281fed4cbece997fb3580075",
+    "referenced": true
+  },
+  {
+    "path": "assets/icons/icon-sunny-tinted.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 310165,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "bb43a4315e56573117814223835e236ad47cf2efd7db8ff30128ba8a27d742a4",
     "referenced": true
   },
   {
@@ -4220,6 +4440,336 @@
     "referenced": false
   },
   {
+    "path": "assets/symptoms/symptom-bleached.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 27288,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "46466ad77f2d0451722c0e9e58859d5624ab8e7d97f677bf5e14b16426d303fd",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-bolting.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 29135,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a5bffa8802a8746b82a1ef7df8899021a78fc60fae2067e005727f16ca79fb73",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-brown-spots.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 27049,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "e8450cb8e012a7c39e8ef84ae968500b18920949113488c23ed358c9c54896ab",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-brown-tips.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 28750,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7f13e148615bb3e3e8c576dc37c2e89dc8ed38c7de82b5aee4903ed9e6bf96ff",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-bumps.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 26250,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "795e8b8b5b78f4726e2afe296af55c590e9fec7aeb2c71983f905e32e237cf18",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-clusters.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 28393,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "073ed88a6337a332383b128ca95896d11d2854e1351d4ef4e3c5f51a81a1db36",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-cotton.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 26563,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "83090b86526d6b6133598f875a83599c4860add746cf0acc179d11dea79929bd",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-curling.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 21661,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "52d293e1f8f4e5766bfb9ef4090f9fd7cbd5cb188c7783fe29b9db351e8b788e",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-drooping.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 29333,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "110a85b43011039de02c4dc8cb013bd7fb07a6d6d145de670c17b4b6ab101162",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-dropping.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 25964,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "dbc77892d534d27b7fecda06dbe5e2dbf8e0d51e73c6c7daa4c9a07a8cd26a75",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-flower-drop.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 32745,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4fa298851ed7b34cbdeedb7002ef3525fec433303ef6aeab4c2bf2588beaa6f1",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-fruit-holes.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 20630,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "47466a1dbe20910e1477aa3c52c978beed726953a0623a7b4727cc4bfe17684f",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-fruit-rot-end.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 26415,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9d5e10354a1bc1aa5b188d9f77861308d54dae130050e12f215e3d92adbb58a4",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-fruit-split.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 24778,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "0a9a3600e450b809f5970d3c161177ad75c0103d5405c35cec7c8650b5a0c9b8",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-holes.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 28139,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7ab2a29c23464d590da17be337a44713ddffda424a6f7a0f97c7833a48026314",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-leafy-no-fruit.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 69174,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "36bb5f3cb43fd4b532ebaf1c744b22d8962c75d50da015e1f0dce8148d341a16",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-leggy.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 15689,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "d2d93d0ae17babcff4c794309fa6900af3de36bc850533beb617d4b025be094b",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-mushy-stem.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 28395,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "b5878eb2236b307028b827b59c4b00cf1792f91e80514494ed52d875cc4eaa09",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-no-growth.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 26285,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "9bd86e7b8a786d58e5c7831ba7589c9b2a4e7dbd29a923dc14a9258cf5a33006",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-purple-leaves.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 68864,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "953b87ce195b6419264c441589ec6425af29e3ccbce7ddf6aba05d15e2645d3c",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-soil-crust.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 39698,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f9caef4922fef9829c200c002743752d9a896d86ff3853401113bbae52631aec",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-soil-dry.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 32350,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7d081e5823e3c0d373cd56eb11284fa1f6ab1959f7f22da2d3700ad6fa2968f8",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-soil-fuzz.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 30134,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f069b6ca35e2cf910130a943c60aaed1065293cf23600771527ca6eb50636519",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-soil-smell.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 21140,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "7c9746c9de1b85a2bdbf32c584eeae6dd346333fa75e22f0fee680acf0f1bbba",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-speckled.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 37335,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "f7b29108c3bd86c701af4b7f5a92a87e9b0657e50029796d1a7c3a6c53cce97c",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-sticky.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 27188,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "4486c477267180ba4c1d642c59a1cb03ce3a0ba1174ad52cdf769da8aa5782b5",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-tiny-flies.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 19979,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "31eb59f93b2d0d0c7beb0f32630e6281d31fe53609b7eaececf5e0a794d0656e",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-webbing.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 25987,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "1ffea7f49b2bc5369d8ae77f71969cbea9e685cb3292454ddb1f196c0e8f8d55",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-white-flies.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 30513,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "78f76474b1775a7564b3231b36b73bfad0e3ee3d235c36d03788a24955610d14",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-white-powder.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 41438,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "03e92a90375083892729195c4e34d7895e72537d8a0b17fe31a5f35540fd0c99",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-yellow-lower.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 27594,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "44d2e04d6b0d7cd57ab11942ef6fbdad10d78f4859a6c442671d8d26384a2485",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-yellow-pale.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 28348,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a39589face9bfea87fee89cd1a054a04cc5a03a92447995e0c99402651259fa6",
+    "referenced": true
+  },
+  {
+    "path": "assets/symptoms/symptom-yellow-veins.png",
+    "width": 384,
+    "height": 384,
+    "bytes": 65260,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "bd26dcd4540ec09f1d1caeb3e0a6a979d42fba4cec01afef555912a003c2ebd6",
+    "referenced": true
+  },
+  {
     "path": "assets/widgets/notification-avatar.png",
     "width": 1024,
     "height": 1024,
@@ -4240,6 +4790,36 @@
     "referenced": false
   },
   {
+    "path": "assets/widgets/widget-monstera-snoozing.png",
+    "width": 360,
+    "height": 360,
+    "bytes": 200032,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "1d454ad6ee3dc67da07ea5f18f1f72237e120c95672c2527318e2b24d326636a",
+    "referenced": false
+  },
+  {
+    "path": "assets/widgets/widget-monstera-thirsty.png",
+    "width": 359,
+    "height": 360,
+    "bytes": 203117,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "9c0f6632151c97399184395795fb8a73264143171184c7d786b98ae5ab4688bc",
+    "referenced": false
+  },
+  {
+    "path": "assets/widgets/widget-monstera.png",
+    "width": 359,
+    "height": 360,
+    "bytes": 207655,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "3b6c6264dbea0fddab9e30c94839486e2fdd52c275551a02609c73f8947db753",
+    "referenced": false
+  },
+  {
     "path": "assets/widgets/widget-small.png",
     "width": 1024,
     "height": 1024,
@@ -4247,6 +4827,26 @@
     "alphaChannel": false,
     "sourceArchive": false,
     "sha256": "ed46bf1e0c193c2ef01823f975f317a6c494e3d477d5d94e0ff198dede1431eb",
+    "referenced": false
+  },
+  {
+    "path": "assets/widgets/widget-snake.png",
+    "width": 210,
+    "height": 360,
+    "bytes": 106291,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "8385413a2416dc77596b6d40771e31c04a602ceae71709a2e78226241c61be0a",
+    "referenced": false
+  },
+  {
+    "path": "assets/widgets/widget-tomato.png",
+    "width": 336,
+    "height": 360,
+    "bytes": 207280,
+    "alphaChannel": true,
+    "sourceArchive": false,
+    "sha256": "371de6e48d724dc6dc842fbbd05904d9b4e0724396df77ad20f7fee69c5db196",
     "referenced": false
   }
 ]

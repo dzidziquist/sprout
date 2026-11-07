@@ -17,7 +17,9 @@ const records = walk(join(root, 'assets')).filter((p) => p.endsWith('.png')).sor
 const paths = new Set(records.map((r) => resolve(root, r.path)));
 const refs = [];
 for (const p of [...walk(join(root, 'src')), ...walk(join(root, 'app'))].filter((p) => /\.[jt]sx?$/.test(p))) {
-  for (const m of readFileSync(p, 'utf8').matchAll(/require\(['"]([^'"]+\.png)['"]\)/g)) {
+  for (const m of readFileSync(p, 'utf8').matchAll(/require\(['"`]([^'"`]+\.png)['"`]\)/g)) {
+    // A computed path (a template with \${...}, as in tests) isn't one file: skip it.
+    if (m[1].includes('${')) continue;
     refs.push({ source: relative(root, p), asset: resolve(dirname(p), m[1]) });
   }
 }
