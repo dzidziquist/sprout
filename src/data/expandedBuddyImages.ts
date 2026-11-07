@@ -183,4 +183,14 @@ export const EXPANDED_BUDDY_IMAGES: Partial<Record<string, Record<Mood, ImageSou
     thirsty: require('../../assets/buddies/meyer-lemon-thirsty.png'),
     snoozing: require('../../assets/buddies/meyer-lemon-snoozing.png'),
   },
+  'heart-fern': {
+    happy: require('../../assets/buddies/heart-fern-happy.png'),
+    thirsty: require('../../assets/buddies/heart-fern-thirsty.png'),
+    snoozing: require('../../assets/buddies/heart-fern-snoozing.png'),
+  },
+  'string-of-hearts': {
+    happy: require('../../assets/buddies/string-of-hearts-happy.png'),
+    thirsty: require('../../assets/buddies/string-of-hearts-thirsty.png'),
+    snoozing: require('../../assets/buddies/string-of-hearts-snoozing.png'),
+  },
 };
