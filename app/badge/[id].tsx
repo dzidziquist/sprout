@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -49,6 +49,15 @@ export default function BadgeScreen() {
   // where the badge already was, so nothing moved.
   const rest = useRef(0);
   const dragFrom = useRef(0);
+  // Where the badge is right now, kept live while it moves, so a drag that interrupts a spin starts from
+  // what's on screen instead of jumping to where the spin was headed.
+  const live = useRef(0);
+  useEffect(() => {
+    const id = x.addListener(({ value }) => {
+      live.current = value;
+    });
+    return () => x.removeListener(id);
+  }, [x]);
 
   // A tap and a drag race (react-native-gesture-handler's own pattern for this): the drag wins once the
   // finger moves sideways, the tap wins when it lifts without moving. Earlier versions nested a tap
@@ -58,10 +67,10 @@ export default function BadgeScreen() {
       .activeOffsetX([-6, 6])
       .failOffsetY([-40, 40])
       .runOnJS(true)
-      // Only once it really is a drag: take over from wherever it's headed and follow the finger.
+      // Only once it really is a drag: catch the badge where it is on screen and follow the finger.
       .onStart(() => {
         x.stopAnimation();
-        dragFrom.current = rest.current;
+        dragFrom.current = live.current;
       })
       .onUpdate((e) => x.setValue(dragFrom.current + e.translationX))
       .onEnd((e) => release(dragFrom.current + e.translationX, e.velocityX ?? 0)),
