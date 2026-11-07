@@ -33,17 +33,22 @@ export default function BadgeScreen() {
   const { badges } = useBadges();
   const reduced = useReducedMotion();
   const badge = badges.find((b) => b.id === id);
-  // One value, in pixels of drag, drives the spin. While a finger drags it follows translationX (the
-  // resting spin sits in the value's offset), and letting go folds the two together in one step, so
-  // there's no frame where the badge jumps. Springs run on the native driver.
+  // One value, in pixels of drag, drives the spin. A drag sets it to where the badge was headed plus the
+  // finger's travel; letting go and tapping spring it on to a whole turn. Springs run on the native driver.
   const x = useRef(new Animated.Value(0)).current;
   const angle = useRef(Animated.multiply(x, TURN)).current;
   const FULL = 360 / TURN;
 
   /** Spin to `to` (pixels), carrying the finger's speed in. */
   const spinTo = (to: number, velocity = 0) => {
+    rest.current = to;
     Animated.spring(x, { toValue: to, velocity, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
   };
+  // Where the badge is headed (pixels), kept here rather than read back from the animated value: on
+  // iPhone a native-driven value can report a stale number after a spin, and a tap then "twirled" to
+  // where the badge already was, so nothing moved.
+  const rest = useRef(0);
+  const dragFrom = useRef(0);
 
   // A tap and a drag race (react-native-gesture-handler's own pattern for this): the drag wins once the
   // finger moves sideways, the tap wins when it lifts without moving. Earlier versions nested a tap
@@ -53,16 +58,13 @@ export default function BadgeScreen() {
       .activeOffsetX([-6, 6])
       .failOffsetY([-40, 40])
       .runOnJS(true)
-      // Only once it really is a drag: catch the badge where it is and follow the finger from there.
+      // Only once it really is a drag: take over from wherever it's headed and follow the finger.
       .onStart(() => {
         x.stopAnimation();
-        x.extractOffset();
+        dragFrom.current = rest.current;
       })
-      .onUpdate((e) => x.setValue(e.translationX))
-      .onEnd((e) => {
-        x.flattenOffset();
-        x.stopAnimation((now) => release(now, e.velocityX ?? 0));
-      }),
+      .onUpdate((e) => x.setValue(dragFrom.current + e.translationX))
+      .onEnd((e) => release(dragFrom.current + e.translationX, e.velocityX ?? 0)),
     Gesture.Tap()
       .maxDuration(400)
       .runOnJS(true)
@@ -74,22 +76,22 @@ export default function BadgeScreen() {
   /** A tap: one full twirl to the next face-forward turn (Reduce Motion: straight to the other side). */
   const twirl = (dir: 1 | -1 = 1) => {
     haptics.tap();
-    x.stopAnimation((now) => {
-      if (reduced) {
-        const half = FULL / 2;
-        x.setValue((Math.round(now / half) + dir) * half);
-        return;
-      }
-      // No momentum went in, so it settles without overshoot (only flicks bounce).
-      Animated.spring(x, { toValue: (Math.round(now / FULL) + dir) * FULL, stiffness: 160, damping: 25, mass: 1, useNativeDriver: true }).start();
-    });
+    if (reduced) {
+      const half = FULL / 2;
+      rest.current = (Math.round(rest.current / half) + dir) * half;
+      x.setValue(rest.current);
+      return;
+    }
+    // No momentum went in, so it settles without overshoot (only flicks bounce).
+    spinTo((Math.round(rest.current / FULL) + dir) * FULL);
   };
 
   const release = (now: number, vx: number) => {
     // Reduce Motion: no coasting. A let-go settles on the nearest side without a spring.
     if (reduced) {
       const half = FULL / 2;
-      x.setValue(Math.round(now / half) * half);
+      rest.current = Math.round(now / half) * half;
+      x.setValue(rest.current);
       return;
     }
     if (Math.abs(vx) > 300) haptics.tap();
