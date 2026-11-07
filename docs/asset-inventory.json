@@ -2120,6 +2120,36 @@
     "referenced": true
   },
   {
+    "path": "assets/buddies/peperomia-obtusifolia-happy.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 53468,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "a0f490d3e6d1b803b91670e6b477b01fc2e4ebc48aa76989240ef1721fcd03b6",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/peperomia-obtusifolia-snoozing.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 51862,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "84a52d5ce85a5068ebaae818f33355502f02739e0e0b7a39db60c9dcb27e0aad",
+    "referenced": true
+  },
+  {
+    "path": "assets/buddies/peperomia-obtusifolia-thirsty.png",
+    "width": 640,
+    "height": 640,
+    "bytes": 51575,
+    "alphaChannel": false,
+    "sourceArchive": false,
+    "sha256": "2d2a3d3bddb04b5f5c58b033dd39f663b5ab9505742ad917c8feeaa963ac565f",
+    "referenced": true
+  },
+  {
     "path": "assets/buddies/pepper-happy.png",
     "width": 640,
     "height": 640,
