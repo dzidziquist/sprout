@@ -1,6 +1,6 @@
 # App Store Connect: privacy answers for PlantFam
 
-Use these when filling in **App Privacy** in App Store Connect. They describe what the code does today (Oct 2026); revisit if you add a server, analytics or accounts.
+Use these when filling in **App Privacy** in App Store Connect. They describe what the code does today (Nov 2026); revisit if you add a server, analytics or accounts.
 
 **Privacy Policy URL:** https://dzidziquist.notion.site/PlantFam-Privacy-Policy-3fabc232dc2181d59c4de6716ad9eb84 (published from the Notion page "PlantFam Privacy Policy"). It's also `PRIVACY_POLICY_URL` in `src/config.ts`. `docs/legal/privacy-policy.md` is the copy kept in the repo; update both together.
 
@@ -15,16 +15,20 @@ Use these when filling in **App Privacy** in App Store Connect. They describe wh
 | Identifiers → User ID | **No while tips are off**; Yes (RevenueCat's anonymous app user ID) if tips are switched on | App Functionality | No | No |
 | User Content → Photos or Videos | **Yes**, conservatively: only the single photo someone chooses for photo ID or the plant doctor's photo check, sent to Pl@ntNet | App Functionality | No | No |
 | Location | **No**: the user types a city name; no device location or GPS is ever read. (Coarse location from a typed city isn't "collected" location data under Apple's definition, but mention it in the policy, which we do.) | | | |
-| Contact info, health, financial info, browsing, diagnostics, usage data | **No** | | | |
+| Contact Info → Email Address | **Yes, optional**: only if someone adds their email to "Suggest a plant or idea" | Customer Support (to reply) | Yes (it's their email) | No |
+| User Content → Customer Support | **Yes**: the text of a suggestion or bug note, with the app and iOS version | Customer Support, App Functionality (fixing bugs, adding plants) | Yes when an email is given, so answer Yes | No |
+| Health, financial info, browsing, diagnostics, usage data, other contact info | **No** | | | |
 
 Notes:
 - Plants, diary, photos and settings stay on the phone, or go to the person's own iCloud (weekly iCloud backup, and household sharing via CloudKit in the owner's iCloud). The developer has no access to either, so under Apple's definition they aren't "collected". The privacy policy describes both.
 - The RevenueCat SDK is in the build but never starts while `TIPS_ENABLED = false`, so nothing goes to RevenueCat. Before App Review, either keep it switched off (and answer "No" for purchases) or remove `react-native-purchases` from the build so the shipped binary matches the answers.
+- Ideas go through the `plantfam-ideas` Vercel function to the owner's Notion. Vercel keeps short request logs (IP address); the function stores nothing itself.
+- Over-the-air updates: on launch the app asks Expo's update service (u.expo.dev) for a newer bundle. The request carries the app's runtime version, platform and update channel, nothing about the person. Expo's own privacy terms cover their logs.
 - Calls to Open-Meteo send only a typed city name (geocoding) or a city's coordinates (history and forecast), with no user data, so there's nothing to declare.
 - If you route photo ID through your own proxy (`EXPO_PUBLIC_PLANTNET_PROXY`), the answer stays the same as long as the proxy doesn't store images or logs that identify people.
 - RevenueCat publishes its own App Store privacy guidance; check it matches the table above when you create the RevenueCat project.
 
 ## Other App Store items
-- **Age rating:** 4+ (no user-generated content shared with others, no web browsing).
+- **Age rating:** 4+ (suggestions go privately to the developer and are never shown to other people; no web browsing).
 - **Account deletion:** not applicable (no accounts). Settings → *Delete all my data* erases everything on the device.
 - **Export compliance:** the app uses only standard HTTPS. Answer "uses encryption: yes, exempt (standard)", or set `ITSAppUsesNonExemptEncryption = false` in `app.json`.
